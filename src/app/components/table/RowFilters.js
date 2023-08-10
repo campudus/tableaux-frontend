@@ -8,8 +8,7 @@ import {
 import { doto, either, withTryCatch } from "../../helpers/functools";
 import {
   getCountryOfLangtag,
-  getLanguageOfLangtag,
-  retrieveTranslation
+  getLanguageOfLangtag
 } from "../../helpers/multiLanguage";
 import searchFunctions, {
   StatusSearchFunction

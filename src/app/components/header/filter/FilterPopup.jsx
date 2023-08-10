@@ -1,19 +1,10 @@
-import { translate } from "react-i18next";
-import React from "react";
-import Select from "react-select";
-import * as f from "lodash/fp";
 import i18n from "i18next";
-import listensToClickOutside from "react-onclickoutside";
-
+import * as f from "lodash/fp";
 import PropTypes from "prop-types";
-
-import { FilterableCellKinds, SortableCellKinds } from "../../table/RowFilters";
-import { either } from "../../../helpers/functools";
-import { getColumnDisplayName } from "../../../helpers/multiLanguage";
-import FilterPopupFooter from "./FilterPopupFooter";
-import FilterPresetList from "./FilterPresetList";
-import FilterRow, { BOOL, TEXT } from "./FilterRow";
-import FilterSavingPopup from "./FilterSavingPopup";
+import React from "react";
+import { translate } from "react-i18next";
+import listensToClickOutside from "react-onclickoutside";
+import Select from "react-select";
 import TableauxConstants, {
   ColumnKinds,
   FilterModes,
@@ -21,6 +12,14 @@ import TableauxConstants, {
   RowIdColumn,
   SortValues
 } from "../../../constants/TableauxConstants";
+import { either } from "../../../helpers/functools";
+import { getColumnDisplayName } from "../../../helpers/multiLanguage";
+import { canColumnBeSearched } from "../../../helpers/searchFunctions";
+import { SortableCellKinds } from "../../table/RowFilters";
+import FilterPopupFooter from "./FilterPopupFooter";
+import FilterPresetList from "./FilterPresetList";
+import FilterRow, { BOOL, TEXT } from "./FilterRow";
+import FilterSavingPopup from "./FilterSavingPopup";
 
 const SPECIAL_SEARCHES = [
   FilterModes.ANY_UNTRANSLATED,
@@ -41,8 +40,7 @@ class FilterPopup extends React.Component {
   static isSortableColumn = column =>
     f.contains(column.kind, SortableCellKinds);
   static isSearchableColumn = column =>
-    column.id !== RowIdColumn.id &&
-    f.contains(column.kind, FilterableCellKinds);
+    column.id !== RowIdColumn.id && canColumnBeSearched(column);
 
   sortableColumns = null;
   searchableColumns = null;

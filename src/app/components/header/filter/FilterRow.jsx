@@ -1,14 +1,18 @@
 import i18n from "i18next";
 import f from "lodash/fp";
 import PropTypes from "prop-types";
-import React, { useCallback, useRef } from "react";
+import React, { useCallback, useEffect, useRef } from "react";
 import { translate } from "react-i18next";
 import Select from "react-select";
 import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
-import SearchFunctions from "../../../helpers/searchFunctions";
+import {
+  getFiltersForColumn,
+  getSearchFunction
+} from "../../../helpers/searchFunctions";
 import SvgIcon from "../../helperComponents/SvgIcon";
 import { BoolInput } from "./FilterFragments";
 import { FilterModes } from "../../../constants/TableauxConstants";
+import { maybe } from "../../../helpers/functools";
 
 export const BOOL = "boolean";
 export const TEXT = "text";
@@ -27,10 +31,10 @@ const FilterRow = ({
 }) => {
   const columnId = parseInt(filter.columnId);
   const clearValue = () => {
-    if (onChangeValue) onChangeValue({});
+    onChangeValue({});
   };
   const clearColumn = () => {
-    if (onChangeColumn) onChangeColumn();
+    handleChangeColumn({});
   };
   const getKeyboardShortcuts = useCallback(
     () => (
@@ -68,23 +72,25 @@ const FilterRow = ({
   const isFilterColumnSelected = !f.isNil(selectedColumn);
   const handleChangeColumn = column => {
     onChangeColumn(column);
-    if (!SearchFunctions[filter.mode].isValidColumn(column)) {
-      onChangeMode(Object.keys(SearchFunctions))[0];
-    }
   };
 
-  const filterModeOptions =
-    SearchFunctions
-    |> f.keys
-    |> f.filter(
-      key =>
-        !isFilterColumnSelected ||
-        SearchFunctions[key].isValidColumn(selectedColumn)
-    )
-    |> f.map(key => ({
-      value: key,
-      label: i18n.t(SearchFunctions[key].displayName)
-    }));
+  useEffect(() => {
+    const searchFn = getSearchFunction(filter.mode);
+    if (!searchFn.isValidColumn(selectedColumn ?? {})) {
+      maybe(selectedColumn)
+        .map(getFiltersForColumn)
+        .map(f.first)
+        .map(searchFn => ({ value: searchFn.mode }))
+        .map(handleChangeFilterMode);
+    }
+  }, [selectedColumn]);
+
+  const filterModeOptions = selectedColumn
+    ? getFiltersForColumn(selectedColumn).map(filterFn => ({
+        value: filterFn.mode,
+        label: i18n.t(filterFn.displayName)
+      }))
+    : [];
 
   return (
     <div className="filter-row">
