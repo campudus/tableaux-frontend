@@ -73,13 +73,6 @@ const FilterRow = ({
     }
   };
 
-  console.log({
-    columnId,
-    searchableColumns,
-    selectedColumn,
-    isFilterColumnSelected
-  });
-
   const filterModeOptions =
     SearchFunctions
     |> f.keys
