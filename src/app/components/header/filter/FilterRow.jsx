@@ -76,7 +76,7 @@ const FilterRow = ({
 
   useEffect(() => {
     const searchFn = getSearchFunction(filter.mode);
-    if (!searchFn.isValidColumn(selectedColumn ?? {})) {
+    if (!searchFn?.isValidColumn(selectedColumn ?? {})) {
       maybe(selectedColumn)
         .map(getFiltersForColumn)
         .map(f.first)
