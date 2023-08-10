@@ -120,8 +120,6 @@ const grudConstants = {
     WITH_COMMENT: null
   }),
 
-  StatusFilterMode: "STATUS",
-
   get config() {
     return _config;
   },

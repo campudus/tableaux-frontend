@@ -34,6 +34,18 @@ const SearchFunctions = {
     f.curry((searchVal, str) => {
       return f.startsWith(clean(searchVal), clean(str));
     })
+  ),
+  [FilterModes.IS_EMPTY]: TaggedFunction(
+    "table:filter.is_empty",
+    f.curry((_, value) => {
+      const isEmptyValue = f.cond([
+        [f.isNumber, f.isNaN],
+        [Array.isArray, f.isEmpty],
+        [f.isPlainObject, f.isEmpty],
+        [f.stubTrue, x => !Boolean(x)]
+      ]);
+      return isEmptyValue(value);
+    })
   )
 };
 
@@ -52,7 +64,8 @@ export const StatusSearchFunction = TaggedFunction(
 
 export const SEARCH_FUNCTION_IDS = [
   FilterModes.CONTAINS,
-  FilterModes.STARTS_WITH
+  FilterModes.STARTS_WITH,
+  FilterModes.IS_EMPTY
 ];
 
 export const createTextFilter = (mode, value) => {
