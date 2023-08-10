@@ -10,7 +10,27 @@ import f from "lodash/fp";
 import { doto } from "../../../helpers/functools";
 import apiUrl from "../../../helpers/apiUrl";
 import { canUserSeeTable } from "../../../helpers/accessManagementHelper.js";
+import { Link } from "react-router-dom";
 
+const isViewableUrl = url => {
+  const fileType = f.last(url.split(".")).toLowerCase();
+  return ["png", "jpg", "gif", "html", "pdf", "webp"].includes(fileType);
+};
+
+const MainButton = ({ url, children, className }) => {
+  const shouldOpenWindow = f.isString(url) && isViewableUrl(url);
+  const handleOpenNewWindow = evt => {
+    evt.preventDefault();
+    window.open(url);
+  };
+  return shouldOpenWindow ? (
+    <Link className={className} to={url} onClick={handleOpenNewWindow}>
+      {children}
+    </Link>
+  ) : (
+    <div className={className}>{children}</div>
+  );
+};
 const getCssClass = ({ isLinked, isSelected }) =>
   classNames("list-item", {
     isLinked: isLinked,
@@ -18,7 +38,12 @@ const getCssClass = ({ isLinked, isSelected }) =>
   });
 
 const LinkItem = props => {
-  const { toTable, showToggleButton = true, userCanEdit = true } = props;
+  const {
+    toTable,
+    showToggleButton = true,
+    userCanEdit = true,
+    viewUrl
+  } = props;
   const mainButtonClass = classNames("left", {
     linked: props.isLinked,
     "has-focus": props.selectedMode === 0
@@ -81,7 +106,7 @@ const LinkItem = props => {
         >
           <SvgIcon icon="edit" containerClasses="color-primary" />
         </a>
-        <div className={mainButtonClass}>
+        <MainButton className={mainButtonClass} url={viewUrl}>
           <div draggable={false}>
             {unless(
               f.isString,
@@ -89,7 +114,7 @@ const LinkItem = props => {
               props.label
             ) || <Empty langtag={props.langtag} />}
           </div>
-        </div>
+        </MainButton>
       </div>
     </div>
   );
@@ -106,7 +131,8 @@ LinkItem.propTypes = {
   style: PropTypes.object,
   toTable: PropTypes.number.isRequired,
   showToggleButton: PropTypes.bool,
-  userCanEdit: PropTypes.bool
+  userCanEdit: PropTypes.bool,
+  viewUrl: PropTypes.string
 };
 
 export default LinkItem;
