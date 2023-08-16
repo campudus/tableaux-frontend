@@ -13,7 +13,7 @@ import { buildClassName } from "../../../helpers/buildClassName";
 
 const isViewableUrl = url => {
   const fileType = f.last(url.split(".")).toLowerCase();
-  return ["png", "jpg", "gif", "html", "pdf", "webp"].includes(fileType);
+  return ["png", "jpg", "gif", "html", "pdf", "webp", "svg"].includes(fileType);
 };
 
 const EditLinkButton = ({ onClick, className }) => {
