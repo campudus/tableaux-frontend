@@ -146,7 +146,7 @@ const FilterRow = ({
             )}
             onClick={focusFilterInput}
           />
-          {!f.isNil(columnId) && (
+          {!f.isEmpty(filter?.value) && (
             <button
               onClick={() => onChangeValue({ target: { value: "" } })}
               className="filter-input__clear-button col-five"
