@@ -92,6 +92,8 @@ const FilterRow = ({
       }))
     : [];
 
+  console.log(filter);
+
   return (
     <div className="filter-row">
       <button
@@ -107,7 +109,7 @@ const FilterRow = ({
         searchable={true}
         clearable={false}
         openOnFocus
-        value={columnId}
+        value={filter?.columnId}
         onChange={handleChangeColumn}
         placeholder={t("filter:input.filter")}
         valueRenderer={valueRenderer}
