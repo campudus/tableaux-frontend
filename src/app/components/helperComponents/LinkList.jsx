@@ -12,6 +12,7 @@ import { LinkedRows } from "../cells/link/LinkOverlayFragments";
 import LinkItem from "../cells/link/LinkItem";
 import { canUserChangeCell } from "../../helpers/accessManagementHelper.js";
 import { retrieveTranslation } from "../../helpers/multiLanguage";
+import apiUrl from "../../helpers/apiUrl";
 
 const MAX_DISPLAYED_LINKS = 4;
 
@@ -47,8 +48,9 @@ const LinkList = props => {
       newValue: rearranged
     });
   };
+
   const getViewUrl = link =>
-    isAttachment ? `/api/${retrieveTranslation(langtag, link.url)}` : undefined;
+    isAttachment ? apiUrl(retrieveTranslation(langtag, link.url)) : undefined;
 
   const renderSortableListItem = () => ({ key, style = {} }) => {
     const link = f.find(f.propEq("id", key), links);
