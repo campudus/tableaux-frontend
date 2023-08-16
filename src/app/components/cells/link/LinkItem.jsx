@@ -7,30 +7,38 @@ import Empty from "../../helperComponents/emptyEntry";
 import { unless } from "../../../helpers/functools";
 import { retrieveTranslation } from "../../../helpers/multiLanguage";
 import f from "lodash/fp";
-import { doto } from "../../../helpers/functools";
-import apiUrl from "../../../helpers/apiUrl";
 import { canUserSeeTable } from "../../../helpers/accessManagementHelper.js";
 import { Link } from "react-router-dom";
+import { buildClassName } from "../../../helpers/buildClassName";
 
 const isViewableUrl = url => {
   const fileType = f.last(url.split(".")).toLowerCase();
   return ["png", "jpg", "gif", "html", "pdf", "webp"].includes(fileType);
 };
 
-const MainButton = ({ url, children, className }) => {
+const EditLinkButton = ({ onClick, className }) => {
+  const cssClass = buildClassName(className, { disabled: !onClick });
+  return (
+    <button onClick={onClick} className={cssClass} draggable={false}>
+      <SvgIcon icon="edit" containerClasses="color-primary" />
+    </button>
+  );
+};
+
+const OpenAttachmentButton = ({ url, className }) => {
   const shouldOpenWindow = f.isString(url) && isViewableUrl(url);
   const handleOpenNewWindow = evt => {
     evt.preventDefault();
-    window.open(url);
+    if (shouldOpenWindow) window.open(url);
   };
-  return shouldOpenWindow ? (
-    <Link className={className} to={url} onClick={handleOpenNewWindow}>
-      {children}
+  const cssClass = buildClassName(className, { disabled: !shouldOpenWindow });
+  return (
+    <Link className={cssClass} to={url} onClick={handleOpenNewWindow}>
+      <i className="fa fa-eye" />
     </Link>
-  ) : (
-    <div className={className}>{children}</div>
   );
 };
+
 const getCssClass = ({ isLinked, isSelected }) =>
   classNames("list-item", {
     isLinked: isLinked,
@@ -39,11 +47,12 @@ const getCssClass = ({ isLinked, isSelected }) =>
 
 const LinkItem = props => {
   const {
-    toTable,
     showToggleButton = true,
+    toTable,
     userCanEdit = true,
     viewUrl
   } = props;
+  const isAttachment = props.isAttachment || Boolean(viewUrl);
   const mainButtonClass = classNames("left", {
     linked: props.isLinked,
     "has-focus": props.selectedMode === 0
@@ -51,6 +60,14 @@ const LinkItem = props => {
   const linkButtonClass = classNames("linkButton", {
     "has-focus": props.selectedMode === 1
   });
+  const handleClickEdit = () =>
+    !isAttachment && canUserSeeTable(toTable)
+      ? loadAndOpenEntityView({
+          tableId: toTable,
+          rowId: props.row.id,
+          langtag: props.langtag
+        })
+      : undefined;
   return (
     <div
       style={props.style}
@@ -77,36 +94,15 @@ const LinkItem = props => {
             )}
           </a>
         )}
-        <a
-          href="#"
-          className={
-            canUserSeeTable(toTable)
-              ? linkButtonClass
-              : linkButtonClass + " " + linkButtonClass + "--disabled"
-          }
-          draggable={false}
-          onClick={() => {
-            if (!canUserSeeTable(toTable)) {
-              return;
-            }
-            props.isAttachment
-              ? doto(
-                  f.find(val => val.uuid === props.row.id, props.cell.value),
-                  f.get("url"),
-                  retrieveTranslation(props.langtag),
-                  apiUrl,
-                  window.open
-                )
-              : loadAndOpenEntityView({
-                  tableId: toTable,
-                  rowId: props.row.id,
-                  langtag: props.langtag
-                });
-          }}
-        >
-          <SvgIcon icon="edit" containerClasses="color-primary" />
-        </a>
-        <MainButton className={mainButtonClass} url={viewUrl}>
+        {isAttachment ? (
+          <OpenAttachmentButton className={linkButtonClass} url={viewUrl} />
+        ) : (
+          <EditLinkButton
+            className={linkButtonClass}
+            onClick={handleClickEdit}
+          />
+        )}
+        <div className={mainButtonClass}>
           <div draggable={false}>
             {unless(
               f.isString,
@@ -114,7 +110,7 @@ const LinkItem = props => {
               props.label
             ) || <Empty langtag={props.langtag} />}
           </div>
-        </MainButton>
+        </div>
       </div>
     </div>
   );
