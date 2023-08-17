@@ -1,5 +1,16 @@
 import f from "lodash/fp";
-import { FilterModes } from "../constants/TableauxConstants";
+import { ColumnKinds, FilterModes } from "../constants/TableauxConstants";
+import { FilterableCellKinds } from "../components/table/RowFilters";
+
+const TaggedFunction = (mode, displayName, fn, isValidColumn = () => true) => {
+  const taggedFn = function(...args) {
+    return fn(...args);
+  };
+  taggedFn.mode = mode;
+  taggedFn.displayName = displayName;
+  taggedFn.isValidColumn = isValidColumn;
+  return taggedFn;
+};
 
 const DEFAULT_FILTER_MODE = FilterModes.CONTAINS;
 
@@ -8,36 +19,76 @@ const clean = f.flow(
   f.trim
 ); // normalise string
 
-// TODO: Filternamen in locale speichern, Schema: {filters: {[mode]: display name}}
-
 const SearchFunctions = {
-  [FilterModes.CONTAINS]: f.curry((stringOfFilters, str) => {
-    return f.every(f.contains(f, clean(str)), f.words(clean(stringOfFilters)));
-  }),
-  [FilterModes.STARTS_WITH]: f.curry((searchVal, str) => {
-    return f.startsWith(clean(searchVal), clean(str));
-  })
+  [FilterModes.CONTAINS]: TaggedFunction(
+    FilterModes.CONTAINS,
+    "table:filter.contains",
+    f.curry((stringOfFilters, str) => {
+      return f.every(
+        f.contains(f, clean(str)),
+        f.words(clean(stringOfFilters))
+      );
+    }),
+    column => FilterableCellKinds.includes(column.kind)
+  ),
+  [FilterModes.STARTS_WITH]: TaggedFunction(
+    FilterModes.STARTS_WITH,
+    "table:filter.starts_with",
+    f.curry((searchVal, str) => {
+      return f.startsWith(clean(searchVal), clean(str));
+    }),
+    column => FilterableCellKinds.includes(column.kind)
+  ),
+  [FilterModes.IS_EMPTY]: TaggedFunction(
+    FilterModes.IS_EMPTY,
+    "table:filter.is_empty",
+    f.curry((_, value) => {
+      const isEmptyValue = f.cond([
+        [f.isNumber, f.isNaN],
+        [Array.isArray, f.isEmpty],
+        [f.isPlainObject, f.isEmpty],
+        [f.isString, f.isEmpty],
+        [f.isBoolean, f.isNil],
+        [f.stubTrue, f.isNil]
+      ]);
+      return isEmptyValue(value);
+    }),
+    column =>
+      ![
+        ColumnKinds.group,
+        ColumnKinds.status,
+        ColumnKinds.currency,
+        ColumnKinds.boolean
+      ].includes(column.kind)
+  )
 };
 
-export const StatusSearchFunction = f.curry(
-  (stringOfFilters, shouldContain, str) => {
+export const StatusSearchFunction = TaggedFunction(
+  FilterModes.STATUS,
+  "Status",
+  f.curry((stringOfFilters, shouldContain, str) => {
     const filterWords = f.words(clean(stringOfFilters));
     const cleanedInput = clean(str);
     const isInInput = f.contains(f.__, cleanedInput);
     return shouldContain
       ? f.every(isInInput, filterWords)
       : !f.some(isInInput, filterWords);
-  }
+  }),
+  column => column.kind === ColumnKinds.status
 );
 
-SearchFunctions[FilterModes.CONTAINS].displayName = "table:filter.contains";
-SearchFunctions[FilterModes.STARTS_WITH].displayName =
-  "table:filter.starts_with";
+export const SEARCH_FUNCTION_IDS = Object.keys(SearchFunctions);
 
-export const SEARCH_FUNCTION_IDS = [
-  FilterModes.CONTAINS,
-  FilterModes.STARTS_WITH
-];
+const allFilters = [...Object.values(SearchFunctions), StatusSearchFunction];
+export const canColumnBeSearched = column =>
+  allFilters.some(filter => filter.isValidColumn(column));
+export const getFiltersForColumn = column =>
+  allFilters.filter(filter => filter.isValidColumn(column));
+export const getSearchFunction = mode =>
+  f.cond([
+    [f.eq(FilterModes.STATUS), () => StatusSearchFunction],
+    [f.contains(f.__, SEARCH_FUNCTION_IDS), () => SearchFunctions[mode]]
+  ])(mode);
 
 export const createTextFilter = (mode, value) => {
   switch (true) {

@@ -110,7 +110,8 @@
     "save-filter": "Filter speichern",
     "filters": "Filter",
     "sorting": "Sortierung",
-    "enter-name": "Filternamen eingeben"
+    "enter-name": "Filternamen eingeben",
+    "is_empty": "Ist leer"
   },
   "jumpspinner": {
     "title": "Gleich am Ziel!",

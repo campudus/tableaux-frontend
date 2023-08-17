@@ -3,10 +3,13 @@ import {
   ColumnKinds,
   FilterModes,
   RowIdColumn,
-  SortValues,
-  StatusFilterMode
+  SortValues
 } from "../../constants/TableauxConstants";
 import { doto, either, withTryCatch } from "../../helpers/functools";
+import {
+  getCountryOfLangtag,
+  getLanguageOfLangtag
+} from "../../helpers/multiLanguage";
 import searchFunctions, {
   StatusSearchFunction
 } from "../../helpers/searchFunctions";
@@ -43,7 +46,7 @@ const FlagSearches = [
 const rememberColumnIds = colSet => f.tap(val => colSet.add(val.column.id));
 
 const getFilteredRows = (
-  currentTable,
+  _currentTable,
   rowsWithIndex,
   columns,
   langtag,
@@ -146,7 +149,7 @@ const getFilteredRows = (
 };
 
 const mkFilterFn = closures => settings => {
-  const valueFilters = [FilterModes.CONTAINS, FilterModes.STARTS_WITH];
+  const valueFilters = Object.keys(searchFunctions);
   return f.cond([
     [f.matchesProperty("mode", FilterModes.ID_ONLY), mkIDFilter(closures)],
     [
@@ -170,6 +173,7 @@ const mkFilterFn = closures => settings => {
       ({ mode }) => f.contains(mode, FlagSearches),
       ({ mode, value }) => mkFlagFilter(closures, mode, value)
     ],
+    [f.propEq("mode", FilterModes.IS_EMPTY), mkEmptyValueFilter(closures)],
     [
       f.matchesProperty("columnKind", ColumnKinds.boolean),
       mkBoolFilter(closures)
@@ -178,7 +182,7 @@ const mkFilterFn = closures => settings => {
       ({ mode }) => f.contains(mode, valueFilters),
       mkColumnValueFilter(closures)
     ],
-    [({ mode }) => mode === StatusFilterMode, mkColumnValueFilter(closures)],
+    [({ mode }) => mode === FilterModes.STATUS, mkColumnValueFilter(closures)],
     [f.stubTrue, () => f.stubTrue]
   ])(settings);
 };
@@ -234,7 +238,7 @@ const mkIDFilter = () => ({ value }) => {
   );
 };
 
-const hasUntranslatedCells = (closures, needsTranslation) =>
+const hasUntranslatedCells = (_, needsTranslation) =>
   f.flow(
     f.get(["values"]),
     f.filter(needsTranslation),
@@ -298,6 +302,21 @@ const mkFlagFilter = (closures, mode, value) => {
   );
 };
 
+const mkEmptyValueFilter = closures => settings => {
+  const { columnId, colId } = settings;
+  const { getColumnIndex, getPlainCellValue } = closures;
+  const id = f.isNumber(columnId) && !isNaN(columnId) ? columnId : colId;
+  const columnIdx = getColumnIndex(id);
+
+  return row =>
+    doto(
+      row,
+      f.prop(`values.${columnIdx}`),
+      getPlainCellValue,
+      searchFunctions[FilterModes.IS_EMPTY](null)
+    );
+};
+
 const mkColumnValueFilter = closures => ({
   value,
   mode,
@@ -308,13 +327,19 @@ const mkColumnValueFilter = closures => ({
   const id = f.isNumber(columnId) && !isNaN(columnId) ? columnId : colId;
   const filterColumnIndex = closures.getColumnIndex(id);
   const toFilterValue = closures.cleanString(
-    mode === StatusFilterMode ? compareValue : value
+    mode === FilterModes.STATUS ? compareValue : value
   );
-  const getSortableCellValue = closures.getSortableCellValue;
+  const { getSortableCellValue } = closures;
 
   if (f.isEmpty(toFilterValue) && typeof sortColumnId === "undefined") {
     return f.stubTrue;
   }
+  const searchFunction = searchFunctions[mode];
+  const isStatusFilter = () => mode === FilterModes.STATUS;
+  const searchFilterableValue = cell =>
+    searchFunction(toFilterValue, getSortableCellValue(cell));
+  const searchStatus = cell =>
+    StatusSearchFunction(toFilterValue, value, getSortableCellValue(cell));
 
   return row => {
     const firstCell = f.get(["values", 0], row);
@@ -328,20 +353,19 @@ const mkColumnValueFilter = closures => ({
     }
 
     const targetCell = f.get(["values", filterColumnIndex], row);
-    const searchFunction = searchFunctions[mode];
+    const canSearchTargetCell = () =>
+      f.contains(targetCell.kind, FilterableCellKinds);
 
-    if (f.contains(targetCell.kind, FilterableCellKinds)) {
-      return searchFunction(toFilterValue, getSortableCellValue(targetCell));
-    } else if (mode === StatusFilterMode) {
-      return StatusSearchFunction(
-        toFilterValue,
-        value,
-        getSortableCellValue(targetCell)
-      );
-    } else {
-      // column type not support for filtering
-      return false;
-    }
+    return f.cond([
+      [canSearchTargetCell, searchFilterableValue],
+      [isStatusFilter, searchStatus],
+      [
+        () => true,
+        () => {
+          console.error("No search found for mode", mode);
+        }
+      ]
+    ])(targetCell);
   };
 };
 
@@ -364,8 +388,19 @@ const mkClosures = (columns, rows, langtag, rowsFilter) => {
     f.join("::")
   );
 
-  const getPlainValue = cell =>
-    cell.isMultiLanguage ? cell.value[langtag] : cell.value;
+  const language = getLanguageOfLangtag(langtag);
+  const country = getCountryOfLangtag(langtag);
+
+  const findNonNilLanguage = f.flow(
+    f.props([langtag, language, country]),
+    f.find(f.complement(f.isNil))
+  );
+
+  const getPlainValue = cell => {
+    return cell.isMultiLanguage || f.isPlainObject(cell.value)
+      ? findNonNilLanguage(cell.value)
+      : cell.value;
+  };
   const getStatusValue = cell => cell.displayValue;
 
   const getSortableCellValue = cell => {
@@ -410,8 +445,8 @@ const mkClosures = (columns, rows, langtag, rowsFilter) => {
     return sortColumnIdx >= 0
       ? f.cond([
           [vals => f.every(isEmpty, vals), f.always(equal)],
-          [([A, dummy]) => isEmpty(A), f.always(bFirst)], // eslint-disable-line no-unused-vars
-          [([dummy, B]) => isEmpty(B), f.always(aFirst)], // eslint-disable-line no-unused-vars
+          [([A, _]) => isEmpty(A), f.always(bFirst)], // eslint-disable-line no-unused-vars
+          [([_, B]) => isEmpty(B), f.always(aFirst)], // eslint-disable-line no-unused-vars
           [
             f.stubTrue,
             ([A, B]) => (f.eq(A, B) ? compareRowIds(a, b) : compareValues(A, B))
@@ -421,15 +456,17 @@ const mkClosures = (columns, rows, langtag, rowsFilter) => {
   };
 
   return {
-    getColumnIndex: getColumnIndex,
-    getSortableCellValue: getSortableCellValue,
-    rows: rows,
+    getColumnIndex,
+    getSortableCellValue,
+    getPlainCellValue: getPlainValue,
+    rows,
     colsWithMatches: new Set(),
-    cleanString: cleanString,
-    comparator: comparator,
+    cleanString,
+    comparator,
     langtag
   };
 };
+
 const completeRowInformation = (columns, table, rows, allDisplayValues) => {
   const tableDisplayValues = allDisplayValues[table.id];
   // generate and reuse one getter per table
