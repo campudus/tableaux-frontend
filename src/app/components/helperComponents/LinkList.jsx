@@ -11,6 +11,8 @@ import { List } from "react-virtualized";
 import { LinkedRows } from "../cells/link/LinkOverlayFragments";
 import LinkItem from "../cells/link/LinkItem";
 import { canUserChangeCell } from "../../helpers/accessManagementHelper.js";
+import { retrieveTranslation } from "../../helpers/multiLanguage";
+import apiUrl from "../../helpers/apiUrl";
 
 const MAX_DISPLAYED_LINKS = 4;
 
@@ -47,6 +49,9 @@ const LinkList = props => {
     });
   };
 
+  const getViewUrl = link =>
+    isAttachment ? apiUrl(retrieveTranslation(langtag, link.url)) : undefined;
+
   const renderSortableListItem = () => ({ key, style = {} }) => {
     const link = f.find(f.propEq("id", key), links);
     const {
@@ -82,6 +87,7 @@ const LinkList = props => {
         clickHandler={clickHandler}
         style={style}
         isLinked
+        viewUrl={getViewUrl(link)}
       />
     );
   };
@@ -120,6 +126,7 @@ const LinkList = props => {
         style={{}}
         userCanEdit={changeCellAuthorized}
         isLinked
+        viewUrl={getViewUrl(link)}
       />
     );
   };
