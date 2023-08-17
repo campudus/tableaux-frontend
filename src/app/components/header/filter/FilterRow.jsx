@@ -92,8 +92,6 @@ const FilterRow = ({
       }))
     : [];
 
-  console.log(filter);
-
   return (
     <div className="filter-row">
       <button
