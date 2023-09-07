@@ -69,7 +69,9 @@ const FilterRow = ({
   const selectedColumn = searchableColumns.find(
     option => parseInt(option.value) === columnId
   );
-  const isFilterColumnSelected = !f.isNil(selectedColumn);
+  const isFilterColumnSelected =
+    !f.isNil(selectedColumn) ||
+    (!f.isNil(filter.mode) && filter.columnId === filter.mode);
   const handleChangeColumn = column => {
     onChangeColumn(column);
   };
