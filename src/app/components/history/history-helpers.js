@@ -3,7 +3,14 @@ import f from "lodash/fp";
 import moment from "moment";
 
 import { ColumnKinds } from "../../constants/TableauxConstants";
-import { composeP, mapP, maybe, merge, when } from "../../helpers/functools";
+import {
+  composeP,
+  mapP,
+  maybe,
+  merge,
+  scan,
+  when
+} from "../../helpers/functools";
 import { makeRequest } from "../../helpers/apiHelper";
 import { retrieveTranslation } from "../../helpers/multiLanguage";
 import Empty from "../helperComponents/emptyEntry";
@@ -12,26 +19,21 @@ import route from "../../helpers/apiRoutes";
 
 const NON_REVERTABLE_COLUMNS = [ColumnKinds.attachment, ColumnKinds.link];
 
-// Recursive reduction might cause stack overflow after a couple of
-// tens of thousands of cell revisions
-// This will track the current content status for all revisions, so we are able
-// to calculate correct diffs for each single revision even when interjacent
-// states are filtered out, or leave content unchanged
 export const reduceRevisionHistory = column => revisions => {
-  const n = (revisions || []).length;
-  const reducedRevisions = new Array(n);
-  const doReduce = (idx = 0, previousRevision = {}) => {
-    const rev = revisions[idx];
+  const getRelativeRevision = (previousRevision, rev, idx) => {
     const cellContentChanged = rev.event === "cell_changed";
+    const isLinked = [ColumnKinds.link, ColumnKinds.attachment].includes(
+      column.kind
+    );
     const isMultiLanguage =
-      rev.languageType === "language" || rev.languageType === "country";
+      rev.languageType === ("language" || rev.languageType === "country") &&
+      !isLinked;
+    const emptyValue = isLinked ? [] : {};
 
-    const changedLangtags = cellContentChanged
-      ? isMultiLanguage
-        ? f.keys(rev.value)
-        : undefined
-      : undefined;
-    reducedRevisions[idx] = {
+    const changedLangtags =
+      cellContentChanged && isMultiLanguage ? f.keys(rev.value) : undefined;
+
+    return {
       ...rev,
       langtags: changedLangtags,
       revertable:
@@ -41,17 +43,13 @@ export const reduceRevisionHistory = column => revisions => {
       prevContent: previousRevision.fullValue,
       fullValue: cellContentChanged
         ? isMultiLanguage
-          ? merge(previousRevision.fullValue || {}, rev.value)
+          ? merge(previousRevision.fullValue || emptyValue, rev.value)
           : rev.value
         : previousRevision.fullValue,
       idx
     };
-    if (idx < n - 1) {
-      doReduce(idx + 1, reducedRevisions[idx]);
-    }
   };
-  n > 0 && doReduce(); // calling doReduce during loading will throw
-  return reducedRevisions;
+  return scan(getRelativeRevision, {}, revisions);
 };
 
 export const getCreationDay = f.compose(
