@@ -133,7 +133,9 @@ const getCurrentLinkDisplayValue = ({ tableId, column, langtag }) => rowId => {
 //------------------------------------------------------------------------------
 
 export const matchesLangtag = langtag => rev =>
-  rev.languageType === "language" ? f.has(langtag, rev.value) : true;
+  !Array.isArray(rev.value) && rev.languageType === "language"
+    ? f.has(langtag, rev.value)
+    : true;
 
 export const filterHasValidDateProp = (prop, filter) =>
   maybe(filter)
