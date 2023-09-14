@@ -15,14 +15,14 @@ const LinkState = {
 };
 
 const LinkDiff = props => {
-  const { diff } = props;
+  const { diff, langtag } = props;
 
   return diff.map(
     ({ add, del, value: { id, value }, currentDisplayValues = {} }) => {
       const displayValue = currentDisplayValues[id];
       const revisionValue = ifElse(
         f.isObject,
-        retrieveTranslation,
+        retrieveTranslation(langtag),
         f.identity,
         value
       );
