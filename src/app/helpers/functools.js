@@ -543,6 +543,16 @@ const intersperse = curryN(2)((delim, coll) =>
   }, [])
 );
 
+const scan = (fn, start, coll) => {
+  const results = [];
+  coll.forEach((value, idx) => {
+    const prevValue = idx === 0 ? start : results[idx - 1];
+    const result = fn(prevValue, value, idx, results);
+    results.push(result);
+  });
+  return results;
+};
+
 export {
   Maybe,
   Just,
@@ -581,5 +591,6 @@ export {
   mergeArrays,
   usePropAsKey,
   time,
-  intersperse
+  intersperse,
+  scan
 };
