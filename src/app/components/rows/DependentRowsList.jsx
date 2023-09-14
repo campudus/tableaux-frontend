@@ -107,6 +107,6 @@ export default translate("table")(DependentRowsList);
 DependentRowsList.propTypes = {
   row: PropTypes.object.isRequired,
   langtag: PropTypes.string.isRequired,
-  hasDependency: PropTypes.func.isRequired,
-  hasNoDependency: PropTypes.func.isRequired
+  hasDependency: PropTypes.func,
+  hasNoDependency: PropTypes.func
 };
