@@ -314,7 +314,7 @@ $dist-from-top: 20px;
         }
         .max-length {
           flex: 1;
-          text-align:right;
+          text-align: right;
         }
 
         .textarea_wrapper {
@@ -480,10 +480,6 @@ $dist-from-top: 20px;
   }
   .sortable {
     @import "./linkList.scss";
-  }
-
-  .sortable_expanded {
-    overflow-y: scroll;
   }
 
   .link-list {
