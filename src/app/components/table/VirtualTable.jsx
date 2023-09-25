@@ -16,13 +16,7 @@ import {
   Directions,
   RowIdColumn
 } from "../../constants/TableauxConstants";
-import {
-  doto,
-  either,
-  isNumber,
-  maybe,
-  mapIndexed
-} from "../../helpers/functools";
+import { doto, either, maybe, mapIndexed } from "../../helpers/functools";
 import { isLocked } from "../../helpers/annotationHelper";
 import AddNewRowButton from "../rows/NewRow";
 import Cell, { getAnnotationState } from "../cells/Cell";
@@ -43,7 +37,7 @@ const HEADER_HEIGHT = 37;
 const CELL_WIDTH = 300;
 const ROW_HEIGHT = 45;
 
-const safelyPassIndex = x => (isNumber(x) ? x : -1);
+const safelyPassIndex = x => (f.isNumber(x) && !f.isNaN(x) ? x : -1);
 
 export default class VirtualTable extends PureComponent {
   constructor(props) {
