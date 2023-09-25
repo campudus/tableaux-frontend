@@ -558,7 +558,6 @@ export default class VirtualTable extends PureComponent {
     const shouldIDColBeGrey =
       f.get("kind", columns[0] /*columns.first()*/) === ColumnKinds.concat &&
       rowCount * 45 + 37 > window.innerHeight; // table might scroll (data rows + button + 37 + tableaux-header) >
-    console.log({ columnIndex, rowIndex });
 
     return (
       <section
