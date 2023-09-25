@@ -535,6 +535,8 @@ function time(arg1, arg2) {
   };
 }
 
+const isNumber = x => typeof x === "number" && !isNaN(x);
+
 const intersperse = curryN(2)((delim, coll) =>
   coll.reduce((accum, next, idx) => {
     accum.push(next);
@@ -581,5 +583,6 @@ export {
   mergeArrays,
   usePropAsKey,
   time,
+  isNumber,
   intersperse
 };
