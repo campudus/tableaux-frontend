@@ -16,7 +16,13 @@ import {
   Directions,
   RowIdColumn
 } from "../../constants/TableauxConstants";
-import { doto, either, maybe, mapIndexed } from "../../helpers/functools";
+import {
+  doto,
+  either,
+  isNumber,
+  maybe,
+  mapIndexed
+} from "../../helpers/functools";
 import { isLocked } from "../../helpers/annotationHelper";
 import AddNewRowButton from "../rows/NewRow";
 import Cell, { getAnnotationState } from "../cells/Cell";
@@ -36,6 +42,8 @@ const STATUS_CELL_WIDTH = 120;
 const HEADER_HEIGHT = 37;
 const CELL_WIDTH = 300;
 const ROW_HEIGHT = 45;
+
+const safelyPassIndex = x => (isNumber(x) ? x : -1);
 
 export default class VirtualTable extends PureComponent {
   constructor(props) {
@@ -556,6 +564,7 @@ export default class VirtualTable extends PureComponent {
     const shouldIDColBeGrey =
       f.get("kind", columns[0] /*columns.first()*/) === ColumnKinds.concat &&
       rowCount * 45 + 37 > window.innerHeight; // table might scroll (data rows + button + 37 + tableaux-header) >
+    console.log({ columnIndex, rowIndex });
 
     return (
       <section
@@ -590,8 +599,8 @@ export default class VirtualTable extends PureComponent {
                 selectedCell={selectedCellKey}
                 expandedRows={expandedRowIds}
                 openAnnotations={!!openAnnotations && openAnnotations.cellId}
-                scrollToRow={rowIndex}
-                scrollToColumn={columnIndex}
+                scrollToRow={safelyPassIndex(rowIndex)}
+                scrollToColumn={safelyPassIndex(columnIndex)}
                 scrollToAlignment={align}
                 columnKeys={columnKeys}
                 overscanColumnCount={5}
