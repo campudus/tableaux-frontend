@@ -91,7 +91,7 @@ const LinkList = props => {
       />
     );
   };
-  const renderListItem = ({ index }) => {
+  const renderListItem = ({ index, style }) => {
     const link = links[index];
     const {
       linkTarget: { tableId, rowId }
@@ -123,7 +123,7 @@ const LinkList = props => {
         label={link.label || link.displayName}
         langtag={langtag}
         clickHandler={clickHandler}
-        style={{}}
+        style={style}
         userCanEdit={changeCellAuthorized}
         isLinked
         viewUrl={getViewUrl(link)}
