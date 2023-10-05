@@ -37,6 +37,8 @@ const HEADER_HEIGHT = 37;
 const CELL_WIDTH = 300;
 const ROW_HEIGHT = 45;
 
+const safelyPassIndex = x => (f.isNumber(x) && !f.isNaN(x) ? x : -1);
+
 export default class VirtualTable extends PureComponent {
   constructor(props) {
     super(props);
@@ -590,8 +592,8 @@ export default class VirtualTable extends PureComponent {
                 selectedCell={selectedCellKey}
                 expandedRows={expandedRowIds}
                 openAnnotations={!!openAnnotations && openAnnotations.cellId}
-                scrollToRow={rowIndex}
-                scrollToColumn={columnIndex}
+                scrollToRow={safelyPassIndex(rowIndex)}
+                scrollToColumn={safelyPassIndex(columnIndex)}
                 scrollToAlignment={align}
                 columnKeys={columnKeys}
                 overscanColumnCount={5}
