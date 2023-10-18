@@ -37,17 +37,15 @@ const FilterRow = ({
     handleChangeColumn({});
   };
   const getKeyboardShortcuts = useCallback(
-    () => (
-      {
-        enter: () => {
-          applyFilters();
-        },
-        escape: () => {
-          clearValue();
-        }
+    () => ({
+      enter: () => {
+        applyFilters();
       },
-      [applyFilters, clearValue]
-    )
+      escape: () => {
+        clearValue();
+      }
+    }),
+    [applyFilters, clearValue]
   );
 
   const filterInputRef = useRef(null);
