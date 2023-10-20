@@ -10,28 +10,35 @@ import f from "lodash/fp";
 import { canUserSeeTable } from "../../../helpers/accessManagementHelper.js";
 import { Link } from "react-router-dom";
 import { buildClassName } from "../../../helpers/buildClassName";
+import PermissionDenied from "../../helperComponents/PermissionDenied";
 
 const isViewableUrl = url => {
   const fileType = f.last(url.split(".")).toLowerCase();
   return ["png", "jpg", "gif", "html", "pdf", "webp", "svg"].includes(fileType);
 };
 
-const EditLinkButton = ({ onClick, className }) => {
-  const cssClass = buildClassName(className, { disabled: !onClick });
+const LinkButton = ({ className, onClick, disabled = !onClick, children }) => {
+  const cssClass = buildClassName("linkButton", { disabled }, className);
   return (
-    <button onClick={onClick} className={cssClass} draggable={false}>
-      <SvgIcon icon="edit" containerClasses="color-primary" />
+    <button
+      className={cssClass}
+      onClick={onClick}
+      draggable={false}
+      disabled={disabled}
+    >
+      {children}
     </button>
   );
 };
 
 const OpenAttachmentButton = ({ url, className }) => {
   const shouldOpenWindow = f.isString(url) && isViewableUrl(url);
+  const disabled = !shouldOpenWindow;
   const handleOpenNewWindow = evt => {
     evt.preventDefault();
     if (shouldOpenWindow) window.open(url);
   };
-  const cssClass = buildClassName(className, { disabled: !shouldOpenWindow });
+  const cssClass = buildClassName("linkButton", { disabled }, className);
   return (
     <Link className={cssClass} to={url} onClick={handleOpenNewWindow}>
       <i className="fa fa-eye" />
@@ -53,13 +60,17 @@ const LinkItem = props => {
     viewUrl
   } = props;
   const isAttachment = props.isAttachment || Boolean(viewUrl);
+  const isPermissionDenied = props.row.hiddenByRowPermissions;
+  const isDisabled = isPermissionDenied || !userCanEdit;
+
   const mainButtonClass = classNames("left", {
     linked: props.isLinked,
     "has-focus": props.selectedMode === 0
   });
-  const linkButtonClass = classNames("linkButton", {
+  const secondaryButtonClass = classNames({
     "has-focus": props.selectedMode === 1
   });
+
   const handleClickEdit = () =>
     !isAttachment && canUserSeeTable(toTable)
       ? loadAndOpenEntityView({
@@ -68,6 +79,16 @@ const LinkItem = props => {
           langtag: props.langtag
         })
       : undefined;
+
+  const handleClickToggle = evt =>
+    props.clickHandler(props.isLinked, props.row, evt);
+
+  const linkName = unless(
+    f.isString,
+    retrieveTranslation(props.langtag),
+    props.label
+  );
+
   return (
     <div
       style={props.style}
@@ -77,38 +98,41 @@ const LinkItem = props => {
     >
       <div className={getCssClass(props)}>
         {showToggleButton && (
-          <a
-            href="#"
-            className={
-              linkButtonClass +
-              " roundCorners" +
-              (userCanEdit ? "" : " linkButton--disabled")
-            }
-            draggable={false}
-            onClick={evt => props.clickHandler(props.isLinked, props.row, evt)}
+          <LinkButton
+            className={classNames(secondaryButtonClass, "roundCorners")}
+            onClick={handleClickToggle}
+            disabled={isDisabled}
           >
             {props.isLinked ? (
               <SvgIcon icon="minus" containerClasses="color-primary" />
             ) : (
               <SvgIcon icon="plus" containerClasses="color-primary" />
             )}
-          </a>
+          </LinkButton>
         )}
         {isAttachment ? (
-          <OpenAttachmentButton className={linkButtonClass} url={viewUrl} />
-        ) : (
-          <EditLinkButton
-            className={linkButtonClass}
-            onClick={handleClickEdit}
+          <OpenAttachmentButton
+            className={secondaryButtonClass}
+            url={viewUrl}
           />
+        ) : (
+          <LinkButton
+            className={secondaryButtonClass}
+            onClick={handleClickEdit}
+            disabled={isDisabled}
+          >
+            <SvgIcon icon="edit" containerClasses="color-primary" />
+          </LinkButton>
         )}
         <div className={mainButtonClass}>
           <div draggable={false}>
-            {unless(
-              f.isString,
-              retrieveTranslation(props.langtag),
-              props.label
-            ) || <Empty langtag={props.langtag} />}
+            {isPermissionDenied ? (
+              <PermissionDenied />
+            ) : f.isEmpty(linkName) ? (
+              <Empty />
+            ) : (
+              linkName
+            )}
           </div>
         </div>
       </div>
