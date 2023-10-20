@@ -6,6 +6,7 @@ import PropTypes from "prop-types";
 import { retrieveTranslation } from "../../../helpers/multiLanguage";
 import getDisplayValue from "../../../helpers/getDisplayValue";
 import Empty from "../../helperComponents/emptyEntry";
+import PermissionDenied from "../../helperComponents/PermissionDenied";
 
 const LinkLabelCell = props => {
   const {
@@ -21,7 +22,13 @@ const LinkLabelCell = props => {
   return (
     <a href="#" className="link-label">
       <div className="label-text">
-        {f.isEmpty(linkName) ? <Empty langtag={langtag} /> : linkName}
+        {value.hiddenByRowPermissions ? (
+          <PermissionDenied />
+        ) : f.isEmpty(linkName) ? (
+          <Empty />
+        ) : (
+          linkName
+        )}
       </div>
     </a>
   );
