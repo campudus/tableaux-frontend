@@ -21,6 +21,7 @@
   "edit": "Edit",
   "current_selection": "Current selection",
   "empty": "Empty",
+  "permission_denied": "Permission denied",
   "loading": "Loading...",
   "add": "Add",
   "url": "URL",

@@ -65,7 +65,7 @@ button {
   cursor: pointer;
 }
 
-.empty-item {
+.empty-item, .permission-denied-item {
   text-transform: uppercase;
   font-style: italic;
   font-weight: lighter;
