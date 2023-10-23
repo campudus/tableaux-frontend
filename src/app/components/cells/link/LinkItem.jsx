@@ -57,10 +57,10 @@ const LinkItem = props => {
     showToggleButton = true,
     toTable,
     userCanEdit = true,
-    viewUrl
+    viewUrl,
+    isPermissionDenied = false
   } = props;
   const isAttachment = props.isAttachment || Boolean(viewUrl);
-  const isPermissionDenied = props.row.hiddenByRowPermissions;
   const isDisabled = isPermissionDenied || !userCanEdit;
 
   const mainButtonClass = classNames("left", {
@@ -152,7 +152,8 @@ LinkItem.propTypes = {
   toTable: PropTypes.number.isRequired,
   showToggleButton: PropTypes.bool,
   userCanEdit: PropTypes.bool,
-  viewUrl: PropTypes.string
+  viewUrl: PropTypes.string,
+  isPermissionDenied: PropTypes.bool
 };
 
 export default LinkItem;
