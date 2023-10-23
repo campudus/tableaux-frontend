@@ -88,6 +88,7 @@ const LinkList = props => {
         style={style}
         isLinked
         viewUrl={getViewUrl(link)}
+        isPermissionDenied={link.hiddenByRowPermissions}
       />
     );
   };
@@ -127,6 +128,7 @@ const LinkList = props => {
         userCanEdit={changeCellAuthorized}
         isLinked
         viewUrl={getViewUrl(link)}
+        isPermissionDenied={link.hiddenByRowPermissions}
       />
     );
   };

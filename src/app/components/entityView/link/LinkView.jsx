@@ -63,7 +63,8 @@ const mkLinkList = (cell, langtag) => {
         langtag
       },
       id: link.id,
-      value: link.value
+      value: link.value,
+      hiddenByRowPermissions: link.hiddenByRowPermissions
     };
   });
 };

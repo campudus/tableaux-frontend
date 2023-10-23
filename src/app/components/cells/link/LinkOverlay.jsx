@@ -258,6 +258,7 @@ class LinkOverlay extends PureComponent {
         langtag={langtag}
         style={style}
         selectedMode={selectedMode}
+        isPermissionDenied={row.hiddenByRowPermissions}
       />
     );
   };
