@@ -45,7 +45,8 @@ const grudConstants = {
     MEDIA_VIEW: null,
     DASHBOARD_VIEW: null,
     FRONTEND_SERVICE_VIEW: null,
-    TAXONOMY_DASHBOARD_VIEW: null
+    TAXONOMY_DASHBOARD_VIEW: null,
+    PROFILE_VIEW: null
   }),
 
   Alignments: keyMirror({
