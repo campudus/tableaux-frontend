@@ -38,6 +38,21 @@
     }
   }
 
+  .user-menu__link,
+  .user-menu__button {
+    padding: 0;
+    margin: 0;
+    line-height: inherit;
+    color: inherit;
+  }
+
+  .user-menu__user-name{
+    color: $color-text-medium-grey;
+    font-style: italic;
+    margin-left: 5px;
+  }
+
+
   &--active {
     .user-menu__list {
       display: block;

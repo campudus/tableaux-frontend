@@ -4,18 +4,12 @@ import React from "react";
 import PropTypes from "prop-types";
 
 import { ENABLE_DASHBOARD } from "../../FeatureFlags";
-import { getLogin, noAuthNeeded } from "../../helpers/authenticate";
-import { getUserName } from "../../helpers/userNameHelper";
 import { Link } from "react-router-dom";
 import MainMenuEntry from "../frontendService/MainMenuEntry";
 import SvgIcon from "../helperComponents/SvgIcon";
 
 const NavigationPopup = props => {
   const { langtag, t, services = [] } = props;
-  const userName = getUserName();
-  const handleLogout = React.useCallback(() => {
-    getLogin().logout();
-  });
 
   return (
     <div id="main-navigation">
@@ -76,18 +70,6 @@ const NavigationPopup = props => {
               service={service}
             />
           ))}
-        {!noAuthNeeded() && (
-          <li className="main-navigation__entry">
-            <div
-              className="main-navigation__entry-button"
-              onClick={handleLogout}
-            >
-              <i className="fa fa-power-off" />
-              {t("header:menu.logout")}
-              <div className="main-navigation-entry__username">{`(${userName})`}</div>
-            </div>
-          </li>
-        )}
       </ul>
     </div>
   );
