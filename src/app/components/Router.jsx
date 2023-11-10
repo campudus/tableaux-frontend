@@ -14,6 +14,7 @@ import Tableaux from "./Tableaux";
 import actionCreators from "../redux/actionCreators";
 import store from "../redux/store";
 import parseOptions from "../router/urlOptionParser";
+import { PROFILE_TAB } from "./profile/constants";
 
 const tablesSelector = state => state.tables;
 const currentTableSelector = state => state.tableView.currentTable;
@@ -33,6 +34,8 @@ const GRUDRouter = React.memo(() => {
   const renderDashboard = React.useCallback(
     renderView(ViewNames.DASHBOARD_VIEW)
   );
+
+  const renderProfile = React.useCallback(renderView(ViewNames.PROFILE_VIEW));
 
   const renderTaxonomyDashboard = renderView(ViewNames.TAXONOMY_DASHBOARD_VIEW);
 
@@ -80,6 +83,7 @@ const GRUDRouter = React.memo(() => {
     <Router>
       <Switch>
         <Route path="/:langtag?/dashboard" render={renderDashboard} />
+        <Route path="/:langtag?/profile/:profileTab?" render={renderProfile} />
         <Route path="/:langtag?/taxonomies" render={renderTaxonomyDashboard} />
         <Route
           path="/:langtag?/(table|tables)/:tableId?/(columns)?/:columnId?/(rows)?/:rowId?"
@@ -129,7 +133,8 @@ const validateRouteParams = (routeParams, tables) => {
     columnId,
     rowId,
     folderId,
-    serviceId
+    serviceId,
+    profileTab
   } = routeParams;
   const getFirstTableId = f.compose(
     f.prop("id"),
@@ -145,7 +150,8 @@ const validateRouteParams = (routeParams, tables) => {
     columnId: validateNumber(columnId),
     rowId: validateNumber(rowId),
     folderId: validateNumber(folderId),
-    serviceId: validateNumber(serviceId)
+    serviceId: validateNumber(serviceId),
+    profileTab: isValidProfileTab(profileTab) ? profileTab : null
   };
 };
 
@@ -160,6 +166,8 @@ const getQueryParams = f.compose(
 
 const isValidLangtag = langtag =>
   /[a-z]{2}(-[A-Z]{2})?/.test() && f.contains(langtag, Langtags);
+
+const isValidProfileTab = tabName => f.contains(tabName, f.values(PROFILE_TAB));
 
 const isValidTableId = (tableId, tables) => {
   const findTableWithId = f.compose(
