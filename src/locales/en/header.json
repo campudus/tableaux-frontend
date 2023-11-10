@@ -4,7 +4,8 @@
     "tables": "Tables",
     "dashboard": "Dashboard",
     "logout": "Log out",
-    "taxonomies": "Categories"
+    "taxonomies": "Categories",
+    "profile": "Profile"
   },
   "pageTitle": {
     "media": "Media Management",

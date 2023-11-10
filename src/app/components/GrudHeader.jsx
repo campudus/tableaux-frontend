@@ -8,6 +8,7 @@ import { ConnectionStatus } from "./header/ConnectionStatus";
 import LanguageSwitcher from "./header/LanguageSwitcher";
 import Navigation from "./header/Navigation";
 import PageTitle from "./header/PageTitle";
+import UserMenu from "./header/UserMenu";
 
 const mapStateToProps = state => {
   const connectedToBackend = f.prop(["grudStatus", "connectedToBackend"])(
@@ -33,6 +34,7 @@ const GrudHeader = ({
       <PageTitle titleKey={pageTitleOrKey} />
       <LanguageSwitcher langtag={langtag} onChange={handleLanguageSwitch} />
       <ConnectionStatus isConnected={connectedToBackend} />
+      <UserMenu langtag={langtag} />
     </header>
   </div>
 );
