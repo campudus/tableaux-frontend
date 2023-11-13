@@ -53,3 +53,55 @@
   color: $color-primary-contrast-text;
   background-color: $color-primary;
 }
+
+.profile-tab {
+  &__header {
+    margin: 16px 0;
+  }
+
+  &__title {
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 175%;
+  }
+
+  &__subtitle {
+    font-size: 14px;
+    font-weight: 400;
+    color: #9E9E9E;
+  }
+
+  &__section {
+    margin-top: 56px;
+  }
+
+  &--personal {
+    .profile-tab__section {
+      display: flex;
+      gap: 0 60px;
+    }
+
+    .profile-tab__icon {
+      grid-column: icon;
+      height: 80px;
+      width: 80px;
+      font-size: 2.5rem;
+      font-weight: lighter;
+    }
+
+    .profile-tab__info {
+      display: flex;
+      flex-flow: column;
+    }
+
+    .profile-tab__label {
+      font-size: 1.6rem;
+      font-weight: 500;
+      margin-bottom: 16px;
+    }
+
+    .profile-tab__value {
+      margin-bottom: 32px;
+    }
+  }
+}
