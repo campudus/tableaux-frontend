@@ -1,11 +1,12 @@
 import React from "react";
 import { t } from "i18next";
+import { buildClassName as cn } from "../../helpers/buildClassName";
 import Breadcrumbs from "../helperComponents/Breadcrumbs";
 import { PROFILE_TAB } from "./constants";
 
 export default function ProfileSettings({ langtag }) {
   return (
-    <div className="profile-settings">
+    <div className={cn("profile-tab", { settings: true })}>
       <Breadcrumbs
         links={[
           {

@@ -2,5 +2,12 @@
   "navigation": {
     "personal-data": "Persönliche Daten",
     "global-settings": "Globale Einstellungen"
+  },
+  "personal-data": {
+    "title": "Persönliche Daten",
+    "subtitle": "Persönliche Informationen bearbeiten",
+    "display-name": "Anzeigename",
+    "user-name": "Nutzername",
+    "email-address": "E-Mail-Adresse"
   }
 }
