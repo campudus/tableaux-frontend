@@ -5,9 +5,16 @@ import GrudHeader from "../GrudHeader";
 import { switchLanguageHandler as switchLang } from "../Router";
 import { buildClassName as cn } from "../../helpers/buildClassName";
 import { PROFILE_TAB } from "./constants";
+import ProfileSettings from "./ProfileSettings";
+import ProfilePersonal from "./ProfilePersonal";
 
-function ProfileView({ langtag, history }) {
+const TAB_COMPONENT = {
+  [PROFILE_TAB.SETTINGS]: ProfileSettings
+};
+
+function ProfileView({ langtag, history, profileTab }) {
   const handleLanguageSwitch = useCallback(value => switchLang(history, value));
+  const TabContent = TAB_COMPONENT[profileTab] ?? ProfilePersonal;
 
   return (
     <>
@@ -37,7 +44,10 @@ function ProfileView({ langtag, history }) {
               {t("profile:navigation.global-settings")}
             </NavLink>
           </div>
-          <div className="profile-view__content"></div>
+
+          <div className="profile-view__content">
+            <TabContent langtag={langtag} />
+          </div>
         </div>
       </div>
     </>
