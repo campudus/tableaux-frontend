@@ -23,6 +23,7 @@ export const initGrud = async setSuccess => {
     const loadTables = promisifyAction(actions.loadTables)();
     const maybeInitSentry = initSentry(process.env.NODE_ENV === "production");
 
+    store.dispatch(actions.loadGlobalSettings());
     store.dispatch(actions.createDisplayValueWorker());
 
     await Promise.all([
