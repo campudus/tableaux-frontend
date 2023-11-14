@@ -23,7 +23,7 @@
     "sorting": "Sortierung",
     "sorting-reset-label": "Sortierung automatisch zurücksetzen",
     "sorting-reset-description": "Ist diese Einstellung aktiviert, werden sämtliche Sortierungseinstellungen bei Tabellenwechsel automatisch zurückgesetzt.",
-    "sorting-latest-top-label": "Neueste Datensätze immer oben anzeigen",
-    "sorting-latest-top-description": "Ist diese Einstellung aktiviert, werden die neuesten Tabelleneinträge an oberster Stelle angezeigt."
+    "sorting-desc-label": "Neueste Datensätze immer oben anzeigen",
+    "sorting-desc-description": "Ist diese Einstellung aktiviert, werden die neuesten Tabelleneinträge an oberster Stelle angezeigt."
   }
 }

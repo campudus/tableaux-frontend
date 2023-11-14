@@ -23,7 +23,7 @@
     "sorting": "Sorting",
     "sorting-reset-label": "Automatically reset sorting",
     "sorting-reset-description": "If this setting is activated, all sorting settings are automatically reset when the table changes.",
-    "sorting-latest-top-label": "Show latest entries at the top",
-    "sorting-latest-top-description": "If this setting is activated, the latest table entries are displayed at the top."
+    "sorting-desc-label": "Show latest entries at the top",
+    "sorting-desc-description": "If this setting is activated, the latest table entries are displayed at the top."
   }
 }
