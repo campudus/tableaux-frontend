@@ -8,6 +8,7 @@ import rows from "./rows";
 import tableView from "./tableView";
 import tables from "./table";
 import selectedCell from "./selectedCell";
+import globalSettings from "./globalSettings";
 
 // const rootReducer = combineReducers({ tables, columns, rows, tableView });
 const rootReducer = omniscentReducer({
@@ -19,7 +20,8 @@ const rootReducer = omniscentReducer({
   media,
   grudStatus,
   frontendServices,
-  selectedCell
+  selectedCell,
+  globalSettings
 });
 
 export default rootReducer;

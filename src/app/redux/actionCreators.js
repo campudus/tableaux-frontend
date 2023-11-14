@@ -10,9 +10,11 @@ import API_ROUTES from "../helpers/apiRoutes";
 import { doto } from "../helpers/functools";
 import {
   getStoredViewObject,
+  readGlobalSettings,
   saveColumnOrdering,
   saveColumnVisibility,
-  saveFilterSettings
+  saveFilterSettings,
+  storeGlobalSettings
 } from "../helpers/localStorage";
 import { checkOrThrow } from "../specs/type";
 import {
@@ -67,7 +69,8 @@ const {
   TABLE_NAME_EDIT_SUCCESS,
   TABLE_NAME_EDIT_ERROR,
   SET_USER_AUTHENTICATED,
-  SET_COLUMN_ORDERING
+  SET_COLUMN_ORDERING,
+  SET_GLOBAL_SETTINGS
 } = actionTypes;
 
 const {
@@ -682,6 +685,16 @@ const rerenderTable = () => ({
   type: RERENDER_TABLE
 });
 
+const loadGlobalSettings = () => dispatch => {
+  const settings = readGlobalSettings();
+  dispatch({ type: SET_GLOBAL_SETTINGS, settings });
+};
+
+const setGlobalSettings = settings => dispatch => {
+  storeGlobalSettings(settings);
+  dispatch({ type: SET_GLOBAL_SETTINGS, settings });
+};
+
 const actionCreators = {
   loadTables: loadTables,
   loadColumns: loadColumns,
@@ -745,7 +758,9 @@ const actionCreators = {
   queryFrontendServices,
   setUserAuthenticated: dispatchParamsFor(SET_USER_AUTHENTICATED),
   setColumnOrdering,
-  rerenderTable
+  rerenderTable,
+  loadGlobalSettings,
+  setGlobalSettings
 };
 
 export default actionCreators;
