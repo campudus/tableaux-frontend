@@ -9,5 +9,21 @@
     "display-name": "Anzeigename",
     "user-name": "Nutzername",
     "email-address": "E-Mail-Adresse"
+  },
+  "global-settings": {
+    "title": "Globale Einstellungen",
+    "subtitle": "Einstellungen des User Interface un der Ansichten ändern",
+    "table-settings": "Tabelleneinstellungen und -ansichten",
+    "filter": "Filter",
+    "filter-reset-label": "Filter automatisch zurücksetzen",
+    "filter-reset-description": "Ist diese Einstellung aktiviert, werden nach einem Tabellenwechsel alle gesetzten Filter automatisch zurückgesetzt.",
+    "columns": "Spaltenansicht",
+    "columns-reset-label": "Spaltenansicht automatisch zurücksetzen",
+    "columns-reset-description": "Ist diese Einstellung aktiviert, werden nach einem Tabellenwechsel alle verborgenen Spalten wieder angezeigt.",
+    "sorting": "Sortierung",
+    "sorting-reset-label": "Sortierung automatisch zurücksetzen",
+    "sorting-reset-description": "Ist diese Einstellung aktiviert, werden sämtliche Sortierungseinstellungen bei Tabellenwechsel automatisch zurückgesetzt.",
+    "sorting-latest-top-label": "Neueste Datensätze immer oben anzeigen",
+    "sorting-latest-top-description": "Ist diese Einstellung aktiviert, werden die neuesten Tabelleneinträge an oberster Stelle angezeigt."
   }
 }
