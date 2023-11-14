@@ -11,6 +11,8 @@
     display: grid;
     grid-template-columns: 250px auto;
     gap: 64px;
+    box-sizing: border-box;
+    overflow: hidden;
   }
 
   .profile-view__navigation {
@@ -19,6 +21,12 @@
     align-items: stretch;
     justify-content: start;
     gap: 16px;
+    overflow: auto;
+  }
+
+  .profile-view__content {
+    height: 100%;
+    overflow: hidden;
   }
 
   .profile-view__link {
@@ -55,8 +63,12 @@
 }
 
 .profile-tab {
+  height: 100%;
+  display: flex;
+  flex-flow: column;
+
   &__header {
-    margin: 16px 0;
+    margin: 16px 0 56px 0;
   }
 
   &__title {
@@ -71,14 +83,70 @@
     color: #9E9E9E;
   }
 
-  &__section {
-    margin-top: 56px;
+  &__divider {
+    border-top: 1px solid #EEEEEE;
+  }
+
+  &__content {
+    height: 100%;
+    overflow: auto;
+
+    .profile-tab__title {
+      font-size: 16px;
+      font-weight: 500;
+      line-height: 150%;
+    }
+
+    .profile-tab__subtitle {
+      margin-top: 30px;
+      font-size: 12px;
+      font-weight: 500;
+      color: #9E9E9E;
+      text-transform: uppercase;
+    }
+  }
+
+  &__actions {
+    margin-top: 32px;
+    display: flex;
+    justify-content: end;
+    gap: 16px;
+  }
+
+  &__button {
+    padding: 4px 16px;
+    border-radius: 4px;
+    font-size: 1.4rem;
+    font-weight: 500;
+    line-height: 150%;
+
+    &--cancel {
+      color: rgba(0, 0, 0, 0.6);
+      border: 1px solid rgba(0, 0, 0, 0.6);
+    }
+
+    &--submit {
+      color: $color-primary-contrast-text;
+      background-color: $color-primary;
+    }
   }
 
   &--personal {
+    .profile-tab__content {
+      display: flex;
+      gap: 60px;
+    }
+
+    .profile-tab__info {
+      display: flex;
+      flex-flow: column;
+      gap: 32px;
+    }
+
     .profile-tab__section {
       display: flex;
-      gap: 0 60px;
+      flex-flow: column;
+      gap: 16px;
     }
 
     .profile-tab__icon {
@@ -89,19 +157,41 @@
       font-weight: lighter;
     }
 
-    .profile-tab__info {
-      display: flex;
-      flex-flow: column;
-    }
-
     .profile-tab__label {
       font-size: 1.6rem;
       font-weight: 500;
-      margin-bottom: 16px;
+    }
+  }
+
+  &--settings {
+    .profile-tab__content {
+      height: auto;
     }
 
-    .profile-tab__value {
-      margin-bottom: 32px;
+    .profile-tab__section {
+      display: grid;
+      grid-template-areas:
+        "label       toggle"
+        "description toggle";
+      gap: 0 60px;
+      padding: 16px 0;
+    }
+
+    .profile-tab__label {
+      grid-area: label;
+      font-size: 1.4rem;
+      line-height: 150%;
+    }
+
+    .profile-tab__description {
+      grid-area: description;
+      font-size: 1.2rem;
+      color: #9E9E9E;
+      line-height: 150%;
+    }
+
+    .profile-tab__toggle {
+      grid-area: toggle;
     }
   }
 }

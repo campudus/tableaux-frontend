@@ -33,22 +33,30 @@ export default function ProfilePersonal({ langtag }) {
         </h2>
       </div>
 
-      <div className="profile-tab__section">
+      <div className="profile-tab__content">
         <UserIcon className="profile-tab__icon" />
         {!!info && (
           <div className="profile-tab__info">
-            <div className="profile-tab__label">
-              {t("profile:personal-data.display-name")}
+            <div className="profile-tab__section">
+              <div className="profile-tab__label">
+                {t("profile:personal-data.display-name")}
+              </div>
+              <div className="profile-tab__value">
+                {info.preferred_username}
+              </div>
             </div>
-            <div className="profile-tab__value">{info.preferred_username}</div>
-            <div className="profile-tab__label">
-              {t("profile:personal-data.user-name")}
+            <div className="profile-tab__section">
+              <div className="profile-tab__label">
+                {t("profile:personal-data.user-name")}
+              </div>
+              <div className="profile-tab__value">{info.name}</div>
             </div>
-            <div className="profile-tab__value">{info.name}</div>
-            <div className="profile-tab__label">
-              {t("profile:personal-data.email-address")}
+            <div className="profile-tab__section">
+              <div className="profile-tab__label">
+                {t("profile:personal-data.email-address")}
+              </div>
+              <div className="profile-tab__value">{info.email}</div>
             </div>
-            <div className="profile-tab__value">{info.email}</div>
           </div>
         )}
       </div>
