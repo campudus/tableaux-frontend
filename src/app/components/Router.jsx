@@ -52,11 +52,12 @@ const GRUDRouter = React.memo(() => {
         store.dispatch(actionCreators.cleanUp(tableId));
         store.dispatch(actionCreators.toggleCellSelection(validParams));
         store.dispatch(actionCreators.loadCompleteTable(tableId));
+        store.dispatch(actionCreators.loadTableView(tableId, filter));
       });
     }
 
     if (tableId && tableId === currentTable) {
-      store.dispatch(actionCreators.loadTableView(tableId, filter));
+      store.dispatch(actionCreators.loadTableView(tableId));
     }
 
     return renderView(ViewNames.TABLE_VIEW)(routeProps);
