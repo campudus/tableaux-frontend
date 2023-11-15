@@ -212,7 +212,7 @@ class TableView extends PureComponent {
   };
 
   getCellUrl = () => {
-    const { langtag, table } = this.props;
+    const { langtag, table, location } = this.props;
     const {
       selectedCell: {
         selectedCell: { rowId, columnId }
@@ -223,7 +223,8 @@ class TableView extends PureComponent {
       `/${langtag}` +
       `/tables/${table.id}` +
       (columnId ? `/columns/${columnId}` : "") +
-      (rowId ? `/rows/${rowId}` : "")
+      (rowId ? `/rows/${rowId}` : "") +
+      location.search
     );
   };
 
