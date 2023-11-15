@@ -366,27 +366,60 @@ const generateDisplayValues = (rows, columns, tableId) => (
   };
 };
 
-const loadCompleteTable = (tableId, urlFilters) => async dispatch => {
+const loadCompleteTable = tableId => async dispatch => {
   dispatch(setCurrentTable(tableId));
   await dispatch(loadColumns(tableId));
   dispatch(loadAllRows(tableId));
+};
 
-  const { visibleColumns, rowsFilter, columnOrdering } = getStoredViewObject(
-    tableId
-  );
-  if (urlFilters) {
-    dispatch(setFiltersAndSorting(urlFilters, null));
-  } else {
-    if (!f.isEmpty(f.get("filters", rowsFilter))) {
-      const { filters, sortColumnId, sortValue } = rowsFilter;
-      dispatch(setFiltersAndSorting(filters, { sortColumnId, sortValue }));
-    }
+const loadTableView = (tableId, customFilters) => (dispatch, getState) => {
+  const state = getState();
+  const { globalSettings, columns } = state;
+  const tableColumns = f.get([tableId, "data"], columns);
+  const tableColumnIds = f.map("id", tableColumns);
+  const {
+    filterReset,
+    columnsReset,
+    sortingReset,
+    sortingDesc
+  } = globalSettings;
+  const storedView = getStoredViewObject(tableId);
+  const { visibleColumns, rowsFilter, columnOrdering } = storedView;
+  const oldFilters = f.get(["filters"], rowsFilter) ?? [];
+  const sortColumnId = f.get(["sortColumnId"], rowsFilter);
+  const sortValue = f.get(["sortValue"], rowsFilter);
+  const hasSorting = !f.isNil(sortColumnId) && !f.isNil(sortValue);
+  const oldSorting = hasSorting ? { sortColumnId, sortValue } : null;
+
+  if (
+    !f.isEmpty(customFilters) ||
+    !f.isEmpty(oldFilters) ||
+    filterReset ||
+    sortingReset ||
+    sortingDesc
+  ) {
+    const filters = !f.isEmpty(customFilters)
+      ? customFilters
+      : filterReset
+      ? []
+      : oldFilters;
+    const sorting = sortingDesc
+      ? { columnId: -1, value: "DESC" }
+      : sortingReset
+      ? null
+      : oldSorting;
+
+    dispatch(setFiltersAndSorting(filters, sorting, true));
   }
+
   if (!f.isEmpty(columnOrdering)) {
     dispatch(setColumnOrdering(columnOrdering));
   }
-  if (!f.isEmpty(visibleColumns)) {
-    dispatch(setColumnsVisible(visibleColumns));
+
+  if (columnsReset || !f.isEmpty(visibleColumns)) {
+    const columnIds = columnsReset ? tableColumnIds : visibleColumns;
+
+    dispatch(setColumnsVisible(columnIds));
   }
 };
 
@@ -695,6 +728,40 @@ const setGlobalSettings = settings => dispatch => {
   dispatch({ type: SET_GLOBAL_SETTINGS, settings });
 };
 
+// const applyGlobalSettings = () => (dispatch, getState) => {
+//   const state = getState();
+//   const settings = f.get(["globalSettings"], state);
+//   const { filterReset, columnsReset, sortingReset, sortingDesc } = settings;
+
+//   console.log({ state, settings });
+
+//   if (filterReset || sortingReset || sortingDesc) {
+//     const oldFilters = f.get(["tableView", "filters"], state);
+//     const oldSorting = f.get(["tableView", "sorting"], state);
+//     const filters = filterReset ? [] : oldFilters;
+//     const sorting = sortingReset
+//       ? null
+//       : sortingDesc
+//       ? { columnId: -1, value: "DESC" }
+//       : oldSorting;
+
+//     console.log({ filters, sorting });
+//     dispatch(setFiltersAndSorting(filters, sorting, true));
+//   }
+
+//   if (columnsReset) {
+//     const currentTable = f.get(["currentTable"], state);
+//     const columns = f.get(["columns", currentTable], state);
+//     const columnIds = f.map("id", columns);
+//     console.log({
+//       currentTable,
+//       columns,
+//       columnIds
+//     });
+//     dispatch(setColumnsVisible(columnIds));
+//   }
+// };
+
 const actionCreators = {
   loadTables: loadTables,
   loadColumns: loadColumns,
@@ -707,6 +774,7 @@ const actionCreators = {
   generateDisplayValues: generateDisplayValues,
   addDisplayValues: dispatchParamsFor(GENERATED_DISPLAY_VALUES),
   loadCompleteTable: loadCompleteTable,
+  loadTableView,
   setCurrentLanguage: setCurrentLanguage,
   addSkeletonColumns: dispatchParamsFor(COLUMNS_DATA_LOADED),
   addSkeletonRow: dispatchParamsFor(ADDITIONAL_ROWS_DATA_LOADED),
