@@ -29,6 +29,10 @@ import TableauxConstants, {
 import applyFiltersAndVisibility from "./applyFiltersAndVisibility";
 import reduxActionHoc from "../../helpers/reduxActionHoc";
 import store from "../../redux/store";
+import {
+  saveColumnVisibility,
+  saveFilterSettings
+} from "../../helpers/localStorage";
 
 const BIG_TABLE_THRESHOLD = 10000; // Threshold to decide when a table is so big we might not want to search it
 const mapStatetoProps = (state, props) => {
@@ -39,6 +43,7 @@ const mapStatetoProps = (state, props) => {
   const rows = f.get(`rows.${tableId}.data`, state);
   const finishedLoading = f.get(`rows.${tableId}.finishedLoading`, state);
   const tableView = f.get("tableView", state);
+  const globalSettings = f.get("globalSettings", state);
   const hasStatusColumn = !!f.find({ kind: ColumnKinds.status }, columns);
   const {
     startedGeneratingDisplayValues,
@@ -68,7 +73,8 @@ const mapStatetoProps = (state, props) => {
     finishedLoading,
     columnOrdering,
     hasStatusColumn,
-    rerenderTable
+    rerenderTable,
+    globalSettings
   };
 };
 
@@ -169,6 +175,43 @@ class TableView extends PureComponent {
     this.setDocumentTitleToTableName();
   };
 
+  componentWillUnmount = () => {
+    this.applySettings();
+  };
+
+  componentWillReceiveProps = nextProps => {
+    if (this.props.table.id !== nextProps.table.id) {
+      this.applySettings();
+    }
+  };
+
+  applySettings = () => {
+    const { filters, sorting, columns, globalSettings, table } = this.props;
+    const { filterReset, sortingReset, columnsReset } = globalSettings;
+
+    if (filterReset || sortingReset) {
+      const newFilters = filterReset ? [] : filters;
+      const newSorting = sortingReset ? null : sorting;
+
+      const isFilterEmpty = filter => {
+        return f.isEmpty(filter.value) && !f.isString(filter.mode);
+      };
+      const rowsFilter = {
+        sortColumnId: f.get("columnId", newSorting),
+        sortValue: f.get("value", newSorting),
+        filters: f.reject(isFilterEmpty, newFilters)
+      };
+
+      saveFilterSettings(table.id, rowsFilter);
+    }
+
+    if (columnsReset) {
+      const columnIds = f.map("id", columns);
+
+      saveColumnVisibility(table.id, columnIds);
+    }
+  };
+
   changeFilter = (settings = {}, store = true) => {
     const currentTable = this.props.table;
     const hasSlowFilters = f.flow(
@@ -212,7 +255,7 @@ class TableView extends PureComponent {
   };
 
   getCellUrl = () => {
-    const { langtag, table, location } = this.props;
+    const { langtag, table } = this.props;
     const {
       selectedCell: {
         selectedCell: { rowId, columnId }
@@ -223,8 +266,7 @@ class TableView extends PureComponent {
       `/${langtag}` +
       `/tables/${table.id}` +
       (columnId ? `/columns/${columnId}` : "") +
-      (rowId ? `/rows/${rowId}` : "") +
-      location.search
+      (rowId ? `/rows/${rowId}` : "")
     );
   };
 
