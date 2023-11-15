@@ -184,5 +184,11 @@
   "text-length": {
     "min-length-full": "mindestens {{minLength}} Zeichen",
     "min-length-short": "min. {{minLength}} Zeichen"
+  },
+  "reset-table-view": {
+    "button": "Tabellenansicht zurücksetzen",
+    "context": "Tabelleneinstellungen",
+    "title": "Tabellenansicht zurücksetzen?",
+    "message": "Sind Sie sicher, dass Sie die Tabelleneinstellungen zurücksetzen möchten? Sie können Ihre individuellen Einstellungen auch im Nutzerprofil in den globalen Einstellungen entsprechend anpassen."
   }
 }

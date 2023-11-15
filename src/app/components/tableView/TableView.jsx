@@ -21,6 +21,7 @@ import Spinner from "../header/Spinner.jsx";
 import Table from "../table/Table.jsx";
 import TableSettings from "../header/tableSettings/TableSettings";
 import TableSwitcher from "../header/tableSwitcher/TableSwitcher.jsx";
+import ResetTableViewButton from "../header/ResetTableViewButton";
 import TableauxConstants, {
   ColumnKinds,
   FilterModes,
@@ -355,6 +356,11 @@ class TableView extends PureComponent {
                 tableId={tableId}
                 actions={actions}
                 tableView={tableView}
+              />
+              <ResetTableViewButton
+                langtag={langtag}
+                columns={columns}
+                navigate={this.onNavigate}
               />
               <div className="header-separator" />
               <Spinner isLoading={f.isEmpty(allDisplayValues)} />

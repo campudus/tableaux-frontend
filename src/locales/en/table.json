@@ -184,5 +184,11 @@
   "text-length": {
     "min-length-full": "minimum {{minLength}} characters",
     "min-length-short": "min. {{minLength}} characters"
+  },
+  "reset-table-view": {
+    "button": "Reset table view",
+    "context": "Table settings",
+    "title": "Reset table view?",
+    "message": "Are you sure you want to reset the table settings? You can also adjust your individual settings accordingly in the user profile in the global settings."
   }
 }
