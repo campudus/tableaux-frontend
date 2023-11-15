@@ -43,7 +43,7 @@ const GRUDRouter = React.memo(() => {
     const validParams = validateRouteParams(routeProps.match.params, tables);
     const { tableId } = validParams;
     const currentTable = currentTableSelector(store.getState());
-    const urlOptions = parseOptions(routeProps.location.search);
+    const { filter } = parseOptions(routeProps.location.search);
 
     // only load table if we're allowed to see at least one
     if ((!currentTable || tableId !== currentTable) && tableId) {
@@ -51,10 +51,12 @@ const GRUDRouter = React.memo(() => {
         switchTable(tableId);
         store.dispatch(actionCreators.cleanUp(tableId));
         store.dispatch(actionCreators.toggleCellSelection(validParams));
-        store.dispatch(
-          actionCreators.loadCompleteTable(tableId, urlOptions.filter)
-        );
+        store.dispatch(actionCreators.loadCompleteTable(tableId));
       });
+    }
+
+    if (tableId && tableId === currentTable) {
+      store.dispatch(actionCreators.loadTableView(tableId, filter));
     }
 
     return renderView(ViewNames.TABLE_VIEW)(routeProps);
