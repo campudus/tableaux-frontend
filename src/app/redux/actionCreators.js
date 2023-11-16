@@ -709,40 +709,6 @@ const setGlobalSettings = settings => dispatch => {
   dispatch({ type: SET_GLOBAL_SETTINGS, settings });
 };
 
-// const applyGlobalSettings = () => (dispatch, getState) => {
-//   const state = getState();
-//   const settings = f.get(["globalSettings"], state);
-//   const { filterReset, columnsReset, sortingReset, sortingDesc } = settings;
-
-//   console.log({ state, settings });
-
-//   if (filterReset || sortingReset || sortingDesc) {
-//     const oldFilters = f.get(["tableView", "filters"], state);
-//     const oldSorting = f.get(["tableView", "sorting"], state);
-//     const filters = filterReset ? [] : oldFilters;
-//     const sorting = sortingReset
-//       ? null
-//       : sortingDesc
-//       ? { columnId: -1, value: "DESC" }
-//       : oldSorting;
-
-//     console.log({ filters, sorting });
-//     dispatch(setFiltersAndSorting(filters, sorting, true));
-//   }
-
-//   if (columnsReset) {
-//     const currentTable = f.get(["currentTable"], state);
-//     const columns = f.get(["columns", currentTable], state);
-//     const columnIds = f.map("id", columns);
-//     console.log({
-//       currentTable,
-//       columns,
-//       columnIds
-//     });
-//     dispatch(setColumnsVisible(columnIds));
-//   }
-// };
-
 const actionCreators = {
   loadTables: loadTables,
   loadColumns: loadColumns,
