@@ -25,7 +25,10 @@ export default function ResetTableViewButton({ langtag, columns, navigate }) {
       message: (
         <div className="reset-table-view-message">
           <p>{t("table:reset-table-view.message")}</p>
-          <button onClick={navigateToSettings}>
+          <button
+            className="reset-table-view-link"
+            onClick={navigateToSettings}
+          >
             {t("profile:navigation.global-settings")}
             <i className="fa fa-arrow-right" />
           </button>
@@ -33,7 +36,7 @@ export default function ResetTableViewButton({ langtag, columns, navigate }) {
       ),
       buttonActions: {
         neutral: [t("common:cancel"), null],
-        positive: [t("common:reset"), resetTableView]
+        negative: [t("common:reset"), resetTableView]
       }
     });
 
