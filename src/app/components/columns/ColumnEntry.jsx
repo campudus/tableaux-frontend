@@ -185,9 +185,11 @@ export default class ColumnEntry extends React.PureComponent {
     return (
       <Rnd
         style={this.props.style}
-        default={{
+        position={{
           x: 0,
-          y: 0,
+          y: 0
+        }}
+        size={{
           width: this.props.width,
           height: 37
         }}

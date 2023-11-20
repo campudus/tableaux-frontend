@@ -5,11 +5,24 @@ import { showDialog } from "../overlay/GenericOverlay";
 import { PROFILE_TAB } from "../profile/constants";
 import store from "../../redux/store";
 import actions from "../../redux/actionCreators";
+import { mapIndexed } from "../../helpers/functools";
+import { saveColumnWidths } from "../../helpers/localStorage";
 
-export default function ResetTableViewButton({ langtag, columns, navigate }) {
+export default function ResetTableViewButton({
+  tableId,
+  langtag,
+  columns,
+  navigate
+}) {
   const resetTableView = () => {
+    const columnIds = f.map("id", columns);
+    const columnOrdering = mapIndexed(({ id }, idx) => ({ id, idx }))(columns);
+
     store.dispatch(actions.setFiltersAndSorting([], [], true));
-    store.dispatch(actions.setColumnsVisible(f.map("id", columns)));
+    store.dispatch(actions.setColumnsVisible(columnIds));
+    store.dispatch(actions.setColumnOrdering(columnOrdering));
+    saveColumnWidths(tableId, {});
+    store.dispatch(actions.rerenderTable());
   };
 
   const navigateToSettings = () => {

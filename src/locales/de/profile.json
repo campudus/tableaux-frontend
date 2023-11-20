@@ -19,7 +19,7 @@
     "filter-reset-description": "Ist diese Einstellung aktiviert, werden nach einem Tabellenwechsel alle gesetzten Filter automatisch zurückgesetzt.",
     "columns": "Spaltenansicht",
     "columns-reset-label": "Spaltenansicht automatisch zurücksetzen",
-    "columns-reset-description": "Ist diese Einstellung aktiviert, werden nach einem Tabellenwechsel alle verborgenen Spalten wieder angezeigt.",
+    "columns-reset-description": "Ist diese Einstellung aktiviert, werden nach einem Tabellenwechsel alle individuellen Spalteneinstellungen zurückgesetzt.",
     "sorting": "Sortierung",
     "sorting-reset-label": "Sortierung automatisch zurücksetzen",
     "sorting-reset-description": "Ist diese Einstellung aktiviert, werden sämtliche Sortierungseinstellungen bei Tabellenwechsel automatisch zurückgesetzt.",
