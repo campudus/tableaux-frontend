@@ -28,6 +28,7 @@ import getDisplayValue from "../../helpers/getDisplayValue";
 import * as tableNavigationWorker from "./tableNavigationWorker";
 import { canUserCreateRow } from "../../helpers/accessManagementHelper";
 import store from "../../redux/store";
+import actions from "../../redux/actionCreators";
 import MetaCellHeader from "../cells/MetaCellHeader";
 import { saveColumnWidths } from "../../helpers/localStorage";
 
@@ -90,6 +91,7 @@ export default class VirtualTable extends PureComponent {
     const { columnWidths = {} } = this.state;
 
     saveColumnWidths(storageKey, columnWidths);
+    store.dispatch(actions.rerenderTable());
   };
 
   calcRowHeight = ({ index }) => {

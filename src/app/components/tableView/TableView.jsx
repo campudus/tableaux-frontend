@@ -31,6 +31,7 @@ import applyFiltersAndVisibility from "./applyFiltersAndVisibility";
 import reduxActionHoc from "../../helpers/reduxActionHoc";
 import store from "../../redux/store";
 import {
+  getStoredViewObject,
   saveColumnOrdering,
   saveColumnVisibility,
   saveColumnWidths,
@@ -211,13 +212,34 @@ class TableView extends PureComponent {
 
     if (columnsReset) {
       const columnIds = f.map("id", columns);
-      const columnOrdering = mapIndexed(({ id }, idx) => ({ id, idx }))(columns);
+      const columnOrdering = mapIndexed(({ id }, idx) => ({ id, idx }))(
+        columns
+      );
 
       saveColumnVisibility(table.id, columnIds);
       saveColumnOrdering(table.id, columnOrdering);
       saveColumnWidths(table.id, {});
     }
   };
+
+  hasResettableChange() {
+    const { tableView, columns = [], table } = this.props;
+    const { columnOrdering, filters, sorting, visibleColumns } = tableView;
+    const { columnWidths } = getStoredViewObject(table.id);
+
+    const initialVisibleColumns = f.map("id", columns);
+    const initialColumnOrdering = mapIndexed(({ id }, idx) => ({ id, idx }))(
+      columns
+    );
+
+    return (
+      !f.isEqual(columnOrdering, initialColumnOrdering) ||
+      initialVisibleColumns.length !== visibleColumns.length ||
+      !f.isEmpty(filters) ||
+      !f.isEmpty(sorting) ||
+      !f.isEmpty(columnWidths)
+    );
+  }
 
   changeFilter = (settings = {}, store = true) => {
     const currentTable = this.props.table;
@@ -302,6 +324,7 @@ class TableView extends PureComponent {
     const copySource = f.propOr({}, "copySource", tableView);
     const pasteOriginCell = copySource.cell;
     const pasteOriginCellLang = copySource.langtag;
+    const showResetTableViewButton = this.hasResettableChange();
 
     // const rows = rowsCollection || currentTable.rows || {};
     // pass concatenated row ids on, so children will re-render on sort, filter, add, etc.
@@ -363,12 +386,14 @@ class TableView extends PureComponent {
                 actions={actions}
                 tableView={tableView}
               />
-              <ResetTableViewButton
-                tableId={tableId}
-                langtag={langtag}
-                columns={columns}
-                navigate={this.onNavigate}
-              />
+              {showResetTableViewButton && (
+                <ResetTableViewButton
+                  tableId={tableId}
+                  langtag={langtag}
+                  columns={columns}
+                  navigate={this.onNavigate}
+                />
+              )}
               <div className="header-separator" />
               <Spinner isLoading={f.isEmpty(allDisplayValues)} />
               <PasteCellIcon
