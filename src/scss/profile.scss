@@ -2,6 +2,7 @@
   background-color: $color-white;
   display: flex;
   justify-content: center;
+  overflow: auto;
 
   .profile-view__inner {
     max-width: 900px;
@@ -12,7 +13,6 @@
     grid-template-columns: 250px auto;
     gap: 64px;
     box-sizing: border-box;
-    overflow: hidden;
   }
 
   .profile-view__navigation {
@@ -21,12 +21,11 @@
     align-items: stretch;
     justify-content: start;
     gap: 16px;
-    overflow: auto;
   }
 
   .profile-view__content {
     height: 100%;
-    overflow: hidden;
+    padding-bottom: 50px;
   }
 
   .profile-view__link {
@@ -89,7 +88,6 @@
 
   &__content {
     height: 100%;
-    overflow: auto;
 
     .profile-tab__title {
       font-size: 16px;
