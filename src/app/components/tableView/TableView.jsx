@@ -31,9 +31,12 @@ import applyFiltersAndVisibility from "./applyFiltersAndVisibility";
 import reduxActionHoc from "../../helpers/reduxActionHoc";
 import store from "../../redux/store";
 import {
+  saveColumnOrdering,
   saveColumnVisibility,
+  saveColumnWidths,
   saveFilterSettings
 } from "../../helpers/localStorage";
+import { mapIndexed } from "../../helpers/functools";
 
 const BIG_TABLE_THRESHOLD = 10000; // Threshold to decide when a table is so big we might not want to search it
 const mapStatetoProps = (state, props) => {
@@ -208,8 +211,11 @@ class TableView extends PureComponent {
 
     if (columnsReset) {
       const columnIds = f.map("id", columns);
+      const columnOrdering = mapIndexed(({ id }, idx) => ({ id, idx }))(columns);
 
       saveColumnVisibility(table.id, columnIds);
+      saveColumnOrdering(table.id, columnOrdering);
+      saveColumnWidths(table.id, {});
     }
   };
 
@@ -358,6 +364,7 @@ class TableView extends PureComponent {
                 tableView={tableView}
               />
               <ResetTableViewButton
+                tableId={tableId}
                 langtag={langtag}
                 columns={columns}
                 navigate={this.onNavigate}

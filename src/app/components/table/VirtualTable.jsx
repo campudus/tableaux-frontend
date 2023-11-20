@@ -435,6 +435,9 @@ export default class VirtualTable extends PureComponent {
     }
     if (this.props.rerenderTable !== next.rerenderTable) {
       this.scrollToCell();
+
+      const view = this.getStoredView();
+      this.setState({ columnWidths: view.columnWidths || {} });
     }
   }
 
