@@ -440,6 +440,7 @@ export default class VirtualTable extends PureComponent {
 
       const view = this.getStoredView();
       this.setState({ columnWidths: view.columnWidths || {} });
+      maybe(this.multiGrid).method("invalidateCellSizeAfterRender");
     }
   }
 
