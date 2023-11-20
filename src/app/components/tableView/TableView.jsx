@@ -30,13 +30,7 @@ import TableauxConstants, {
 import applyFiltersAndVisibility from "./applyFiltersAndVisibility";
 import reduxActionHoc from "../../helpers/reduxActionHoc";
 import store from "../../redux/store";
-import {
-  getStoredViewObject,
-  saveColumnOrdering,
-  saveColumnVisibility,
-  saveColumnWidths,
-  saveFilterSettings
-} from "../../helpers/localStorage";
+import { getStoredViewObject } from "../../helpers/localStorage";
 import { mapIndexed } from "../../helpers/functools";
 
 const BIG_TABLE_THRESHOLD = 10000; // Threshold to decide when a table is so big we might not want to search it
@@ -178,48 +172,6 @@ class TableView extends PureComponent {
 
   componentDidUpdate = () => {
     this.setDocumentTitleToTableName();
-  };
-
-  componentWillUnmount = () => {
-    this.applySettings();
-  };
-
-  componentWillReceiveProps = nextProps => {
-    if (this.props.table.id !== nextProps.table.id) {
-      this.applySettings();
-    }
-  };
-
-  applySettings = () => {
-    const { filters, sorting, columns, globalSettings, table } = this.props;
-    const { filterReset, sortingReset, columnsReset } = globalSettings;
-
-    if (filterReset || sortingReset) {
-      const newFilters = filterReset ? [] : filters;
-      const newSorting = sortingReset ? null : sorting;
-
-      const isFilterEmpty = filter => {
-        return f.isEmpty(filter.value) && !f.isString(filter.mode);
-      };
-      const rowsFilter = {
-        sortColumnId: f.get("columnId", newSorting),
-        sortValue: f.get("value", newSorting),
-        filters: f.reject(isFilterEmpty, newFilters)
-      };
-
-      saveFilterSettings(table.id, rowsFilter);
-    }
-
-    if (columnsReset) {
-      const columnIds = f.map("id", columns);
-      const columnOrdering = mapIndexed(({ id }, idx) => ({ id, idx }))(
-        columns
-      );
-
-      saveColumnVisibility(table.id, columnIds);
-      saveColumnOrdering(table.id, columnOrdering);
-      saveColumnWidths(table.id, {});
-    }
   };
 
   hasResettableChange() {

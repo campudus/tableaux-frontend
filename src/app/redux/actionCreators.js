@@ -3,16 +3,17 @@ import f from "lodash/fp";
 import React from "react";
 import askForSessionUnlock from "../components/helperComponents/SessionUnlockDialog";
 import { loadAndOpenEntityView } from "../components/overlay/EntityViewOverlay";
-import { Langtags } from "../constants/TableauxConstants";
+import { FilterModes, Langtags } from "../constants/TableauxConstants";
 import { isLocked } from "../helpers/annotationHelper";
 import { makeRequest } from "../helpers/apiHelper";
 import API_ROUTES from "../helpers/apiRoutes";
-import { doto } from "../helpers/functools";
+import { doto, mapIndexed } from "../helpers/functools";
 import {
   getStoredViewObject,
   readGlobalSettings,
   saveColumnOrdering,
   saveColumnVisibility,
+  saveColumnWidths,
   saveFilterSettings,
   storeGlobalSettings
 } from "../helpers/localStorage";
@@ -372,35 +373,59 @@ const loadCompleteTable = tableId => async dispatch => {
   dispatch(loadAllRows(tableId));
 };
 
-const loadTableView = (tableId, urlFilters) => dispatch => {
-  const { sortingDesc } = readGlobalSettings();
+const loadTableView = (tableId, customFilters) => (dispatch, getState) => {
+  const { globalSettings, columns } = getState();
+  const {
+    filterReset,
+    columnsReset,
+    sortingReset,
+    sortingDesc
+  } = globalSettings;
   const storedView = getStoredViewObject(tableId);
   const { visibleColumns, rowsFilter, columnOrdering } = storedView;
-  const filters = f.get("filters", rowsFilter);
-  const hasFilters = !f.isEmpty(filters);
-  const sortColumnId = f.get("sortColumnId", rowsFilter);
-  const sortValue = f.get("sortValue", rowsFilter);
+  const oldFilters = f.get(["filters"], rowsFilter) ?? [];
+  const sortColumnId = f.get(["sortColumnId"], rowsFilter);
+  const sortValue = f.get(["sortValue"], rowsFilter);
   const hasSorting = !f.isNil(sortColumnId) && !f.isNil(sortValue);
+  const oldSorting = hasSorting ? { sortColumnId, sortValue } : null;
 
-  if (urlFilters) {
-    dispatch(setFiltersAndSorting(urlFilters, null));
-  } else if (hasFilters || hasSorting || sortingDesc) {
-    dispatch(
-      setFiltersAndSorting(
-        hasFilters ? filters : null,
-        sortingDesc
-          ? { columnId: -1, value: "DESC" }
-          : hasSorting
-          ? { columnId: sortColumnId, value: sortValue }
-          : null
-      )
-    );
+  if (
+    !f.isEmpty(customFilters) ||
+    !f.isEmpty(oldFilters) ||
+    filterReset ||
+    sortingReset ||
+    sortingDesc
+  ) {
+    const filters = !f.isEmpty(customFilters)
+      ? customFilters
+      : filterReset
+      ? f.filter(f.matchesProperty("mode", FilterModes.ID_ONLY), oldFilters)
+      : oldFilters;
+    const sorting = sortingDesc
+      ? { columnId: -1, value: "DESC" }
+      : sortingReset
+      ? null
+      : oldSorting;
+
+    dispatch(setFiltersAndSorting(filters, sorting, true));
   }
+
   if (!f.isEmpty(columnOrdering)) {
     dispatch(setColumnOrdering(columnOrdering));
   }
+
   if (!f.isEmpty(visibleColumns)) {
     dispatch(setColumnsVisible(visibleColumns));
+  }
+
+  if (columnsReset) {
+    const cols = f.get([tableId, "data"], columns) ?? [];
+    const columnIds = f.map("id", cols);
+    const columnOrdering = mapIndexed(({ id }, idx) => ({ id, idx }))(cols);
+
+    dispatch(setColumnsVisible(columnIds));
+    dispatch(setColumnOrdering(columnOrdering));
+    saveColumnWidths(tableId, {});
   }
 };
 
