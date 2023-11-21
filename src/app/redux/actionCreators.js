@@ -383,36 +383,41 @@ const loadTableView = (tableId, customFilters) => (dispatch, getState) => {
   } = globalSettings;
   const storedView = getStoredViewObject(tableId);
   const { visibleColumns, rowsFilter, columnOrdering } = storedView;
-  const oldFilters = f.get(["filters"], rowsFilter) ?? [];
-  const hasIdFilter = f.some({ mode: FilterModes.ID_ONLY }, oldFilters);
+  const storedFilters = f.get(["filters"], rowsFilter) ?? [];
+  const hasIdFilter = f.some({ mode: FilterModes.ID_ONLY }, storedFilters);
   const sortColumnId = f.get(["sortColumnId"], rowsFilter);
   const sortValue = f.get(["sortValue"], rowsFilter);
-  const hasSorting = !f.isNil(sortColumnId) && !f.isNil(sortValue);
-  const oldSorting = hasSorting ? { sortColumnId, sortValue } : null;
 
   if (
     !f.isEmpty(customFilters) ||
-    !f.isEmpty(oldFilters) ||
+    !f.isEmpty(storedFilters) ||
     filterReset ||
     sortingReset ||
     sortingDesc
   ) {
     const filters = !f.isEmpty(customFilters)
       ? customFilters
-      : filterReset
-      ? f.filter({ mode: FilterModes.ID_ONLY }, oldFilters)
-      : oldFilters;
+      : filterReset || hasIdFilter
+      ? f.filter({ mode: FilterModes.ID_ONLY }, storedFilters)
+      : f.reject({ mode: FilterModes.ID_ONLY }, storedFilters);
     const sorting = sortingDesc
       ? { columnId: -1, value: "DESC" }
       : sortingReset
-      ? null
-      : oldSorting;
+      ? {}
+      : { columnId: sortColumnId, value: sortValue };
 
-    dispatch(setFiltersAndSorting(filters, sorting, true));
+    dispatch(setFiltersAndSorting(filters, sorting));
 
-    if (f.isEmpty(customFilters) && hasIdFilter) {
-      // clean up id filter in localStorage so it won't be applied in next routing cycle
-      saveFilterSettings(tableId, { ...rowsFilter, filters: [] });
+    if (!f.isEmpty(customFilters)) {
+      saveFilterSettings(tableId, {
+        ...rowsFilter,
+        filters: f.concat(storedFilters, customFilters)
+      });
+    } else if (f.isEmpty(customFilters)) {
+      saveFilterSettings(tableId, {
+        ...rowsFilter,
+        filters: f.reject({ mode: FilterModes.ID_ONLY }, storedFilters)
+      });
     }
   }
 
