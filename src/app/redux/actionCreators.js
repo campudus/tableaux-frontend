@@ -383,41 +383,45 @@ const loadTableView = (tableId, customFilters) => (dispatch, getState) => {
   } = globalSettings;
   const storedView = getStoredViewObject(tableId);
   const { visibleColumns, rowsFilter, columnOrdering } = storedView;
+  const idFilterMode = { mode: FilterModes.ID_ONLY };
   const storedFilters = f.get(["filters"], rowsFilter) ?? [];
-  const hasIdFilter = f.some({ mode: FilterModes.ID_ONLY }, storedFilters);
+  const storedIdFilter = f.filter(idFilterMode, storedFilters);
+  const storedUserFilters = f.compact(f.reject(idFilterMode, storedFilters));
+  const hasStoredIdFilter = !f.isEmpty(storedIdFilter);
   const sortColumnId = f.get(["sortColumnId"], rowsFilter);
   const sortValue = f.get(["sortValue"], rowsFilter);
   const hasSorting = !f.isNil(sortColumnId) && !f.isNil(sortValue);
+  const hasCustomFilters = !f.isEmpty(customFilters);
+  const hasStoredFilters = !f.isEmpty(storedFilters);
 
   if (
-    !f.isEmpty(customFilters) ||
-    !f.isEmpty(storedFilters) ||
+    hasCustomFilters ||
+    hasStoredFilters ||
     filterReset ||
     sortingReset ||
     sortingDesc ||
     hasSorting
   ) {
-    const filters = !f.isEmpty(customFilters)
+    const filters = hasCustomFilters
       ? customFilters
-      : filterReset || hasIdFilter
-      ? f.filter({ mode: FilterModes.ID_ONLY }, storedFilters)
-      : f.reject({ mode: FilterModes.ID_ONLY }, storedFilters);
-    const sorting = sortingDesc
-      ? { columnId: -1, value: "DESC" }
-      : sortingReset
-      ? {}
-      : { columnId: sortColumnId, value: sortValue };
+      : hasStoredIdFilter
+      ? storedIdFilter
+      : storedUserFilters;
+    const sorting = {
+      columnId: sortingDesc ? -1 : sortingReset ? null : sortColumnId,
+      value: sortingDesc ? "DESC" : sortingReset ? null : sortValue
+    };
 
     dispatch(setFiltersAndSorting(filters, sorting));
 
-    const newStoredFilters = filterReset ? [] : storedFilters;
-
+    // store customFilters in localStorage for one navigation cycle
     saveFilterSettings(tableId, {
       sortColumnId: sortingReset ? null : sortColumnId,
       sortValue: sortingReset ? null : sortValue,
-      filters: !f.isEmpty(customFilters)
-        ? f.concat(newStoredFilters, customFilters)
-        : f.reject({ mode: FilterModes.ID_ONLY }, newStoredFilters)
+      filters: f.concat(
+        filterReset ? [] : storedUserFilters,
+        hasCustomFilters ? customFilters : []
+      )
     });
   }
 
