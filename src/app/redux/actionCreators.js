@@ -387,13 +387,15 @@ const loadTableView = (tableId, customFilters) => (dispatch, getState) => {
   const hasIdFilter = f.some({ mode: FilterModes.ID_ONLY }, storedFilters);
   const sortColumnId = f.get(["sortColumnId"], rowsFilter);
   const sortValue = f.get(["sortValue"], rowsFilter);
+  const hasSorting = !f.isNil(sortColumnId) && !f.isNil(sortValue);
 
   if (
     !f.isEmpty(customFilters) ||
     !f.isEmpty(storedFilters) ||
     filterReset ||
     sortingReset ||
-    sortingDesc
+    sortingDesc ||
+    hasSorting
   ) {
     const filters = !f.isEmpty(customFilters)
       ? customFilters
@@ -408,17 +410,15 @@ const loadTableView = (tableId, customFilters) => (dispatch, getState) => {
 
     dispatch(setFiltersAndSorting(filters, sorting));
 
-    if (!f.isEmpty(customFilters)) {
-      saveFilterSettings(tableId, {
-        ...rowsFilter,
-        filters: f.concat(storedFilters, customFilters)
-      });
-    } else if (f.isEmpty(customFilters)) {
-      saveFilterSettings(tableId, {
-        ...rowsFilter,
-        filters: f.reject({ mode: FilterModes.ID_ONLY }, storedFilters)
-      });
-    }
+    const newStoredFilters = filterReset ? [] : storedFilters;
+
+    saveFilterSettings(tableId, {
+      sortColumnId: sortingReset ? null : sortColumnId,
+      sortValue: sortingReset ? null : sortValue,
+      filters: !f.isEmpty(customFilters)
+        ? f.concat(newStoredFilters, customFilters)
+        : f.reject({ mode: FilterModes.ID_ONLY }, newStoredFilters)
+    });
   }
 
   if (!f.isEmpty(columnOrdering)) {
