@@ -384,6 +384,7 @@ const loadTableView = (tableId, customFilters) => (dispatch, getState) => {
   const storedView = getStoredViewObject(tableId);
   const { visibleColumns, rowsFilter, columnOrdering } = storedView;
   const oldFilters = f.get(["filters"], rowsFilter) ?? [];
+  const hasIdFilter = f.some({ mode: FilterModes.ID_ONLY }, oldFilters);
   const sortColumnId = f.get(["sortColumnId"], rowsFilter);
   const sortValue = f.get(["sortValue"], rowsFilter);
   const hasSorting = !f.isNil(sortColumnId) && !f.isNil(sortValue);
@@ -399,7 +400,7 @@ const loadTableView = (tableId, customFilters) => (dispatch, getState) => {
     const filters = !f.isEmpty(customFilters)
       ? customFilters
       : filterReset
-      ? f.filter(f.matchesProperty("mode", FilterModes.ID_ONLY), oldFilters)
+      ? f.filter({ mode: FilterModes.ID_ONLY }, oldFilters)
       : oldFilters;
     const sorting = sortingDesc
       ? { columnId: -1, value: "DESC" }
@@ -408,6 +409,11 @@ const loadTableView = (tableId, customFilters) => (dispatch, getState) => {
       : oldSorting;
 
     dispatch(setFiltersAndSorting(filters, sorting, true));
+
+    if (f.isEmpty(customFilters) && hasIdFilter) {
+      // clean up id filter in localStorage so it won't be applied in next routing cycle
+      saveFilterSettings(tableId, { ...rowsFilter, filters: [] });
+    }
   }
 
   if (!f.isEmpty(columnOrdering)) {
