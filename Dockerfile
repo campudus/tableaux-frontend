@@ -1,4 +1,4 @@
-FROM node:10.15.0-alpine AS build
+FROM node:20.10-alpine AS build
 
 RUN apk update && apk upgrade && \
     apk add --no-cache bash git openssh
@@ -23,7 +23,7 @@ RUN npm run test:ci
 RUN npm run build
 RUN npm prune --production
 
-FROM node:10.15.0-alpine
+FROM node:20.10.0-alpine
 
 WORKDIR /usr/app
 
