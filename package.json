@@ -12,7 +12,6 @@
     "lint:changes": "git diff master --name-only | grep -E \"src\\/.*\\.jsx?$\" | xargs -I{} sh -c \"test -f '{}' && echo '{}'\" | xargs eslint",
     "lint:fix": "eslint --fix -f stylish --ignore-pattern src/scss/FontAwesome \"src/**/*.{js,jsx}\"",
     "lint:fix:changes": "git diff master --name-only | grep -E \"src\\/.*\\.jsx?$\" | xargs -I{} sh -c \"test -f '{}' && echo '{}'\" | xargs eslint --fix",
-    "storybook": "start-storybook -p 3001 -s src",
     "test": "NODE_ICU_DATA=node_modules/full-icu jest",
     "test:ci": "JEST_JUNIT_OUTPUT_DIR=./output/coverage/ NODE_ICU_DATA=node_modules/full-icu jest --ci --reporters=default --reporters=jest-junit",
     "clean": "rm -fr .cache out",
@@ -32,6 +31,12 @@
     "@babel/preset-flow": "7.0.0",
     "@babel/preset-react": "^7.0.0",
     "@babel/preset-stage-0": "^7.0.0",
+    "@babel/runtime": "7.23.5",
+    "@codemirror/lang-markdown": "6.2.3",
+    "@codemirror/language-data": "6.3.1",
+    "@codemirror/state": "6.3.3",
+    "@codemirror/theme-one-dark": "6.1.2",
+    "@codemirror/view": "6.22.1",
     "@sentry/browser": "^4.6.4",
     "@uiw/react-codemirror": "4.21.21",
     "autoprefixer": "^9.6.0",
@@ -101,12 +106,6 @@
     "typescript": "4.5.4"
   },
   "dependencies": {
-    "@babel/runtime": "7.23.5",
-    "@codemirror/lang-markdown": "6.2.3",
-    "@codemirror/language-data": "6.3.1",
-    "@codemirror/state": "6.3.3",
-    "@codemirror/theme-one-dark": "6.1.2",
-    "@codemirror/view": "6.22.1",
     "connect-loki": "1.1.0",
     "express": "4.18.2",
     "express-session": "1.16.2",
@@ -116,8 +115,6 @@
     "uuid": "3.3.3"
   },
   "jest": {
-    "setupFilesAfterEnv": [
-      "./setupTests.js"
-    ]
+    "setupFilesAfterEnv": ["./setupTests.js"]
   }
 }
