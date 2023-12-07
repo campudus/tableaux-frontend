@@ -1,8 +1,9 @@
 import classNames from "classnames";
-import "codemirror/mode/markdown/markdown";
 import PropTypes from "prop-types";
 import React from "react";
-import CodeMirror from "react-codemirror";
+import CodeMirror from "@uiw/react-codemirror";
+import { markdown, markdownLanguage } from "@codemirror/lang-markdown";
+import { languages } from "@codemirror/language-data";
 import ReactMarkdown from "react-markdown";
 import { StyleIcon } from "./StyleControls";
 import {
@@ -19,27 +20,23 @@ const PreviewModes = {
   NONE: "NONE"
 };
 
-const PlainMarkdownEditor = (
-  {
-    controlButtons,
-    initialMarkdown,
-    className,
-    onChange,
-    readOnly,
-    cell: { column }
-  },
-  ref
-) => {
-  const [markdown, setMarkdown] = React.useState(initialMarkdown || "");
+const PlainMarkdownEditor = ({
+  controlButtons,
+  initialMarkdown,
+  className,
+  onChange,
+  readOnly,
+  cell: { column }
+}) => {
+  const [value, setValue] = React.useState(initialMarkdown || "");
   const [clickedOutside, setClickedOutside] = React.useState(false);
-  const editorRef = React.useRef();
 
   const { minLength, maxLength } = column;
   const minLengthText = columnHasMinLength(column)
     ? i18n.t("table:text-length:min-length-full", { minLength })
     : "";
   const maxLengthText = columnHasMaxLength(column)
-    ? `${getTextLength(markdown)}/${maxLength}`
+    ? `${getTextLength(value)}/${maxLength}`
     : "";
   // FIXME: Other preview modes' display components problematic with current
   // CodeMirror versions
@@ -62,29 +59,9 @@ const PlainMarkdownEditor = (
     readOnly
   };
 
-  React.useImperativeHandle(ref, () => ({
-    focus: () => editorRef.current && editorRef.current.focus()
-  }));
-
   const handleChange = newValue => {
     setClickedOutside(false);
-    if (
-      columnHasMaxLength(column) &&
-      getTextLength(newValue) > column.maxLength
-    ) {
-      //We have to manually set the value of the internal codemirror instance
-      //as this is not a true controlled component. Not doing this WILL lead
-      //to different states.
-      const codeMirrorDoc = editorRef.current.getCodeMirror().getDoc();
-      const currentCursor = codeMirrorDoc.getCursor();
-      const newCursor = { ...currentCursor, ch: currentCursor.ch - 1 };
-      codeMirrorDoc.setValue(markdown);
-      //set cursor to previous location
-      codeMirrorDoc.setCursor(newCursor);
-
-      return;
-    }
-    setMarkdown(newValue);
+    setValue(newValue);
     onChange(newValue);
   };
 
@@ -118,7 +95,7 @@ const PlainMarkdownEditor = (
     setClickedOutside(true);
   };
 
-  const textTooShort = isTextTooShort(column, markdown);
+  const textTooShort = isTextTooShort(column, value);
   const shouldCatchOutsideClick = textTooShort;
   const textTooShortErrorCssClass =
     clickedOutside && textTooShort ? "markdown-editor_error" : "";
@@ -138,11 +115,14 @@ const PlainMarkdownEditor = (
         )}
         <div className={`cm-wrapper ${textTooShortErrorCssClass}`}>
           <CodeMirror
-            ref={editorRef}
-            value={markdown}
+            height="800px"
+            value={value}
             onChange={handleChange}
-            options={editorOptions}
             autoFocus={true}
+            basicSetup={{ lineNumbers: false, foldGutter: false }}
+            extensions={[
+              markdown({ base: markdownLanguage, codeLanguages: languages })
+            ]}
           />
           <div className="length-limits">
             <div className={`min-length ${textTooShortErrorCssClass}`}>
@@ -153,7 +133,7 @@ const PlainMarkdownEditor = (
         </div>
         <div className="plain-markdown-editor__preview">
           <div className="plain-markdown-editor-preview__react-markdown">
-            <ReactMarkdown source={markdown} />
+            <ReactMarkdown source={value} />
           </div>
         </div>
       </div>
