@@ -1,18 +1,19 @@
-import classNames from "classnames";
-import PropTypes from "prop-types";
-import React from "react";
-import CodeMirror from "@uiw/react-codemirror";
 import { markdown, markdownLanguage } from "@codemirror/lang-markdown";
 import { languages } from "@codemirror/language-data";
-import ReactMarkdown from "react-markdown";
-import { StyleIcon } from "./StyleControls";
-import {
-  columnHasMinLength,
-  columnHasMaxLength,
-  isTextTooShort,
-  getTextLength
-} from "../../helpers/limitTextLength";
+import CodeMirror from "@uiw/react-codemirror";
+import classNames from "classnames";
+import { EditorView } from "codemirror";
 import i18n from "i18next";
+import PropTypes from "prop-types";
+import React from "react";
+import ReactMarkdown from "react-markdown";
+import {
+  columnHasMaxLength,
+  columnHasMinLength,
+  getTextLength,
+  isTextTooShort
+} from "../../helpers/limitTextLength";
+import { StyleIcon } from "./StyleControls";
 
 const PreviewModes = {
   HORIZONTAL: "HORIZONTAL",
@@ -51,13 +52,6 @@ const PlainMarkdownEditor = ({
     "markdown-editor--split-v": markdownPreview === PreviewModes.VERTICAL,
     "markdown-editor--hide-preview": markdownPreview === PreviewModes.NONE
   });
-
-  const editorOptions = {
-    lineNumbers: false,
-    mode: "markdown",
-    lineWrapping: true,
-    readOnly
-  };
 
   const handleChange = newValue => {
     setClickedOutside(false);
@@ -115,14 +109,16 @@ const PlainMarkdownEditor = ({
         )}
         <div className={`cm-wrapper ${textTooShortErrorCssClass}`}>
           <CodeMirror
-            height="800px"
+            maxWidth="100%"
             value={value}
             onChange={handleChange}
             autoFocus={true}
             basicSetup={{ lineNumbers: false, foldGutter: false }}
             extensions={[
+              EditorView.lineWrapping,
               markdown({ base: markdownLanguage, codeLanguages: languages })
             ]}
+            readOnly={readOnly}
           />
           <div className="length-limits">
             <div className={`min-length ${textTooShortErrorCssClass}`}>
