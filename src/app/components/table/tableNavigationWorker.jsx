@@ -1,6 +1,5 @@
-import React from "react";
 import f from "lodash/fp";
-
+import React from "react";
 import {
   ColumnKinds,
   DefaultLangtag,
@@ -9,15 +8,16 @@ import {
 } from "../../constants/TableauxConstants";
 import { KEYBOARD_TABLE_HISTORY } from "../../FeatureFlags";
 import { canUserChangeCell } from "../../helpers/accessManagementHelper";
-import { doto, maybe, memoizeWith, unless } from "../../helpers/functools";
-import { getTableDisplayName } from "../../helpers/multiLanguage";
 import { isLocked } from "../../helpers/annotationHelper";
-import { openLinkOverlay } from "../cells/link/LinkOverlay";
-import AttachmentOverlay from "../cells/attachment/AttachmentOverlay";
-import Header from "../overlay/Header";
-import TextEditOverlay from "../cells/text/TextEditOverlay";
-import pasteCellValue from "../cells/cellCopyHelper";
+import { doto, maybe, memoizeWith, unless } from "../../helpers/functools";
+import { getModifiers } from "../../helpers/modifierState";
+import { getTableDisplayName } from "../../helpers/multiLanguage";
 import store from "../../redux/store";
+import AttachmentOverlay from "../cells/attachment/AttachmentOverlay";
+import pasteCellValue from "../cells/cellCopyHelper";
+import { openLinkOverlay } from "../cells/link/LinkOverlay";
+import TextEditOverlay from "../cells/text/TextEditOverlay";
+import Header from "../overlay/Header";
 
 const tableColumnKey = (tableId, columnId) => `${tableId}-${columnId}`;
 const lookUpCellKind = memoizeWith(tableColumnKey, (tableId, columnId) =>
@@ -39,9 +39,6 @@ export function getKeyboardShortcuts() {
     selectedCell: { selectedCell }
   } = store.getState();
   const selectedCellEditing = tableView.editing;
-  const actionKey = f.contains("Mac OS", navigator.userAgent)
-    ? "metaKey"
-    : "ctrlKey";
 
   return {
     left: event => {
@@ -61,7 +58,7 @@ export function getKeyboardShortcuts() {
       preventSleepingOnTheKeyboard.call(this, () => {
         setNextSelectedCell.call(
           this,
-          event.shiftKey ? Directions.LEFT : Directions.RIGHT
+          getModifiers(event).shift ? Directions.LEFT : Directions.RIGHT
         );
       });
     },
@@ -109,13 +106,13 @@ export function getKeyboardShortcuts() {
       if (!selectedCell) {
         return;
       }
+      const modifiers = getModifiers(event);
       const cellKind = getCellKind(tableView);
-      const hasActionKey = !!f.get(actionKey, event);
+      const hasActionKey = modifiers.mod;
       const isKeyPressed = k =>
         k >= "A" && k <= "Z"
           ? f.matchesProperty("key", k)(event) ||
-            (f.matchesProperty("key", f.toLower(k))(event) &&
-              f.get("shiftKey", event))
+            (f.matchesProperty("key", f.toLower(k))(event) && modifiers.shift)
           : f.matchesProperty("key", k)(event);
 
       const systemPaste =
@@ -165,7 +162,7 @@ export function getKeyboardShortcuts() {
       } else if (
         KEYBOARD_TABLE_HISTORY &&
         isKeyPressed("y") &&
-        event.ctrlKey &&
+        modifiers.mod &&
         !selectedCellEditing
       ) {
         event.preventDefault();
@@ -173,7 +170,7 @@ export function getKeyboardShortcuts() {
         actions.modifyHistory("redo", tableView.currentTable);
       } else if (
         !selectedCellEditing && // Other keypress
-        (!event.altKey && !event.metaKey && !event.ctrlKey) &&
+        modifiers.none &&
         (cellKind === ColumnKinds.text ||
           cellKind === ColumnKinds.shorttext ||
           cellKind === ColumnKinds.richtext ||
