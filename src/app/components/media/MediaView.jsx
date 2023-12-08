@@ -8,7 +8,7 @@ import { simpleError } from "../overlay/ConfirmationOverlay";
 import { switchLanguageHandler } from "../Router";
 import Folder from "./folder/Folder.jsx";
 import GrudHeader from "../GrudHeader";
-import ReduxActionHoc from "../../helpers/reduxActionHoc.js";
+import ReduxActionHoc from "../../helpers/reduxActionHoc";
 import Spinner from "../header/Spinner";
 
 const mapStateToProps = state => {
