@@ -17,9 +17,7 @@ export function isTextTooShort(column, text) {
   return textLength !== 0 && textLength < column.minLength;
 }
 
-export function getTextLength(text) {
-  return f.size(text);
-}
+export const getTextLength = f.size;
 
 export function isTextTooLong(column, text) {
   if (!columnHasMaxLength(column)) {

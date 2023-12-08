@@ -1,3 +1,5 @@
+/* eslint react/no-this-in-sfc: 0 */
+
 import { List } from "react-virtualized";
 import React from "react";
 import f from "lodash/fp";

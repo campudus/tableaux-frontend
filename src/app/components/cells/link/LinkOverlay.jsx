@@ -1,3 +1,5 @@
+/* eslint react/no-this-in-sfc: 0 */
+
 import React, { PureComponent } from "react";
 import * as Sentry from "@sentry/browser";
 import * as f from "lodash/fp";

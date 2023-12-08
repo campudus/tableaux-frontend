@@ -1,5 +1,5 @@
 import { withProps } from "recompose";
-import React, { Component } from "react";
+import React from "react";
 import * as f from "lodash/fp";
 import i18n from "i18next";
 
@@ -10,42 +10,39 @@ import { when } from "../../../helpers/functools";
 import Empty from "../../helperComponents/emptyEntry";
 import LinkList from "../../helperComponents/LinkList";
 
-class LinkView extends Component {
-  static propTypes = {
-    langtag: PropTypes.string.isRequired,
-    cell: PropTypes.object.isRequired,
-    actions: PropTypes.object.isRequired
-  };
+const LinkView = ({
+  langtag,
+  cell,
+  cell: { value },
+  actions,
+  linkList,
+  children
+}) =>
+  f.isEmpty(linkList) ? (
+    <div className="item-description">
+      {i18n.t("table:empty.links")}
+      {children}
+    </div>
+  ) : (
+    <div>
+      <LinkList
+        links={linkList}
+        langtag={langtag}
+        cell={cell}
+        actions={actions}
+        value={value}
+        sortable
+      />
+      {children}
+    </div>
+  );
 
-  render() {
-    const {
-      actions,
-      langtag,
-      linkList,
-      cell,
-      cell: { value }
-    } = this.props;
+LinkView.propTypes = {
+  langtag: PropTypes.string.isRequired,
+  cell: PropTypes.object.isRequired,
+  actions: PropTypes.object.isRequired
+};
 
-    return f.isEmpty(linkList) ? (
-      <div className="item-description">
-        {i18n.t("table:empty.links")}
-        {this.props.children}
-      </div>
-    ) : (
-      <div>
-        <LinkList
-          links={linkList}
-          langtag={langtag}
-          cell={cell}
-          actions={actions}
-          value={value}
-          sortable
-        />
-        {this.props.children}
-      </div>
-    );
-  }
-}
 const mkLinkList = (cell, langtag) => {
   const translate = when(f.isPlainObject, retrieveTranslation(langtag));
   return cell.value.map((link, idx) => {
