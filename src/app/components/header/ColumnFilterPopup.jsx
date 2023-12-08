@@ -284,20 +284,18 @@ class ColumnFilterPopup extends React.Component {
         </div>
         <div className="wrap-me-grey">
           <div className="row">
-            <a
-              href="#"
+            <button
               className="button positive"
               onClick={() => setColumnsVisible(f.map("id", columns))}
             >
               {i18n.t("table:show_all_columns")}
-            </a>
-            <a
-              href="#"
+            </button>
+            <button
               className="button neutral"
               onClick={() => hideAllColumns(tableId, columns)}
             >
               {i18n.t("table:hide_all_columns")}
-            </a>
+            </button>
           </div>
         </div>
       </div>
