@@ -1,7 +1,8 @@
 {
-    "compilerOptions": {
-        "target": "es6"
-    },
-    "include": ["src/**/*"],
-    "baseUrl": "./src"
+  "compilerOptions": {
+    "target": "es6",
+    "experimentalDecorators": true
+  },
+  "include": ["src/**/*"],
+  "baseUrl": "./src"
 }
