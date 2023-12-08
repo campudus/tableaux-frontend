@@ -1,3 +1,5 @@
+/* eslint react/no-this-in-sfc: 0 */
+
 import { List, AutoSizer, WindowScroller } from "react-virtualized";
 import { translate } from "react-i18next";
 import { withRouter } from "react-router-dom";
