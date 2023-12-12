@@ -146,9 +146,12 @@ class Cell extends React.Component {
     if (!withRightClick) {
       this.props.closeCellContextMenu();
       if (modifiers.none) {
-        actions.clearMultiSelect();
+        actions.clearMultiselect();
       } else if (modifiers.mod) {
+        event.preventDefault();
         actions.toggleMultiselectCell({ cell });
+      } else if (modifiers.shift) {
+        event.preventDefault();
       }
     }
 
@@ -262,7 +265,7 @@ class Cell extends React.Component {
       <div
         style={this.props.style}
         className={cssClass}
-        onClick={this.cellClicked}
+        onMouseDownCapture={this.cellClicked}
         onContextMenu={this.rightClicked}
         tabIndex="1"
         onKeyDown={
