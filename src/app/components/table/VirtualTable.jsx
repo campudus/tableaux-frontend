@@ -279,23 +279,26 @@ export default class VirtualTable extends PureComponent {
     return (
       <Cell
         actions={actions}
-        value={value}
         allDisplayValues={tableView.displayValues}
-        displayValue={cell.displayValue}
-        cell={cell}
-        columns={columns}
         annotationState={annotationState}
-        focusTable={this.focusTable}
-        langtag={langtag}
         annotationsOpen={
           !!openAnnotations.cellId && openAnnotations.cellId === cell.id
         }
-        isExpandedCell={false}
-        toggleAnnotationPopup={this.setOpenAnnotations}
-        openCellContextMenu={this.openCellContextMenu}
+        cell={cell}
         closeCellContextMenu={this.props.closeCellContextMenu}
-        width={width}
+        columns={columns}
+        displayValue={cell.displayValue}
+        focusTable={this.focusTable}
+        isExpandedCell={false}
+        langtag={langtag}
+        openCellContextMenu={this.openCellContextMenu}
         rowIndex={rowIndex}
+        rows={this.props.rows}
+        selectedCell={this.props.selectedCell}
+        toggleAnnotationPopup={this.setOpenAnnotations}
+        value={value}
+        visibleColumns={this.props.visibleColumnOrdering}
+        width={width}
       />
     );
   };
@@ -322,23 +325,26 @@ export default class VirtualTable extends PureComponent {
           return (
             <Cell
               actions={actions}
-              key={`${langtag}-${key}`}
+              allDisplayValues={tableView.displayValues}
               annotationState={annotationsState}
-              column={column}
-              cell={cell}
-              langtag={langtag}
               annotationsOpen={
                 isPrimaryLang &&
                 !!openAnnotations.cellId &&
                 cell.id === openAnnotations.cellId
               }
-              isExpandedCell={!isPrimaryLang}
-              displayValue={displayValue}
-              allDisplayValues={tableView.displayValues}
-              value={cell.value}
-              toggleAnnotationPopup={this.setOpenAnnotations}
-              openCellContextMenu={this.openCellContextMenu}
+              cell={cell}
               closeCellContextMenu={this.props.closeCellContextMenu}
+              column={column}
+              displayValue={displayValue}
+              isExpandedCell={!isPrimaryLang}
+              key={`${langtag}-${key}`}
+              langtag={langtag}
+              openCellContextMenu={this.openCellContextMenu}
+              rows={this.props.rows}
+              selectedCell={this.props.selectedCell}
+              toggleAnnotationPopup={this.setOpenAnnotations}
+              value={cell.value}
+              visibleColumns={this.props.visibleColumnOrdering}
               width={width}
             />
           );
