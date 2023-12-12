@@ -137,7 +137,7 @@ const PlainMarkdownEditor = ({
   );
 };
 
-export default React.forwardRef(PlainMarkdownEditor);
+export default PlainMarkdownEditor;
 
 PlainMarkdownEditor.propTypes = {
   initialMarkdown: PropTypes.string,
