@@ -32,6 +32,7 @@ import ShortTextCell from "./text/ShortTextCell.jsx";
 import TextCell from "./text/TextCell.jsx";
 import StatusCell from "./status/StatusCell.jsx";
 import reduxActionHoc from "../../helpers/reduxActionHoc";
+import { getModifiers } from "../../helpers/modifierState";
 
 const mapStateToProps = (state, props) => {
   const { cell, langtag } = props;
@@ -144,10 +145,11 @@ class Cell extends React.Component {
 
     if (!withRightClick) {
       this.props.closeCellContextMenu();
-    }
-
-    if (modifiers.mod) {
-      actions.toggleMultiselectCell({ cell });
+      if (modifiers.none) {
+        actions.clearMultiSelect();
+      } else if (modifiers.mod) {
+        actions.toggleMultiselectCell({ cell });
+      }
     }
 
     // we select the cell when clicking or right clicking. Don't jump in edit mode when selected and clicking right

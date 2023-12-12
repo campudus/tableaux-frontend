@@ -831,7 +831,8 @@ const actionCreators = {
   toggleMultiselectCell: dispatchParamsSafelyFor(
     ["cell"],
     MultiSelect.TOGGLE_MULTISELECT_CELL
-  )
+  ),
+  clearMultiselect: dispatchParamsFor(MultiSelect.CLEAR_MULTISELECT)
 };
 
 export default actionCreators;
