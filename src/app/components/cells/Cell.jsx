@@ -140,9 +140,14 @@ class Cell extends React.Component {
   cellClickedWorker = (event, withRightClick) => {
     const { actions, cell, editing, selected, langtag } = this.props;
     const { table, column, row } = cell;
+    const modifiers = getModifiers(event);
 
     if (!withRightClick) {
       this.props.closeCellContextMenu();
+    }
+
+    if (modifiers.mod) {
+      actions.toggleMultiselectCell({ cell });
     }
 
     // we select the cell when clicking or right clicking. Don't jump in edit mode when selected and clicking right
