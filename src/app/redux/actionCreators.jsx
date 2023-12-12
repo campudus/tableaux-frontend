@@ -43,53 +43,53 @@ const {
 } = API_ROUTES;
 
 const {
-  TABLE_LOADING_DATA,
-  TABLE_DATA_LOADED,
-  TABLE_DATA_LOAD_ERROR,
-  TOGGLE_COLUMN_VISIBILITY,
-  COLUMNS_LOADING_DATA,
+  ADDITIONAL_ROWS_DATA_LOADED,
+  ALL_ROWS_DATA_LOADED,
+  CLEAN_UP,
   COLUMNS_DATA_LOADED,
   COLUMNS_DATA_LOAD_ERROR,
-  ALL_ROWS_DATA_LOADED,
-  ADDITIONAL_ROWS_DATA_LOADED,
+  COLUMNS_LOADING_DATA,
+  COLUMN_EDIT,
+  COLUMN_EDIT_ERROR,
+  COLUMN_EDIT_SUCCESS,
   DELETE_ROW,
-  SET_COLUMNS_VISIBLE,
-  HIDE_ALL_COLUMNS,
-  SET_CURRENT_TABLE,
   GENERATED_DISPLAY_VALUES,
-  START_GENERATING_DISPLAY_VALUES,
+  HIDE_ALL_COLUMNS,
+  SET_COLUMNS_VISIBLE,
+  SET_COLUMN_ORDERING,
   SET_CURRENT_LANGUAGE,
+  SET_CURRENT_TABLE,
   SET_DISPLAY_VALUE_WORKER,
   SET_FILTERS_AND_SORTING,
-  CLEAN_UP,
-  COLUMN_EDIT,
-  COLUMN_EDIT_SUCCESS,
-  COLUMN_EDIT_ERROR,
+  SET_GLOBAL_SETTINGS,
   SET_STATUS_INFO,
-  TABLE_NAME_EDIT,
-  TABLE_NAME_EDIT_SUCCESS,
-  TABLE_NAME_EDIT_ERROR,
   SET_USER_AUTHENTICATED,
-  SET_COLUMN_ORDERING,
-  SET_GLOBAL_SETTINGS
+  START_GENERATING_DISPLAY_VALUES,
+  TABLE_DATA_LOADED,
+  TABLE_DATA_LOAD_ERROR,
+  TABLE_LOADING_DATA,
+  TABLE_NAME_EDIT,
+  TABLE_NAME_EDIT_ERROR,
+  TABLE_NAME_EDIT_SUCCESS,
+  TOGGLE_COLUMN_VISIBILITY
 } = actionTypes;
 
 const {
-  TOGGLE_CELL_SELECTION,
-  TOGGLE_CELL_EDITING,
-  SET_PREVENT_CELL_DESELECTION,
-  TOGGLE_EXPANDED_ROW,
   COPY_CELL_VALUE_TO_CLIPBOARD,
-  RERENDER_TABLE
+  RERENDER_TABLE,
+  SET_PREVENT_CELL_DESELECTION,
+  TOGGLE_CELL_EDITING,
+  TOGGLE_CELL_SELECTION,
+  TOGGLE_EXPANDED_ROW
 } = actionTypes.tableView;
 
 const {
-  SHOW_TOAST,
+  CLOSE_OVERLAY,
   HIDE_TOAST,
   OPEN_OVERLAY,
+  REMOVE_OVERLAY,
   SET_OVERLAY_STATE,
-  CLOSE_OVERLAY,
-  REMOVE_OVERLAY
+  SHOW_TOAST
 } = actionTypes.overlays;
 
 const {
@@ -117,10 +117,22 @@ const {
   MEDIA_FILE_DELETE_ERROR
 } = actionTypes.media;
 
-const dispatchParamsFor = actionType => params => ({
-  ...params,
-  type: actionType
-});
+const MultiSelect = actionTypes.multiSelect;
+
+const dispatchParamsSafelyFor = (requiredParamNames, actionType) => params => {
+  requiredParamNames.forEach(name => {
+    if (!Object.keys(params).includes(name)) {
+      throw new Error(
+        `Can not create action ${actionType}, input misses param ${name}: ${JSON.stringify(
+          params
+        )}`
+      );
+    }
+  });
+  return { ...params, type: actionType };
+};
+
+const dispatchParamsFor = actionType => dispatchParamsSafelyFor([], actionType);
 
 const loadTables = () => {
   return {
@@ -815,7 +827,11 @@ const actionCreators = {
   setColumnOrdering,
   rerenderTable,
   loadGlobalSettings,
-  setGlobalSettings
+  setGlobalSettings,
+  toggleMultiselectCell: dispatchParamsSafelyFor(
+    ["cell"],
+    MultiSelect.TOGGLE_MULTISELECT_CELL
+  )
 };
 
 export default actionCreators;
