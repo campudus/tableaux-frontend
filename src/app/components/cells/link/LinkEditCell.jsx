@@ -1,66 +1,40 @@
-import { compose, withHandlers } from "recompose";
-import React from "react";
-import f from "lodash/fp";
-
 import PropTypes from "prop-types";
-
+import React, { useCallback } from "react";
 import { canUserChangeCell } from "../../../helpers/accessManagementHelper";
 import { isLocked } from "../../../helpers/annotationHelper";
-import { openLinkOverlay } from "./LinkOverlay.jsx";
-import { spy } from "../../../helpers/functools";
 import { withForeignDisplayValues } from "../../helperComponents/withForeignDisplayValues";
 import LinkLabelCell from "./LinkLabelCell.jsx";
-
-const withOverlayOpener = compose(
-  withHandlers({
-    catchScrolling: () => event => {
-      event && event.stopPropagation();
-    },
-    openOverlay: ({ cell, langtag, actions }) => () => {
-      if (canUserChangeCell(cell, langtag) && !isLocked(cell.row)) {
-        openLinkOverlay({ cell, langtag, actions });
-      }
-    }
-  }),
-  withForeignDisplayValues
-);
+import { openLinkOverlay } from "./LinkOverlay.jsx";
 
 const LinkEditCell = props => {
-  const {
-    cell,
-    langtag,
-    foreignDisplayValues,
-    value,
-    openOverlay,
-    catchScrolling
-  } = props;
+  const { cell, langtag, foreignDisplayValues, value, actions } = props;
 
+  const catchScrolling = useCallback(event => {
+    event && event.stopPropagation();
+  }, []);
+  const openOverlay = useCallback(() => {
+    if (canUserChangeCell(cell, langtag) && !isLocked(cell.row)) {
+      openLinkOverlay({ cell, langtag, actions });
+    }
+  }, [cell.id]);
   const displayValue = foreignDisplayValues || props.displayValue;
 
-  const links = f.isArray(value)
-    ? value.map((element, index) => (
-        <LinkLabelCell
-          key={element.id}
-          linkElement={element}
-          cell={cell}
-          langtag={langtag}
-          displayValue={displayValue[index]}
-          value={element}
-        />
-      ))
-    : spy(
-        [],
-        "Cell value was not array but " +
-          typeof cell.value +
-          " " +
-          JSON.stringify(cell.value)
-      );
+  const links = value.map((element, index) => (
+    <LinkLabelCell
+      key={element.id}
+      linkElement={element}
+      cell={cell}
+      langtag={langtag}
+      displayValue={displayValue[index]}
+      value={element}
+    />
+  ));
 
   return (
     <div
       className={"cell-content"}
       onScroll={catchScrolling}
-      onClick={openOverlay}
+      onMouseDown={openOverlay}
     >
       {canUserChangeCell(cell, langtag)
         ? [
@@ -80,4 +54,4 @@ LinkEditCell.propTypes = {
   editing: PropTypes.bool.isRequired
 };
 
-export default withOverlayOpener(LinkEditCell);
+export default withForeignDisplayValues(LinkEditCell);

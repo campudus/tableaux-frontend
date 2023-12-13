@@ -37,7 +37,8 @@ import { getModifiers } from "../../helpers/modifierState";
 const mapStateToProps = (state, props) => {
   const { cell, langtag } = props;
   const {
-    selectedCell: { selectedCell, editing }
+    selectedCell: { selectedCell, editing },
+    multiSelect
   } = state;
   const rowId = cell.row.id;
   const columnId = cell.column.id;
@@ -46,15 +47,23 @@ const mapStateToProps = (state, props) => {
     columnId === selectedCell.columnId &&
     langtag === selectedCell.langtag;
   const inSelectedRow =
-    rowId === selectedCell.rowId &&
-    (f.isEmpty(langtag) || langtag === selectedCell.langtag);
-  return { selected, editing: selected && editing, inSelectedRow };
+    f.map("id", multiSelect).includes(cell.id) ||
+    (rowId === selectedCell.rowId &&
+      (f.isEmpty(langtag) || langtag === selectedCell.langtag));
+  return {
+    selected,
+    editing: selected && editing,
+    inSelectedRow
+  };
 };
 
 const ExpandCorner = compose(
   branch(({ show }) => !show, renderNothing),
   withHandlers({
-    onClick: ({ actions: { toggleExpandedRow }, cell: { row } }) => event => {
+    onMouseDown: ({
+      actions: { toggleExpandedRow },
+      cell: { row }
+    }) => event => {
       event.stopPropagation();
       toggleExpandedRow({ rowId: row.id });
     }
@@ -139,24 +148,49 @@ class Cell extends React.Component {
     })(event);
 
   cellClickedWorker = (event, withRightClick) => {
-    const { actions, cell, editing, selected, langtag } = this.props;
+    const {
+      actions,
+      cell,
+      columns,
+      editing,
+      isExpandedCell,
+      langtag,
+      rows,
+      selected,
+      visibleColumns: visibleColumnIdces
+    } = this.props;
+    if (!editing) {
+      event.stopPropagation();
+    }
     const { table, column, row } = cell;
     const modifiers = getModifiers(event);
 
-    if (!withRightClick) {
+    if (withRightClick) {
+      event.preventDefault();
+      event.stopPropagation();
+      this.openCellContextMenu(event);
+    } else {
       this.props.closeCellContextMenu();
       if (modifiers.none) {
         actions.clearMultiselect();
-      } else if (modifiers.mod) {
+      } else if (!isExpandedCell && modifiers.mod) {
         event.preventDefault();
         actions.toggleMultiselectCell({ cell });
-      } else if (modifiers.shift) {
+      } else if (!isExpandedCell && modifiers.shift) {
         event.preventDefault();
+        actions.toggleMultiselectArea({
+          cell,
+          columns: visibleColumnIdces.map(idx => ({
+            ...columns[idx],
+            idx
+          })),
+          rows
+        });
       }
     }
 
     // we select the cell when clicking or right clicking. Don't jump in edit mode when selected and clicking right
-    if (!selected) {
+    if (!selected && modifiers.none) {
       actions.toggleCellSelection({
         columnId: column.id,
         rowId: row.id,
@@ -166,19 +200,6 @@ class Cell extends React.Component {
     } else if (!withRightClick && this.userCanEditValue()) {
       actions.toggleCellEditing({ row, cell, eventKey: event.key });
     }
-
-    if (withRightClick) {
-      event.preventDefault();
-      this.openCellContextMenu(event);
-    }
-
-    if (!withRightClick || editing) {
-      /*
-       Important to block the click listener of Table. This helps focusing the cell when clicked but prevents from scrolling
-       the table view when clicking on an element other than the cell.
-       */
-      event.stopPropagation();
-    }
   };
 
   rightClicked = event => {
@@ -187,11 +208,6 @@ class Cell extends React.Component {
 
   cellClicked = event => {
     this.cellClickedWorker(event);
-  };
-
-  onMouseDownHandler = e => {
-    // Prevents table mousedown handler, so we can select
-    e.stopPropagation();
   };
 
   componentDidCatch(error, info) {
@@ -265,7 +281,7 @@ class Cell extends React.Component {
       <div
         style={this.props.style}
         className={cssClass}
-        onMouseDownCapture={this.cellClicked}
+        onMouseDown={this.cellClicked}
         onContextMenu={this.rightClicked}
         tabIndex="1"
         onKeyDown={
@@ -275,7 +291,6 @@ class Cell extends React.Component {
               )
             : f.noop
         }
-        onMouseDown={this.onMouseDownHandler}
       >
         <CellKind
           table={table}

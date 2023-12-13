@@ -78,6 +78,9 @@ export default class VirtualTable extends PureComponent {
     this.divRef.style.left = event.clientX + "px";
   };
 
+  getSelectedCell = () =>
+    f.propOr({}, "selectedCell.selectedCell", store.getState());
+
   saveColWidths = index => {
     this.columnStartSize = null;
     if (index === this.getFixedColumnCount() - 1) {
@@ -294,7 +297,7 @@ export default class VirtualTable extends PureComponent {
         openCellContextMenu={this.openCellContextMenu}
         rowIndex={rowIndex}
         rows={this.props.rows}
-        selectedCell={this.props.selectedCell}
+        selectedCell={this.getSelectedCell()}
         toggleAnnotationPopup={this.setOpenAnnotations}
         value={value}
         visibleColumns={this.props.visibleColumnOrdering}
@@ -341,7 +344,7 @@ export default class VirtualTable extends PureComponent {
               langtag={langtag}
               openCellContextMenu={this.openCellContextMenu}
               rows={this.props.rows}
-              selectedCell={this.props.selectedCell}
+              selectedCell={this.getSelectedCell()}
               toggleAnnotationPopup={this.setOpenAnnotations}
               value={cell.value}
               visibleColumns={this.props.visibleColumnOrdering}
@@ -455,9 +458,7 @@ export default class VirtualTable extends PureComponent {
   };
 
   scrollToCell = () => {
-    const {
-      selectedCell: { selectedCell }
-    } = store.getState();
+    const selectedCell = this.getSelectedCell();
 
     const { rows, columns, visibleColumnOrdering } = this.props;
     const rowIndex = f.add(

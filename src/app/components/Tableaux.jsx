@@ -6,7 +6,7 @@ import i18n from "i18next";
 import PropTypes from "prop-types";
 
 import Overlays from "./overlay/Overlays";
-import ViewRenderer from "./ViewRenderer.jsx";
+import ViewRenderer from "./ViewRenderer";
 import resources from "../../locales/index";
 
 export default class Tableaux extends React.Component {
