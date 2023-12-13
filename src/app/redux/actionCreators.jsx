@@ -828,6 +828,10 @@ const actionCreators = {
   rerenderTable,
   loadGlobalSettings,
   setGlobalSettings,
+  toggleMultiselectArea: dispatchParamsSafelyFor(
+    ["cell", "columns", "rows"],
+    MultiSelect.TOGGLE_MULTISELECT_AREA
+  ),
   toggleMultiselectCell: dispatchParamsSafelyFor(
     ["cell"],
     MultiSelect.TOGGLE_MULTISELECT_CELL

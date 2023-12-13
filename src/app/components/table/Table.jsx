@@ -46,7 +46,7 @@ class Table extends PureComponent {
   }
 
   // Don't put this into state, deliberate antipattern to prevent unnecessary rerenders
-  selectedCellExpandedRow: null;
+  selectedCellExpandedRow = null;
 
   onMouseDownHandler = e => {
     // We don't prevent mouse down behaviour when focus is outside of table. This fixes the issue to close select boxes

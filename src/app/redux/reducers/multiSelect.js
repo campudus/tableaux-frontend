@@ -41,21 +41,49 @@ const whenClipboardNotEmpty = fn => (...args) => {
 
 const toggleMultiselectCell = (state = initialState, action, store) => {
   const { cell } = action;
-  const multiselect = f.isEmpty(state)
+  return f.isEmpty(state)
     ? f.uniqBy("id", [cell, findSelectedCell(store)])
     : toggleInArray(cell, f.prop("id"), state);
-
-  console.log({ multiselect });
-  return multiSelect;
 };
 
-const toggleMultiselectArea = (state = initialState, action, store) => {
-  const { cells } = action;
+const toggleMultiselectArea = (_state = initialState, action, store) => {
+  const { cell, columns, rows } = action;
+  const selectedCell = f.prop("selectedCell.selectedCell", store);
+
+  return f.isEmpty(selectedCell)
+    ? []
+    : getCellRectangle(columns, rows, selectedCell, cell);
+};
+
+const getCellRectangle = (columns, rows, selectedCell, cell) => {
+  const findOrderedIndices = (coll, ...ids) =>
+    ids.map(id => coll.findIndex(f.whereEq({ id }))).sort((a, b) => a - b);
+  const [startX, endX] = findOrderedIndices(
+    columns,
+    selectedCell.columnId,
+    cell.column.id
+  );
+  const [startY, endY] = findOrderedIndices(
+    rows,
+    selectedCell.rowId,
+    cell.row.id
+  );
+
+  const cells = [];
+  for (let y = startY; y <= endY; y++)
+    for (let x = startX; x <= endX; x++)
+      cells.push(rows[y].cells[columns[x].idx]);
+  console.log(
+    `${selectedCell.rowId},${selectedCell.columnId} -> ${cell.row.id},${cell.column.id}`,
+    `[${startX},${startY}] - [${endX},${endY}]`,
+    f.map("id", cells)
+  );
+  return cells;
 };
 
 const clearMultiSelect = () => initialState;
 
-export const multiSelect = selectReducer({
+export default selectReducer({
   [actionTypes.SET_CURRENT_TABLE]: clearMultiSelect,
   [Action.CLEAR_MULTISELECT]: clearMultiSelect,
   [Action.TOGGLE_MULTISELECT_AREA]: whenClipboardNotEmpty(
