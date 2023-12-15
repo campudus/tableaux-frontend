@@ -277,6 +277,7 @@ class TableView extends PureComponent {
     const pasteOriginCell = copySource.cell;
     const pasteOriginCellLang = copySource.langtag;
     const showResetTableViewButton = this.hasResettableChange();
+    const cellUrl = this.getCellUrl();
 
     // const rows = rowsCollection || currentTable.rows || {};
     // pass concatenated row ids on, so children will re-render on sort, filter, add, etc.
@@ -361,7 +362,7 @@ class TableView extends PureComponent {
         {this.renderTableOrSpinner()}
         <JumpSpinner isOpen={!!this.props.showCellJumpOverlay && !filtering} />
         <SearchOverlay isOpen={filtering} />
-        <Redirect to={this.getCellUrl()} />
+        {cellUrl !== location.pathname && <Redirect to={cellUrl} />}
       </div>
     );
   };
