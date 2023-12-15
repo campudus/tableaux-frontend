@@ -6,7 +6,7 @@ import {
   renderNothing,
   withHandlers
 } from "recompose";
-import React from "react";
+import React, { useCallback } from "react";
 import f from "lodash/fp";
 
 import PropTypes from "prop-types";
@@ -47,30 +47,30 @@ const mapStateToProps = (state, props) => {
     columnId === selectedCell.columnId &&
     langtag === selectedCell.langtag;
   const inSelectedRow =
-    f.map("id", multiSelect).includes(cell.id) ||
-    (rowId === selectedCell.rowId &&
-      (f.isEmpty(langtag) || langtag === selectedCell.langtag));
+    rowId === selectedCell.rowId &&
+    (f.isEmpty(langtag) || langtag === selectedCell.langtag);
+  const inMultiSelection = f.map("id", multiSelect).includes(cell.id);
   return {
     selected,
     editing: selected && editing,
+    inMultiSelection,
     inSelectedRow
   };
 };
 
-const ExpandCorner = compose(
-  branch(({ show }) => !show, renderNothing),
-  withHandlers({
-    onMouseDown: ({
-      actions: { toggleExpandedRow },
-      cell: { row }
-    }) => event => {
+const ExpandCorner = ({ show, actions, cell }) => {
+  const handleClick = useCallback(
+    event => {
       event.stopPropagation();
-      toggleExpandedRow({ rowId: row.id });
-    }
-  })
-)(props => (
-  <div className="needs-translation-other-language" onClick={props.onClick} />
-));
+      actions.toggleExpandedRow({ rowId: cell.row.id });
+    },
+    [cell.row.id]
+  );
+
+  return show ? (
+    <div className="needs-translation-other-language" onClick={handleClick} />
+  ) : null;
+};
 
 export const getAnnotationState = cell => {
   const flags = f.flow(
@@ -124,6 +124,7 @@ class Cell extends React.Component {
       cell.id !== nextCell.id ||
       this.props.selected !== nextProps.selected ||
       this.props.inSelectedRow !== nextProps.inSelectedRow ||
+      this.props.inMultiSelection !== nextProps.inMultiSelection ||
       this.props.editing !== nextProps.editing ||
       this.props.annotationsOpen !== nextProps.annotationsOpen ||
       !f.isEqual(
@@ -252,6 +253,7 @@ class Cell extends React.Component {
       langtag,
       selected,
       editing,
+      inMultiSelection,
       inSelectedRow,
       focusTable,
       toggleAnnotationPopup,
@@ -270,7 +272,8 @@ class Cell extends React.Component {
       selected: selected,
       editing: this.userCanEditValue() && editing,
       "in-selected-row": inSelectedRow,
-      "cell-disabled": cell.isReadOnly
+      "cell-disabled": cell.isReadOnly,
+      "in-multi-selection": inMultiSelection
     });
 
     const CellKind =

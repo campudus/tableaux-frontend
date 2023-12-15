@@ -14,10 +14,10 @@
     color: $color-text-medium-grey;
   }
 
-  &>:first-child {
+  & > :first-child {
     border-top: 1px solid $color-text-light-grey;
   }
-  &>:last-child {
+  & > :last-child {
     border-bottom: 1px solid $color-text-light-grey;
   }
 }
@@ -53,7 +53,8 @@
     font: inherit;
   }
 
-  .edit, .expand {
+  .edit,
+  .expand {
     width: 30px;
     height: 30px;
     line-height: 25px; // Suggested by Alex to center icon on his browser
@@ -101,11 +102,13 @@
     white-space: nowrap;
     width: 100%;
 
-    .grey-out, .grey-out input {
+    .grey-out,
+    .grey-out input {
       color: $color-text-medium-grey;
     }
 
-    input, textarea {
+    input,
+    textarea {
       outline: none;
       padding: 0;
       border: 0;
@@ -122,7 +125,9 @@
     }
   }
 
-  &.cell-shorttext, &.cell-text, &.cell-richtext {
+  &.cell-shorttext,
+  &.cell-text,
+  &.cell-richtext {
     .cell-content {
       white-space: pre; // let the user see white space issues in preview mode
     }
@@ -132,11 +137,14 @@
     flex: 1;
   }
 
-  &.editing.cell-currency, &.cell-attachment.selected, &.cell-link.selected {
-      height: auto;
+  &.editing.cell-currency,
+  &.cell-attachment.selected,
+  &.cell-link.selected {
+    height: auto;
   }
 
-  &.cell-concat, &.cell-group {
+  &.cell-concat,
+  &.cell-group {
     .cell-content {
       width: 100%;
     }
@@ -156,10 +164,18 @@
     align-items: center;
     z-index: 1;
 
-    .important { @include cell-flag-dot($color-important); }
-    .check-me { @include cell-flag-dot($color-checkme); }
-    .postpone { @include cell-flag-dot($color-postpone); }
-    .translation { @include cell-flag-dot($color-needs-translation); }
+    .important {
+      @include cell-flag-dot($color-important);
+    }
+    .check-me {
+      @include cell-flag-dot($color-checkme);
+    }
+    .postpone {
+      @include cell-flag-dot($color-postpone);
+    }
+    .translation {
+      @include cell-flag-dot($color-needs-translation);
+    }
   }
 
   .needs-translation-other-language {
@@ -170,7 +186,7 @@
     z-index: 1;
 
     &:before {
-      content: '';
+      content: "";
       position: absolute;
       right: 0;
       top: 0;
@@ -184,7 +200,11 @@
   &.selected {
     border: 1px solid $color-primary;
 
-    &.cell-link, &.cell-text, &.cell-attachment, &.cell-richtext, &.cell-currency {
+    &.cell-link,
+    &.cell-text,
+    &.cell-attachment,
+    &.cell-richtext,
+    &.cell-currency {
       border: 0;
       padding: 0;
 
@@ -203,28 +223,32 @@
       }
     }
 
-    &.cell-link, &.cell-attachment {
+    &.cell-link,
+    &.cell-attachment {
       .cell-content {
         white-space: normal;
       }
     }
 
-    &.cell-link, &.cell-attachment {
+    &.cell-link,
+    &.cell-attachment {
       &.cell-text {
         white-space: pre;
       }
     }
-
   }
 
   &.in-selected-row {
     background-color: $color-selected-row;
   }
+  &.in-multi-selection {
+    background-color: $color-selected-multi;
+  }
 
   &.editing {
-
     //Important for datepicker
-    &.cell-datetime, &.cell-date {
+    &.cell-datetime,
+    &.cell-date {
       .cell-content {
         overflow: visible;
       }
@@ -263,7 +287,6 @@
       display: inline-block;
     }
   }
-
 }
 
 .cell.editing .row-display-label.below {
