@@ -73,11 +73,6 @@ const getCellRectangle = (columns, rows, selectedCell, cell) => {
   for (let y = startY; y <= endY; y++)
     for (let x = startX; x <= endX; x++)
       cells.push(rows[y].cells[columns[x].idx]);
-  console.log(
-    `${selectedCell.rowId},${selectedCell.columnId} -> ${cell.row.id},${cell.column.id}`,
-    `[${startX},${startY}] - [${endX},${endY}]`,
-    f.map("id", cells)
-  );
   return cells;
 };
 
