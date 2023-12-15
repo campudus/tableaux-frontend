@@ -1,23 +1,23 @@
+import classNames from "classnames";
+import f from "lodash/fp";
+import PropTypes from "prop-types";
+import React, { useCallback } from "react";
 import {
   branch,
   compose,
   pure,
   renderComponent,
-  renderNothing,
   withHandlers
 } from "recompose";
-import React, { useCallback } from "react";
-import f from "lodash/fp";
-
-import PropTypes from "prop-types";
-import classNames from "classnames";
-
 import { ColumnKinds, Langtags } from "../../constants/TableauxConstants";
 import {
-  canUserChangeCell,
-  canUserChangeAnyCountryTypeCell
+  canUserChangeAnyCountryTypeCell,
+  canUserChangeCell
 } from "../../helpers/accessManagementHelper";
 import { isLocked } from "../../helpers/annotationHelper";
+import KeyboardShortcutsHelper from "../../helpers/KeyboardShortcutsHelper";
+import { getModifiers } from "../../helpers/modifierState";
+import reduxActionHoc from "../../helpers/reduxActionHoc";
 import AttachmentCell from "./attachment/AttachmentCell.jsx";
 import BooleanCell from "./boolean/BooleanCell";
 import CurrencyCell from "./currency/CurrencyCell.jsx";
@@ -25,14 +25,11 @@ import DateCell from "./date/DateCell";
 import DisabledCell from "./disabled/DisabledCell.jsx";
 import FlagIconRenderer from "./FlagIconRenderer";
 import IdentifierCell from "./identifier/IdentifierCell.jsx";
-import KeyboardShortcutsHelper from "../../helpers/KeyboardShortcutsHelper";
 import LinkCell from "./link/LinkCell.jsx";
 import NumericCell from "./numeric/NumericCell.jsx";
+import StatusCell from "./status/StatusCell.jsx";
 import ShortTextCell from "./text/ShortTextCell.jsx";
 import TextCell from "./text/TextCell.jsx";
-import StatusCell from "./status/StatusCell.jsx";
-import reduxActionHoc from "../../helpers/reduxActionHoc";
-import { getModifiers } from "../../helpers/modifierState";
 
 const mapStateToProps = (state, props) => {
   const { cell, langtag } = props;
