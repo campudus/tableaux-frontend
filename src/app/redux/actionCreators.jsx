@@ -7,6 +7,7 @@ import { FilterModes, Langtags } from "../constants/TableauxConstants";
 import { isLocked } from "../helpers/annotationHelper";
 import { makeRequest } from "../helpers/apiHelper";
 import API_ROUTES from "../helpers/apiRoutes";
+import { urlToTableDestination } from "../helpers/apiUrl";
 import { doto, mapIndexed } from "../helpers/functools";
 import {
   getStoredViewObject,
@@ -255,7 +256,7 @@ const loadAllRows = tableId => (dispatch, getState) => {
 
       if (anyIdChanged) {
         dispatch(
-          dispatchParamsFor(TOGGLE_CELL_SELECTION)({
+          toggleCellSelection({
             tableId: table.id,
             columnId: validColumnId,
             rowId: validRowId,
@@ -425,16 +426,6 @@ const loadTableView = (tableId, customFilters) => (dispatch, getState) => {
     };
 
     dispatch(setFiltersAndSorting(filters, sorting));
-
-    // store customFilters in localStorage for one navigation cycle
-    saveFilterSettings(tableId, {
-      sortColumnId: sortingReset ? null : sortColumnId,
-      sortValue: sortingReset ? null : sortValue,
-      filters: f.concat(
-        filterReset ? [] : storedUserFilters,
-        hasCustomFilters ? customFilters : []
-      )
-    });
   }
 
   if (!f.isEmpty(columnOrdering)) {
@@ -525,6 +516,12 @@ const createDisplayValueWorker = () => {
   return {
     type: SET_DISPLAY_VALUE_WORKER
   };
+};
+
+const toggleCellSelection = action => {
+  // update url without navigation
+  window.history.replaceState({}, null, urlToTableDestination(action));
+  return dispatchParamsFor(TOGGLE_CELL_SELECTION)(action);
 };
 
 const toggleCellEditingOrUnlockCell = action => {
@@ -777,16 +774,7 @@ const actionCreators = {
   setCurrentLanguage: setCurrentLanguage,
   addSkeletonColumns: dispatchParamsFor(COLUMNS_DATA_LOADED),
   addSkeletonRow: dispatchParamsFor(ADDITIONAL_ROWS_DATA_LOADED),
-  toggleCellSelection: data => {
-    const { rowId, columnId, tableId } = data;
-    const currentLang = f.split("/", window.location.href)[3];
-    const url =
-      `/${currentLang}/tables/${tableId}` +
-      (columnId ? `/columns/${columnId}` : "") +
-      (rowId ? `/rows/${rowId}` : "");
-    window.history.pushState({}, null, url);
-    return dispatchParamsFor(TOGGLE_CELL_SELECTION)(data);
-  },
+  toggleCellSelection,
   toggleCellEditing: toggleCellEditingOrUnlockCell,
   setPreventCellDeselection: dispatchParamsFor(SET_PREVENT_CELL_DESELECTION),
   toggleExpandedRow: dispatchParamsFor(TOGGLE_EXPANDED_ROW),
