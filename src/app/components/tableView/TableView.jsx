@@ -29,7 +29,6 @@ import TableauxConstants, {
 } from "../../constants/TableauxConstants";
 import applyFiltersAndVisibility from "./applyFiltersAndVisibility";
 import reduxActionHoc from "../../helpers/reduxActionHoc";
-import store from "../../redux/store";
 import { getStoredViewObject } from "../../helpers/localStorage";
 import { mapIndexed } from "../../helpers/functools";
 
@@ -235,22 +234,6 @@ class TableView extends PureComponent {
     navigate(history, path);
   };
 
-  getCellUrl = () => {
-    const { langtag, table } = this.props;
-    const {
-      selectedCell: {
-        selectedCell: { rowId, columnId }
-      }
-    } = store.getState();
-
-    return (
-      `/${langtag}` +
-      `/tables/${table.id}` +
-      (columnId ? `/columns/${columnId}` : "") +
-      (rowId ? `/rows/${rowId}` : "")
-    );
-  };
-
   render = () => {
     const {
       tables,
@@ -277,7 +260,6 @@ class TableView extends PureComponent {
     const pasteOriginCell = copySource.cell;
     const pasteOriginCellLang = copySource.langtag;
     const showResetTableViewButton = this.hasResettableChange();
-    const cellUrl = this.getCellUrl();
 
     // const rows = rowsCollection || currentTable.rows || {};
     // pass concatenated row ids on, so children will re-render on sort, filter, add, etc.
@@ -362,7 +344,6 @@ class TableView extends PureComponent {
         {this.renderTableOrSpinner()}
         <JumpSpinner isOpen={!!this.props.showCellJumpOverlay && !filtering} />
         <SearchOverlay isOpen={filtering} />
-        {cellUrl !== location.pathname && <Redirect to={cellUrl} />}
       </div>
     );
   };
