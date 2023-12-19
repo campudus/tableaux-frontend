@@ -34,16 +34,15 @@ class TableSettings extends React.Component {
     return (
       config.showTableDropdown && (
         <div id="table-settings-wrapper" onClick={this.toggleSettingsPopup}>
-          <a
+          <button
             id="table-settings"
             className={open ? "button active" : "button"}
             ref={tableSettings => {
               this.tableSettings = tableSettings;
             }}
-            href="#"
           >
             <i className={open ? "fa fa-angle-up" : "fa fa-angle-down"} />
-          </a>
+          </button>
           {open ? (
             <TableSettingsPopup
               table={this.props.table}

@@ -112,8 +112,7 @@ const AOFilterBarModePopup = pure(({ filterMode, setFilterMode }) => (
 ));
 
 const AOFilterModeItem = ({ setFilterMode, filterMode, itemMode, label }) => (
-  <a
-    href="#"
+  <button
     draggable={false}
     onClick={() => setFilterMode(itemMode)}
     className={
@@ -121,14 +120,13 @@ const AOFilterModeItem = ({ setFilterMode, filterMode, itemMode, label }) => (
     }
   >
     {i18n.t(label)}
-  </a>
+  </button>
 );
 
 const AOSortButton = props => {
   const { sortOrder, toggleSortOrder } = props;
   return (
-    <a
-      href="#"
+    <button
       className="attachment-overlay-sort-button"
       draggable={false}
       onClick={toggleSortOrder}
@@ -141,7 +139,7 @@ const AOSortButton = props => {
           <i className="fa fa-clock-o" />
         </i>
       )}
-    </a>
+    </button>
   );
 };
 

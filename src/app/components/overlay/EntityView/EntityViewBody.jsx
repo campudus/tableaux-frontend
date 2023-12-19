@@ -303,9 +303,9 @@ class EntityViewBody extends Component {
           <i className="fa fa-lock" />
           <span>{i18n.t("table:row-is-locked")}</span>
         </div>
-        <div className={buttonClass} onClick={this.unlockRowTemporary}>
-          <a href="#">{i18n.t("table:unlock-row")}</a>
-        </div>
+        <button className={buttonClass} onClick={this.unlockRowTemporary}>
+          {i18n.t("table:unlock-row")}
+        </button>
       </div>
     );
   };

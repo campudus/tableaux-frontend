@@ -53,16 +53,15 @@ const RevisionItem = props => {
               {revision.author}
             </div>
           </div>
-          <a
+          <button
             className="revision-item-header__revert-button"
-            href="#"
             onClick={revertHere}
           >
             <div className="revert-button__text">
               {i18n.t("history:revert")}
             </div>
             <i className="revert-button__icon fa fa-history" />
-          </a>
+          </button>
         </div>
       )}
       <div className="revision-item__content">

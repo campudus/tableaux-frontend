@@ -62,12 +62,12 @@ class Header extends PureComponent {
     const makeButton = (className, [text, fn, dontClose]) => {
       const execAndClose = this.wrapButtonFn(className, fn);
       return (
-        <a
+        <button
           className={"button " + className}
           onClick={dontClose ? fn || f.noop : execAndClose}
         >
           {text}
-        </a>
+        </button>
       );
     };
     const buttonsItem = f.isEmpty(buttonActions) ? null : (
@@ -86,20 +86,15 @@ class Header extends PureComponent {
 
     return (
       <div className={cssClass}>
-        <div className="close-button">
-          <a
-            href="#"
-            onClick={() => {
-              actions.closeOverlay(id);
-            }}
-          >
-            <SvgIcon
-              icon="cross"
-              containerClasses="color-white"
-              center={true}
-            />
-          </a>
-        </div>
+        <button
+          className="close-button"
+          onClick={() => {
+            actions.closeOverlay(id);
+          }}
+        >
+          <SvgIcon icon="cross" containerClasses="color-white" center={true} />
+        </button>
+
         <div className="labels">
           <div className="context-info">{context || "Action"}</div>
           <div className="title">{this.renderTitle()}</div>
@@ -118,16 +113,14 @@ export const SimpleHeader = props => {
   const { title, id, cssClass = "" } = props;
   return (
     <div className={"header-wrapper " + cssClass}>
-      <div className="close-button">
-        <a
-          href=""
-          onClick={() => {
-            store.dispatch(ReduxAction.closeOverlay(id));
-          }}
-        >
-          <SvgIcon icon="cross" containerClasses="color-white" />
-        </a>
-      </div>
+      <button
+        className="close-button"
+        onClick={() => {
+          store.dispatch(ReduxAction.closeOverlay(id));
+        }}
+      >
+        <SvgIcon icon="cross" containerClasses="color-white" />
+      </button>
       <div className="labels">
         <div className="title">{title}</div>
       </div>

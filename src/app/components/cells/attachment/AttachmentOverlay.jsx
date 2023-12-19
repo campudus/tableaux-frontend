@@ -59,10 +59,10 @@ const NewAttachmentOverlay = props => {
   const backButton =
     folder && folder.name !== "root" ? (
       <div className="back active" key={folder.id}>
-        <a onClick={() => navigateFolder(folder.parent)}>
+        <button onClick={() => navigateFolder(folder.parent)}>
           <i className="fa fa-chevron-left" />
           {i18n.t("media:folder_back")}
-        </a>
+        </button>
         <span className="folder-name">{folder.name}</span>
       </div>
     ) : folder ? (

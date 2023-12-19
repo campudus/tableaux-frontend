@@ -39,8 +39,8 @@ export const safelyDuplicateRow = ({
   rowId,
   langtag,
   cell,
-  successCallback,
-  errorCallback
+  onSuccess,
+  onError
 }) => async (dispatch, getState) => {
   const state = getState();
   const columns = f.prop(["columns", tableId, "data"], state);
@@ -86,9 +86,9 @@ export const safelyDuplicateRow = ({
       )
     );
 
-    successCallback && successCallback();
+    onSuccess && onSuccess();
   } catch (err) {
-    errorCallback && errorCallback(err);
+    onError && onError(err);
     console.error("While duplicating row:", err);
   }
 };

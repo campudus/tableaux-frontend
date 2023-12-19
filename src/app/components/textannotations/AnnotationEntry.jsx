@@ -48,11 +48,11 @@ const AnnotationEntry = props => {
       </div>
       <div className="info-column">
         {canDelete ? (
-          <a href="#" className="delete-button" onClick={confirm}>
+          <button className="delete-button" onClick={confirm}>
             <i className="fa fa-trash delete-icon" />
-          </a>
+          </button>
         ) : (
-          <a href="#" />
+          <div />
         )}
         <div className="number-label">{`#${idx}`}</div>
       </div>

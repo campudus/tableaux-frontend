@@ -138,7 +138,7 @@ class View extends PureComponent {
 
     const translationTag =
       isMyTranslationNeeded || isAnyTranslationNeeded ? (
-        <span
+        <button
           className="action-item translation"
           onClick={evt => {
             evt.stopPropagation();
@@ -148,14 +148,12 @@ class View extends PureComponent {
             });
           }}
         >
-          <a className="content">
-            {isMyTranslationNeeded
-              ? i18n.t("table:translations.this_translation_needed", {
-                  langtag
-                })
-              : i18n.t("table:translations.translation_needed")}
-          </a>
-        </span>
+          {isMyTranslationNeeded
+            ? i18n.t("table:translations.this_translation_needed", {
+                langtag
+              })
+            : i18n.t("table:translations.translation_needed")}
+        </button>
       ) : null;
 
     const tagList = ["important", "check-me", "postpone"]

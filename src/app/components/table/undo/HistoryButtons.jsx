@@ -9,26 +9,24 @@ const HistoryButtons = ({ canUndo, canRedo, undo, redo, active }) => {
 
   return (
     <div className="history-buttons">
-      <a
+      <button
         className={`${buttonBaseClass} undo-button ${
           canUndo ? "" : "disabled"
         }`}
         onClick={canUndo ? undo : f.noop}
-        href="#"
         draggable={false}
       >
         <i className="fa fa-undo" />
-      </a>
-      <a
+      </button>
+      <button
         className={`${buttonBaseClass} redo-button ${
           canRedo ? "" : "disabled"
         }`}
         onClick={canRedo ? redo : f.noop}
-        href="#"
         draggable={false}
       >
         <i className="fa fa-repeat" />
-      </a>
+      </button>
     </div>
   );
 };

@@ -123,10 +123,10 @@ class TableSwitcherButton extends React.PureComponent {
     });
     return (
       <div id="tableswitcher-wrapper" className={cssClass}>
-        <a href="#" className={buttonClass} onClick={this.togglePopup}>
+        <button className={buttonClass} onClick={this.togglePopup}>
           <i className="fa fa-columns" />
           {tableDisplayName}
-        </a>
+        </button>
         {this.state.isOpen ? this.renderPopup() : null}
       </div>
     );

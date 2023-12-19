@@ -45,10 +45,10 @@ const RowButton = branch(
   props => f.getOr(false, ["table", "type"], props) === "settings",
   renderNothing
 )(({ t, addNewRow }) => (
-  <a href="#" className="button new-row-inner" onClick={addNewRow}>
+  <button className="button new-row-inner" onClick={addNewRow}>
     <i className="fa fa-plus-circle" />
     <span>{t("add_new_row")}</span>
-  </a>
+  </button>
 ));
 
 const NewRowButton = props => {

@@ -20,7 +20,7 @@ const LinkLabelCell = props => {
     : retrieveTranslation(langtag, displayValue);
 
   return (
-    <a href="#" className="link-label">
+    <button className="link-label">
       <div className="label-text">
         {value.hiddenByRowPermissions ? (
           <PermissionDenied />
@@ -30,7 +30,7 @@ const LinkLabelCell = props => {
           linkName
         )}
       </div>
-    </a>
+    </button>
   );
 };
 

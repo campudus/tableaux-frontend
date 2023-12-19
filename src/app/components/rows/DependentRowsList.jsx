@@ -70,12 +70,13 @@ const DependentRowsList = props => {
 
       return (
         <div className="item" key={idx}>
-          <div className="item-header">
-            <a href="#" onClick={() => window.open(linkToTable, "_blank")}>
-              {tableName}
-              <SvgIcon icon="tablelink" containerClasses="color-primary" />
-            </a>
-          </div>
+          <button
+            className="item-header"
+            onClick={() => window.open(linkToTable, "_blank")}
+          >
+            {tableName}
+            <SvgIcon icon="tablelink" containerClasses="color-primary" />
+          </button>
           <LinkList
             showToggleButton={false}
             langtag={langtag}

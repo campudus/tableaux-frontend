@@ -13,9 +13,9 @@ const FolderList = props => {
               key={subfolder.id}
               onClick={() => navigateFolder(subfolder.id)}
             >
-              <a>
+              <button>
                 <i className="icon fa fa-folder-open" /> {subfolder.name}
-              </a>
+              </button>
             </li>
           );
         })}

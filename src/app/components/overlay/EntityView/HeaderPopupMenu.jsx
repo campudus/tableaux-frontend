@@ -37,10 +37,10 @@ class HeaderPopupMenu extends Component {
       this.setState({ open: false });
     };
     return (
-      <a className="entry" onClick={clickHandler} href="#">
+      <button className="entry" onClick={clickHandler}>
         <i className={`fa fa-${icon}`} />
         <div>{i18n.t(title)}</div>
-      </a>
+      </button>
     );
   };
 
@@ -129,18 +129,17 @@ class HeaderPopupMenu extends Component {
 
     return (
       <div className="header-popup-wrapper">
-        <div className={buttonClass} onMouseLeave={this.handleMouseLeave}>
-          <a
-            href="#"
-            onClick={event => {
-              event.stopPropagation();
-              this.setState({ open: !open });
-              this.cancelClosingTimer();
-            }}
-          >
-            <SvgIcon icon="vdots" containerClasses="color-white" />
-          </a>
-        </div>
+        <button
+          className={buttonClass}
+          onMouseLeave={this.handleMouseLeave}
+          onClick={event => {
+            event.stopPropagation();
+            this.setState({ open: !open });
+            this.cancelClosingTimer();
+          }}
+        >
+          <SvgIcon icon="vdots" containerClasses="color-white" />
+        </button>
         {row && open ? (
           <div className="popup-wrapper">
             <div
@@ -200,6 +199,7 @@ class HeaderPopupMenu extends Component {
                 title: "table:duplicate_row",
                 fn: () =>
                   initiateDuplicateRow({
+                    table,
                     tableId,
                     row,
                     langtag,

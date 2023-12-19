@@ -27,7 +27,7 @@ const ContextMenuItem = ({ iconName, title, onClick, closeMenu, children }) => {
   return (
     <div className="column-context-menu__item" onMouseDown={handleClick}>
       <i className={"column-context-menu-item__icon fa " + iconName} />
-      <div className="column-context-menut-item__title">{i18n.t(title)}</div>
+      <div className="column-context-menu-item__title">{i18n.t(title)}</div>
       {children}
     </div>
   );

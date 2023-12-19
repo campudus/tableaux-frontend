@@ -12,13 +12,12 @@ const Popup = ({ langtag, handleLangtagSwitch }) => (
     {Langtags.filter(lt => lt !== langtag).map(lt => {
       return (
         <div key={lt} className="language-switcher__menu-item">
-          <a
-            href="#"
+          <button
             className="language-switcher__switch-language-button"
             onClick={handleLangtagSwitch(lt)}
           >
             {getLanguageOrCountryIcon(lt, "language")}
-          </a>
+          </button>
         </div>
       );
     })}

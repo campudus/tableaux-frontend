@@ -356,13 +356,12 @@ class LinkOverlay extends PureComponent {
               {!canUserSeeTable(column.toTable) ? (
                 getColumnDisplayName(column, langtag)
               ) : (
-                <a
+                <button
                   className="table-link"
-                  href="#"
                   onClick={() => openInNewTab(targetTable)}
                 >
                   {getColumnDisplayName(column, langtag)}
-                </a>
+                </button>
               )}
             </span>
             <LinkStatus rowResults={rowResults} maxLinks={maxLinks} />

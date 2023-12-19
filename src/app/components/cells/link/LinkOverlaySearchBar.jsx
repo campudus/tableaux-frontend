@@ -44,13 +44,9 @@ const SearchModePopup = ({
           });
           return (
             <div className={itemClass} key={id}>
-              <a
-                className="menu-item-inner"
-                href="#"
-                onClick={updateFilter(id)}
-              >
+              <button className="menu-item-inner" onClick={updateFilter(id)}>
                 {name}
-              </a>
+              </button>
             </div>
           );
         })}
@@ -129,10 +125,10 @@ const SearchBar = ({
         onKeyDown={handleInputKeys}
         onChange={handleChange}
       />
-      <a className="popup-button" href="#" onClick={togglePopup}>
+      <button className="popup-button" onClick={togglePopup}>
         <i className="fa fa-search" />
         <i className="fa fa-angle-down" />
-      </a>
+      </button>
       <FilterPopup
         closePopup={closePopup}
         popupOpen={popupOpen}

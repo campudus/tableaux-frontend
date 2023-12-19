@@ -47,26 +47,22 @@ class RowSwitcher extends PureComponent {
     return (
       <div className="row-switcher">
         {this.getNextRow(Directions.UP) ? (
-          <div
+          <button
             className="button clickable"
             onClick={this.switchRow(Directions.UP)}
           >
-            <a href="#">
-              <i className="fa fa-angle-left" />
-            </a>
-          </div>
+            <i className="fa fa-angle-left" />
+          </button>
         ) : (
           <div className="button dummy" />
         )}
         {this.getNextRow(Directions.DOWN) ? (
-          <div
+          <button
             className="button clickable"
             onClick={this.switchRow(Directions.DOWN)}
           >
-            <a href="#">
-              <i className="fa fa-angle-right" />
-            </a>
-          </div>
+            <i className="fa fa-angle-right" />
+          </button>
         ) : (
           <div className="button dummy" />
         )}

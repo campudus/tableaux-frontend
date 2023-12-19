@@ -92,6 +92,8 @@
 
 .revision-item--hovered {
   .revision-item-header__revert-button {
+    padding: 0;
+    font: inherit;
     display: flex;
   }
 

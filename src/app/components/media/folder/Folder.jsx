@@ -46,12 +46,12 @@ class Folder extends Component {
 
     if (name !== "root") {
       currentFolder = (
-        <a href="#" onClick={this.backFolderHandler}>
+        <button onClick={this.backFolderHandler}>
           <span className="back">
             <i className="fa fa-chevron-left" />
             {currentFolder}
           </span>
-        </a>
+        </button>
       );
     } else {
       currentFolderClass.push("is-root");

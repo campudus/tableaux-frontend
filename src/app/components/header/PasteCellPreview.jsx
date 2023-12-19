@@ -17,11 +17,12 @@ import store from "../../redux/store";
 import actions from "../../redux/actionCreators";
 
 const ClearCellButton = props => (
-  <div className="clear-pasted-button button neutral">
-    <a href="#" onClick={props.clearCellClipboard}>
-      {i18n.t("header:clipboard.clear")}
-    </a>
-  </div>
+  <button
+    className="clear-pasted-button button neutral"
+    onClick={props.clearCellClipboard}
+  >
+    {i18n.t("header:clipboard.clear")}
+  </button>
 );
 
 const FocusCellButton = withHandlers({
@@ -42,11 +43,12 @@ const FocusCellButton = withHandlers({
     }
   }
 })(props => (
-  <div className="focus-cell-button button positive">
-    <a href="#" onClick={props.focusCell}>
-      {i18n.t("header:clipboard.focus")}
-    </a>
-  </div>
+  <button
+    className="focus-cell-button button positive"
+    onClick={props.focusCell}
+  >
+    {i18n.t("header:clipboard.focus")}
+  </button>
 ));
 
 const cellRenderers = {

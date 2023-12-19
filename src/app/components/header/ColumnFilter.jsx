@@ -53,10 +53,10 @@ class ColumnFilter extends React.Component {
     });
     return (
       <div id="column-filter-wrapper" className={cssClass}>
-        <a href="#" className={buttonClass} onClick={this.togglePopup}>
+        <button className={buttonClass} onClick={this.togglePopup}>
           <i className="fa fa-eye" />
           {nHidden > 0 ? <span className="infotext">{message}</span> : null}
-        </a>
+        </button>
         {open ? (
           <ColumnFilterPopup
             langtag={langtag}
