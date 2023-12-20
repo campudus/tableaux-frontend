@@ -188,8 +188,6 @@ class Table extends PureComponent {
               table={table}
               tables={tables}
               langtag={langtag}
-              selectedCell={(tableView && tableView.selectedCell) || {}}
-              selectedCellEditing={(tableView && tableView.editiong) || false}
               expandedRowIds={tableView.expandedRowIds}
               fullyLoaded={this.props.fullyLoaded}
               openCellContextMenu={this.showRowContextMenu}

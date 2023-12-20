@@ -453,9 +453,6 @@ export default class VirtualTable extends PureComponent {
     }
   }
 
-  isSelectedCellValid = selectedCell => {
-    return !f.isNil(selectedCell.rowId) && !f.isNil(selectedCell.columnId);
-  };
 
   scrollToCell = () => {
     const selectedCell = this.getSelectedCell();
@@ -545,9 +542,6 @@ export default class VirtualTable extends PureComponent {
       expandedRowIds,
       columns,
       columnKeys,
-      selectedCell,
-      selectedCellEditing,
-      selectedCellExpandedRow,
       langtag,
       visibleColumnOrdering
     } = this.props;
@@ -556,13 +550,6 @@ export default class VirtualTable extends PureComponent {
 
     const columnCount = f.size(visibleColumnOrdering) + 1;
     const rowCount = f.size(rows) + 2; // one for headers, one for button line
-
-    const selectedCellKey = this.isSelectedCellValid(selectedCell)
-      ? `${f.prop("rowId", this.selectedCell)}-${f.prop(
-          "colId",
-          this.selectedCell
-        )}-${selectedCellEditing}-${selectedCellExpandedRow}`
-      : "";
 
     const resizeBarClass = showResizeBar
       ? "resize-bar"
@@ -602,7 +589,6 @@ export default class VirtualTable extends PureComponent {
                 fixedRowCount={1}
                 width={width}
                 height={height}
-                selectedCell={selectedCellKey}
                 expandedRows={expandedRowIds}
                 openAnnotations={!!openAnnotations && openAnnotations.cellId}
                 scrollToRow={safelyPassIndex(rowIndex)}
