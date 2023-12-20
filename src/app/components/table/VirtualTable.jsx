@@ -337,6 +337,7 @@ export default class VirtualTable extends PureComponent {
               closeCellContextMenu={this.props.closeCellContextMenu}
               column={column}
               displayValue={displayValue}
+              focusTable={this.focusTable}
               isExpandedCell={!isPrimaryLang}
               key={`${langtag}-${key}`}
               langtag={langtag}
