@@ -382,7 +382,7 @@ export function setNextSelectedCell(direction) {
         langtag: newSelectedCellExpandedRow
       });
     }
-    this.scrollToCell();
+    this.forceUpdate();
   }
 }
 
