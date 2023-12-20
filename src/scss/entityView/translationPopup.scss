@@ -51,7 +51,7 @@ $arrow-height: 50px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 8px;
+      padding: 3px 8px;
       border-radius: 3px;
       width: 60px;
       border: 1px solid $color-primary-lighter;
@@ -82,15 +82,12 @@ $arrow-height: 50px;
     }
 
     .toggle-button {
+      @include button-with-icon();
+      width: auto;
       font-size: 7px;
-      a {
-        @include button-with-icon();
-      }
-      &:hover {
-        background-color: transparent;
-        svg {
-          fill: $color-text-medium-grey;
-        }
+
+      &:hover svg {
+        fill: $color-text-medium-grey;
       }
     }
 
@@ -108,7 +105,8 @@ $arrow-height: 50px;
 
     .pseudo-header {
       flex: 0 0 auto;
-      display: flex;
+      display: grid;
+      grid-template-columns: 50px 1fr auto;
       height: $pseudo-header-height;
       align-items: center;
       font-weight: bold;
@@ -150,18 +148,13 @@ $arrow-height: 50px;
       }
 
       .pseudo-header__close-button {
-        @include clickable-svg-icon
-      }
-
-      a {
-        padding: 8px 8px;
+        @include button-with-icon();
+        width: auto;
+        padding: 8px;
+        
         &:hover svg {
           fill: $color-text-medium-grey;
         }
-      }
-
-      div {
-        padding-right: 20px;
       }
     }
 

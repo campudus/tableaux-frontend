@@ -80,10 +80,10 @@ class ItemPopupMenu extends Component {
       this.closePopup
     );
     return (
-      <a className="entry" href="#" onClick={clickHandler}>
+      <button className="entry" onClick={clickHandler}>
         <i className={classes || `fa fa-${icon}`} />
         <div>{value ? i18n.t(title, { langtag: value }) : i18n.t(title)}</div>
-      </a>
+      </button>
     );
   };
 
@@ -224,15 +224,13 @@ class ItemPopupMenu extends Component {
 
     return (
       <div className={wrapperClass}>
-        <div
+        <button
           className={buttonClass}
           onMouseLeave={leaveItemPopupButton}
           onMouseDown={popupOpen ? f.noop : this.props.funcs.openItemPopup}
         >
-          <a href="#">
-            <SvgIcon icon="vdots" />
-          </a>
-        </div>
+          <SvgIcon icon="vdots" />
+        </button>
         {popupOpen ? (
           <MenuPopup
             popupClass={popupClass}

@@ -42,6 +42,8 @@
 }
 
 .action-item {
+    @include button-with-icon();
+    width: auto;
     display: flex;
     justify-content: space-around;
     align-items: center;
@@ -56,10 +58,6 @@
     font-weight: normal;
     margin-right: 1em;
     cursor: pointer;
-
-    a {
-      @include button-with-icon();
-    }
 
     &.translation {
       background-color: $color-needs-translation;
@@ -353,24 +351,20 @@
     height: 100%;
     position: relative;
     border-radius: 3px;
+    @include button-with-icon();
+    
     &.clickable:hover {
       color: $color-text-medium-grey;
-    }
-
-    a {
-      @include button-with-icon();
     }
   }
 }
 
 // Entry popup
 .overlay .overlay-content .content-items .item.has-mouse-pointer .entry-popup-wrapper .popup-button { // stack all the selectors!
-  a {
-    border: 1px solid transparentize($color-primary, 0.5);
-    .svg-icon {
-      svg {
-        fill: $color-primary;
-      }
+  border: 1px solid transparentize($color-primary, 0.5);
+  .svg-icon {
+    svg {
+      fill: $color-primary;
     }
   }
 }
@@ -395,6 +389,10 @@
   position: relative;
   display: inline-flex;
   align-items: center;
+  font: inherit;
+  color: inherit;
+  text-transform: uppercase;
+  padding: 0;
 
   .svg-icon {
     height: 12px;
@@ -409,43 +407,34 @@
     left: -40px;
 
     .popup-button {
+      @include button-with-icon();
       position: relative;
       height: 30px;
       width: 30px;
-
-      a {
-        position: absolute;
-        background-color: transparent;
-        color: $color-primary;
-        border-radius: 3px;
-        @include button-with-icon();
-
-        div {
-          flex: 1;
-        }
-
-        svg {
-          fill: transparent;
-        }
+      background-color: transparent;
+      color: $color-primary;
+      border-radius: 3px;
+        
+      div {
+        flex: 1;
       }
 
+      svg {
+        fill: transparent;
+      }
+     
       &:hover, &.is-open {
-        a {
-          background-color: $color-primary;
-          svg {
-            fill: $color-white;
-          }
+        background-color: $color-primary;
+        svg {
+          fill: $color-white;
         }
       }
 
       &.is-open {
-        a {
-          @include rounded-upper-borders;
-        }
+        @include rounded-upper-borders;
+     
         &.menu-is-right {
-          a {
-            border-radius: 3px 0 0 3px;
-          }
+          border-radius: 3px 0 0 3px;
         }
       }
     }
@@ -492,14 +481,15 @@
     }
   }
   .button {
+    @include button-with-icon();
+    width: auto;
+    color: inherit;
     padding: 0.5em 1em;
     border: 1px solid $color-text-light-grey;
     border-radius: 3px;
     position: relative;
     display: block;
-    a {
-      @include button-with-icon();
-    }
+
     &:hover {
       color: $color-primary-contrast-text;
       background-color: $color-primary;
@@ -600,35 +590,29 @@
       justify-content: center;
 
       .popup-button {
+        @include button-with-icon();
         position: relative;
         width: 31px;
         height: 31px;
+        background-color: transparent;
+        color: $color-primary-contrast-text;
+        border: 1px solid transparentize($color-text-medium-grey, 0.5);
+        border-radius: 3px;
 
-        a {
-          @include button-with-icon();
-          background-color: transparent;
-          color: $color-primary-contrast-text;
-          border: 1px solid transparentize($color-text-medium-grey, 0.5);
-          border-radius: 3px;
-
-          .svg-icon {
-            flex: 1;
-            max-width: none;
-          }
+        .svg-icon {
+          flex: 1;
+          max-width: none;
         }
+     
 
         &:hover, &.is-open {
-          a {
-            border-color: $color-primary;
-            background-color: $color-primary;
-            color: $color-primary-contrast-text;
-          }
+          border-color: $color-primary;
+          background-color: $color-primary;
+          color: $color-primary-contrast-text;
         }
 
         &.is-open {
-          a {
-            @include rounded-upper-borders;
-          }
+          @include rounded-upper-borders;
         }
       }
 

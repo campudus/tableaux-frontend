@@ -9,25 +9,24 @@ const FileItem = translate(["media", "common"])(props => {
   return (
     <div className="file-wrapper" style={style}>
       <div className={isLinked ? "file is-linked" : "file"}>
-        <a onClick={toggleAttachment} className={"overlay-table-row"}>
+        <button onClick={toggleAttachment} className={"overlay-table-row"}>
           <i className="icon fa fa-file" />
           <span>{title}</span>
           {isLinked ? <SvgIcon icon="cross" /> : <SvgIcon icon="check" />}
-        </a>
+        </button>
         <div className="media-options">
-          <a className="file-link" href="#" onClick={() => window.open(url)}>
+          <button className="file-link" onClick={() => window.open(url)}>
             <i className="icon fa fa-external-link" />
             {i18n.t("media:show_file")}
-          </a>
-          <a
+          </button>
+          <button
             className="change-file"
             alt="edit"
-            href="#"
             onClick={() => window.open(editorUrl)}
           >
             <i className="icon fa fa-pencil-square-o" />
             {i18n.t("media:change_file")}
-          </a>
+          </button>
         </div>
       </div>
     </div>

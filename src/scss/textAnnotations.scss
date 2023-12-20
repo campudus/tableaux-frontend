@@ -132,13 +132,14 @@ $annotation-popup-width: 300px;
       justify-content: space-between;
 
       .delete-button {
+        color: inherit;
         padding: 15px;
         &:hover .delete-icon {
           color: $color-primary;
         }
       }
 
-      div {
+      .number-label {
         position: absolute;
         right: 15px;
         bottom: 15px;

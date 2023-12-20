@@ -39,13 +39,13 @@ const RootButton = props => {
     );
   return (
     <div className="breadcrumb-wrapper">
-      <a href="#" onClick={closeAllButRoot}>
+      <button onClick={closeAllButRoot}>
         <div className="context">{context}</div>
         <div className="title">
           <i className="fa fa-long-arrow-left" />
           {titleToDisplay}
         </div>
-      </a>
+      </button>
     </div>
   );
 };

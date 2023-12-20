@@ -114,15 +114,15 @@
       box-sizing: border-box;
     }
 
-    a.popup-button {
+    button.popup-button {
       position: absolute;
-      top: -7px;
+      top: 0;
       right: 0;
-      width: 31px;
+      width: 40px;
       height: 31px;
       display: flex;
       flex-direction: row;
-      justify-content: center;
+      justify-content: space-between;
       align-items: center;
       padding: 8px;
       color: $color-text-medium-grey;
@@ -136,7 +136,8 @@
       box-shadow: 0 5px 10px 0 $color-text-light-grey;
       .menu-item {
         position: relative;
-        a {
+        button {
+          color: inherit;
           display: block;
           width: 100%;
           padding: 12px;

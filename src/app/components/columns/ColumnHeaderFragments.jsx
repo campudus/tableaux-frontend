@@ -24,8 +24,7 @@ export const DescriptionTooltip = branch(
 
 export const ContextMenuButton = branch(props => props.isConcat, renderNothing)(
   props => (
-    <a
-      href="#"
+    <button
       className={props.contextMenuClass}
       draggable={false}
       onClick={props.toggleContextMenu}

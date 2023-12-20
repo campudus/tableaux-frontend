@@ -27,12 +27,11 @@ const HeaderWithLangTabs = ({ setLangtag, selectedLang, flag }) => (
   <DefaultHeader flag={flag}>
     {f.map(
       langtag => (
-        <a
+        <button
           key={langtag}
           className={classNames("language-tab", {
             active: langtag === selectedLang
           })}
-          href="#"
           draggable={false}
           onClick={event => {
             event.preventDefault();
@@ -42,7 +41,7 @@ const HeaderWithLangTabs = ({ setLangtag, selectedLang, flag }) => (
           <div className="language-label">
             {doto(langtag, f.toLower, f.takeRight(2), f.join(""))}
           </div>
-        </a>
+        </button>
       ),
       f.tail(Langtags) // TODO: tail() can be removed once we decided how to visualise needs_translation_other_langs for primary
     )}

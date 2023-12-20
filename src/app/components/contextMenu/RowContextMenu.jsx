@@ -312,8 +312,7 @@ class RowContextMenu extends React.Component {
 
   mkItem = (action, label, icon, classes = "") => {
     return (
-      <a
-        href="#"
+      <button
         onClick={f.compose(
           this.closeRowContextMenu,
           action
@@ -321,7 +320,7 @@ class RowContextMenu extends React.Component {
       >
         <i className={`fa fa-${icon} ${classes}`} />
         <div className="item-label">{this.props.t(label)}</div>
-      </a>
+      </button>
     );
   };
 

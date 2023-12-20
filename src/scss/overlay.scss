@@ -159,21 +159,11 @@ $dist-from-top: 20px;
       grid-template-rows: $vspacing 1fr;
       -ms-grid-rows: $vspacing 1fr;
 
-      a {
-        display: flex;
-        width: 100%;
-        height: 100%;
-        justify-content: center;
-        align-items: center;
-      }
-
       .close-button {
+        @include button-with-icon();
+
         .svg-icon {
           width: 1em;
-
-          .a {
-            fill: inherit;
-          }
         }
         &:hover svg {
           fill: $color-text-medium-grey;
@@ -584,6 +574,7 @@ $dist-from-top: 20px;
     }
 
     .expand-button {
+      width: 100%;
       display: block;
       text-align: center;
       text-transform: uppercase;
@@ -650,7 +641,7 @@ $dist-from-top: 20px;
   border-top-right-radius: $overlay-border-radius;
   overflow: hidden;
 
-  a {
+  button {
     padding: 20px;
     display: block;
     height: 100%;

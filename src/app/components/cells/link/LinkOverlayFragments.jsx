@@ -171,8 +171,8 @@ export const SwitchSortingButton = compose(
 )(props => {
   const { switchSortMode, sortIcons, sortOrder } = props;
   return (
-    <a href="#" className="sort-mode-button" onClick={switchSortMode}>
+    <button className="sort-mode-button" onClick={switchSortMode}>
       <i className={sortIcons[sortOrder]} />
-    </a>
+    </button>
   );
 });

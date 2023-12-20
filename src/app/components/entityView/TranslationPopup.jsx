@@ -60,13 +60,12 @@ const LanguageView = props => {
 
   return (
     <div className={wrapperClass}>
-      <div className={`item-header ${isMain ? "main" : ""}`}>
-        <a className="switch-language-icon" href="#" onClick={switchLanguage}>
-          <div className="label">
-            {getLanguageOrCountryIcon(langtag, "language")}
-          </div>
-        </a>
-      </div>
+      <button
+        className={`item-header ${isMain ? "main" : ""}`}
+        onClick={switchLanguage}
+      >
+        {getLanguageOrCountryIcon(langtag, "language")}
+      </button>
       {f.isEmpty(f.trim(value)) && !f.isArray(cell.value) ? (
         <div className="item-content">
           <div className="content-box">
@@ -78,11 +77,9 @@ const LanguageView = props => {
           <div className="content-box">{displayCell(cell, langtag)}</div>
         </div>
       )}
-      <div className="toggle-button">
-        <a href="#" onClick={toggleExpand}>
-          <SvgIcon icon="cross" />
-        </a>
-      </div>
+      <button className="toggle-button" onClick={toggleExpand}>
+        <SvgIcon icon="cross" />
+      </button>
     </div>
   );
 };
@@ -206,26 +203,27 @@ class TranslationPopup extends PureComponent {
     return (
       <div className="translation-view">
         <div className="pseudo-header">
-          <a
+          <button
             className="pseudo-header__close-button"
-            href="#"
             onClick={() => setTranslationView({ show: false })}
           >
-            <SvgIcon icon="cross" />
-          </a>
+            <SvgIcon
+              icon="cross"
+              containerClasses="color-white"
+              center={true}
+            />
+          </button>
           <div className="title">{title}</div>
-          <div
+          <button
             className="toggle-all-button"
             onClick={this.setAllTranslations(isAnyCollapsed)}
           >
-            <a href="#">
-              {i18n.t(
-                isAnyCollapsed
-                  ? "table:translations.expand_all"
-                  : "table:translations.collapse_all"
-              )}
-            </a>
-          </div>
+            {i18n.t(
+              isAnyCollapsed
+                ? "table:translations.expand_all"
+                : "table:translations.collapse_all"
+            )}
+          </button>
         </div>
         {this.renderLangSelector()}
         <div className="content-items">

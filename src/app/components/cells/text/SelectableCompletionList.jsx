@@ -57,14 +57,13 @@ const CompletionItem = compose(
     style={virtualizedStyle}
     onMouseEnter={handleSelection}
   >
-    <a
-      href="#"
+    <button
       className={`completion-item ${isSelected ? "selected" : ""}`}
       draggable={false}
       onMouseDownCapture={handleClick}
     >
       <div className="completion-item-label">{value}</div>
-    </a>
+    </button>
   </div>
 ));
 

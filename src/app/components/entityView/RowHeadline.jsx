@@ -63,36 +63,33 @@ class RowHeadline extends React.Component {
     return (
       <BasicHeadline
         {...this.props}
-        columName={
+        columnName={
           toTableVisible ? (
-            <a
+            <button
               className="title-wrapper"
-              href="#"
               onClick={() => window.open(url, "_blank")}
             >
               {colName}
 
               <SvgIcon icon="tablelink" containerClasses="color-primary" />
-            </a>
+            </button>
           ) : (
             <div className="title-wrapper">{colName}</div>
           )
         }
       >
         {thisUserCantEdit ? (
-          <a
+          <button
             className=" button--disabled neutral"
-            href="#"
             ref={el => {
               funcs.register(el);
             }}
           >
             {i18n.t("table:edit_links", { title: colName })}
-          </a>
+          </button>
         ) : (
-          <a
+          <button
             className="column-icon button"
-            href="#"
             onClick={() => openLinkOverlay({ cell, langtag, actions })}
             ref={el => {
               funcs.register(el);
@@ -100,7 +97,7 @@ class RowHeadline extends React.Component {
           >
             <SvgIcon icon="plus" containerClasses="color-white" />
             {i18n.t("table:edit_links", { title: colName })}
-          </a>
+          </button>
         )}
       </BasicHeadline>
     );
@@ -129,19 +126,17 @@ class RowHeadline extends React.Component {
     return (
       <BasicHeadline {...this.props}>
         {thisUserCantEdit ? (
-          <a
+          <button
             className="button neutral column-icon"
-            href="#"
             ref={el => {
               funcs.register(el);
             }}
           >
             {i18n.t("table:edit_attachments")}
-          </a>
+          </button>
         ) : (
-          <a
+          <button
             className="button column-icon"
-            href="#"
             onClick={this.openAttachmentOverlay}
             ref={el => {
               funcs.register(el);
@@ -149,7 +144,7 @@ class RowHeadline extends React.Component {
           >
             <SvgIcon icon="plus" containerClasses="color-white" />
             {i18n.t("table:edit_attachments")}
-          </a>
+          </button>
         )}
       </BasicHeadline>
     );
@@ -163,9 +158,8 @@ class RowHeadline extends React.Component {
 
   mkRichtextHeader = () => (
     <BasicHeadline {...this.props}>
-      <a
+      <button
         className="column-icon button"
-        href=""
         onClick={() =>
           openMarkdownEditor({
             cell: this.props.cell,
@@ -175,7 +169,7 @@ class RowHeadline extends React.Component {
         }
       >
         {i18n.t("table:open-markdown-editor")}
-      </a>
+      </button>
     </BasicHeadline>
   );
 

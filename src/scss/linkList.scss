@@ -98,6 +98,8 @@
 
   .table-link {
     color: $color-primary;
+    font: inherit;
+    padding: 0;
   }
 }
 

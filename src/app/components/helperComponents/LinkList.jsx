@@ -163,12 +163,12 @@ const LinkList = props => {
     <div className="link-list">
       {ListRenderer}
       {canExpand ? (
-        <a className="expand-button" href="#" onClick={toggleExpand}>
+        <button className="expand-button" onClick={toggleExpand}>
           <i className={expanded ? "fa fa-angle-up" : "fa fa-angle-down"} />
           {expanded
             ? i18n.t("table:show_less")
             : i18n.t("table:show_all_items", { nItems: nLinks })}
-        </a>
+        </button>
       ) : null}
     </div>
   );

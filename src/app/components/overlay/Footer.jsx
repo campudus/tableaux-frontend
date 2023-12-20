@@ -30,12 +30,12 @@ class Footer extends Component {
       );
 
       const makeButton = (className, [text, fn]) => (
-        <a
+        <button
           className={"button " + className}
           onClick={this.wrapButtonFn(className, fn)}
         >
           {text}
-        </a>
+        </button>
       );
 
       const buttonsItem = (
