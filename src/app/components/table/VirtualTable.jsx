@@ -359,9 +359,10 @@ export default class VirtualTable extends PureComponent {
     const {
       table: { id, type },
       table,
-      actions: { addEmptyRow, showToast },
+      actions: { addEmptyRow, showToast, toggleCellSelection },
       rows,
-      columns
+      columns,
+      langtag
     } = this.props;
     const hasStatusColumn = columns.find(c => c.kind === ColumnKinds.status);
     const rowButtonColumn = hasStatusColumn ? 2 : 1;
@@ -372,8 +373,14 @@ export default class VirtualTable extends PureComponent {
     ) {
       return (
         <AddNewRowButton
-          onAdd={() => {
-            addEmptyRow(id);
+          onAdd={async () => {
+            const { result: newRow } = await addEmptyRow(id);
+            toggleCellSelection({
+              langtag,
+              tableId: id,
+              rowId: newRow.id
+            });
+            this.forceUpdate();
           }}
           rows={rows}
           showToast={showToast}
