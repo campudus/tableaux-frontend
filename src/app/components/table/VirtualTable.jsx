@@ -45,10 +45,8 @@ export default class VirtualTable extends PureComponent {
     super(props);
     this.virtualTableRef = createRef();
     this.keyboardRecentlyUsedTimer = null;
-    this.didInitialCellScroll = false;
     this.state = {
       openAnnotations: {},
-      scrolledCell: {},
       newRowAdded: false,
       showResizeBar: false,
       columnWidths: {}
@@ -375,7 +373,6 @@ export default class VirtualTable extends PureComponent {
         <AddNewRowButton
           onAdd={() => {
             addEmptyRow(id);
-            this.jumpToLastRow;
           }}
           rows={rows}
           showToast={showToast}
@@ -445,54 +442,29 @@ export default class VirtualTable extends PureComponent {
       maybe(this.multiGrid).method("invalidateCellSizeAfterRender");
     }
     if (this.props.rerenderTable !== next.rerenderTable) {
-      this.scrollToCell();
-
       const view = this.getStoredView();
       this.setState({ columnWidths: view.columnWidths || {} });
       maybe(this.multiGrid).method("invalidateCellSizeAfterRender");
     }
   }
 
-
-  scrollToCell = () => {
-    const selectedCell = this.getSelectedCell();
-
+  getScrollInfo = () => {
     const { rows, columns, visibleColumnOrdering } = this.props;
-    const rowIndex = f.add(
-      1,
-      f.findIndex(f.matchesProperty("id", selectedCell.rowId), rows)
-    );
+    const { rowId, columnId, align } = this.getSelectedCell();
+
+    const rowIndex = f.findIndex(f.matchesProperty("id", rowId), rows);
     const columnIndex = f.compose(
       f.get("orderIdx"),
-      f.find(({ id }) => id === selectedCell.columnId),
+      f.find(({ id }) => id === columnId),
       mapIndexed((obj, orderIdx) => ({ ...obj, orderIdx })),
       f.map(index => ({ id: f.get("id", columns[index]), idx: index }))
     )(visibleColumnOrdering);
 
-    const grid = this.multiGrid._bottomRightGrid;
-    const shouldScroll =
-      !f.inRange(
-        grid._renderedRowStartIndex,
-        grid._renderedRowStopIndex,
-        rowIndex - 1
-      ) ||
-      (!f.inRange(
-        grid._renderedColumnStartIndex,
-        grid._renderedColumnStopIndex,
-        columnIndex - 1
-      ) &&
-        columnIndex !== 0);
-
-    if (shouldScroll) {
-      this.setState({
-        scrolledCell: {
-          columnIndex: columnIndex + 1,
-          rowIndex,
-          align: selectedCell.align,
-          scrolledCell: selectedCell
-        }
-      });
-    }
+    return {
+      columnIndex: columnIndex + 1,
+      rowIndex: rowIndex + 1,
+      align
+    };
   };
 
   storeGridElement = node => {
@@ -507,14 +479,6 @@ export default class VirtualTable extends PureComponent {
   }
 
   componentDidUpdate(prev) {
-    if (
-      !this.didInitialCellScroll &&
-      this.multiGrid._bottomRightGrid &&
-      this.props.finishedLoading
-    ) {
-      this.didInitialCellScroll = true;
-      this.scrollToCell();
-    }
     // jump one row down if a new one was created from keyboardnavigation
     if (this.state.newRowAdded && f.size(prev.rows) < f.size(this.props.rows)) {
       tableNavigationWorker.setNextSelectedCell.call(this, Directions.DOWN);
@@ -527,13 +491,6 @@ export default class VirtualTable extends PureComponent {
     this.focusTable();
   }
 
-  jumpToLastRow = () => {
-    const { rows } = this.props;
-    this.setState({
-      scrolledCell: { rowIndex: f.size(rows) }
-    });
-  };
-
   divRef = null;
 
   render() {
@@ -545,8 +502,8 @@ export default class VirtualTable extends PureComponent {
       langtag,
       visibleColumnOrdering
     } = this.props;
-    const { openAnnotations, scrolledCell, showResizeBar } = this.state;
-    const { columnIndex, rowIndex, align } = scrolledCell;
+    const { openAnnotations, showResizeBar } = this.state;
+    const { rowIndex, columnIndex, align } = this.getScrollInfo();
 
     const columnCount = f.size(visibleColumnOrdering) + 1;
     const rowCount = f.size(rows) + 2; // one for headers, one for button line
