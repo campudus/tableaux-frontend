@@ -269,7 +269,7 @@ class Cell extends React.Component {
       selected: selected,
       editing: this.userCanEditValue() && editing,
       "in-selected-row": inSelectedRow,
-      "cell-disabled": cell.isReadOnly,
+      "cell-disabled": cell.isReadOnly || !this.userCanEditValue(),
       "in-multi-selection": inMultiSelection
     });
 
