@@ -8,6 +8,23 @@ var keyMirror = require("keymirror");
 let languagetags;
 let _config = {};
 
+const ColumnKinds = keyMirror({
+  shorttext: null,
+  richtext: null,
+  text: null,
+  link: null,
+  numeric: null,
+  boolean: null,
+  concat: null,
+  attachment: null,
+  datetime: null,
+  currency: null,
+  date: null,
+  group: null,
+  integer: null,
+  status: null
+});
+
 const grudConstants = {
   Directions: keyMirror({
     DOWN: null,
@@ -16,25 +33,16 @@ const grudConstants = {
     UP: null
   }),
 
-  // Lowercase on purpose. Reflects exact API naming
-  ColumnKinds: keyMirror({
-    shorttext: null,
-    richtext: null,
-    text: null,
-    link: null,
-    numeric: null,
-    boolean: null,
-    concat: null,
-    attachment: null,
-    datetime: null,
-    currency: null,
-    date: null,
-    group: null,
-    integer: null,
-    status: null
+  TableType: keyMirror({
+    taxonomy: null,
+    settings: null,
+    default: null
   }),
 
-  ImmutableColumnKinds: ["status"],
+  // Lowercase on purpose. Reflects exact API naming
+  ColumnKinds,
+
+  ImmutableColumnKinds: [ColumnKinds.status, ColumnKinds.concat],
 
   LanguageType: keyMirror({
     country: null
