@@ -1,6 +1,10 @@
 import f from "lodash/fp";
 
-import { Langtags, ImmutableColumnKinds } from "../constants/TableauxConstants";
+import {
+  Langtags,
+  ImmutableColumnKinds,
+  TableType
+} from "../constants/TableauxConstants";
 import { memoizeWith, unless } from "./functools";
 import { noAuthNeeded } from "./authenticate";
 import store from "../redux/store";
@@ -63,6 +67,11 @@ const getPermission = pathToPermission =>
     lookUpPermissions
   );
 
+const isSettingsTable = table => table.type === TableType.settings;
+const isSettingsKey = cell =>
+  isSettingsTable(cell.table) &&
+  (cell.column.name === "key" || cell.column.name === "displayKey");
+
 // (cell | {tableId: number, columnId: number}) -> (langtag | nil) -> boolean
 export const canUserChangeCell = f.curry((cellInfo, langtag) => {
   const { kind } = cellInfo;
@@ -72,7 +81,11 @@ export const canUserChangeCell = f.curry((cellInfo, langtag) => {
     ? editCellValue
     : f.isPlainObject(editCellValue) && editCellValue[langtag];
 
-  return !f.contains(kind, ImmutableColumnKinds) && (allowed || noAuthNeeded()); // this special case is not caught by ALLOW_ANYTHING
+  return (
+    !isSettingsKey(cellInfo) &&
+    !f.contains(kind, ImmutableColumnKinds) &&
+    (allowed || noAuthNeeded())
+  ); // this special case is not caught by ALLOW_ANYTHING
 });
 
 export const canUserChangeAnyCountryTypeCell = cellInfo => {
