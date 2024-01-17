@@ -31,7 +31,7 @@ const _lookUpPermissions = params => {
     const state = store.getState();
     const tables = state.tables;
     const columns = state.columns[tblId];
-    const rows = (tblId && state.rows[tblId].data) || {};
+    const rows = f.propOr({}, `rows.${tblId}.data`, state);
 
     const lookUpTable = id => f.find(f.propEq(["data", "id"], id), tables);
     const missingColumnIds = id => f.isNil(id) || f.isNil(tblId);
