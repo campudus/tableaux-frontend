@@ -13,7 +13,10 @@ import {
   RowCreator,
   UnlinkedRows
 } from "./LinkOverlayFragments";
-import { canUserSeeTable } from "../../../helpers/accessManagementHelper";
+import {
+  canUserCreateRow,
+  canUserSeeTable
+} from "../../../helpers/accessManagementHelper";
 import { getColumnDisplayName } from "../../../helpers/multiLanguage";
 import { loadAndOpenEntityView } from "../../overlay/EntityViewOverlay";
 import {
@@ -391,7 +394,10 @@ class LinkOverlay extends PureComponent {
         />
         <RowCreator
           langtag={langtag}
-          canAddLinks={this.canAddLink()}
+          canAddLinks={
+            this.canAddLink() &&
+            canUserCreateRow({ tableId: targetTable.tableId })
+          }
           cell={cell}
           shiftUp={noForeignRows && !loading}
           updateRowResults={this.updateRowResults}
