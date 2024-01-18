@@ -545,6 +545,7 @@ class FilterPopup extends React.Component {
           clearFilters={this.clearFilter}
           filters={filters}
           sorting={sorting}
+          langtag={this.props.langtag}
         />
 
         <FilterPresetList

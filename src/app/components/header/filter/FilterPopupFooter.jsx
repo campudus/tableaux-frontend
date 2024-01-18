@@ -4,11 +4,17 @@ import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Actions from "../../../redux/actionCreators";
 
-const FilterPopupFooter = ({ canApplyFilters, applyFilters, clearFilters }) => {
+const FilterPopupFooter = ({
+  canApplyFilters,
+  applyFilters,
+  clearFilters,
+  langtag
+}) => {
   return (
     <div className="description-row">
       <p className="info">
         <DefaultFooter
+          langtag={langtag}
           applyFilters={applyFilters}
           clearFilters={clearFilters}
           canApplyFilters={canApplyFilters}
@@ -18,17 +24,24 @@ const FilterPopupFooter = ({ canApplyFilters, applyFilters, clearFilters }) => {
   );
 };
 
-const DefaultFooter = ({ clearFilters, canApplyFilters, applyFilters }) => {
+const DefaultFooter = ({
+  clearFilters,
+  canApplyFilters,
+  applyFilters,
+  langtag
+}) => {
   const dispatch = useDispatch();
   const tableId = useSelector(state => state.tableView.currentTable);
   const handleApplyFilters = React.useCallback(() => {
     if (canApplyFilters) {
-      dispatch(Actions.toggleCellSelection({ select: false, tableId }));
+      dispatch(
+        Actions.toggleCellSelection({ select: false, tableId, langtag })
+      );
       applyFilters();
     } else {
       clearFilters();
     }
-  });
+  }, [langtag, tableId]);
   return (
     <>
       <button
