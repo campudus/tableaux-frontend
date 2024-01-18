@@ -34,14 +34,13 @@ const withFiltersAndVisibility = Component => props => {
   );
 
   const visibleRows = useMemo(() => {
-    const filteredRows = filterRows(props).visibleRows;
-    const visibleRowIds = new Set(filteredRows);
-    const mustFilter = props.filters?.length > 0;
-    return mustFilter
-      ? rows?.filter(
-          (row, idx) => row.id === selectedCell.rowId || visibleRowIds.has(idx)
-        ) ?? []
-      : rows;
+    const filteredRowIDs = maybeAddNullable(
+      selectedCell.rowId
+        ? rows?.findIndex(row => row.id === selectedCell.rowId)
+        : undefined,
+      filterRows(props).visibleRows ?? []
+    );
+    return filteredRowIDs.map(idx => rows[idx]);
   }, [
     arrayToKey(props.visibleRows),
     rows,
