@@ -1,147 +1,102 @@
-import React from "react";
-import { compose, withPropsOnChange } from "recompose";
-import getFilteredRows, { completeRowInformation } from "../table/RowFilters";
-import store from "../../redux/store";
 import f from "lodash/fp";
+import React, { useEffect, useMemo } from "react";
+import { useSelector } from "react-redux";
 import { ColumnKinds } from "../../constants/TableauxConstants";
+import DVWorkerCtl from "../../helpers/DisplayValueWorkerControls";
+import { maybe } from "../../helpers/functools";
 import * as t from "../../helpers/transduce";
+import getFilteredRows, { completeRowInformation } from "../table/RowFilters";
 
-import { mapIndexed } from "../../helpers/functools";
-
-const applyFiltersAndVisibility = function(ComposedComponent) {
-  return class FilteredTableView extends React.Component {
-    applyColumnVisibility = () => {
-      const { columns, visibleColumns, colsWithMatches } = this.props;
-
-      const applyVisibility = (columns, visibleArray) =>
-        f.map(
-          column =>
-            f.assoc(
-              "visible",
-              f.includes(column.id, visibleArray) || column.id === 0,
-              column
-            ),
-          columns
-        );
-
-      return applyVisibility(
-        columns,
-        f.isEmpty(colsWithMatches) ? visibleColumns : colsWithMatches
-      );
-    };
-
-    updateColumnVisibility = (visibleRows, columnsWithVisibility) =>
-      visibleRows.map(
-        f.update(
-          "cells",
-          mapIndexed((cell, idx) =>
-            f.assoc("column", columnsWithVisibility[idx], cell)
-          )
-        )
-      );
-
-    render() {
-      const {
-        tables, // all tables
-        rows, // all rows with cell values
-        columns, // all columns without visibility information
-        allDisplayValues,
-        actions,
-        startedGeneratingDisplayValues,
-        table,
-        langtag,
-        finishedLoading,
-        columnOrdering,
-        visibleColumns
-      } = this.props;
-
-      const sortedVisibleColumns = getSortedVisibleColumns(
-        columnOrdering,
-        visibleColumns,
-        columns
-      );
-      // Start displayValue worker if neccessary
-      if (
-        !f.isEmpty(columns) &&
-        f.isNil(allDisplayValues[table.id]) &&
-        !startedGeneratingDisplayValues &&
-        finishedLoading
-      ) {
-        const { generateDisplayValues } = actions;
-        generateDisplayValues(rows, columns, table.id, langtag);
-      }
-
-      const canRenderTable = f.every(f.negate(f.isNil), [
-        tables,
-        rows,
-        columns
-      ]);
-
-      const getSelectedCell = () => {
-        const {
-          selectedCell: { selectedCell }
-        } = store.getState();
-        return selectedCell;
-      };
-
-      const hasJumpTarget = () => {
-        const selectedCell = getSelectedCell();
-        return f.every(f.negate(f.isNil), [
-          selectedCell.columnId,
-          selectedCell.rowId
-        ]);
-      };
-
-      const jumpTargetIn = rows => {
-        const selectedCell = getSelectedCell();
-        return f.any(f.propEq("id", selectedCell.rowId), rows);
-      };
-      const showCellJumpOverlay =
-        !finishedLoading && hasJumpTarget() && !jumpTargetIn(rows);
-
-      if (canRenderTable) {
-        const columnsWithVisibility = this.applyColumnVisibility();
-        return (
-          <ComposedComponent
-            {...{
-              ...this.props,
-              columns: columnsWithVisibility,
-              visibleColumns: f.flow(
-                f.filter("visible"),
-                f.map("id"),
-                f.join(";")
-              )(columnsWithVisibility),
-              rows: f.map(rowIndex => rows[rowIndex], this.props.visibleRows),
-              visibleRows: this.props.visibleRows,
-              canRenderTable,
-              showCellJumpOverlay,
-              visibleColumnOrdering: sortedVisibleColumns,
-              columnOrdering: columnOrdering
-            }}
-          />
-        );
-      } else {
-        return (
-          <ComposedComponent
-            {...{ ...this.props, canRenderTable, showCellJumpOverlay }}
-          />
-        );
-      }
+const withFiltersAndVisibility = Component => props => {
+  const { tables, rows, columns, colsWithMatches } = props;
+  const shouldLaunchDisplayValueWorker = DVWorkerCtl.shouldStartForTable(props);
+  useEffect(() => {
+    if (shouldLaunchDisplayValueWorker) {
+      DVWorkerCtl.startForTable(props);
     }
-  };
+  }, [shouldLaunchDisplayValueWorker]);
+
+  const selectedCell = useSelector(state => state.selectedCell?.selectedCell);
+  const visibleColumnIds = maybeAddNullable(
+    selectedCell?.columnId,
+    f.isEmpty(colsWithMatches) ? props.visibleColumns : colsWithMatches
+  );
+
+  const sortedVisibleColumns = useMemo(
+    () =>
+      getSortedVisibleColumns(props.columnOrdering, visibleColumnIds, columns),
+    [arrayToKey(f.map("id", columns)), arrayToKey(visibleColumnIds)]
+  );
+
+  const visibleColumns = useMemo(
+    () => addColumnVisibility(columns, visibleColumnIds),
+    [sortedVisibleColumns]
+  );
+
+  const visibleRows = useMemo(() => {
+    const filteredRows = filterRows(props).visibleRows;
+    const visibleRowIds = new Set(filteredRows);
+    const mustFilter = props.filters?.length > 0;
+    return mustFilter
+      ? rows?.filter(
+          (row, idx) => row.id === selectedCell.rowId || visibleRowIds.has(idx)
+        ) ?? []
+      : rows;
+  }, [
+    arrayToKey(props.visibleRows),
+    rows,
+    props.filters,
+    props.sorting,
+    f.isEmpty(props.allDisplayValues[props.table.id])
+  ]);
+
+  const visibleRowIDs = useMemo(() => f.map("id", visibleRows), [visibleRows]);
+
+  const hasRowJumpTarget = isNotNil(selectedCell.rowId);
+  const canRenderTable = f.every(f.negate(f.isNil), [tables, rows, columns]);
+  const showCellJumpOverlay =
+    !props.finishedLoading &&
+    hasRowJumpTarget &&
+    !f.find(row => row.id === selectedCell.rowId);
+
+  if (canRenderTable) {
+    return (
+      <Component
+        {...{
+          ...props,
+          columns: visibleColumns,
+          rows: visibleRows,
+          visibleRows: visibleRowIDs,
+          canRenderTable,
+          showCellJumpOverlay,
+          visibleColumnOrdering: sortedVisibleColumns,
+          columnOrdering: props.columnOrdering,
+          visibleColumns: arrayToKey(visibleColumnIds)
+        }}
+      />
+    );
+  } else {
+    return <Component {...{ ...props, canRenderTable, showCellJumpOverlay }} />;
+  }
 };
 
-const tableOrFiltersChanged = (props, nextProps) => {
-  if (!props || !nextProps) {
-    return false;
-  }
-  return (
-    f.size(props.rows) !== f.size(nextProps.rows) || // rows got initialized
-    (f.isEmpty(props.displayValues) && !f.isEmpty(nextProps.displayValues)) || // displayValues got initialized
-    !f.isEqual(props.sorting, nextProps.sorting) ||
-    !f.isEqual(props.filters, nextProps.filters)
-  );
-};
+const shouldColumnBeVisible = (column, visibleColumnIds) =>
+  f.includes(column.id, visibleColumnIds) || column.id === 0;
+const addColumnVisibility = (columns = [], visibleColumnIds) =>
+  columns.map(column => ({
+    ...column,
+    visible: shouldColumnBeVisible(column, visibleColumnIds)
+  }));
+const maybeAddNullable = (el, coll) =>
+  maybe(el)
+    .map(el => [...coll, el])
+    .map(f.uniq)
+    .getOrElse(coll);
+const arrayToKey = coll =>
+  Array.from(coll ?? [])
+    .sort()
+    .join(",");
+const isNotNil = f.negate(f.isNil);
 
 const listToSet = (...fs) => list => {
   const into = (set, item) => set.add(item);
@@ -180,17 +135,16 @@ const getSortedVisibleColumns = (columnOrdering, visibleColumns, columns) => {
   )(columnOrdering);
 };
 
-const filterRows = props => {
-  const {
-    filters,
-    sorting,
-    rows,
-    table,
-    langtag,
-    columns,
-    allDisplayValues,
-    actions: { setColumnsVisible }
-  } = props;
+const filterRows = ({
+  filters,
+  sorting,
+  rows,
+  table,
+  langtag,
+  columns,
+  allDisplayValues,
+  actions: { setColumnsVisible }
+}) => {
   const nothingToFilter = f.isEmpty(sorting) && f.isEmpty(filters);
   if (f.isNil(rows) || f.isEmpty(allDisplayValues) || nothingToFilter) {
     return {
@@ -224,7 +178,4 @@ const filterRows = props => {
   return { visibleRows, filtering: false };
 };
 
-export default compose(
-  withPropsOnChange(tableOrFiltersChanged, filterRows),
-  applyFiltersAndVisibility
-);
+export default withFiltersAndVisibility;
