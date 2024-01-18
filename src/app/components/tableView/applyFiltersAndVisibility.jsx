@@ -86,10 +86,9 @@ const addColumnVisibility = (columns = [], visibleColumnIds) =>
     ...column,
     visible: shouldColumnBeVisible(column, visibleColumnIds)
   }));
-const maybeAddNullable = (el, coll) =>
-  maybe(el)
-    .map(el => [el, ...coll])
-    .map(f.uniq)
+const maybeAddNullable = (element, coll) =>
+  maybe(element)
+    .map(el => (coll.includes(el) ? coll : [el, ...coll]))
     .getOrElse(coll);
 const arrayToKey = coll =>
   Array.from(coll ?? [])
