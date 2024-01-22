@@ -155,7 +155,7 @@ export const getUpdatedCellValueToSet = (
     ColumnKinds.status
   ];
   const mergeCellValues = () =>
-    !column.multilanguage || f.contains(column.kind, unmergeableTypes)
+    !column?.multilanguage || f.contains(column?.kind, unmergeableTypes)
       ? newValue
       : merge(oldValue, newValue);
   return isRollback ? oldValue : mergeCellValues();
