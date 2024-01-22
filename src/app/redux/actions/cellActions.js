@@ -68,26 +68,29 @@ export const changeCellValue = action => (dispatch, getState) => {
   const mainLangtagChanged = !f.isNil(
     f.prop(`newValue.${DefaultLangtag}`, action)
   );
-  return !action.dontClear &&
+  if (
+    !action.dontClear &&
     mainLangtagChanged &&
-    mustClearCell({ column, oldValue: action.oldValue, newValue })
-    ? showClearCellDialog({ ...action, cell })
-    : dispatch(
-        dispatchCellValueChange({
-          ...action,
-          column,
-          columnId,
-          rowId,
-          tableId,
-          newValue,
-          cell
-        })
-      );
+    shouldShowClearDialog({ column, oldValue: action.oldValue, newValue })
+  ) {
+    showClearCellDialog({ ...action, cell });
+  }
+  return dispatch(
+    dispatchCellValueChange({
+      ...action,
+      column,
+      columnId,
+      rowId,
+      tableId,
+      newValue,
+      cell
+    })
+  );
 };
 
 const isEmptyValue = (_columnKind, value) => f.isEmpty(value);
 
-const mustClearCell = ({ column, oldValue, newValue }) => {
+const shouldShowClearDialog = ({ column, oldValue, newValue }) => {
   const clearableColumnKinds = [
     ColumnKinds.text,
     ColumnKinds.richtext,
