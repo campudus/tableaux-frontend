@@ -190,5 +190,10 @@
     "context": "Table settings",
     "title": "Reset table view?",
     "message": "Are you sure you want to reset the table settings? You can also adjust your individual settings accordingly in the user profile in the global settings."
+  },
+  "clear-cell": {
+    "title": "Clear cell",
+    "confirmation": "Do you want to clear the cell value?",
+    "description": "This will clear the following value:"
   }
 }

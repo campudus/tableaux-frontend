@@ -190,5 +190,10 @@
     "context": "Tabelleneinstellungen",
     "title": "Tabellenansicht zurücksetzen?",
     "message": "Sind Sie sicher, dass Sie die Tabelleneinstellungen zurücksetzen möchten? Sie können Ihre individuellen Einstellungen auch im Nutzerprofil in den globalen Einstellungen entsprechend anpassen."
+  },
+  "clear-cell": {
+    "title": "Zellinhalte löschen",
+    "confirmation": "Wollen Sie die Zellinnhalte löschen?",
+    "description": "Die folgenden Werte werden entfernt:"
   }
 }

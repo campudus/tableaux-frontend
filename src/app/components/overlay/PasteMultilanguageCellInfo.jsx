@@ -95,15 +95,12 @@ export const MultilangCellChangeInfo = ({
       <div className="old">{oldValue}</div>
       {showNewValues ? (
         <>
-          {" "}
           <i className="fa fa-long-arrow-right" />
           <div className="new">{newValue}</div>
         </>
       ) : null}
     </div>
   ));
-
-  console.log({ oldVals, newVals, entrylist });
 
   return (
     <div id="confirm-copy-overlay-content" className="confirmation-overlay">
