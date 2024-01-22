@@ -34,9 +34,15 @@ const truncateText = maxLength => text =>
   text.length > maxLength ? text.substring(0, maxLength) + "..." : text;
 const formatDate = pattern => str => Moment(str).format(pattern);
 
-const PasteMultilanguageCellInfo = props => {
-  const { oldVals, newVals, kind, cell } = props;
-
+export const MultilangCellChangeInfo = ({
+  cell,
+  headingText,
+  kind,
+  messageText,
+  newVals,
+  oldVals,
+  showOldValues: showNewValues
+}) => {
   const renderEntry = kind => ([key, value]) => {
     if (kind === "flag") {
       return (
@@ -87,28 +93,42 @@ const PasteMultilanguageCellInfo = props => {
     <div key={idx} className="item">
       {flag}
       <div className="old">{oldValue}</div>
-      <i className="fa fa-long-arrow-right" />
-      <div className="new">{newValue}</div>
+      {showNewValues ? (
+        <>
+          {" "}
+          <i className="fa fa-long-arrow-right" />
+          <div className="new">{newValue}</div>
+        </>
+      ) : null}
     </div>
   ));
 
+  console.log({ oldVals, newVals, entrylist });
+
   return (
     <div id="confirm-copy-overlay-content" className="confirmation-overlay">
-      <InfoBox
-        heading={i18n.t("table:confirm_copy.header")}
-        message={i18n.t("table:confirm_copy.info")}
-        type="question"
-      />
+      <InfoBox heading={headingText} message={messageText} type="question" />
       <div className="content-items">{entrylist}</div>
     </div>
   );
 };
 
-PasteMultilanguageCellInfo.propTypes = {
-  langtag: PropTypes.string.isRequired,
-  oldVals: PropTypes.object.isRequired,
+MultilangCellChangeInfo.propTypes = {
+  cell: PropTypes.object.isRequired,
+  headingText: PropTypes.string,
+  kind: PropTypes.string.isRequired,
+  messageText: PropTypes.string,
   newVals: PropTypes.object.isRequired,
-  kind: PropTypes.string.isRequired
+  oldVals: PropTypes.object.isRequired,
+  showNewValues: PropTypes.bool
 };
 
+const PasteMultilanguageCellInfo = props => (
+  <MultilangCellChangeInfo
+    showNewValues
+    headingText={i18n.t("table:confirm_copy.header")}
+    messageText={i18n.t("table:confirm_copy.info")}
+    {...props}
+  />
+);
 export default PasteMultilanguageCellInfo;
