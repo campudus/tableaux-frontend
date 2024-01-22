@@ -1,35 +1,38 @@
-import React from "react";
-import PropTypes from "prop-types";
 import i18n from "i18next";
-import { getLanguageOrCountryIcon } from "../../helpers/multiLanguage";
-import { canUserChangeCell } from "../../helpers/accessManagementHelper";
 import {
-  findIndex,
-  map,
-  sortBy,
-  reduce,
-  entries,
-  compose,
-  keys,
-  assoc,
-  cond,
-  eq,
-  identity,
   always,
-  stubTrue,
-  zip,
-  filter
+  assoc,
+  compose,
+  entries,
+  eq,
+  filter,
+  findIndex,
+  identity,
+  keys,
+  map,
+  reduce,
+  sortBy,
+  zip
 } from "lodash/fp";
+import { match, otherwise, when } from "match-iz";
+import Moment from "moment";
+import PropTypes from "prop-types";
+import React from "react";
 import {
   ColumnKinds,
   DateFormats,
   DateTimeFormats
 } from "../../constants/TableauxConstants";
-import Moment from "moment";
+import { canUserChangeCell } from "../../helpers/accessManagementHelper";
+import { getLanguageOrCountryIcon } from "../../helpers/multiLanguage";
+import InfoBox from "./InfoBox";
 
 const EMPTY_STRING = "---";
 const { date, datetime } = ColumnKinds;
-import InfoBox from "./InfoBox";
+
+const truncateText = maxLength => text =>
+  text.length > maxLength ? text.substring(0, maxLength) + "..." : text;
+const formatDate = pattern => str => Moment(str).format(pattern);
 
 const PasteMultilanguageCellInfo = props => {
   const { oldVals, newVals, kind, cell } = props;
@@ -45,19 +48,12 @@ const PasteMultilanguageCellInfo = props => {
 
     const MAX_LENGTH = 30;
     const formatValue = compose(
-      text =>
-        text.length > MAX_LENGTH ? text.substring(0, MAX_LENGTH) + "..." : text,
-      cond([
-        [
-          eq(date),
-          always(str => Moment(str).format(DateFormats.formatForUser))
-        ],
-        [
-          eq(datetime),
-          always(str => Moment(str).format(DateTimeFormats.formatForUser))
-        ],
-        [stubTrue, always(identity)]
-      ])(kind)
+      truncateText(MAX_LENGTH),
+      match(kind)(
+        when(date, always(formatDate(DateFormats.formatForUser))),
+        when(datetime, always(formatDate(DateTimeFormats.formatForUser))),
+        otherwise(always(identity))
+      )
     );
     return (
       <div key={key} className="entry">
