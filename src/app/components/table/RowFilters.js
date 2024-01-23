@@ -445,8 +445,8 @@ const mkClosures = (columns, rows, langtag, rowsFilter) => {
     return sortColumnIdx >= 0
       ? f.cond([
           [vals => f.every(isEmpty, vals), f.always(equal)],
-          [([A, _]) => isEmpty(A), f.always(bFirst)], // eslint-disable-line no-unused-vars
-          [([_, B]) => isEmpty(B), f.always(aFirst)], // eslint-disable-line no-unused-vars
+          [([A, _]) => isEmpty(A), f.always(bFirst)],
+          [([_, B]) => isEmpty(B), f.always(aFirst)],
           [
             f.stubTrue,
             ([A, B]) => (f.eq(A, B) ? compareRowIds(a, b) : compareValues(A, B))
