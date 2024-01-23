@@ -82,6 +82,10 @@ rules:
     - arrowFunctions: false
   lodash-fp/preferred-alias: off
   lodash-fp/use-fp: warn
+  no-unused-vars:
+    - error
+    - varsIgnorePattern: ^_
+      argsIgnorePattern: ^_
   react/jsx-uses-react: warn
   react/jsx-uses-vars: warn
   react/no-typos: error

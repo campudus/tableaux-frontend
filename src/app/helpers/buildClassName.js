@@ -1,7 +1,7 @@
 export const buildClassName = (base, modifiers = {}, additionals) => {
   const bemModifiers = Object.entries(modifiers || {})
-    .filter(([_, isActive]) => isActive) // eslint-disable-line no-unused-vars
-    .map(([modifier, _]) => `${base}--${modifier}`); // eslint-disable-line no-unused-vars
+    .filter(([_, isActive]) => isActive)
+    .map(([modifier, _]) => `${base}--${modifier}`);
   const additionalsList =
     typeof additionals === "string"
       ? [additionals]

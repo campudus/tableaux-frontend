@@ -107,8 +107,7 @@ export const getGroupColumn = (data, completeState) =>
 
 export const calcConcatValues = (action, completeState) => {
   const { tableId, columnId, column } = action;
-  // eslint-disable-next-line no-unused-vars
-  const [rowIdx, columnIdx, dvRowIdx] = idsToIndices(action, completeState);
+  const [rowIdx, _columnIdx, dvRowIdx] = idsToIndices(action, completeState);
   const columns = completeState.columns[tableId].data;
   const rows = completeState.rows[tableId].data;
 
