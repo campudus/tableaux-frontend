@@ -7,6 +7,7 @@ import {
   Langtags
 } from "../../constants/TableauxConstants";
 import {
+  canUserChangeAllLangsOfCell,
   reduceValuesToAllowedCountries,
   reduceValuesToAllowedLanguages
 } from "../../helpers/accessManagementHelper";
@@ -65,13 +66,20 @@ export const changeCellValue = action => (dispatch, getState) => {
     row: { ...(action.row ?? {}), id: rowId }
   };
 
-  const mainLangtagChanged = !f.isNil(
-    f.prop(`newValue.${DefaultLangtag}`, action)
-  );
+  if (!action.cell) {
+    // TODO: This is mostly required to check if a cell can be completely
+    // cleared. All currently clearable cell types pass cells in properly.
+    // Once this error stops appearing, we can remove the check.
+    console.error("NO CELL OBJECT PASSED IN, using Fallback");
+  }
   if (
     !action.dontClear &&
-    mainLangtagChanged &&
-    shouldShowClearDialog({ column, oldValue: action.oldValue, newValue })
+    shouldShowClearDialog({
+      column,
+      oldValue: action.oldValue,
+      newValue,
+      cell: action.cell
+    })
   ) {
     showClearCellDialog({ ...action, cell });
   }
@@ -90,7 +98,7 @@ export const changeCellValue = action => (dispatch, getState) => {
 
 const isEmptyValue = (_columnKind, value) => f.isEmpty(value);
 
-const shouldShowClearDialog = ({ column, oldValue, newValue }) => {
+const shouldShowClearDialog = ({ cell, column, oldValue, newValue }) => {
   const clearableColumnKinds = [
     ColumnKinds.text,
     ColumnKinds.richtext,
@@ -100,11 +108,17 @@ const shouldShowClearDialog = ({ column, oldValue, newValue }) => {
   const isMultilanguage =
     column.multilanguage && column.languageType !== "country";
   const primaryLanguage = DefaultLangtag;
+  const mainLangtagChanged = f.where(
+    { [primaryLanguage]: f.negate(f.isNil) },
+    newValue
+  );
   return (
     isMultilanguage &&
+    mainLangtagChanged &&
     typeIsToClear &&
     !isEmptyValue(column.kind, oldValue[primaryLanguage]) &&
-    isEmptyValue(column.kind, newValue[primaryLanguage])
+    isEmptyValue(column.kind, newValue[primaryLanguage]) &&
+    canUserChangeAllLangsOfCell(cell)
   );
 };
 

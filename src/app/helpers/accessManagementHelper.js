@@ -75,6 +75,9 @@ export const canUserChangeCell = f.curry((cellInfo, langtag) => {
   return !f.contains(kind, ImmutableColumnKinds) && (allowed || noAuthNeeded()); // this special case is not caught by ALLOW_ANYTHING
 });
 
+export const canUserChangeAllLangsOfCell = cellInfo =>
+  Langtags.every(canUserChangeCell(cellInfo));
+
 export const canUserChangeAnyCountryTypeCell = cellInfo => {
   const allowed =
     cellInfo
