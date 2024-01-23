@@ -63,13 +63,14 @@ const ShortTextCell = props => {
 };
 
 const ShortTextCellContainer = props => {
-  const { value, actions, column, row, table, langtag } = props;
+  const { value, actions, column, row, table, langtag, cell } = props;
   const handleEditDone = useCallback(
     newValue => {
       const valueToSave = column.multilanguage
         ? { [langtag]: newValue }
         : newValue;
       actions.changeCellValue({
+        cell,
         tableId: table.id,
         column,
         columnId: column.id,
