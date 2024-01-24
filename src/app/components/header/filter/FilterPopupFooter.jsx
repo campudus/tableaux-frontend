@@ -46,6 +46,7 @@ const DefaultFooter = ({
         {i18n.t("filter:button.clearFilter")}
       </button>
       <button
+        disabled={!canApplyFilters}
         className={
           "filter-popup__apply-filters-button " +
           (canApplyFilters ? "" : "neutral")
