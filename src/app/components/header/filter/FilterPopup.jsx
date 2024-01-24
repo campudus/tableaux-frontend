@@ -15,6 +15,7 @@ import TableauxConstants, {
 import { either } from "../../../helpers/functools";
 import { getColumnDisplayName } from "../../../helpers/multiLanguage";
 import { canColumnBeSearched } from "../../../helpers/searchFunctions";
+import store from "../../../redux/store";
 import { SortableCellKinds } from "../../table/RowFilters";
 import FilterPopupFooter from "./FilterPopupFooter";
 import FilterPresetList from "./FilterPresetList";
@@ -265,7 +266,9 @@ class FilterPopup extends React.Component {
 
   applyFilters = event => {
     const { filters, sorting } = this.state;
-    const { setRowFilter } = this.props;
+    const { setRowFilter, actions, langtag } = this.props;
+    const tableId = f.prop("tableView.currentTable", store.getState());
+    actions.toggleCellSelection({ select: false, langtag, tableId });
     const colIdToNumber = obj =>
       f.assoc("columnId", parseInt(obj.columnId), obj);
     setRowFilter(
