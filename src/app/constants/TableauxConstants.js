@@ -37,7 +37,8 @@ const grudConstants = {
   ImmutableColumnKinds: ["status"],
 
   LanguageType: keyMirror({
-    country: null
+    country: null,
+    language: null
   }),
 
   ViewNames: keyMirror({

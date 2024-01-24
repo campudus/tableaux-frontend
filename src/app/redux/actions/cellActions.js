@@ -4,7 +4,8 @@ import openTranslationDialog from "../../components/overlay/TranslationDialog";
 import {
   ColumnKinds,
   DefaultLangtag,
-  Langtags
+  Langtags,
+  LanguageType
 } from "../../constants/TableauxConstants";
 import {
   canUserChangeAllLangsOfCell,
@@ -22,6 +23,8 @@ import { createLinkOrderRequest } from "../../helpers/linkHelper";
 import ActionTypes from "../actionTypes";
 import store from "../store";
 import { refreshDependentRows } from "../updateDependentTables";
+import { when as on, match, otherwise } from "match-iz";
+import { isValidDate } from "../../helpers/date";
 
 const {
   SET_STATE,
@@ -96,18 +99,40 @@ export const changeCellValue = action => (dispatch, getState) => {
   );
 };
 
-const isEmptyValue = (_columnKind, value) => f.isEmpty(value);
+const getPrimaryLanguage = cell =>
+  cell.column.languageType === LanguageType.country
+    ? cell.column.countryCodes[0]
+    : DefaultLangtag;
+
+const isEmptyValue = (columnKind, value) => {
+  const isEmptyNumberInputValue = x =>
+    f.isEmpty(x) && (typeof x !== "number" || isNaN(x));
+  const checkValue = match(columnKind)(
+    on(ColumnKinds.date, f.always(isValidDate)),
+    on(ColumnKinds.datetime, f.always(isValidDate)),
+    on(ColumnKinds.integer, f.always(isEmptyNumberInputValue)),
+    on(ColumnKinds.numeric, f.always(isEmptyNumberInputValue)),
+    on(ColumnKinds.currency, f.always(f.equals(0))),
+    otherwise(f.always(f.isEmpty))
+  );
+  return checkValue(value);
+};
+
+const clearableColumnKinds = [
+  ColumnKinds.currency,
+  ColumnKinds.date,
+  ColumnKinds.datetime,
+  ColumnKinds.integer,
+  ColumnKinds.number,
+  ColumnKinds.richtext,
+  ColumnKinds.shorttext,
+  ColumnKinds.text
+];
 
 const shouldShowClearDialog = ({ cell, column, oldValue, newValue }) => {
-  const clearableColumnKinds = [
-    ColumnKinds.text,
-    ColumnKinds.richtext,
-    ColumnKinds.shorttext
-  ];
   const typeIsToClear = clearableColumnKinds.includes(column.kind);
-  const isMultilanguage =
-    column.multilanguage && column.languageType !== "country";
-  const primaryLanguage = DefaultLangtag;
+  const isMultilanguage = column.multilanguage;
+  const primaryLanguage = getPrimaryLanguage(cell);
   const mainLangtagChanged = f.where(
     { [primaryLanguage]: f.negate(f.isNil) },
     newValue
@@ -122,8 +147,19 @@ const shouldShowClearDialog = ({ cell, column, oldValue, newValue }) => {
   );
 };
 
+const empty = cell => {
+  const langtags =
+    cell.column.languageType === LanguageType.country
+      ? cell.column.countryCodes
+      : Langtags;
+  return Object.fromEntries(langtags.map(lt => [lt, null]), cell);
+};
+
 export const clearMultilangCell = cell => {
-  const emptyValue = Object.fromEntries(Langtags.map(lt => [lt, null]), cell);
+  if (!cell?.multilanguage) {
+    throw new Error(`${cell?.id} is not a multilanguage cell`);
+  }
+  const emptyValue = empty(cell);
   const action = () => ({
     cell,
     column: cell.column,

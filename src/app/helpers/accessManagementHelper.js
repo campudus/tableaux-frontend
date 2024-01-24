@@ -1,6 +1,10 @@
 import f from "lodash/fp";
 
-import { Langtags, ImmutableColumnKinds } from "../constants/TableauxConstants";
+import {
+  Langtags,
+  ImmutableColumnKinds,
+  LanguageType
+} from "../constants/TableauxConstants";
 import { memoizeWith, unless } from "./functools";
 import { noAuthNeeded } from "./authenticate";
 import store from "../redux/store";
@@ -75,8 +79,13 @@ export const canUserChangeCell = f.curry((cellInfo, langtag) => {
   return !f.contains(kind, ImmutableColumnKinds) && (allowed || noAuthNeeded()); // this special case is not caught by ALLOW_ANYTHING
 });
 
-export const canUserChangeAllLangsOfCell = cellInfo =>
-  Langtags.every(canUserChangeCell(cellInfo));
+export const canUserChangeAllLangsOfCell = cellInfo => {
+  const langs =
+    cellInfo.column.languageType === LanguageType.country
+      ? cellInfo.column.countryCodes
+      : Langtags;
+  return langs.every(canUserChangeCell(cellInfo));
+};
 
 export const canUserChangeAnyCountryTypeCell = cellInfo => {
   const allowed =
