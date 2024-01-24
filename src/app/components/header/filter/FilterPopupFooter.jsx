@@ -1,8 +1,7 @@
 import i18n from "i18next";
 import PropTypes from "prop-types";
 import React from "react";
-import { useDispatch, useSelector } from "react-redux";
-import Actions from "../../../redux/actionCreators";
+import { useSelector } from "react-redux";
 
 const FilterPopupFooter = ({
   canApplyFilters,
@@ -30,18 +29,14 @@ const DefaultFooter = ({
   applyFilters,
   langtag
 }) => {
-  const dispatch = useDispatch();
   const tableId = useSelector(state => state.tableView.currentTable);
   const handleApplyFilters = React.useCallback(() => {
     if (canApplyFilters) {
-      dispatch(
-        Actions.toggleCellSelection({ select: false, tableId, langtag })
-      );
       applyFilters();
     } else {
       clearFilters();
     }
-  }, [langtag, tableId]);
+  }, [langtag, tableId, canApplyFilters]);
   return (
     <>
       <button
