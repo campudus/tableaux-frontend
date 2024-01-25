@@ -123,7 +123,7 @@ const clearableColumnKinds = [
   ColumnKinds.date,
   ColumnKinds.datetime,
   ColumnKinds.integer,
-  ColumnKinds.number,
+  ColumnKinds.numeric,
   ColumnKinds.richtext,
   ColumnKinds.shorttext,
   ColumnKinds.text
