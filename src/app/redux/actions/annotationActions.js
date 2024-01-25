@@ -53,6 +53,9 @@ const modifyAnnotationLangtags = change => action => (dispatch, getState) => {
           )
         )
       );
+  if (shouldDelete && !couldFindUuid) {
+    return null;
+  }
   // Avoid langtag race condition
   if (!(shouldDelete && !couldFindUuid)) {
     dispatch({
@@ -114,6 +117,7 @@ const getRequestParam = change => (cell, annotationObj) => {
     f.prop("annotation"),
     annotationObj
   );
+  if (change === Change.DELETE && param) return null;
   const apiRoute =
     route.toCell({
       tableId: table.id,
@@ -122,7 +126,7 @@ const getRequestParam = change => (cell, annotationObj) => {
     }) +
     (change === Change.ADD
       ? "/annotations"
-      : `/annotations/${annotation.uuid}`);
+      : `/annotations/${annotation?.uuid}`);
   const param = {
     apiRoute,
     method: change === Change.ADD ? "POST" : "DELETE",
