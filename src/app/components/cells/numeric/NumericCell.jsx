@@ -18,6 +18,7 @@ const NumericCell = props => {
     value,
     editing,
     setCellKeyboardShortcuts,
+    cell,
     cell: { column }
   } = props;
 
@@ -33,6 +34,7 @@ const NumericCell = props => {
       : validatedValue;
 
     actions.changeCellValue({
+      cell,
       column,
       columnId: column.id,
       rowId: row.id,

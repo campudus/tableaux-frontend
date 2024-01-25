@@ -13,6 +13,7 @@ const BooleanCell = props => {
       ? { [langtag]: newValue }
       : newValue;
     actions.changeCellValue({
+      cell,
       column,
       tableId: table.id,
       rowId: row.id,
