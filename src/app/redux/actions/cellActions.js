@@ -156,7 +156,7 @@ const empty = cell => {
 };
 
 export const clearMultilangCell = cell => {
-  if (!cell?.multilanguage) {
+  if (!cell?.column?.multilanguage) {
     throw new Error(`${cell?.id} is not a multilanguage cell`);
   }
   const emptyValue = empty(cell);
