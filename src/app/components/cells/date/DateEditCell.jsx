@@ -1,31 +1,12 @@
+import React, { useCallback, useState } from "react";
 import Datetime from "react-datetime";
-import Moment from "moment";
-import React, { useState, useEffect, useCallback, useRef } from "react";
-
 import { formatDate, formatDateTime } from "../../../helpers/multiLanguage";
-import { maybe, stopPropagation } from "../../../helpers/functools";
+import Moment from "moment";
 
 const DATE_PICKER_HEIGHT = 265;
 
-const DateEditCell = props => {
-  const { actions, cell, langtag, Formats, showTime } = props;
-  const isMultiLanguage = cell.column.multilanguage;
-
-  const getValue = obj => (isMultiLanguage ? obj[langtag] : obj);
-
+const DateEditCell = ({ showTime, value, onChange }) => {
   const [needsShiftUp, setShift] = useState(false);
-  const [viewMode, setViewMode] = useState("days");
-  const [selectedMoment, setMomentState] = useState(
-    maybe(getValue(cell.value))
-      .map(str => Moment(str))
-      .getOrElse(new Moment())
-  );
-
-  const mutableMoment = useRef(selectedMoment);
-  const setMoment = moment => {
-    setMomentState(moment);
-    mutableMoment.current = moment;
-  };
 
   const checkPosition = useCallback(node => {
     if (!node) return;
@@ -33,57 +14,32 @@ const DateEditCell = props => {
       node.getBoundingClientRect().bottom + DATE_PICKER_HEIGHT >=
       window.innerHeight;
     setShift(needsShiftUp);
-  });
-
-  const saveValue = () => {
-    const momentString = mutableMoment.current
-      ? mutableMoment.current.format(Formats.formatForServer)
-      : null;
-    actions.changeCellValue({
-      cell,
-      oldValue: cell.value,
-      newValue: isMultiLanguage ? { [langtag]: momentString } : momentString
-    });
-  };
-
-  const setAndSave = moment => {
-    setMoment(moment);
-    saveValue();
-  };
-
-  useEffect(() => {
-    // cleanup gets called on unmount, so we won't save & re-render constantly
-    return () => {
-      if (
-        maybe(mutableMoment.current)
-          .map(m => !m.isSame(Moment(getValue(cell.value))))
-          .getOrElse(false)
-      ) {
-        saveValue();
-      }
-    };
   }, []);
 
   const format = showTime ? formatDateTime : formatDate;
 
   return (
     <div ref={checkPosition}>
-      {format(selectedMoment)}
-      <i className="fa fa-ban" onClick={() => setAndSave(null)} />
+      {format(value)}
+      {value ? (
+        <i className="fa fa-ban" onMouseDown={() => onChange(null)} />
+      ) : null}
       <div
         className="time-picker-wrapper"
         style={{
           position: "absolute",
           top: needsShiftUp ? -DATE_PICKER_HEIGHT : "100%"
         }}
-        onClick={stopPropagation}
+        onMouseDown={evt => {
+          evt.stopPropagation();
+          evt.preventDefault();
+        }}
       >
         <Datetime
-          onViewModeChange={setViewMode}
-          onChange={setMoment}
+          onChange={onChange}
           input={false}
-          defaultValue={selectedMoment}
-          viewMode={viewMode}
+          value={Moment(value)}
+          initialViewMode={"days"}
           timeFormat={showTime}
           open
         />

@@ -1,4 +1,5 @@
 import f from "lodash/fp";
+import { match, otherwise, when as on } from "match-iz";
 import { showClearCellDialog } from "../../components/overlay/ClearCellDialog";
 import openTranslationDialog from "../../components/overlay/TranslationDialog";
 import {
@@ -18,13 +19,12 @@ import {
 } from "../../helpers/annotationHelper";
 import { makeRequest } from "../../helpers/apiHelper";
 import route from "../../helpers/apiRoutes";
+import { isValidDate } from "../../helpers/date";
 import { merge, when } from "../../helpers/functools";
 import { createLinkOrderRequest } from "../../helpers/linkHelper";
 import ActionTypes from "../actionTypes";
 import store from "../store";
 import { refreshDependentRows } from "../updateDependentTables";
-import { when as on, match, otherwise } from "match-iz";
-import { isValidDate } from "../../helpers/date";
 
 const {
   SET_STATE,
@@ -104,12 +104,12 @@ const getPrimaryLanguage = cell =>
     ? cell.column.countryCodes[0]
     : DefaultLangtag;
 
-const isEmptyValue = (columnKind, value) => {
+export const isEmptyValue = (columnKind, value) => {
   const isEmptyNumberInputValue = x =>
     f.isEmpty(x) && (typeof x !== "number" || isNaN(x));
   const checkValue = match(columnKind)(
-    on(ColumnKinds.date, f.always(isValidDate)),
-    on(ColumnKinds.datetime, f.always(isValidDate)),
+    on(ColumnKinds.date, f.always(f.negate(isValidDate))),
+    on(ColumnKinds.datetime, f.always(f.negate(isValidDate))),
     on(ColumnKinds.integer, f.always(isEmptyNumberInputValue)),
     on(ColumnKinds.numeric, f.always(isEmptyNumberInputValue)),
     on(ColumnKinds.currency, f.always(f.equals(0))),
@@ -133,16 +133,20 @@ const shouldShowClearDialog = ({ cell, column, oldValue, newValue }) => {
   const typeIsToClear = clearableColumnKinds.includes(column.kind);
   const isMultilanguage = column.multilanguage;
   const primaryLanguage = getPrimaryLanguage(cell);
-  const mainLangtagChanged = f.where(
-    { [primaryLanguage]: f.negate(f.isNil) },
-    newValue
-  );
+  const mainLangtagChanged = f.has(primaryLanguage, newValue);
+  const valueHasBeenCleared =
+    !isEmptyValue(column.kind, oldValue[primaryLanguage]) &&
+    isEmptyValue(column.kind, newValue[primaryLanguage]);
+  const hasValuesToClear =
+    Object.entries({ ...oldValue, newValue }).filter(
+      ([lt, val]) => lt !== primaryLanguage && !isEmptyValue(column.kind, val)
+    ).length > 0;
   return (
     isMultilanguage &&
     mainLangtagChanged &&
     typeIsToClear &&
-    !isEmptyValue(column.kind, oldValue[primaryLanguage]) &&
-    isEmptyValue(column.kind, newValue[primaryLanguage]) &&
+    valueHasBeenCleared &&
+    hasValuesToClear &&
     canUserChangeAllLangsOfCell(cell)
   );
 };
