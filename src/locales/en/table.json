@@ -194,6 +194,6 @@
   "clear-cell": {
     "title": "Clear cell",
     "confirmation": "Do you want to clear the cell value?",
-    "description": "This will clear the following value:"
+    "description": "This will clear the following values:"
   }
 }
