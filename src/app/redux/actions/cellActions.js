@@ -135,6 +135,7 @@ const shouldShowClearDialog = ({ cell, column, oldValue, newValue }) => {
   const primaryLanguage = getPrimaryLanguage(cell);
   const mainLangtagChanged = f.has(primaryLanguage, newValue);
   const valueHasBeenCleared =
+    isMultilanguage &&
     !isEmptyValue(column.kind, oldValue[primaryLanguage]) &&
     isEmptyValue(column.kind, newValue[primaryLanguage]);
   const hasValuesToClear =
