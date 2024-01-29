@@ -1,187 +1,136 @@
-import { translate } from "react-i18next";
-import React from "react";
-import ReactDOM from "react-dom";
 import f from "lodash/fp";
-
 import PropTypes from "prop-types";
-
+import React, { useCallback, useEffect, useState } from "react";
+import { translate } from "react-i18next";
+import { when } from "../../../helpers/functools.js";
 import {
   formatNumber,
   getCountryOfLangtag,
   getCurrencyCode,
   getLocaleDecimalSeparator
 } from "../../../helpers/multiLanguage";
+import CurrencyEditCell from "./CurrencyEditCell";
 import {
   getCurrencyWithCountry,
-  splitPriceDecimals,
-  maybeAddZeroToDecimals
+  maybeAddZeroToDecimals,
+  splitPriceDecimals
 } from "./currencyHelper";
-import CurrencyEditCell from "./CurrencyEditCell";
-import { when } from "../../../helpers/functools.js";
 
-@translate(["table"])
-class CurrencyCell extends React.PureComponent {
-  static propTypes = {
-    cell: PropTypes.object.isRequired,
-    langtag: PropTypes.string.isRequired,
-    selected: PropTypes.bool.isRequired,
-    editing: PropTypes.bool.isRequired,
-    setCellKeyboardShortcuts: PropTypes.func
-  };
+const stopPropagation = event => event?.stopPropagation();
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      shiftUp: false,
-      domNode: null
-    };
-  }
+const previewStyle = { top: 0, bottom: 0 };
+const editingStyle = shiftUp =>
+  shiftUp ? { top: -125, bottom: -45 } : { top: 0, bottom: -170 };
+const getStyle = ({ editing, shiftUp }) =>
+  editing ? editingStyle(shiftUp) : previewStyle;
 
-  CurrencyCellDOMNode = null;
+const DisplayPrice = translate(["table"])(({ country, t, currencyValues }) => {
+  const value = getCurrencyWithCountry(currencyValues, country, true);
+  const toValueString = f.compose(
+    maybeAddZeroToDecimals,
+    f.map(when(f.isEmpty, () => "00")),
+    splitPriceDecimals
+  );
+  const valueStrings = toValueString(value);
+  const currencyCode = getCurrencyCode(country);
 
-  componentDidMount() {
-    // React ref does not support finding element dimensions
-    // eslint-disable-next-line react/no-find-dom-node
-    this.CurrencyCellDOMNode = ReactDOM.findDOMNode(this);
-  }
-
-  static scrollHandler(event) {
-    // prevents the table scroll event
-    event.stopPropagation();
-  }
-
-  saveCurrencyCell = valuesToSave => {
-    const { actions, table, column, row } = this.props;
-    actions.changeCellValue({
-      tableId: table.id,
-      columnId: column.id,
-      column,
-      rowId: row.id,
-      oldValue: this.props.value,
-      newValue: valuesToSave
-    });
-  };
-
-  exitCurrencyCell = () => {
-    const { actions, tableId, columnId, rowId } = this.props;
-    actions.toggleCellEditing({ tableId, columnId, rowId, editing: false });
-  };
-
-  handleClickOutside = () => {
-    this.exitCurrencyCell();
-  };
-
-  renderPrice(currencyValues, country) {
-    const currencyValue = getCurrencyWithCountry(
-      currencyValues,
-      country,
-      "withFallback"
-    );
-    const splittedValueAsString =
-      currencyValue
-      |> splitPriceDecimals
-      |> f.map(when(f.isEmpty, () => "00"))
-      |> maybeAddZeroToDecimals;
-
-    const currencyCode = getCurrencyCode(country);
-    const { value, t } = this.props;
-    if (!currencyCode) {
-      return (
-        <div className="currency-wrapper">
-          <span className="currency-no-country">
-            {t("error_language_is_no_country")}
-            <i className="open-country fa fa-angle-down" />
-          </span>
-        </div>
-      );
-    }
-
-    return (
-      <div className={`currency-wrapper${value[country] ? "" : " grey-out"}`}>
-        <span className="currency-value">
-          {formatNumber(splittedValueAsString[0])}
-        </span>
-        <span className="currency-value-decimals">
-          {getLocaleDecimalSeparator()}
-          {splittedValueAsString[1]}
-        </span>
-        <span className="currency-code">{currencyCode}</span>
+  const cssClass = `currency-wrapper${
+    currencyValues[country] ? "" : " grey-out"
+  }`;
+  return currencyCode ? (
+    <div className={cssClass}>
+      <span className="currency-valye">{formatNumber(valueStrings[0])}</span>
+      <span className="currency-value-decimals">
+        {getLocaleDecimalSeparator()}
+        {valueStrings[1]}
+      </span>
+      <span className="currency-code">{currencyCode}</span>
+      <i className="open-country fa fa-angle-down"></i>
+    </div>
+  ) : (
+    <div className="currency-wrapper">
+      <span className="currency-no-country">
+        {t("error_language_is_no_country")}
         <i className="open-country fa fa-angle-down" />
-      </div>
-    );
-  }
+      </span>
+    </div>
+  );
+});
 
-  getStyle = () => {
-    const { shiftUp } = this.state;
-    return this.props.editing
-      ? {
-          top: shiftUp ? -125 : 0,
-          bottom: shiftUp ? -45 : -170
+const CurrencyCell = ({
+  actions,
+  cell,
+  editing,
+  langtag,
+  setCellKeyboardShortcuts
+}) => {
+  const [shiftUp, setShiftUp] = useState(false);
+  const saveCellValue = useCallback(value => {
+    actions.changeCellValue({ cell, oldValue: cell.value, newValue: value });
+  }, []);
+  const exitEditMode = useCallback(() => {
+    actions.toggleCellEditing({
+      editing: false,
+      tableId: cell.table.id,
+      columnId: cell.columnId,
+      rowId: cell.row.id,
+      langtag
+    });
+  }, []);
+
+  const [value, setValue] = useState(cell.value);
+
+  useEffect(() => {
+    if (!editing) {
+      saveCellValue(value);
+    }
+  }, [editing, value]);
+
+  const checkPosition = useCallback(
+    domNode => {
+      if (!f.isNil(domNode)) {
+        const rect = domNode.getBoundingClientRect();
+        const unshiftedBottom = shiftUp ? rect.bottom + 180 : rect.bottom + 10;
+        const needsShiftUp = editing && unshiftedBottom >= window.innerHeight;
+        if (needsShiftUp !== shiftUp) {
+          setShiftUp(needsShiftUp);
         }
-      : {
-          top: 0,
-          bottom: 0
-        };
-  };
+      }
+    },
+    [shiftUp, editing]
+  );
 
-  checkPosition = (domNode = this.state.domNode) => {
-    if (f.isNil(domNode)) {
-      return;
-    }
+  return (
+    <div
+      ref={checkPosition}
+      className="cell-content"
+      onScroll={stopPropagation}
+      style={getStyle({ editing, shiftUp })}
+    >
+      {editing ? (
+        <CurrencyEditCell
+          cell={cell}
+          exitEditMode={exitEditMode}
+          onChange={setValue}
+          setCellKeyboardShortcuts={setCellKeyboardShortcuts}
+          value={value}
+        />
+      ) : (
+        <DisplayPrice
+          country={getCountryOfLangtag(langtag)}
+          currencyValues={cell.value}
+        />
+      )}
+    </div>
+  );
+};
 
-    if (f.isNil(this.state.domNode)) {
-      this.setState({ domNode });
-    }
+CurrencyCell.propTypes = {
+  cell: PropTypes.object.isRequired,
+  langtag: PropTypes.string.isRequired,
+  selected: PropTypes.bool.isRequired,
+  editing: PropTypes.bool.isRequired,
+  setCellKeyboardShortcuts: PropTypes.func
+};
 
-    if (!this.props.editing) {
-      return;
-    }
-
-    const rect = domNode.getBoundingClientRect();
-    const unshiftedBottom = this.state.shiftUp
-      ? rect.bottom + 180
-      : rect.bottom + 10;
-    const needsShiftUp =
-      this.props.editing && unshiftedBottom >= window.innerHeight;
-    if (needsShiftUp !== this.state.shiftUp) {
-      this.setState({ shiftUp: needsShiftUp });
-    }
-  };
-
-  componentDidUpdate() {
-    this.checkPosition();
-  }
-
-  render() {
-    const {
-      langtag,
-      editing,
-      cell: { value },
-      setCellKeyboardShortcuts
-    } = this.props;
-    const currencyValues = value;
-    const country = getCountryOfLangtag(langtag);
-    const currencyCellMarkup = editing ? (
-      <CurrencyEditCell
-        cell={this.props.cell}
-        setCellKeyboardShortcuts={setCellKeyboardShortcuts}
-        saveCell={this.saveCurrencyCell}
-        exitCell={this.exitCurrencyCell}
-      />
-    ) : (
-      this.renderPrice(currencyValues, country)
-    );
-
-    return (
-      <div
-        className="cell-content"
-        onScroll={this.scrollHandler}
-        ref={this.checkPosition}
-        style={this.getStyle()}
-      >
-        {currencyCellMarkup}
-      </div>
-    );
-  }
-}
 export default CurrencyCell;

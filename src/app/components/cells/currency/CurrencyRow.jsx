@@ -15,7 +15,7 @@ import { maybe } from "../../../helpers/functools";
 export default class CurrencyRow extends PureComponent {
   static propTypes = {
     country: PropTypes.string.isRequired,
-    countryCurrencyValue: PropTypes.number,
+    countryCurrencyValue: PropTypes.arrayOf(PropTypes.string),
     isFallbackValue: PropTypes.bool.isRequired,
     updateValue: PropTypes.func.isRequired
   };
