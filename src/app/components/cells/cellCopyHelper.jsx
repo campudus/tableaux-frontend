@@ -1,27 +1,27 @@
-import React from "react";
-import * as f from "lodash/fp";
 import i18n from "i18next";
-
+import * as f from "lodash/fp";
+import React from "react";
 import { ColumnKinds } from "../../constants/TableauxConstants";
+import { canUserChangeCell } from "../../helpers/accessManagementHelper";
 import {
   addTranslationNeeded,
   deleteCellAnnotation,
   isLocked
 } from "../../helpers/annotationHelper";
-import { canConvert, convert } from "../../helpers/cellValueConverter";
-import { canUserChangeCell } from "../../helpers/accessManagementHelper";
-import { getTableDisplayName } from "../../helpers/multiLanguage";
 import { makeRequest } from "../../helpers/apiHelper";
+import route from "../../helpers/apiRoutes";
+import { canConvert, convert } from "../../helpers/cellValueConverter";
 import { mapPromise, propMatches } from "../../helpers/functools";
+import getDisplayValue from "../../helpers/getDisplayValue";
+import { isTextInRange } from "../../helpers/limitTextLength";
+import { getTableDisplayName } from "../../helpers/multiLanguage";
+import actions from "../../redux/actionCreators";
+import store from "../../redux/store";
+import askForSessionUnlock from "../helperComponents/SessionUnlockDialog";
 import Footer from "../overlay/Footer";
 import Header from "../overlay/Header";
 import PasteMultilanguageCellInfo from "../overlay/PasteMultilanguageCellInfo";
-import actions from "../../redux/actionCreators";
-import askForSessionUnlock from "../helperComponents/SessionUnlockDialog";
-import route from "../../helpers/apiRoutes";
-import store from "../../redux/store";
-import getDisplayValue from "../../helpers/getDisplayValue";
-import { isTextInRange } from "../../helpers/limitTextLength";
+import P from "../../helpers/promise";
 
 const showErrorToast = (msg, data = {}) => {
   store.dispatch(
@@ -283,11 +283,31 @@ async function pasteValueAndTranslationStatus(src, dst, reducedValue) {
   }
 }
 
+const startPasteOperation = (...args) => {
+  const parallelPastes = 4;
+  const [src, srcLang, _, dstLang] = args;
+  const multiSelection = f.prop("multiSelect", store.getState());
+
+  return f.isEmpty(multiSelection)
+    ? pasteCellValue(...args)
+    : P.chunk(
+        parallelPastes,
+        cell => {
+          try {
+            pasteCellValue(src, srcLang, cell, dstLang, true);
+          } catch (err) {
+            console.error("Could not paste", src, "to", cell, err);
+          }
+        },
+        multiSelection
+      );
+};
+
 const pasteCellValue = function(
-  src,
-  srcLang,
-  dst,
-  dstLang,
+  src, // cell
+  srcLang, // langtag
+  dst, // cell
+  dstLang, // langtag
   skipDialogs = false
 ) {
   // The lock can be overridden, if a user has access to the langtag and it is flagged as "needs translation"
@@ -409,4 +429,4 @@ const pasteCellValue = function(
   }
 };
 
-export default pasteCellValue;
+export default startPasteOperation;
