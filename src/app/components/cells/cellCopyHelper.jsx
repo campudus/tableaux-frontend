@@ -22,6 +22,7 @@ import Footer from "../overlay/Footer";
 import Header from "../overlay/Header";
 import PasteMultilanguageCellInfo from "../overlay/PasteMultilanguageCellInfo";
 import P from "../../helpers/promise";
+import { idsToIndices } from "../../redux/redux-helpers";
 
 const showErrorToast = (msg, data = {}) => {
   store.dispatch(
@@ -283,22 +284,53 @@ async function pasteValueAndTranslationStatus(src, dst, reducedValue) {
   }
 }
 
+const decelerate = fn => {
+  const delay = 250; // ms
+  return (...args) =>
+    new Promise(resolve => {
+      fn(...args);
+      setTimeout(resolve, delay);
+    });
+};
+
 const startPasteOperation = (...args) => {
-  const parallelPastes = 4;
-  const [src, srcLang, _, dstLang] = args;
-  const multiSelection = f.prop("multiSelect", store.getState());
+  const parallelPastes = 20;
+  const reduxStore = store.getState();
+
+  const [src, srcLang, dst, dstLang] = args;
+  const multiSelection = f.prop("multiSelect", reduxStore);
+  const getIndices = cell =>
+    idsToIndices(
+      { tableId: dst.table.id, rowId: cell.row.id, columnId: cell.column.id },
+      reduxStore
+    );
+  const getCurrentValue = cell => {
+    // Selected cells don't store their value, as it would always be outdated
+    const [rowIdx, colIdx] = getIndices(cell);
+
+    return f.prop(
+      `rows.${dst.table.id}.data.${rowIdx}.values.${colIdx}`,
+      reduxStore
+    );
+  };
 
   return f.isEmpty(multiSelection)
     ? pasteCellValue(...args)
     : P.chunk(
         parallelPastes,
-        cell => {
+        decelerate(cell => {
           try {
-            pasteCellValue(src, srcLang, cell, dstLang, true);
+            pasteCellValue(
+              src,
+              srcLang,
+              { ...cell, value: getCurrentValue(cell) },
+              dstLang,
+              true
+            );
           } catch (err) {
             console.error("Could not paste", src, "to", cell, err);
           }
-        },
+        }),
         multiSelection
       );
 };
