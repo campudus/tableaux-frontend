@@ -33,9 +33,10 @@ const showErrorToast = (msg, data = {}) => {
   );
 };
 
-const changeCellValue = (cell, newValue) => {
+const changeCellValue = (cell, newValue, skipTranslationDialog) => {
   store.dispatch(
     actions.changeCellValue({
+      skipTranslationDialog,
       cell,
       newValue,
       oldValue: cell.value
@@ -262,8 +263,13 @@ const createEntriesAndCopy = async (src, dst, constrainedValue) => {
   );
 };
 
-async function pasteValueAndTranslationStatus(src, dst, reducedValue) {
-  changeCellValue(dst, reducedValue);
+async function pasteValueAndTranslationStatus(
+  src,
+  dst,
+  reducedValue,
+  skipDialogs
+) {
+  changeCellValue(dst, reducedValue, skipDialogs);
   if (src.column.multilanguage && dst.column.multilanguage) {
     const srcTranslation = f.get(["annotations", "translationNeeded"], src);
     const dstTranslation = f.get(["annotations", "translationNeeded"], dst);
@@ -413,7 +419,7 @@ const pasteCellValue = function(
       showErrorToast("table:copy_kind_error");
       return;
     }
-    pasteValueAndTranslationStatus(src, dst, newValue);
+    pasteValueAndTranslationStatus(src, dst, newValue, skipDialogs);
   } else {
     const newValue = calcNewValue.call(this, src, srcLang, dst, dstLang);
     if (f.isNil(newValue) && !f.isNil(src.value)) {
@@ -424,7 +430,7 @@ const pasteCellValue = function(
       if (event) {
         event.preventDefault();
       }
-      pasteValueAndTranslationStatus(src, dst, newValue);
+      pasteValueAndTranslationStatus(src, dst, newValue, skipDialogs);
     };
     const buttons = {
       positive: [
