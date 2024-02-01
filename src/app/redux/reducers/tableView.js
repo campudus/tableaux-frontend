@@ -160,20 +160,25 @@ const toggleExpandedRow = (state, action) => {
   );
 };
 
-const setInitialColumnState = (state, action, completeState) => {
-  const columnsReset = f.get(["globalSettings", "columnsReset"], completeState);
-  const hasVisibleColumns = !f.isEmpty(f.get("visibleColumns", state));
-  const hasColumnOrdering = !f.isEmpty(f.get("columnOrdering", state));
-  const columns = f.get(["result", "columns"], action);
-  const visibleColumns = f.map("id", columns);
-  const columnOrdering = mapIndexed(({ id }, idx) => ({ id, idx }))(columns);
+const setInitialVisibleColumns = (action, completeState) => state =>
+  f.get(["globalSettings", "columnsReset"], completeState) ||
+  f.isEmpty(f.get("visibleColumns", state))
+    ? f.flow(
+        f.prop(["result", "columns"]),
+        f.map("id"),
+        ids => f.assoc("visibleColumns")(ids)(state)
+      )(action)
+    : state;
 
-  return {
-    ...state,
-    ...((columnsReset || !hasVisibleColumns) && { visibleColumns }),
-    ...((columnsReset || !hasColumnOrdering) && { columnOrdering })
-  };
-};
+const setInitialColumnOrdering = (action, completeState) => state =>
+  f.get(["globalSettings", "columnsReset"], completeState) ||
+  f.isEmpty(f.get("columnOrdering", state))
+    ? f.flow(
+        f.prop(["result", "columns"]),
+        mapIndexed(({ id }, idx) => ({ id, idx })),
+        ids => f.assoc("columnOrdering", ids, state)
+      )(action)
+    : state;
 
 const displayValueSelector = ({ tableId, dvRowIdx, columnIdx }) => [
   "displayValues",
@@ -305,7 +310,10 @@ export default (state = initialState, action, completeState) => {
     case SET_CURRENT_TABLE:
       return { ...state, currentTable: action.tableId };
     case COLUMNS_DATA_LOADED:
-      return setInitialColumnState(state, action, completeState);
+      return f.compose(
+        setInitialVisibleColumns(action, completeState),
+        setInitialColumnOrdering(action, completeState)
+      )(state);
     case GENERATED_DISPLAY_VALUES:
       return setLinkDisplayValues(state, action.displayValues);
     case ADDITIONAL_ROWS_DATA_LOADED:
