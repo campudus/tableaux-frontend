@@ -160,17 +160,18 @@ const toggleExpandedRow = (state, action) => {
   );
 };
 
-const setInitialVisibleColumns = action => state =>
+const setInitialVisibleColumns = (action, completeState) => state =>
+  f.get(["globalSettings", "columnsReset"], completeState) ||
   f.isEmpty(f.get("visibleColumns", state))
     ? f.flow(
         f.prop(["result", "columns"]),
-        f.slice(0, 10),
         f.map("id"),
         ids => f.assoc("visibleColumns")(ids)(state)
       )(action)
     : state;
 
-const setInitialColumnOrdering = action => state =>
+const setInitialColumnOrdering = (action, completeState) => state =>
+  f.get(["globalSettings", "columnsReset"], completeState) ||
   f.isEmpty(f.get("columnOrdering", state))
     ? f.flow(
         f.prop(["result", "columns"]),
@@ -310,8 +311,8 @@ export default (state = initialState, action, completeState) => {
       return { ...state, currentTable: action.tableId };
     case COLUMNS_DATA_LOADED:
       return f.compose(
-        setInitialVisibleColumns(action),
-        setInitialColumnOrdering(action)
+        setInitialVisibleColumns(action, completeState),
+        setInitialColumnOrdering(action, completeState)
       )(state);
     case GENERATED_DISPLAY_VALUES:
       return setLinkDisplayValues(state, action.displayValues);
