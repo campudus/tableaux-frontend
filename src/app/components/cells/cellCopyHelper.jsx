@@ -15,14 +15,14 @@ import { mapPromise, propMatches } from "../../helpers/functools";
 import getDisplayValue from "../../helpers/getDisplayValue";
 import { isTextInRange } from "../../helpers/limitTextLength";
 import { getTableDisplayName } from "../../helpers/multiLanguage";
+import P from "../../helpers/promise";
 import actions from "../../redux/actionCreators";
+import { idsToIndices } from "../../redux/redux-helpers";
 import store from "../../redux/store";
 import askForSessionUnlock from "../helperComponents/SessionUnlockDialog";
 import Footer from "../overlay/Footer";
 import Header from "../overlay/Header";
 import PasteMultilanguageCellInfo from "../overlay/PasteMultilanguageCellInfo";
-import P from "../../helpers/promise";
-import { idsToIndices } from "../../redux/redux-helpers";
 
 const showErrorToast = (msg, data = {}) => {
   store.dispatch(
@@ -305,6 +305,7 @@ const startPasteOperation = (...args) => {
 
   const [src, srcLang, dst, dstLang] = args;
   const multiSelection = f.prop("multiSelect", reduxStore);
+  const isSinglePaste = f.isEmpty(multiSelection);
   const getIndices = cell =>
     idsToIndices(
       { tableId: dst.table.id, rowId: cell.row.id, columnId: cell.column.id },
@@ -320,7 +321,10 @@ const startPasteOperation = (...args) => {
     );
   };
 
-  return f.isEmpty(multiSelection)
+  if (!isSinglePaste) {
+    store.dispatch(actions.clearMultiselect());
+  }
+  return isSinglePaste
     ? pasteCellValue(...args)
     : P.chunk(
         parallelPastes,
