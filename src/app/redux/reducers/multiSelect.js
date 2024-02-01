@@ -42,7 +42,7 @@ const whenClipboardNotEmpty = fn => (...args) => {
 const toggleMultiselectCell = (state = initialState, action, store) => {
   const { cell } = action;
   return f.isEmpty(state)
-    ? f.uniqBy("id", [cell, findSelectedCell(store)])
+    ? f.uniqBy("id", [findSelectedCell(store), cell])
     : toggleInArray(cell, f.prop("id"), state);
 };
 

@@ -299,6 +299,16 @@ const decelerate = fn => {
     });
 };
 
+const forceCellFocus = (target, store) => {
+  const toggleFocus = () => store.dispatch(actions.toggleCellSelection(target));
+  const needsRefocus = f.compose(
+    f.whereEq(f.pick(["columnId", "rowId", "langtag"], target)),
+    f.prop("selectedCell.selectedCell")
+  )(store.getState());
+  toggleFocus();
+  if (needsRefocus) requestAnimationFrame(toggleFocus);
+};
+
 const startPasteOperation = (...args) => {
   const parallelPastes = 20;
   const reduxStore = store.getState();
@@ -322,7 +332,19 @@ const startPasteOperation = (...args) => {
   };
 
   if (!isSinglePaste) {
+    const {
+      table: { id: tableId },
+      column: { id: columnId },
+      row: { id: rowId }
+    } = f.first(multiSelection);
+    const cellToFocus = {
+      tableId,
+      columnId,
+      rowId,
+      langtag: srcLang
+    };
     store.dispatch(actions.clearMultiselect());
+    forceCellFocus(cellToFocus, store);
   }
   return isSinglePaste
     ? pasteCellValue(...args)
