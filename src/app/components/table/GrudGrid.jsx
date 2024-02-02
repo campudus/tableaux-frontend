@@ -101,7 +101,11 @@ export default class GrudGrid extends MultiGrid {
     }
   }
 
-  _onScroll({ scrollLeft, scrollTop }) {
+  _onScroll(scrollInfo) {
+    const { scrollLeft, scrollTop } = scrollInfo;
+    if (this.props.onScroll && typeof this.props.onScroll === "function") {
+      this.props.onScroll({ scrollLeft, scrollTop });
+    }
     if (!this._trgParent) {
       // eslint-disable-next-line react/no-find-dom-node
       this._trgParent = ReactDOM.findDOMNode(this._topRightGrid);

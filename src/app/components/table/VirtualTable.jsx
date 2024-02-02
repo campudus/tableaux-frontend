@@ -4,33 +4,31 @@
  * cell position indices.
  */
 
-import { AutoSizer } from "react-virtualized";
-import React, { PureComponent, createRef } from "react";
 import f from "lodash/fp";
-
 import PropTypes from "prop-types";
-
+import React, { createRef, PureComponent } from "react";
+import { AutoSizer } from "react-virtualized";
 import {
   ColumnKinds,
-  Langtags,
   Directions,
+  Langtags,
   RowIdColumn
 } from "../../constants/TableauxConstants";
-import { doto, either, maybe, mapIndexed } from "../../helpers/functools";
-import { isLocked } from "../../helpers/annotationHelper";
-import AddNewRowButton from "../rows/NewRow";
-import Cell, { getAnnotationState } from "../cells/Cell";
-import ColumnHeader from "../columns/ColumnHeader";
-import KeyboardShortcutsHelper from "../../helpers/KeyboardShortcutsHelper";
-import MetaCell from "../cells/MetaCell";
-import MultiGrid from "./GrudGrid";
-import getDisplayValue from "../../helpers/getDisplayValue";
-import * as tableNavigationWorker from "./tableNavigationWorker";
 import { canUserCreateRow } from "../../helpers/accessManagementHelper";
-import store from "../../redux/store";
-import actions from "../../redux/actionCreators";
-import MetaCellHeader from "../cells/MetaCellHeader";
+import { isLocked } from "../../helpers/annotationHelper";
+import { doto, either, mapIndexed, maybe } from "../../helpers/functools";
+import getDisplayValue from "../../helpers/getDisplayValue";
+import KeyboardShortcutsHelper from "../../helpers/KeyboardShortcutsHelper";
 import { saveColumnWidths } from "../../helpers/localStorage";
+import actions from "../../redux/actionCreators";
+import store from "../../redux/store";
+import Cell, { getAnnotationState } from "../cells/Cell";
+import MetaCell from "../cells/MetaCell";
+import MetaCellHeader from "../cells/MetaCellHeader";
+import ColumnHeader from "../columns/ColumnHeader";
+import AddNewRowButton from "../rows/NewRow";
+import MultiGrid from "./GrudGrid";
+import * as tableNavigationWorker from "./tableNavigationWorker";
 
 const META_CELL_WIDTH = 80;
 const STATUS_CELL_WIDTH = 120;
@@ -78,6 +76,11 @@ export default class VirtualTable extends PureComponent {
 
   getSelectedCell = () =>
     f.propOr({}, "selectedCell.selectedCell", store.getState());
+
+  handleScroll = f.debounce(100, () => {
+    if (document.activeElement === document.body)
+      this.virtualTableRef.current?.focus();
+  });
 
   saveColWidths = index => {
     this.columnStartSize = null;
@@ -538,6 +541,7 @@ export default class VirtualTable extends PureComponent {
           {({ height, width }) => {
             return (
               <MultiGrid
+                onScroll={this.handleScroll}
                 isScrollingOptOut={true}
                 enableFixedColumnScroll={true}
                 langtag={langtag}
