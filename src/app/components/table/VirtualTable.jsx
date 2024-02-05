@@ -67,7 +67,9 @@ export default class VirtualTable extends PureComponent {
   }
 
   focusTable = () => {
-    this.virtualTableRef.current.focus();
+    if (document.activeElement !== this.virtualTableRef.current) {
+      requestAnimationFrame(() => this.virtualTableRef.current?.focus());
+    }
   };
 
   setBarOffset = event => {
@@ -78,8 +80,9 @@ export default class VirtualTable extends PureComponent {
     f.propOr({}, "selectedCell.selectedCell", store.getState());
 
   handleScroll = f.debounce(100, () => {
-    if (document.activeElement === document.body)
-      this.virtualTableRef.current?.focus();
+    if (document.activeElement === document.body) {
+      this.focusTable();
+    }
   });
 
   saveColWidths = index => {

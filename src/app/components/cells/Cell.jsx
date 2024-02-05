@@ -1,7 +1,7 @@
 import classNames from "classnames";
 import f from "lodash/fp";
 import PropTypes from "prop-types";
-import React, { useCallback } from "react";
+import React, { createRef, useCallback } from "react";
 import {
   branch,
   compose,
@@ -103,6 +103,7 @@ class Cell extends React.Component {
   constructor(props) {
     super(props);
     this.keyboardShortcuts = {};
+    this.cellRef = createRef(null);
   }
 
   shouldComponentUpdate = nextProps => {
@@ -146,6 +147,11 @@ class Cell extends React.Component {
     })(event);
 
   cellClickedWorker = (event, withRightClick) => {
+    requestAnimationFrame(() => {
+      if (document.activeElement === document.body) {
+        this.cellRef.current?.focus();
+      }
+    });
     const {
       actions,
       cell,
@@ -279,6 +285,7 @@ class Cell extends React.Component {
     // onKeyDown event just for selected components
     return (
       <div
+        ref={this.cellRef}
         style={this.props.style}
         className={cssClass}
         onMouseDown={this.cellClicked}
