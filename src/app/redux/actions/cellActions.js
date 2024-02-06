@@ -22,6 +22,7 @@ import route from "../../helpers/apiRoutes";
 import { isValidDate } from "../../helpers/date";
 import { merge, when } from "../../helpers/functools";
 import { createLinkOrderRequest } from "../../helpers/linkHelper";
+import { getCountryOfLangtag } from "../../helpers/multiLanguage";
 import ActionTypes from "../actionTypes";
 import store from "../store";
 import { refreshDependentRows } from "../updateDependentTables";
@@ -171,8 +172,12 @@ const empty = cell => {
 
 export const clearSelectedCellValue = (cell, langtag) => {
   const mempty = getEmptyValue(cell.column.kind);
+  const langtagToClear =
+    cell.column.languageType === LanguageType.country
+      ? getCountryOfLangtag(langtag)
+      : langtag;
   const clearedValue = cell.column.multilanguage
-    ? { [langtag]: mempty }
+    ? { [langtagToClear]: mempty }
     : mempty;
   store.dispatch(
     changeCellValue({ cell, oldValue: cell.value, newValue: clearedValue })
