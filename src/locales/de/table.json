@@ -193,7 +193,7 @@
   },
   "clear-cell": {
     "title": "Zellinhalte löschen",
-    "confirmation": "Wollen Sie die Zellinnhalte löschen?",
+    "confirmation": "Wollen Sie die Zellinnhalte auch für alle anderen Sprachen löschen?",
     "description": "Die folgenden Werte werden entfernt:"
   }
 }

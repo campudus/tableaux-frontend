@@ -193,7 +193,7 @@
   },
   "clear-cell": {
     "title": "Clear cell",
-    "confirmation": "Do you want to clear the cell value?",
+    "confirmation": "Do you also want to clear the cell value for all other languages?",
     "description": "This will clear the following values:"
   }
 }
