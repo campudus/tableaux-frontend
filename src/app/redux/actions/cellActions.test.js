@@ -1,5 +1,5 @@
 import { ColumnKinds } from "../../constants/TableauxConstants";
-import { isEmptyValue } from "./cellActions";
+import { getEmptyValue, isEmptyValue } from "./cellActions";
 
 describe("isEmptyValue()", () => {
   describe("date", () => {
@@ -20,4 +20,25 @@ describe("isEmptyValue()", () => {
       expect(isEmptyValue(ColumnKinds.datetime, x)).toBe(expected);
     });
   });
+});
+
+describe("getEmptyValue()", () => {
+  test.each`
+    kind                      | expected
+    ${ColumnKinds.attachment} | ${[]}
+    ${ColumnKinds.currency}   | ${0}
+    ${ColumnKinds.date}       | ${null}
+    ${ColumnKinds.datetime}   | ${null}
+    ${ColumnKinds.integer}    | ${null}
+    ${ColumnKinds.link}       | ${[]}
+    ${ColumnKinds.numeric}    | ${null}
+    ${ColumnKinds.richtext}   | ${null}
+    ${ColumnKinds.shorttext}  | ${null}
+    ${ColumnKinds.text}       | ${null}
+  `(
+    "Empty value for cell kind $kind should be $expected",
+    ({ kind, expected }) => {
+      expect(getEmptyValue(kind)).toEqual(expected);
+    }
+  );
 });
