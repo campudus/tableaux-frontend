@@ -7,13 +7,14 @@ const {
   TOGGLE_CELL_EDITING,
   SET_PREVENT_CELL_DESELECTION
 } = ActionTypes.tableView;
+import { getCellByIds } from "../redux-helpers";
 
 const initialState = { selectedCell: {}, preventCellSelection: false };
 
 export default (state = initialState, action, completeState) => {
   switch (action.type) {
     case TOGGLE_CELL_SELECTION:
-      return toggleSelectedCell(state, action);
+      return toggleSelectedCell(state, action, completeState);
     case TOGGLE_CELL_EDITING:
       return toggleCellEditing(state, action, completeState);
     case SET_PREVENT_CELL_DESELECTION:
@@ -58,19 +59,25 @@ const toggleCellEditing = (state, action, completeState) => {
   }
 };
 
-const toggleSelectedCell = (state, action) => {
+const toggleSelectedCell = (state, action, completeState) => {
   if (state.preventCellSelection) return state;
-  unlockRow(action.rowId, false);
-  return f.flow(
-    f.assoc("editing", false),
-    f.update("selectedCell", prevSelection =>
-      (action.select !== false &&
-        (prevSelection.rowId !== action.rowId ||
-          prevSelection.columnId !== action.columnId ||
-          prevSelection.langtag !== action.langtag)) ||
-      prevSelection.align !== action.align
-        ? f.pick(["rowId", "columnId", "langtag", "align"], action)
-        : {}
-    )
-  )(state);
+  else {
+    const getSelection = f.pick(["rowId", "columnId", "langtag", "tableId"]);
+    unlockRow(action.rowId, false);
+    const cell = getCellByIds(action, completeState);
+    return f.flow(
+      f.assoc("editing", false),
+      f.update("selectedCell", prevSelection =>
+        (action.select !== false &&
+          !f.equals(getSelection(action), getSelection(prevSelection))) ||
+        prevSelection.align !== action.align
+          ? f.assoc(
+              "cell",
+              cell,
+              f.pick(["rowId", "columnId", "langtag", "align"], action)
+            )
+          : {}
+      )
+    )(state);
+  }
 };
