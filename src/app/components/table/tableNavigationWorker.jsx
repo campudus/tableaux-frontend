@@ -12,6 +12,7 @@ import { isLocked } from "../../helpers/annotationHelper";
 import { doto, maybe, memoizeWith, unless } from "../../helpers/functools";
 import { getModifiers } from "../../helpers/modifierState";
 import { getTableDisplayName } from "../../helpers/multiLanguage";
+import { clearSelectedCellValue } from "../../redux/actions/cellActions";
 import store from "../../redux/store";
 import AttachmentOverlay from "../cells/attachment/AttachmentOverlay";
 import pasteCellValue from "../cells/cellCopyHelper";
@@ -39,8 +40,24 @@ export function getKeyboardShortcuts() {
     selectedCell: { selectedCell }
   } = store.getState();
   const selectedCellEditing = tableView.editing;
+  const { cell, langtag } = selectedCell;
+
+  const clearVisibleCellValue = () => {
+    if (
+      canUserChangeCell(cell, langtag) &&
+      cell.column.kind !== ColumnKinds.group
+    ) {
+      clearSelectedCellValue(cell, langtag);
+    }
+  };
 
   return {
+    backspace: _ => {
+      clearVisibleCellValue();
+    },
+    delete: _ => {
+      clearVisibleCellValue();
+    },
     left: event => {
       event.preventDefault();
       preventSleepingOnTheKeyboard.call(this, () => {
