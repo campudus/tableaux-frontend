@@ -118,6 +118,14 @@ export const isEmptyValue = (columnKind, value) => {
   return checkValue(value);
 };
 
+export const getEmptyValue = columnKind =>
+  match(columnKind)(
+    on(ColumnKinds.attachment, []),
+    on(ColumnKinds.currency, 0),
+    on(ColumnKinds.link, []),
+    otherwise(f.always(null))
+  );
+
 const clearableColumnKinds = [
   ColumnKinds.currency,
   ColumnKinds.date,
@@ -153,11 +161,13 @@ const shouldShowClearDialog = ({ cell, column, oldValue, newValue }) => {
 };
 
 const empty = cell => {
+  const mempty = getEmptyValue(cell.column.kind);
   const langtags =
     cell.column.languageType === LanguageType.country
       ? cell.column.countryCodes
       : Langtags;
-  return Object.fromEntries(langtags.map(lt => [lt, null]), cell);
+  return Object.fromEntries(langtags.map(lt => [lt, mempty]), cell);
+};
 };
 
 export const clearMultilangCell = cell => {
