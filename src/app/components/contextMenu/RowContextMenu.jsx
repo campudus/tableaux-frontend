@@ -37,6 +37,7 @@ import ContextMenuServices from "../frontendService/ContextMenuEntries";
 import { openHistoryOverlay } from "../history/HistoryOverlay";
 import GenericContextMenu from "./GenericContextMenu";
 import { isTextInRange } from "../../helpers/limitTextLength";
+import { clearSelectedCellValue } from "../../redux/actions/cellActions";
 
 // Distance between clicked coordinate and the left upper corner of the context menu
 const CLICK_OFFSET = 3;
@@ -310,6 +311,17 @@ class RowContextMenu extends React.Component {
     return this.mkItem(doOpen, "table:open-link-filtered", "external-link");
   };
 
+  clearCellValue = () => {
+    const { cell, langtag } = this.props;
+    const doClear = () => {
+      clearSelectedCellValue(cell, langtag);
+    };
+    return canUserChangeCell(cell, langtag) &&
+      cell.column.kind !== ColumnKinds.group
+      ? this.mkItem(doClear, "table:clear-cell.title", "times")
+      : null;
+  };
+
   mkItem = (action, label, icon, classes = "") => {
     return (
       <button
@@ -354,6 +366,7 @@ class RowContextMenu extends React.Component {
           {this.openLinksFilteredItem()}
           {this.copyItem()}
           {this.pasteItem()}
+          {this.clearCellValue()}
           {canUserEditCellAnnotations(cell)
             ? this.mkItem(
                 () => this.props.openAnnotations(cell),

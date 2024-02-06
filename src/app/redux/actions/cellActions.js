@@ -168,6 +168,15 @@ const empty = cell => {
       : Langtags;
   return Object.fromEntries(langtags.map(lt => [lt, mempty]), cell);
 };
+
+export const clearSelectedCellValue = (cell, langtag) => {
+  const mempty = getEmptyValue(cell.column.kind);
+  const clearedValue = cell.column.multilanguage
+    ? { [langtag]: mempty }
+    : mempty;
+  store.dispatch(
+    changeCellValue({ cell, oldValue: cell.value, newValue: clearedValue })
+  );
 };
 
 export const clearMultilangCell = cell => {
