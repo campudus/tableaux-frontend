@@ -20,6 +20,7 @@ const KEYS = {
   control: 17,
   command: 91,
   tab: 9,
+  delete: 46,
 
   // These optional keys allow to inject further functionality
   text: null, // use text key handler for any letter or number
