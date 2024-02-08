@@ -72,7 +72,7 @@ const CurrencyEditCell = ({
     <div
       className="cell-currency-rows"
       ref={container}
-      onMouseDown={evt => {
+      onClick={evt => {
         evt.stopPropagation();
       }}
     >
