@@ -202,7 +202,7 @@ class Cell extends React.Component {
         tableId: table.id
       });
     } else if (!withRightClick && this.userCanEditValue() && modifiers.none) {
-      actions.toggleCellEditing({ row, cell, eventKey: event.key });
+      actions.toggleCellEditing({ editing: true });
     }
   };
 
