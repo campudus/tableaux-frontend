@@ -99,13 +99,13 @@ const enhance = compose(
           rowId: row.id,
           cell
         });
+        actions.toggleCellEditing({ editing: false });
       }
     }
   ),
   lifecycle({
     componentWillUnmount() {
       this.props.saveEdits();
-      this.props.actions.toggleCellEditing({ editing: false });
     }
   })
 );
