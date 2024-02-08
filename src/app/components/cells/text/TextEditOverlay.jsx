@@ -105,6 +105,7 @@ const enhance = compose(
   lifecycle({
     componentWillUnmount() {
       this.props.saveEdits();
+      this.props.actions.toggleCellEditing({ editing: false });
     }
   })
 );
