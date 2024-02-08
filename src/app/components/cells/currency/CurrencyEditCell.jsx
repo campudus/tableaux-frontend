@@ -1,6 +1,6 @@
 import f from "lodash/fp";
 import PropTypes from "prop-types";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef } from "react";
 import { canUserChangeCountryTypeCell } from "../../../helpers/accessManagementHelper";
 import { outsideClickEffect } from "../../../helpers/useOutsideClick";
 import {

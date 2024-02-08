@@ -271,6 +271,7 @@ class LinkOverlay extends PureComponent {
       value,
       rowResults,
       actions,
+      cell,
       cell: { table, row, column }
     } = this.props;
     const linkedItems = rowResults.linked;
