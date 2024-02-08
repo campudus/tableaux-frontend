@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect } from "react";
 import { canUserChangeCell } from "../../../helpers/accessManagementHelper";
 import { isLocked } from "../../../helpers/annotationHelper";
 import { withForeignDisplayValues } from "../../helperComponents/withForeignDisplayValues";
@@ -7,16 +7,18 @@ import LinkLabelCell from "./LinkLabelCell.jsx";
 import { openLinkOverlay } from "./LinkOverlay.jsx";
 
 const LinkEditCell = props => {
-  const { cell, langtag, foreignDisplayValues, value, actions } = props;
+  const {
+    cell,
+    editing,
+    langtag,
+    foreignDisplayValues,
+    value,
+    actions
+  } = props;
 
   const catchScrolling = useCallback(event => {
     event && event.stopPropagation();
   }, []);
-  const openOverlay = useCallback(() => {
-    if (canUserChangeCell(cell, langtag) && !isLocked(cell.row)) {
-      openLinkOverlay({ cell, langtag, actions });
-    }
-  }, [cell.id]);
   const displayValue = foreignDisplayValues || props.displayValue;
 
   const links = value.map((element, index) => (
@@ -30,12 +32,15 @@ const LinkEditCell = props => {
     />
   ));
 
+  useEffect(() => {
+    if (editing && canUserChangeCell(cell, langtag) && !isLocked(cell.row)) {
+      openLinkOverlay({ cell, langtag, actions });
+      actions.toggleCellEditing({ editing: false });
+    }
+  }, [Boolean(editing), isLocked(cell.row)]);
+
   return (
-    <div
-      className={"cell-content"}
-      onScroll={catchScrolling}
-      onMouseDown={openOverlay}
-    >
+    <div className={"cell-content"} onScroll={catchScrolling}>
       {canUserChangeCell(cell, langtag)
         ? [
             ...links,
