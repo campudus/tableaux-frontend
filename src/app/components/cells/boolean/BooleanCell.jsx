@@ -43,13 +43,11 @@ const BooleanCell = props => {
       if (!isLocked(row) && canUserChangeCell(cell, langtag)) {
         handleEditDone(!getCheckboxValue());
       }
-    } else {
-      return true;
     }
   };
 
   return (
-    <div className={"cell-content"} onMouseDown={handleClick}>
+    <div className={"cell-content"} onClick={handleClick}>
       <input
         className="checkbox"
         type="checkbox"
