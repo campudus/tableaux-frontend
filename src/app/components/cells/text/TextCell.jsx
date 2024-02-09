@@ -7,6 +7,7 @@ import MarkdownEditor from "../../markdownEditor/MarkdownEditor";
 import Header from "../../overlay/Header";
 import ExpandButton from "./ExpandButton.jsx";
 import TextEditOverlay from "./TextEditOverlay";
+import { Langtags } from "../../../constants/TableauxConstants";
 
 const TextCell = props => {
   const {
@@ -30,7 +31,7 @@ const TextCell = props => {
       actions.openOverlay({
         head: <Header context={context} langtag={langtag} />,
         body: isRichText ? (
-          <MarkdownEditor {...props} readOnly={editable} />
+          <MarkdownEditor {...props} readOnly={!editable} />
         ) : (
           <TextEditOverlay {...props} readOnly={!editable} />
         ),
@@ -38,6 +39,7 @@ const TextCell = props => {
         type: "full-height",
         classes: isRichText ? "text-editor-overlay" : ""
       });
+      actions.toggleCellEditing({ editing: false });
     }
   }, [editing, value]);
 
