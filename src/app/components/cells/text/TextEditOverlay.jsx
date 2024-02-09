@@ -99,7 +99,6 @@ const enhance = compose(
           rowId: row.id,
           cell
         });
-        actions.toggleCellEditing({ editing: false });
       }
     }
   ),
