@@ -30,7 +30,7 @@ const DateEditCell = ({ showTime, value, onChange }) => {
           position: "absolute",
           top: needsShiftUp ? -DATE_PICKER_HEIGHT : "100%"
         }}
-        onMouseDown={evt => {
+        onClick={evt => {
           evt.stopPropagation();
           evt.preventDefault();
         }}
