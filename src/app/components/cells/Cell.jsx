@@ -257,6 +257,10 @@ class Cell extends React.Component {
       : canUserChangeCell(cell, langtag);
   }
 
+  stopBubblingUp = event => {
+    event.stopPropagation();
+  };
+
   render() {
     const {
       annotationsOpen,
@@ -302,7 +306,9 @@ class Cell extends React.Component {
         onContextMenu={this.rightClicked}
         tabIndex="1"
         onKeyDown={
-          selected
+          editing
+            ? this.stopBubblingUp
+            : selected
             ? KeyboardShortcutsHelper.onKeyboardShortcut(
                 this.getKeyboardShortcuts
               )
