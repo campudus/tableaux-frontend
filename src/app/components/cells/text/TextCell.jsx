@@ -7,7 +7,6 @@ import MarkdownEditor from "../../markdownEditor/MarkdownEditor";
 import Header from "../../overlay/Header";
 import ExpandButton from "./ExpandButton.jsx";
 import TextEditOverlay from "./TextEditOverlay";
-import { Langtags } from "../../../constants/TableauxConstants";
 
 const TextCell = props => {
   const {
