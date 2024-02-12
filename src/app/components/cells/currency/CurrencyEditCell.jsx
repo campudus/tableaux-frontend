@@ -59,12 +59,15 @@ const CurrencyEditCell = ({
     };
   }, []);
 
-  const handleChange = useCallback((country, inputValue) => {
-    onChange({
-      ...value,
-      [country]: fromCurrencyInputValue(inputValue)
-    });
-  }, []);
+  const handleChange = useCallback(
+    (country, inputValue) => {
+      onChange({
+        ...value,
+        [country]: fromCurrencyInputValue(inputValue)
+      });
+    },
+    [value]
+  );
 
   const inputValues = f.mapValues(toCurrencyInputValue, value);
 
