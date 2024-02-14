@@ -375,7 +375,11 @@ const RepeaterCell = withHandlers({
     openCellContextMenu({ cell, langtag: f.first(Langtags) })(event);
   }
 })(props => (
-  <div className="cell repeat placeholder" onContextMenu={props.onContextMenu}>
+  <div
+    style={props.style}
+    className="cell repeat placeholder"
+    onContextMenu={props.onContextMenu}
+  >
     —.—
   </div>
 ));
