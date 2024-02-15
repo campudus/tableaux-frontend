@@ -79,10 +79,16 @@ const CurrencyCell = ({
   }, []);
 
   const [value, setValue] = useState({});
+  const [dirty, setDirty] = useState(false);
+  const handleChange = useCallback(val => {
+    setValue(val);
+    setDirty(true);
+  });
 
   useEffect(() => {
-    if (!editing) {
+    if (!editing && dirty) {
       saveCellValue(value);
+      setDirty(false);
     }
   }, [editing, value]);
   useEffect(() => {
@@ -115,7 +121,7 @@ const CurrencyCell = ({
         <CurrencyEditCell
           cell={cell}
           exitEditMode={exitEditMode}
-          onChange={setValue}
+          onChange={handleChange}
           setCellKeyboardShortcuts={setCellKeyboardShortcuts}
           value={value}
         />
