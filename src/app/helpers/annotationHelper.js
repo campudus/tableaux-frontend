@@ -1,16 +1,16 @@
 import f from "lodash/fp";
-
-import { extractAnnotations, refreshAnnotations } from "./annotationHelper";
+import { LanguageType } from "../constants/TableauxConstants";
+// import { showDialog } from "../components/overlay/GenericOverlay";
+import actions from "../redux/actionCreators";
 import {
   isFlagAnnotation,
   isMultilangAnnotation,
   isTextAnnotation
 } from "../redux/actions/annotation-specs";
-import { maybe, unless } from "./functools";
 import { setRowFlag } from "../redux/actions/annotationActions";
-// import { showDialog } from "../components/overlay/GenericOverlay";
-import actions from "../redux/actionCreators";
 import store from "../redux/store";
+import { extractAnnotations, refreshAnnotations } from "./annotationHelper";
+import { maybe, unless } from "./functools";
 
 // function annotationError(heading, error) {
 //   const { message } = error;
@@ -65,38 +65,42 @@ const deleteCellAnnotation = (annotation, cell) =>
   });
 
 const addTranslationNeeded = (langtag, cell) =>
-  new Promise((resolve, reject) => {
-    const langtags = unless(f.isArray, lt => [lt], langtag);
-    store.dispatch(
-      actions.addAnnotationLangtags({
-        annotation: {
-          type: "flag",
-          value: "needs_translation",
-          langtags
-        },
-        onError: reject,
-        onSuccess: resolve,
-        cell
+  cell.column.languageType === LanguageType.language
+    ? new Promise((resolve, reject) => {
+        const langtags = unless(f.isArray, lt => [lt], langtag);
+        store.dispatch(
+          actions.addAnnotationLangtags({
+            annotation: {
+              type: "flag",
+              value: "needs_translation",
+              langtags
+            },
+            onError: reject,
+            onSuccess: resolve,
+            cell
+          })
+        );
       })
-    );
-  });
+    : Promise.resolve;
 
 const removeTranslationNeeded = (langtagOrLangtags, cell) =>
-  new Promise((resolve, reject) => {
-    const langtags = unless(f.isArray, lt => [lt], langtagOrLangtags);
-    store.dispatch(
-      actions.removeAnnotationLangtags({
-        annotation: {
-          type: "flag",
-          value: "needs_translation",
-          langtags
-        },
-        onError: reject,
-        onSuccess: resolve,
-        cell
+  cell.column.languageType === LanguageType.language
+    ? new Promise((resolve, reject) => {
+        const langtags = unless(f.isArray, lt => [lt], langtagOrLangtags);
+        store.dispatch(
+          actions.removeAnnotationLangtags({
+            annotation: {
+              type: "flag",
+              value: "needs_translation",
+              langtags
+            },
+            onError: reject,
+            onSuccess: resolve,
+            cell
+          })
+        );
       })
-    );
-  });
+    : Promise.resolve();
 
 const setRowFinal = ({ table, row, value = true }) => {
   setRowAnnotation({ table, row, flagName: "final", flagValue: value });
