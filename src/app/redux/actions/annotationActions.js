@@ -1,9 +1,8 @@
 import f from "lodash/fp";
-
 import { makeRequest } from "../../helpers/apiHelper";
+import route from "../../helpers/apiRoutes";
 import { when } from "../../helpers/functools";
 import ActionTypes from "../actionTypes.js";
-import route from "../../helpers/apiRoutes";
 
 const Change = { ADD: "ADD", DELETE: "DELETE" };
 const {
@@ -41,25 +40,24 @@ const modifyAnnotationLangtags = change => action => (dispatch, getState) => {
   const couldFindUuid =
     annotation.uuid || (existingAnnotation && existingAnnotation.uuid);
 
-  const promise = shouldDelete
-    ? makeRequest(paramToDeleteAnnotation(cell, existingAnnotation))
-    : change === Change.ADD
-    ? makeRequest(paramToSetAnnotation(cell, annotation))
-    : // else remove individual tags
-      Promise.all(
-        newLangtags.map(lt =>
-          makeRequest(
-            paramToDeleteAnnotationLangtag(cell, existingAnnotation, lt)
+  const startRequest = () =>
+    shouldDelete
+      ? makeRequest(paramToDeleteAnnotation(cell, existingAnnotation))
+      : change === Change.ADD
+      ? makeRequest(paramToSetAnnotation(cell, annotation))
+      : // else remove individual tags
+        Promise.all(
+          newLangtags.map(lt =>
+            makeRequest(
+              paramToDeleteAnnotationLangtag(cell, existingAnnotation, lt)
+            )
           )
-        )
-      );
+        );
   if (shouldDelete && !couldFindUuid) {
     return null;
-  }
-  // Avoid langtag race condition
-  if (!(shouldDelete && !couldFindUuid)) {
+  } else {
     dispatch({
-      promise,
+      promise: startRequest(),
       actionTypes: [
         shouldDelete ? REMOVE_CELL_ANNOTATION : SET_CELL_ANNOTATION,
         shouldDelete ? "NOTHING_TO_DO" : SET_CELL_ANNOTATION,
