@@ -153,6 +153,7 @@ class RowContextMenu extends React.Component {
       : f.get(["cell", "value"], copySource);
     return table.type !== "settings" &&
       copySource &&
+      canUserChangeCell(cell, langtag) &&
       !f.isEmpty(copySource) &&
       canConvert(copySource.cell.kind, cell.kind) &&
       !f.eq(cell.id, copySource.cell.id) &&
