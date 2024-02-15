@@ -6,16 +6,38 @@ import {
 import * as f from "lodash/fp";
 import Moment from "moment";
 
-const { shorttext, richtext, text, numeric, datetime, date } = ColumnKinds;
+const {
+  shorttext,
+  richtext,
+  text,
+  numeric,
+  datetime,
+  date,
+  integer
+} = ColumnKinds;
 
 // (string, string) -> bool
 const canConvert = (from, to) => {
   if (from === to) {
     return true;
   } else if (from === text) {
-    return f.contains(to, [numeric, date, datetime, shorttext, richtext]);
+    return f.contains(to, [
+      numeric,
+      date,
+      datetime,
+      shorttext,
+      richtext,
+      integer
+    ]);
   } else if (to === text) {
-    return f.contains(from, [numeric, shorttext, richtext, date, datetime]);
+    return f.contains(from, [
+      integer,
+      numeric,
+      shorttext,
+      richtext,
+      date,
+      datetime
+    ]);
   } else {
     return canConvert(from, text) && canConvert(text, to);
   }
@@ -44,15 +66,17 @@ const momentFromString = str => {
   return f.first(f.compact, values);
 };
 
+const textToNumber = f.flow(
+  cleanString,
+  f.parseInt(10),
+  f.defaultTo(null)
+);
 // string -> value
 const fromText = {
   [shorttext]: cleanString,
   [richtext]: f.identity,
-  [numeric]: f.flow(
-    cleanString,
-    f.parseInt(10),
-    f.defaultTo(null)
-  ),
+  [numeric]: textToNumber,
+  [integer]: textToNumber,
   [date]: str => {
     const mom = f.isEmpty(str) ? null : momentFromString(str);
     return mom ? mom.format(DateFormats.formatForServer) : null;
@@ -68,6 +92,7 @@ const toText = {
   [shorttext]: f.identity,
   [richtext]: f.identity,
   [numeric]: num => num.toString(),
+  [integer]: num => num.toString(),
   [date]: str => {
     const moment = momentFromString(str);
     return moment ? moment.format(DateFormats.formatForUser) : null;

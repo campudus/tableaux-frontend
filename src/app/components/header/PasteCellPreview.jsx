@@ -63,7 +63,8 @@ const cellRenderers = {
   [ColumnKinds.currency]: CurrencyCell,
   [ColumnKinds.text]: TextCell,
   [ColumnKinds.richtext]: TextCell,
-  [ColumnKinds.group]: IdentifierCell
+  [ColumnKinds.group]: IdentifierCell,
+  [ColumnKinds.integer]: NumericCell
 };
 
 const CellPreview = props => {
