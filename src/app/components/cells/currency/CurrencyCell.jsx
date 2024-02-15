@@ -78,13 +78,17 @@ const CurrencyCell = ({
     });
   }, []);
 
-  const [value, setValue] = useState(cell.value);
+  const [value, setValue] = useState({});
 
   useEffect(() => {
     if (!editing) {
       saveCellValue(value);
     }
   }, [editing, value]);
+  useEffect(() => {
+    // this is the cost of multiple state keeping
+    setValue(cell.value);
+  }, [cell.value]);
 
   const checkPosition = useCallback(
     domNode => {
