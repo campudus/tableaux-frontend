@@ -1,39 +1,48 @@
-import React from "react";
-import PropTypes from "prop-types";
 import i18n from "i18next";
-import { getLanguageOrCountryIcon } from "../../helpers/multiLanguage";
-import { canUserChangeCell } from "../../helpers/accessManagementHelper";
 import {
-  findIndex,
-  map,
-  sortBy,
-  reduce,
-  entries,
-  compose,
-  keys,
-  assoc,
-  cond,
-  eq,
-  identity,
   always,
-  stubTrue,
-  zip,
-  filter
+  assoc,
+  compose,
+  entries,
+  eq,
+  filter,
+  findIndex,
+  identity,
+  keys,
+  map,
+  reduce,
+  sortBy,
+  zip
 } from "lodash/fp";
+import { match, otherwise, when } from "match-iz";
+import Moment from "moment";
+import PropTypes from "prop-types";
+import React from "react";
 import {
   ColumnKinds,
   DateFormats,
   DateTimeFormats
 } from "../../constants/TableauxConstants";
-import Moment from "moment";
+import { canUserChangeCell } from "../../helpers/accessManagementHelper";
+import { getLanguageOrCountryIcon } from "../../helpers/multiLanguage";
+import InfoBox from "./InfoBox";
 
 const EMPTY_STRING = "---";
 const { date, datetime } = ColumnKinds;
-import InfoBox from "./InfoBox";
 
-const PasteMultilanguageCellInfo = props => {
-  const { oldVals, newVals, kind, cell } = props;
+const truncateText = maxLength => text =>
+  text.length > maxLength ? text.substring(0, maxLength) + "..." : text;
+const formatDate = pattern => str => Moment(str).format(pattern);
 
+export const MultilangCellChangeInfo = ({
+  cell,
+  headingText,
+  kind,
+  messageText,
+  newVals,
+  oldVals,
+  showOldValues: showNewValues
+}) => {
   const renderEntry = kind => ([key, value]) => {
     if (kind === "flag") {
       return (
@@ -45,19 +54,12 @@ const PasteMultilanguageCellInfo = props => {
 
     const MAX_LENGTH = 30;
     const formatValue = compose(
-      text =>
-        text.length > MAX_LENGTH ? text.substring(0, MAX_LENGTH) + "..." : text,
-      cond([
-        [
-          eq(date),
-          always(str => Moment(str).format(DateFormats.formatForUser))
-        ],
-        [
-          eq(datetime),
-          always(str => Moment(str).format(DateTimeFormats.formatForUser))
-        ],
-        [stubTrue, always(identity)]
-      ])(kind)
+      truncateText(MAX_LENGTH),
+      match(kind)(
+        when(date, always(formatDate(DateFormats.formatForUser))),
+        when(datetime, always(formatDate(DateTimeFormats.formatForUser))),
+        otherwise(always(identity))
+      )
     );
     return (
       <div key={key} className="entry">
@@ -91,28 +93,39 @@ const PasteMultilanguageCellInfo = props => {
     <div key={idx} className="item">
       {flag}
       <div className="old">{oldValue}</div>
-      <i className="fa fa-long-arrow-right" />
-      <div className="new">{newValue}</div>
+      {showNewValues ? (
+        <>
+          <i className="fa fa-long-arrow-right" />
+          <div className="new">{newValue}</div>
+        </>
+      ) : null}
     </div>
   ));
 
   return (
     <div id="confirm-copy-overlay-content" className="confirmation-overlay">
-      <InfoBox
-        heading={i18n.t("table:confirm_copy.header")}
-        message={i18n.t("table:confirm_copy.info")}
-        type="question"
-      />
+      <InfoBox heading={headingText} message={messageText} type="question" />
       <div className="content-items">{entrylist}</div>
     </div>
   );
 };
 
-PasteMultilanguageCellInfo.propTypes = {
-  langtag: PropTypes.string.isRequired,
-  oldVals: PropTypes.object.isRequired,
+MultilangCellChangeInfo.propTypes = {
+  cell: PropTypes.object.isRequired,
+  headingText: PropTypes.string,
+  kind: PropTypes.string.isRequired,
+  messageText: PropTypes.string,
   newVals: PropTypes.object.isRequired,
-  kind: PropTypes.string.isRequired
+  oldVals: PropTypes.object.isRequired,
+  showNewValues: PropTypes.bool
 };
 
+const PasteMultilanguageCellInfo = props => (
+  <MultilangCellChangeInfo
+    showNewValues
+    headingText={i18n.t("table:confirm_copy.header")}
+    messageText={i18n.t("table:confirm_copy.info")}
+    {...props}
+  />
+);
 export default PasteMultilanguageCellInfo;

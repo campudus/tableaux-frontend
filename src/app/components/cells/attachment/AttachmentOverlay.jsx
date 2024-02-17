@@ -80,6 +80,7 @@ const NewAttachmentOverlay = props => {
       : [...value, file];
 
     actions.changeCellValue({
+      cell,
       columnId: cell.column.id,
       rowId: cell.row.id,
       tableId: cell.table.id,

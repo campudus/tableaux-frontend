@@ -81,9 +81,9 @@ const addTranslationNeeded = (langtag, cell) =>
     );
   });
 
-const removeTranslationNeeded = (langtag, cell) =>
+const removeTranslationNeeded = (langtagOrLangtags, cell) =>
   new Promise((resolve, reject) => {
-    const langtags = unless(f.isArray, lt => [lt], langtag);
+    const langtags = unless(f.isArray, lt => [lt], langtagOrLangtags);
     store.dispatch(
       actions.removeAnnotationLangtags({
         annotation: {

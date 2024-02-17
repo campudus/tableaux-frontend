@@ -1,23 +1,31 @@
 import f from "lodash/fp";
-
-import { ColumnKinds, Langtags } from "../../constants/TableauxConstants";
-import { createLinkOrderRequest } from "../../helpers/linkHelper";
-import { refreshDependentRows } from "../updateDependentTables";
-import { makeRequest } from "../../helpers/apiHelper";
-import { merge, when } from "../../helpers/functools";
+import { match, otherwise, when as on } from "match-iz";
+import { showClearCellDialog } from "../../components/overlay/ClearCellDialog";
+import openTranslationDialog from "../../components/overlay/TranslationDialog";
 import {
+  ColumnKinds,
+  DefaultLangtag,
+  Langtags,
+  LanguageType
+} from "../../constants/TableauxConstants";
+import {
+  canUserChangeAllLangsOfCell,
   reduceValuesToAllowedCountries,
   reduceValuesToAllowedLanguages
 } from "../../helpers/accessManagementHelper";
 import {
-  removeTranslationNeeded,
-  addTranslationNeeded
+  addTranslationNeeded,
+  removeTranslationNeeded
 } from "../../helpers/annotationHelper";
-import ActionTypes from "../actionTypes";
-import openTranslationDialog from "../../components/overlay/TranslationDialog";
+import { makeRequest } from "../../helpers/apiHelper";
 import route from "../../helpers/apiRoutes";
-
+import { isValidDate } from "../../helpers/date";
+import { merge, when } from "../../helpers/functools";
+import { createLinkOrderRequest } from "../../helpers/linkHelper";
+import { getCountryOfLangtag } from "../../helpers/multiLanguage";
+import ActionTypes from "../actionTypes";
 import store from "../store";
+import { refreshDependentRows } from "../updateDependentTables";
 
 const {
   SET_STATE,
@@ -36,8 +44,7 @@ export const changeCellValue = action => (dispatch, getState) => {
     f.prop(["columns", tableId, "data"]),
     f.find(f.propEq("id", columnId))
   );
-  const column =
-    action.column || (action.cell && action.cell.column) || getColumn();
+  const column = action.column || action.cell?.column || getColumn();
 
   // Merge allowed changes into old cell value, so we can use the
   // delta to calculate a new display value immediately without
@@ -56,6 +63,30 @@ export const changeCellValue = action => (dispatch, getState) => {
         )
       : action.newValue;
 
+  const cell = action.cell || {
+    id: `cell-${tableId}-${columnId}-${rowId}`,
+    column,
+    table: { ...(action.table ?? {}), id: tableId },
+    row: { ...(action.row ?? {}), id: rowId }
+  };
+
+  if (!action.cell) {
+    // TODO: This is mostly required to check if a cell can be completely
+    // cleared. All currently clearable cell types pass cells in properly.
+    // Once this error stops appearing, we can remove the check.
+    console.error("NO CELL OBJECT PASSED IN, using Fallback");
+  }
+  if (
+    !action.dontClear &&
+    shouldShowClearDialog({
+      column,
+      oldValue: action.oldValue,
+      newValue,
+      cell: action.cell
+    })
+  ) {
+    showClearCellDialog({ ...action, cell });
+  }
   return dispatch(
     dispatchCellValueChange({
       ...action,
@@ -64,13 +95,123 @@ export const changeCellValue = action => (dispatch, getState) => {
       rowId,
       tableId,
       newValue,
-      cell: action.cell || {
-        column,
-        table: { id: tableId },
-        row: { id: rowId }
-      }
+      cell
     })
   );
+};
+
+const getPrimaryLanguage = cell =>
+  cell.column.languageType === LanguageType.country
+    ? cell.column.countryCodes[0]
+    : DefaultLangtag;
+
+export const isEmptyValue = (columnKind, value) => {
+  const isEmptyNumberInputValue = x =>
+    f.isEmpty(x) && (typeof x !== "number" || isNaN(x));
+  const checkValue = match(columnKind)(
+    on(ColumnKinds.date, f.always(f.negate(isValidDate))),
+    on(ColumnKinds.datetime, f.always(f.negate(isValidDate))),
+    on(ColumnKinds.integer, f.always(isEmptyNumberInputValue)),
+    on(ColumnKinds.numeric, f.always(isEmptyNumberInputValue)),
+    on(ColumnKinds.currency, f.always(f.equals(0))),
+    otherwise(f.always(f.isEmpty))
+  );
+  return checkValue(value);
+};
+
+export const getEmptyValue = columnKind =>
+  match(columnKind)(
+    on(ColumnKinds.attachment, []),
+    on(ColumnKinds.currency, 0),
+    on(ColumnKinds.link, []),
+    otherwise(f.always(null))
+  );
+
+const clearableColumnKinds = [
+  ColumnKinds.currency,
+  ColumnKinds.date,
+  ColumnKinds.datetime,
+  ColumnKinds.integer,
+  ColumnKinds.numeric,
+  ColumnKinds.richtext,
+  ColumnKinds.shorttext,
+  ColumnKinds.text
+];
+
+const shouldShowClearDialog = ({ cell, column, oldValue, newValue }) => {
+  const typeIsToClear = clearableColumnKinds.includes(column.kind);
+  const isMultilanguage = column.multilanguage;
+  const primaryLanguage = getPrimaryLanguage(cell);
+  const mainLangtagChanged = f.has(primaryLanguage, newValue);
+  const valueHasBeenCleared =
+    isMultilanguage &&
+    !isEmptyValue(column.kind, oldValue[primaryLanguage]) &&
+    isEmptyValue(column.kind, newValue[primaryLanguage]);
+  const hasValuesToClear =
+    Object.entries({ ...oldValue, newValue }).filter(
+      ([lt, val]) => lt !== primaryLanguage && !isEmptyValue(column.kind, val)
+    ).length > 0;
+  return (
+    isMultilanguage &&
+    mainLangtagChanged &&
+    typeIsToClear &&
+    valueHasBeenCleared &&
+    hasValuesToClear &&
+    canUserChangeAllLangsOfCell(cell)
+  );
+};
+
+const empty = cell => {
+  const mempty = getEmptyValue(cell.column.kind);
+  const langtags =
+    cell.column.languageType === LanguageType.country
+      ? cell.column.countryCodes
+      : Langtags;
+  return Object.fromEntries(langtags.map(lt => [lt, mempty]), cell);
+};
+
+export const clearSelectedCellValue = (cell, langtag) => {
+  const mempty = getEmptyValue(cell.column.kind);
+  const langtagToClear =
+    cell.column.languageType === LanguageType.country
+      ? getCountryOfLangtag(langtag)
+      : langtag;
+  const clearedValue = cell.column.multilanguage
+    ? { [langtagToClear]: mempty }
+    : mempty;
+  store.dispatch(
+    changeCellValue({ cell, oldValue: cell.value, newValue: clearedValue })
+  );
+};
+
+export const clearMultilangCell = cell => {
+  if (!cell?.column?.multilanguage) {
+    throw new Error(`${cell?.id} is not a multilanguage cell`);
+  }
+  const emptyValue = empty(cell);
+  const action = () => ({
+    cell,
+    column: cell.column,
+    oldValue: cell.value,
+    newValue: emptyValue,
+    tableId: cell.table.id,
+    columnId: cell.column.id,
+    rowId: cell.row.id,
+    promise: makeRequest({
+      method: "POST",
+      apiRoute: route.toCell({
+        tableId: cell.table.id,
+        columnId: cell.column.id,
+        rowId: cell.row.id
+      }),
+      data: { value: emptyValue }
+    }),
+    onSuccess: () => {
+      removeTranslationNeeded(Langtags, cell);
+    },
+    actionTypes: [CELL_SET_VALUE, CELL_SAVED_SUCCESSFULLY, CELL_ROLLBACK_VALUE]
+  });
+  store.dispatch(action());
 };
 
 const dispatchCellValueChange = action => (dispatch, getState) => {

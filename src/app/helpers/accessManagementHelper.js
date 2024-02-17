@@ -1,9 +1,13 @@
 import f from "lodash/fp";
-
-import { Langtags, ImmutableColumnKinds } from "../constants/TableauxConstants";
-import { memoizeWith, unless } from "./functools";
-import { noAuthNeeded } from "./authenticate";
+import {
+  ImmutableColumnKinds,
+  Langtags,
+  LanguageType
+} from "../constants/TableauxConstants";
 import store from "../redux/store";
+import { noAuthNeeded } from "./authenticate";
+import { memoizeWith, unless } from "./functools";
+import { getCountryOfLangtag } from "./multiLanguage";
 
 // Table data editing permissions
 
@@ -64,16 +68,27 @@ const getPermission = pathToPermission =>
   );
 
 // (cell | {tableId: number, columnId: number}) -> (langtag | nil) -> boolean
-export const canUserChangeCell = f.curry((cellInfo, langtag) => {
-  const { kind } = cellInfo;
-  const editCellValue = getPermission(["column", "editCellValue"])(cellInfo);
+export const canUserChangeCell = f.curry((cell, langtag) => {
+  const { kind } = cell;
+  const editCellValue = getPermission(["column", "editCellValue"])(cell);
+  const language = f.propEq("column.languageType", LanguageType.country)(cell)
+    ? getCountryOfLangtag(langtag)
+    : langtag;
 
   const allowed = f.isBoolean(editCellValue)
     ? editCellValue
-    : f.isPlainObject(editCellValue) && editCellValue[langtag];
+    : f.isPlainObject(editCellValue) && editCellValue[language];
 
   return !f.contains(kind, ImmutableColumnKinds) && (allowed || noAuthNeeded()); // this special case is not caught by ALLOW_ANYTHING
 });
+
+export const canUserChangeAllLangsOfCell = cellInfo => {
+  const langs =
+    cellInfo.column.languageType === LanguageType.country
+      ? cellInfo.column.countryCodes
+      : Langtags;
+  return langs.every(canUserChangeCell(cellInfo));
+};
 
 export const canUserChangeAnyCountryTypeCell = cellInfo => {
   const allowed =

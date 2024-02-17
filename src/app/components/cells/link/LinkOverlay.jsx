@@ -203,6 +203,7 @@ class LinkOverlay extends PureComponent {
 
     const { table, column, row } = cell;
     actions.changeCellValue({
+      cell,
       tableId: table.id,
       rowId: row.id,
       columnId: column.id,
@@ -270,6 +271,7 @@ class LinkOverlay extends PureComponent {
       value,
       rowResults,
       actions,
+      cell,
       cell: { table, row, column }
     } = this.props;
     const linkedItems = rowResults.linked;
@@ -280,6 +282,7 @@ class LinkOverlay extends PureComponent {
     )(linkedItems);
 
     actions.changeCellValue({
+      cell,
       columnId: column.id,
       rowId: row.id,
       tableId: table.id,
@@ -293,6 +296,7 @@ class LinkOverlay extends PureComponent {
       value,
       rowResults,
       actions,
+      cell,
       cell: { table, row, column }
     } = this.props;
     const linkedItems = rowResults.linked;
@@ -302,6 +306,7 @@ class LinkOverlay extends PureComponent {
       ordering
     );
     actions.changeCellValue({
+      cell,
       columnId: column.id,
       rowId: row.id,
       tableId: table.id,

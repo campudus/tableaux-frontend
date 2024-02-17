@@ -41,6 +41,14 @@ export const idsToIndices = (
   }
 };
 
+export const getCellByIds = (ids, state) => {
+  const [rowIdx, columnIdx] = idsToIndices(ids, state);
+  const row = f.prop(`rows.${ids.tableId}.data.${rowIdx}`, state);
+  const value = f.prop(`values.${columnIdx}`, row);
+  const cell = f.prop(`cells.${columnIdx}`, row);
+  return { ...cell, value };
+};
+
 export const tableColumnKey = arg => {
   const [tableId, columnId] = f.props(["tableId", ["column", "id"]], arg);
   return f.every(f.isNil, [tableId, columnId])
@@ -155,7 +163,7 @@ export const getUpdatedCellValueToSet = (
     ColumnKinds.status
   ];
   const mergeCellValues = () =>
-    !column.multilanguage || f.contains(column.kind, unmergeableTypes)
+    !column?.multilanguage || f.contains(column?.kind, unmergeableTypes)
       ? newValue
       : merge(oldValue, newValue);
   return isRollback ? oldValue : mergeCellValues();

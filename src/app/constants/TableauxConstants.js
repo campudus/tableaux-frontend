@@ -34,10 +34,11 @@ const grudConstants = {
     status: null
   }),
 
-  ImmutableColumnKinds: ["status"],
+  ImmutableColumnKinds: ["status", "concat"],
 
   LanguageType: keyMirror({
-    country: null
+    country: null,
+    language: null
   }),
 
   ViewNames: keyMirror({

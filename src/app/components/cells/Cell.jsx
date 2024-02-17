@@ -146,19 +146,19 @@ class Cell extends React.Component {
       cell: this.props.cell
     })(event);
 
-  cellClickedWorker = (event, withRightClick) => {
+  cellClickedWorker = event => {
     requestAnimationFrame(() => {
       if (document.activeElement === document.body) {
         this.cellRef.current?.focus();
       }
     });
+
     const {
       actions,
       cell,
       columns,
       editing,
       isExpandedCell,
-      langtag,
       rows,
       selected,
       visibleColumns: visibleColumnIdces
@@ -166,52 +166,62 @@ class Cell extends React.Component {
     if (!editing) {
       event.stopPropagation();
     }
-    const { table, column, row } = cell;
-    const modifiers = getModifiers(event);
 
-    if (withRightClick) {
+    const modifiers = getModifiers(event);
+    this.props.closeCellContextMenu();
+    if (modifiers.none) {
+      actions.clearMultiselect();
+    } else if (!isExpandedCell && modifiers.mod) {
       event.preventDefault();
-      event.stopPropagation();
-      this.openCellContextMenu(event);
-    } else {
-      this.props.closeCellContextMenu();
-      if (modifiers.none) {
-        actions.clearMultiselect();
-      } else if (!isExpandedCell && modifiers.mod) {
-        event.preventDefault();
-        actions.toggleMultiselectCell({ cell });
-      } else if (!isExpandedCell && modifiers.shift) {
-        event.preventDefault();
-        actions.toggleMultiselectArea({
-          cell,
-          columns: visibleColumnIdces.map(idx => ({
-            ...columns[idx],
-            idx
-          })),
-          rows
-        });
-      }
+      actions.toggleMultiselectCell({ cell });
+    } else if (!isExpandedCell && modifiers.shift) {
+      event.preventDefault();
+      actions.toggleMultiselectArea({
+        cell,
+        columns: visibleColumnIdces.map(idx => ({
+          ...columns[idx],
+          idx
+        })),
+        rows
+      });
     }
 
     // we select the cell when clicking or right clicking. Don't jump in edit mode when selected and clicking right
     if (!selected && modifiers.none) {
-      actions.toggleCellSelection({
-        columnId: column.id,
-        rowId: row.id,
-        langtag,
-        tableId: table.id
-      });
-    } else if (!withRightClick && this.userCanEditValue() && modifiers.none) {
-      actions.toggleCellEditing({ row, cell, eventKey: event.key });
+      this.setSelfAsSelected();
+    } else if (this.userCanEditValue() && modifiers.none) {
+      actions.toggleCellEditing({ editing: true });
     }
   };
 
+  setSelfAsSelected = () => {
+    const {
+      actions,
+      cell: { column, row, table },
+      langtag
+    } = this.props;
+    actions.toggleCellSelection({
+      columnId: column.id,
+      rowId: row.id,
+      tableId: table.id,
+      langtag
+    });
+  };
+
   rightClicked = event => {
-    this.cellClickedWorker(event, true);
+    event.preventDefault();
+    event.stopPropagation();
+    this.openCellContextMenu(event);
+    if (!this.props.selected) {
+      this.setSelfAsSelected();
+    }
   };
 
   cellClicked = event => {
-    this.cellClickedWorker(event);
+    const withRightClick = event.button > 0;
+    return withRightClick
+      ? this.rightClicked(event)
+      : this.cellClickedWorker(event);
   };
 
   componentDidCatch(error, info) {
@@ -246,6 +256,10 @@ class Cell extends React.Component {
       ? canUserChangeAnyCountryTypeCell(cell)
       : canUserChangeCell(cell, langtag);
   }
+
+  stopBubblingUp = event => {
+    event.stopPropagation();
+  };
 
   render() {
     const {
@@ -288,11 +302,13 @@ class Cell extends React.Component {
         ref={this.cellRef}
         style={this.props.style}
         className={cssClass}
-        onMouseDown={this.cellClicked}
+        onClick={this.cellClicked}
         onContextMenu={this.rightClicked}
         tabIndex="1"
         onKeyDown={
-          selected
+          editing
+            ? this.stopBubblingUp
+            : selected
             ? KeyboardShortcutsHelper.onKeyboardShortcut(
                 this.getKeyboardShortcuts
               )
@@ -359,7 +375,11 @@ const RepeaterCell = withHandlers({
     openCellContextMenu({ cell, langtag: f.first(Langtags) })(event);
   }
 })(props => (
-  <div className="cell repeat placeholder" onContextMenu={props.onContextMenu}>
+  <div
+    style={props.style}
+    className="cell repeat placeholder"
+    onContextMenu={props.onContextMenu}
+  >
     —.—
   </div>
 ));

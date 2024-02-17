@@ -1,26 +1,25 @@
+import classNames from "classnames";
+import i18n from "i18next";
+import f from "lodash/fp";
+import PropTypes from "prop-types";
 import React, { Component } from "react";
 import ReactDOM from "react-dom";
-import f from "lodash/fp";
-import i18n from "i18next";
 import listenToClickOutside from "react-onclickoutside";
-
-import PropTypes from "prop-types";
-import classNames from "classnames";
-
+import pasteCellValue from "../../components/cells/cellCopyHelper";
 import { ColumnKinds, Langtags } from "../../constants/TableauxConstants";
 import {
   addTranslationNeeded,
   deleteCellAnnotation,
-  setCellAnnotation,
-  removeTranslationNeeded
+  removeTranslationNeeded,
+  setCellAnnotation
 } from "../../helpers/annotationHelper";
 import { canConvert } from "../../helpers/cellValueConverter";
 import { merge } from "../../helpers/functools";
-import { openShowDependency } from "../overlay/ConfirmDependentOverlay";
-import SvgIcon from "../helperComponents/SvgIcon";
 import actions from "../../redux/actionCreators";
 import store from "../../redux/store";
-import pasteCellValue from "../../components/cells/cellCopyHelper";
+import SvgIcon from "../helperComponents/SvgIcon";
+import { openShowDependency } from "../overlay/ConfirmDependentOverlay";
+import { clearSelectedCellValue } from "../../redux/actions/cellActions";
 
 @listenToClickOutside
 class MenuPopup extends Component {
@@ -71,7 +70,7 @@ class ItemPopupMenu extends Component {
     this.props.funcs.closeItemPopup();
   };
 
-  mkEntry = (idx, { title, fn, value, icon, classes }) => {
+  mkEntry = (_, { title, fn, value, icon, classes }) => {
     const clickHandler = f.flow(
       e => {
         e.stopPropagation();
@@ -274,6 +273,15 @@ class ItemPopupMenu extends Component {
                       langtag
                     ),
                   icon: "clipboard"
+                })}
+            {thisUserCantEdit || cell.column.kind === ColumnKinds.group
+              ? null
+              : this.mkEntry(3, {
+                  title: "table:clear-cell.title",
+                  fn: () => {
+                    clearSelectedCellValue(cell, langtag);
+                  },
+                  icon: "times"
                 })}
             {this.mkToggleFlagItem("important")}
             {this.mkToggleFlagItem("check-me")}

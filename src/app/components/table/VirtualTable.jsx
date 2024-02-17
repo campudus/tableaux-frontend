@@ -320,7 +320,7 @@ export default class VirtualTable extends PureComponent {
 
     return (
       <div className="cell-stack">
-        {Langtags.map(langtag => {
+        {Langtags.map((langtag, idx) => {
           const isPrimaryLang = langtag === f.first(Langtags);
           const displayValue = this.getDisplayValueWithFallback(
             rowIndex,
@@ -328,6 +328,8 @@ export default class VirtualTable extends PureComponent {
             column,
             cell.value
           );
+
+          const style = { position: "absolute", top: `${idx * ROW_HEIGHT}px` };
 
           return (
             <Cell
@@ -354,6 +356,7 @@ export default class VirtualTable extends PureComponent {
               value={cell.value}
               visibleColumns={this.props.visibleColumnOrdering}
               width={width}
+              style={style}
             />
           );
         })}
