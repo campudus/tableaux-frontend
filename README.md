@@ -93,6 +93,22 @@ Following variable names can be used:
 PORT=3001 npm run start
 ```
 
+## Troubleshooting
+
+### NPM install fails with `node-gyp` error
+
+Something like this:
+
+```sh
+npm ERR! Traceback (most recent call last):
+npm ERR!   File "/Users/xxx/.nvm/versions/node/v20.5.1/lib/node_modules/npm/node_modules/node-gyp/gyp/gyp_main.py", line 42, in <module>
+npm ERR!     import gyp  # noqa: E402
+npm ERR!     ^^^^^^^^^^
+```
+
+This is because `distutils` has been removed in Python v3.12. You can fix this by downgrade/installing Python v3.11.
+The simplest and flexible way to manage Python versions is to use `pyenv`. Install it and use a `.python-version` file in the project root to specify the version.
+
 ## License
 
 ```txt
