@@ -14,7 +14,9 @@ import PermissionDenied from "../../helperComponents/PermissionDenied";
 
 const isViewableUrl = url => {
   const fileType = f.last(url.split(".")).toLowerCase();
-  return ["png", "jpg", "gif", "html", "pdf", "webp", "svg"].includes(fileType);
+  return ["png", "jpg", "jpeg", "gif", "html", "pdf", "webp", "svg"].includes(
+    fileType
+  );
 };
 
 const LinkButton = ({ className, onClick, disabled = !onClick, children }) => {
