@@ -3,7 +3,7 @@ import f from "lodash/fp";
 import React from "react";
 import askForSessionUnlock from "../components/helperComponents/SessionUnlockDialog";
 import { loadAndOpenEntityView } from "../components/overlay/EntityViewOverlay";
-import { FilterModes, Langtags } from "../constants/TableauxConstants";
+import { Langtags } from "../constants/TableauxConstants";
 import { isLocked } from "../helpers/annotationHelper";
 import { makeRequest } from "../helpers/apiHelper";
 import API_ROUTES from "../helpers/apiRoutes";
@@ -396,36 +396,40 @@ const loadTableView = (tableId, customFilters) => (dispatch, getState) => {
   } = globalSettings;
   const storedView = getStoredViewObject(tableId);
   const { visibleColumns, rowsFilter, columnOrdering } = storedView;
-  const idFilterMode = { mode: FilterModes.ID_ONLY };
   const storedFilters = f.get(["filters"], rowsFilter) ?? [];
-  const storedIdFilter = f.filter(idFilterMode, storedFilters);
-  const storedUserFilters = f.compact(f.reject(idFilterMode, storedFilters));
-  const hasStoredIdFilter = !f.isEmpty(storedIdFilter);
-  const sortColumnId = f.get(["sortColumnId"], rowsFilter);
-  const sortValue = f.get(["sortValue"], rowsFilter);
-  const hasSorting = !f.isNil(sortColumnId) && !f.isNil(sortValue);
+  const storedSortColumnId = f.get(["sortColumnId"], rowsFilter);
+  const storedSortValue = f.get(["sortValue"], rowsFilter);
   const hasCustomFilters = !f.isEmpty(customFilters);
+  const hasStoredSorting =
+    !f.isNil(storedSortColumnId) && !f.isNil(storedSortValue);
   const hasStoredFilters = !f.isEmpty(storedFilters);
 
   if (
     hasCustomFilters ||
+    hasStoredSorting ||
     hasStoredFilters ||
     filterReset ||
     sortingReset ||
-    sortingDesc ||
-    hasSorting
+    sortingDesc
   ) {
-    const filters = hasCustomFilters
-      ? customFilters
-      : hasStoredIdFilter
-      ? storedIdFilter
-      : storedUserFilters;
-    const sorting = {
-      columnId: sortingDesc ? -1 : sortingReset ? null : sortColumnId,
-      value: sortingDesc ? "DESC" : sortingReset ? null : sortValue
+    const permanentFilters = filterReset ? [] : storedFilters;
+    const permanentSortColumnId = sortingReset ? null : storedSortColumnId;
+    const permanentSortValue = sortingReset ? null : storedSortValue;
+    const tempFilters = hasCustomFilters ? customFilters : permanentFilters;
+    const tempSorting = {
+      columnId: sortingDesc ? -1 : permanentSortColumnId,
+      value: sortingDesc ? "DESC" : permanentSortValue
     };
 
-    dispatch(setFiltersAndSorting(filters, sorting));
+    // apply temporary filters
+    dispatch(setFiltersAndSorting(tempFilters, tempSorting, false));
+
+    // persist permanent filters
+    saveFilterSettings(tableId, {
+      sortColumnId: permanentSortColumnId,
+      sortValue: permanentSortValue,
+      filters: permanentFilters
+    });
   }
 
   if (!f.isEmpty(columnOrdering)) {
