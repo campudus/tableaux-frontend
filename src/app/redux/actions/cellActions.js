@@ -176,9 +176,10 @@ export const clearSelectedCellValue = (cell, langtag) => {
     cell.column.languageType === LanguageType.country
       ? getCountryOfLangtag(langtag)
       : langtag;
-  const clearedValue = cell.column.multilanguage
-    ? { [langtagToClear]: mempty }
-    : mempty;
+  const clearedValue =
+    cell.column.multilanguage && cell.column.kind !== ColumnKinds.link
+      ? { [langtagToClear]: mempty }
+      : mempty;
   store.dispatch(
     changeCellValue({ cell, oldValue: cell.value, newValue: clearedValue })
   );
