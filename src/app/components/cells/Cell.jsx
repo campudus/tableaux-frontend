@@ -263,7 +263,7 @@ class Cell extends React.Component {
 
   preventTextRangeSelection = event => {
     const modifiers = getModifiers(event);
-    if (modifiers.shift) {
+    if (modifiers.shift || modifiers.mod) {
       event.preventDefault();
     }
   };
