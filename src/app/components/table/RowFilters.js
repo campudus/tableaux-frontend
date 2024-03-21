@@ -13,6 +13,7 @@ import {
 import searchFunctions, {
   StatusSearchFunction
 } from "../../helpers/searchFunctions";
+import * as t from "../../helpers/transduce";
 
 export const FilterableCellKinds = [
   ColumnKinds.concat,
@@ -53,16 +54,17 @@ const getFilteredRows = (
   filterSettings
 ) => {
   const closures = mkClosures(columns, rowsWithIndex, langtag, filterSettings);
+
   const allFilters = f.flow(
     // eslint-disable-line lodash-fp/prefer-composition-grouping
     f.map(mkFilterFn(closures)),
-    f.map(fn => withTryCatch(fn, console.error)) // to get errors, replace f.always(false) with eg. console.error
+    f.map(fn => withTryCatch(fn, console.error)), // to get errors, replace f.always(false) with eg. console.error
+    f.map(t.filter)
   )(filterSettings.filters || []);
-  const combinedFilter = f.flow(
-    f.juxt(allFilters),
-    f.every(f.identity)
-  );
-  const filteredRows = f.filter(combinedFilter, rowsWithIndex);
+  const filteredRows = f.isEmpty(allFilters)
+    ? rowsWithIndex
+    : t.transduceList(...allFilters)(rowsWithIndex);
+
   const { sortColumnId, sortValue } = filterSettings;
 
   // sort by ID
