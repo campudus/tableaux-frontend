@@ -1,11 +1,12 @@
 import f from "lodash/fp";
+import { isRowArchived } from "../../archivedRows";
 import {
   ColumnKinds,
   FilterModes,
   RowIdColumn,
   SortValues
 } from "../../constants/TableauxConstants";
-import { doto, either, withTryCatch } from "../../helpers/functools";
+import { doto, either, unless, withTryCatch } from "../../helpers/functools";
 import {
   getCountryOfLangtag,
   getLanguageOfLangtag
@@ -59,7 +60,8 @@ const getFilteredRows = (
     // eslint-disable-line lodash-fp/prefer-composition-grouping
     f.map(mkFilterFn(closures)),
     f.map(fn => withTryCatch(fn, console.error)), // to get errors, replace f.always(false) with eg. console.error
-    f.map(t.filter)
+    f.map(t.filter),
+    unless(() => filterSettings.showArchived, f.concat(t.reject(isRowArchived)))
   )(filterSettings.filters || []);
   const filteredRows = f.isEmpty(allFilters)
     ? rowsWithIndex
