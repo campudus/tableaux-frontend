@@ -143,7 +143,9 @@ const filterRows = ({
   allDisplayValues,
   actions: { setColumnsVisible }
 }) => {
-  const nothingToFilter = f.isEmpty(sorting) && f.isEmpty(filters);
+  const showArchived = Boolean(filters.showArchived);
+  const nothingToFilter =
+    f.isEmpty(sorting) && f.isEmpty(filters) && showArchived;
   if (f.isNil(rows) || f.isEmpty(allDisplayValues) || nothingToFilter) {
     return {
       visibleRows: f.range(0, f.size(rows)),
@@ -152,10 +154,12 @@ const filterRows = ({
   }
   const isFilterEmpty = filter =>
     f.isEmpty(filter.value) && !f.isString(filter.mode);
+
   const rowsFilter = {
     sortColumnId: sorting.columnId,
     sortValue: sorting.value,
-    filters: f.reject(isFilterEmpty, filters)
+    filters: f.reject(isFilterEmpty, filters),
+    showArchived
   };
   const rowsWithIndex = completeRowInformation(
     columns,
