@@ -56,6 +56,7 @@ const initialState = {
   visibleRows: [],
   filters: [],
   sorting: [],
+  showArchived: false,
   history: {
     undoQueue: [],
     redoQueue: []
@@ -368,8 +369,9 @@ export default (state = initialState, action, completeState) => {
     case SET_FILTERS_AND_SORTING:
       return {
         ...state,
-        filters: action.filters || state.filters,
-        sorting: action.sorting || state.sorting,
+        filters: action.filters ?? state.filters,
+        sorting: action.sorting ?? state.sorting,
+        showArchived: action.showArchived ?? state.showArchived,
         expandedRowIds: []
       };
     case CLEAN_UP:
