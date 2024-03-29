@@ -1,28 +1,21 @@
-DEPLOY_DIR = 'build/deploy'
-TEST_COVERAGE_FILE = 'output/coverage/junit.xml'
+@Library('campudus-jenkins-shared-lib') _
 
-IMAGE_NAME = "campudus/grud-frontend"
-ARCHIVE_FILENAME_DIST="grud-frontend-dist.tar.gz"
-DOCKER_BASE_IMAGE_TAG = "build-${BUILD_NUMBER}"
+final String BRANCH = params.BRANCH
+final boolean NOTIFY_SLACK_ON_FAILURE = params.NOTIFY_SLACK_ON_FAILURE
+final boolean NOTIFY_SLACK_ON_SUCCESS = params.NOTIFY_SLACK_ON_SUCCESS
 
+final String BRANCH_NAME = BRANCH ? BRANCH.tokenize('/').last() : ""
+final String DEPLOY_DIR = 'build/deploy'
+final String TEST_COVERAGE_FILE = 'output/coverage/junit.xml'
 
-def slackParams = { GString message, String color ->
-  [
-    tokenCredentialId : "${env.SLACK_GRUD_INTEGRATION_ID}",
-    channel           : "#grud",
-    color             : color,
-    message           : message
-  ]
-}
+final String IMAGE_NAME = "campudus/grud-frontend"
+final String ARCHIVE_FILENAME_DIST = "grud-frontend-dist.tar.gz"
+final GString DOCKER_BASE_IMAGE_TAG = "build-${BUILD_NUMBER}"
 
-def getTriggeringUser = env.BUILD_USER ? env.BUILD_USER : { sh (
-      script: 'git --no-pager show -s --format=%an',
-      returnStdout: true
-    ).trim()
-}
+final String SLACK_CHANNEL = "#grud"
 
 pipeline {
-  agent any
+  agent { label 'agent1' }
 
   options {
     timestamps()
@@ -32,10 +25,14 @@ pipeline {
 
   environment {
     COMMIT_INFO = sh(returnStdout: true, script: './getCommitHash.sh').trim()
-    GIT_HASH = sh (returnStdout: true, script: 'git log -1 --pretty=%h').trim()
+    GIT_HASH = sh(returnStdout: true, script: 'git log -1 --pretty=%h').trim()
     BUILD_DATE = sh(returnStdout: true, script: 'date \"+%Y-%m-%d %H:%M:%S\"').trim()
     GIT_COMMIT_DATE = sh(returnStdout: true, script: "git show -s --format=%ci").trim()
-    BRANCH_NAME = params.BRANCH.tokenize('/').last()
+  }
+
+  parameters {
+    booleanParam(name: 'NOTIFY_SLACK_ON_FAILURE', defaultValue: true, description: '')
+    booleanParam(name: 'NOTIFY_SLACK_ON_SUCCESS', defaultValue: false, description: '')
   }
 
   stages {
@@ -84,7 +81,7 @@ pipeline {
           --label "GIT_COMMIT_DATE=${GIT_COMMIT_DATE}" \
           --label "BUILD_DATE=${BUILD_DATE}" \
           -t ${IMAGE_NAME}:${DOCKER_BASE_IMAGE_TAG}-${GIT_HASH} \
-          -t ${IMAGE_NAME}:${env.BRANCH_NAME} \
+          ${BRANCH_NAME ? "-t ${IMAGE_NAME}:${BRANCH_NAME}" : ""} \
           -t ${IMAGE_NAME}:latest \
           -f Dockerfile --rm .
         """
@@ -99,12 +96,16 @@ pipeline {
 
     stage('Push to docker registry') {
       steps {
-        withDockerRegistry([ credentialsId: "dockerhub", url: "" ]) {
+        withDockerRegistry([credentialsId: "dockerhub", url: ""]) {
           sh "docker push ${IMAGE_NAME}:${DOCKER_BASE_IMAGE_TAG}-${GIT_HASH}"
-          sh "docker push ${IMAGE_NAME}:${env.BRANCH_NAME}"
+
           script {
-            if (env.BRANCH_NAME == "master") {
-                sh "docker push ${IMAGE_NAME}:latest"
+            if (BRANCH_NAME) {
+              sh "docker push ${IMAGE_NAME}:${BRANCH_NAME}"
+            }
+
+            if (!BRANCH_NAME || BRANCH_NAME == 'master') {
+              sh "docker push ${IMAGE_NAME}:latest"
             }
           }
         }
@@ -116,9 +117,9 @@ pipeline {
     success {
       wrap([$class: 'BuildUser']) {
         script {
-          sh "echo successful"
-          slackSend(slackParams("""Build successful: <${BUILD_URL}|${env.JOB_NAME} @ \
-              ${env.BUILD_NUMBER}> (${getTriggeringUser()})""", "good"))
+          if (NOTIFY_SLACK_ON_SUCCESS) {
+            slackOk(channel: SLACK_CHANNEL, message: BRANCH ? "BRANCH=${BRANCH}" : "")
+          }
         }
       }
     }
@@ -126,9 +127,9 @@ pipeline {
     failure {
       wrap([$class: 'BuildUser']) {
         script {
-          sh "echo failed"
-          slackSend(slackParams("""Build failed: <${BUILD_URL}|${env.JOB_NAME} @ \
-              ${env.BUILD_NUMBER}> (${getTriggeringUser()})""", "danger"))
+          if (NOTIFY_SLACK_ON_FAILURE) {
+            slackError(channel: SLACK_CHANNEL, message: BRANCH ? "BRANCH=${BRANCH}" : "")
+          }
         }
       }
     }
