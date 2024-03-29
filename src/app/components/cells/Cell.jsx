@@ -261,6 +261,13 @@ class Cell extends React.Component {
     event.stopPropagation();
   };
 
+  preventTextRangeSelection = event => {
+    const modifiers = getModifiers(event);
+    if (modifiers.shift || modifiers.mod) {
+      event.preventDefault();
+    }
+  };
+
   render() {
     const {
       annotationsOpen,
@@ -303,6 +310,7 @@ class Cell extends React.Component {
         style={this.props.style}
         className={cssClass}
         onClick={this.cellClicked}
+        onMouseDown={this.preventTextRangeSelection}
         onContextMenu={this.rightClicked}
         tabIndex="1"
         onKeyDown={
