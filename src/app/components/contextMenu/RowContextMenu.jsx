@@ -355,6 +355,14 @@ class RowContextMenu extends React.Component {
       closeRowContextMenu
     } = this;
 
+    const isSettingsTable = table.type === "settings";
+
+    const isDeletingRowAllowed =
+      !isSettingsTable && canUserDeleteRow({ table }) && !final;
+
+    const isDuplicatingRowAllowed =
+      !isSettingsTable && canUserCreateRow({ table });
+
     return (
       <div className="prevent-scroll" onClick={closeRowContextMenu}>
         <GenericContextMenu
@@ -403,17 +411,18 @@ class RowContextMenu extends React.Component {
           {this.props.table.type === "settings"
             ? ""
             : this.mkItem(showEntityView, "show_entity_view", "server")}
-          {this.props.table.type === "settings" || !canUserCreateRow({ table })
-            ? ""
-            : this.mkItem(duplicateRow, "duplicate_row", "clone")}
-          {this.props.table.type === "settings" ||
-          !canUserDeleteRow({ table }) ||
-          final
-            ? ""
-            : this.mkItem(deleteRow, "delete_row", "trash-o")}
           {this.mkItem(showDependency, "show_dependency", "code-fork")}
           {this.mkItem(showTranslations, "show_translation", "flag")}
           {this.setFinalItem()}
+          {isDeletingRowAllowed || isDuplicatingRowAllowed ? (
+            <div className="separator--internal" />
+          ) : null}
+          {isDuplicatingRowAllowed
+            ? this.mkItem(duplicateRow, "duplicate_row", "clone")
+            : null}
+          {isDeletingRowAllowed
+            ? this.mkItem(deleteRow, "delete_row", "trash-o")
+            : null}
         </GenericContextMenu>
       </div>
     );

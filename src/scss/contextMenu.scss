@@ -7,7 +7,8 @@
   border-radius: 4px;
   padding: 20px 0;
 
-  button, a {
+  button,
+  a {
     box-sizing: border-box;
     width: 100%;
     display: flex;
@@ -20,17 +21,17 @@
       position: relative;
 
       &.dot.translation {
-        @include status-dot($color-needs-translation, $color-overlay-header)
+        @include status-dot($color-needs-translation, $color-overlay-header);
       }
-      
+
       &.dot.important {
         @include status-dot($color-important, $color-overlay-header);
       }
-      
+
       &.dot.check-me {
         @include status-dot($color-checkme, $color-overlay-header);
       }
-      
+
       &.dot.postpone {
         @include status-dot($color-postpone, $color-overlay-header);
       }
@@ -44,7 +45,10 @@
       background-color: $color-hover-dark;
 
       .dot.translation {
-        @include status-dot-hovered($color-needs-translation, $color-hover-dark)
+        @include status-dot-hovered(
+          $color-needs-translation,
+          $color-hover-dark
+        );
       }
 
       .dot.important {
@@ -74,18 +78,25 @@
       padding-top: 25px;
       margin-top: 15px;
     }
+
+    &--internal {
+      padding: 0;
+      border-top: 1px solid transparentize($color-text-medium-grey, 0.5);
+      margin: 8px 25px;
+      box-sizing: border-box;
+    }
   }
 }
-  .prevent-scroll {
-    left:0px;
-    right:0px;
-    top:0px;
-    bottom:0px;
-    height: 100%;
-    width: 100%;
-    position: absolute;
-    z-index:2;
-  }
+.prevent-scroll {
+  left: 0px;
+  right: 0px;
+  top: 0px;
+  bottom: 0px;
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  z-index: 2;
+}
 
 .column-head .context-menu {
   @include context-menu-look();
