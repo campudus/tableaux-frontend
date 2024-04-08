@@ -605,6 +605,11 @@ const setFiltersAndSorting = (filters, sorting, shouldSave) => (
   }
 };
 
+const setShowArchivedRows = (_table, shouldShow = false) => dispatch => {
+  // TODO: Fetch rows once we have the endpoint
+  dispatch({ type: SET_FILTERS_AND_SORTING, showArchived: shouldShow });
+};
+
 const deleteRow = action => {
   const { mergeWithRowId, tableId, rowId } = action;
   const queryString =
@@ -764,7 +769,8 @@ const actionCreators = {
     ["cell"],
     MultiSelect.TOGGLE_MULTISELECT_CELL
   ),
-  clearMultiselect: dispatchParamsFor(MultiSelect.CLEAR_MULTISELECT)
+  clearMultiselect: dispatchParamsFor(MultiSelect.CLEAR_MULTISELECT),
+  setShowArchivedRows
 };
 
 export default actionCreators;

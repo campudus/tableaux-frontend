@@ -1,36 +1,35 @@
-import { Redirect, withRouter } from "react-router-dom";
-import React, { PureComponent } from "react";
-import f from "lodash/fp";
 import i18n from "i18next";
-import { branch, renderComponent } from "recompose";
-import { isTaxonomyTable } from "../taxonomy/taxonomy";
-
+import f from "lodash/fp";
 import PropTypes from "prop-types";
-
-import { getTableDisplayName } from "../../helpers/multiLanguage";
-import { showDialog } from "../overlay/GenericOverlay";
-import { switchLanguageHandler, navigate } from "../Router";
-import ColumnFilter from "../header/ColumnFilter";
-import Filter from "../header/filter/Filter.jsx";
-import GrudHeader from "../GrudHeader";
-import HistoryButtons from "../table/undo/HistoryButtons";
-import JumpSpinner from "./JumpSpinner";
-import PasteCellIcon from "../header/PasteCellIcon";
-import SearchOverlay from "./SearchOverlay";
-import Spinner from "../header/Spinner.jsx";
-import Table from "../table/Table.jsx";
-import TableSettings from "../header/tableSettings/TableSettings";
-import TableSwitcher from "../header/tableSwitcher/TableSwitcher.jsx";
-import ResetTableViewButton from "../header/ResetTableViewButton";
+import React, { PureComponent } from "react";
+import { Redirect, withRouter } from "react-router-dom";
+import { branch, renderComponent } from "recompose";
+import ToggleArchivedRowsButton from "../../archivedRows/ToggleArchivedRowsButton";
 import TableauxConstants, {
   ColumnKinds,
   FilterModes,
   RowIdColumn
 } from "../../constants/TableauxConstants";
-import applyFiltersAndVisibility from "./applyFiltersAndVisibility";
-import reduxActionHoc from "../../helpers/reduxActionHoc";
-import { getStoredViewObject } from "../../helpers/localStorage";
 import { mapIndexed } from "../../helpers/functools";
+import { getStoredViewObject } from "../../helpers/localStorage";
+import { getTableDisplayName } from "../../helpers/multiLanguage";
+import reduxActionHoc from "../../helpers/reduxActionHoc";
+import GrudHeader from "../GrudHeader";
+import ColumnFilter from "../header/ColumnFilter";
+import Filter from "../header/filter/Filter.jsx";
+import PasteCellIcon from "../header/PasteCellIcon";
+import ResetTableViewButton from "../header/ResetTableViewButton";
+import Spinner from "../header/Spinner.jsx";
+import TableSettings from "../header/tableSettings/TableSettings";
+import TableSwitcher from "../header/tableSwitcher/TableSwitcher.jsx";
+import { showDialog } from "../overlay/GenericOverlay";
+import { navigate, switchLanguageHandler } from "../Router";
+import Table from "../table/Table.jsx";
+import HistoryButtons from "../table/undo/HistoryButtons";
+import { isTaxonomyTable } from "../taxonomy/taxonomy";
+import applyFiltersAndVisibility from "./applyFiltersAndVisibility";
+import JumpSpinner from "./JumpSpinner";
+import SearchOverlay from "./SearchOverlay";
 
 const BIG_TABLE_THRESHOLD = 10000; // Threshold to decide when a table is so big we might not want to search it
 const mapStatetoProps = (state, props) => {
@@ -316,6 +315,7 @@ class TableView extends PureComponent {
               ) : (
                 <div />
               )}
+              <ToggleArchivedRowsButton table={table} />
               <HistoryButtons
                 tableId={tableId}
                 actions={actions}

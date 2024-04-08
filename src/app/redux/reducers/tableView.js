@@ -394,3 +394,5 @@ export default (state = initialState, action, completeState) => {
       return state;
   }
 };
+
+export const selectShowArchivedState = store => store.tableView?.showArchived;
