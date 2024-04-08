@@ -1,4 +1,5 @@
 import f from "lodash/fp";
+import { isRowArchived } from "../archivedRows/helpers";
 import {
   ImmutableColumnKinds,
   Langtags,
@@ -69,17 +70,23 @@ const getPermission = pathToPermission =>
 
 // (cell | {tableId: number, columnId: number}) -> (langtag | nil) -> boolean
 export const canUserChangeCell = f.curry((cell, langtag) => {
-  const { kind } = cell;
+  const { kind, row } = cell;
   const editCellValue = getPermission(["column", "editCellValue"])(cell);
   const language = f.propEq("column.languageType", LanguageType.country)(cell)
     ? getCountryOfLangtag(langtag)
     : langtag;
 
+  console.log(row);
+
   const allowed = f.isBoolean(editCellValue)
     ? editCellValue
     : f.isPlainObject(editCellValue) && editCellValue[language];
 
-  return !f.contains(kind, ImmutableColumnKinds) && (allowed || noAuthNeeded()); // this special case is not caught by ALLOW_ANYTHING
+  return (
+    !isRowArchived(row) &&
+    !f.contains(kind, ImmutableColumnKinds) &&
+    (allowed || noAuthNeeded())
+  ); // this special case is not caught by ALLOW_ANYTHING
 });
 
 export const canUserChangeAllLangsOfCell = cellInfo => {
