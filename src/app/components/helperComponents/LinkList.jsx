@@ -78,7 +78,6 @@ const LinkList = props => {
     };
     const isArchived = isLinkArchived(link);
     const id = link.linkTarget.rowId || link.uuid;
-    console.log({ id, isArchived });
     return (
       <LinkItem
         key={id}

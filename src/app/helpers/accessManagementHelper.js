@@ -76,8 +76,6 @@ export const canUserChangeCell = f.curry((cell, langtag) => {
     ? getCountryOfLangtag(langtag)
     : langtag;
 
-  console.log(row);
-
   const allowed = f.isBoolean(editCellValue)
     ? editCellValue
     : f.isPlainObject(editCellValue) && editCellValue[language];
