@@ -23,6 +23,10 @@ pipeline {
     timeout(time: 15, unit: 'MINUTES')
   }
 
+  triggers {
+    githubPush()
+  }
+
   environment {
     COMMIT_INFO = sh(returnStdout: true, script: './getCommitHash.sh').trim()
     GIT_HASH = sh(returnStdout: true, script: 'git log -1 --pretty=%h').trim()
