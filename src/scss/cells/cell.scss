@@ -287,6 +287,21 @@
       display: inline-block;
     }
   }
+
+  &.cell-concat,
+  &.cell-disabled {
+    background-color: #f9f9f9;
+    color: $color-text-light-grey;
+    //Overwrite editing styling because concat cells are not editable
+    &.editing {
+      @include box-shadow(none);
+    }
+  }
+
+  &.archived {
+    background: $color-archived-row-bg;
+    color: $color-archived-row-fg;
+  }
 }
 
 .cell.editing .row-display-label.below {

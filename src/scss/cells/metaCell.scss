@@ -37,7 +37,7 @@
     }
   }
 
-  .access-denied-icon {
+  .meta-cell-icon {
     color: $color-button-grey;
     flex: 1;
     margin-left: 3px;
@@ -88,5 +88,10 @@
 
   &.in-selected-row {
     background-color: $color-selected-row;
+  }
+
+  &.archived {
+    background: $color-archived-row-bg;
+    color: $color-archived-row-fg;
   }
 }
