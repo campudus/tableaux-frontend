@@ -74,6 +74,13 @@
       padding-top: 25px;
       margin-top: 15px;
     }
+
+    &--internal {
+      padding: 0;
+      border-top: 1px solid transparentize($color-text-medium-grey, 0.5);
+      margin: 8px 0;
+      box-sizing: border-box;
+    }
   }
 }
   .prevent-scroll {
