@@ -37,52 +37,50 @@
 .action-tags {
   padding-top: 10px;
   display: flex;
-
-
 }
 
 .action-item {
-    @include button-with-icon();
-    width: auto;
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    background-color: $color-text-light-grey;
-    border-radius: 10px;
-    border: 1px solid $color-text-light-grey;
-    text-transform: uppercase;
-    color: $color-primary-contrast-text;
-    padding: 4px 10px 3px 10px;
-    font-size: 10px;
-    letter-spacing: 1px;
-    font-weight: normal;
-    margin-right: 1em;
-    cursor: pointer;
+  @include button-with-icon();
+  width: auto;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  background-color: $color-text-light-grey;
+  border-radius: 10px;
+  border: 1px solid $color-text-light-grey;
+  text-transform: uppercase;
+  color: $color-primary-contrast-text;
+  padding: 4px 10px 3px 10px;
+  font-size: 10px;
+  letter-spacing: 1px;
+  font-weight: normal;
+  margin-right: 1em;
+  cursor: pointer;
 
-    &.translation {
-      background-color: $color-needs-translation;
-      border-color: $color-needs-translation;
-      &:hover {
-        background-color: $color-needs-translation-dark;
-        border-color: $color-needs-translation-dark;
-      }
-    }
-
-    &.important {
-      background-color: $color-important;
-      border-color: $color-important;
-    }
-
-    &.check-me {
-      background-color: $color-checkme;
-      border-color: $color-checkme;
-    }
-
-    &.postpone {
-      background-color: $color-postpone;
-      border-color: $color-postpone;
+  &.translation {
+    background-color: $color-needs-translation;
+    border-color: $color-needs-translation;
+    &:hover {
+      background-color: $color-needs-translation-dark;
+      border-color: $color-needs-translation-dark;
     }
   }
+
+  &.important {
+    background-color: $color-important;
+    border-color: $color-important;
+  }
+
+  &.check-me {
+    background-color: $color-checkme;
+    border-color: $color-checkme;
+  }
+
+  &.postpone {
+    background-color: $color-postpone;
+    border-color: $color-postpone;
+  }
+}
 
 .overlay .entity-view {
   .rich-text-wrapper {
@@ -105,9 +103,21 @@
       right: 0;
       top: 0;
       height: 250px;
-      background: -webkit-linear-gradient(top, transparent 80%, $color-overlay-background-even);
-      background: -moz-linear-gradient(top, transparent 80%, $color-overlay-background-even);
-      background: -ms-linear-gradient(top, transparent 80%, $color-overlay-background-even);
+      background: -webkit-linear-gradient(
+        top,
+        transparent 80%,
+        $color-overlay-background-even
+      );
+      background: -moz-linear-gradient(
+        top,
+        transparent 80%,
+        $color-overlay-background-even
+      );
+      background: -ms-linear-gradient(
+        top,
+        transparent 80%,
+        $color-overlay-background-even
+      );
       z-index: 1;
     }
   }
@@ -120,15 +130,28 @@
       right: 0;
       top: 0;
       height: 250px;
-      background: -webkit-linear-gradient(top, transparent 80%, $color-overlay-background);
-      background: -moz-linear-gradient(top, transparent 80%, $color-overlay-background);
-      background: -ms-linear-gradient(top, transparent 80%, $color-overlay-background);
+      background: -webkit-linear-gradient(
+        top,
+        transparent 80%,
+        $color-overlay-background
+      );
+      background: -moz-linear-gradient(
+        top,
+        transparent 80%,
+        $color-overlay-background
+      );
+      background: -ms-linear-gradient(
+        top,
+        transparent 80%,
+        $color-overlay-background
+      );
       z-index: 1;
     }
   }
 }
 
-.view-text, .view-richtext {
+.view-text,
+.view-richtext {
   textarea {
     min-height: 150px;
     resize: vertical;
@@ -154,7 +177,9 @@
     border-color: transparent;
 
     &.not-set {
-      .currency-string, .langtag-label, .currency-code {
+      .currency-string,
+      .langtag-label,
+      .currency-code {
         color: $color-text-medium-grey;
       }
     }
@@ -166,7 +191,8 @@
       border-color: transparent;
     }
 
-    div, span {
+    div,
+    span {
       @include flex-centered();
       height: 100%;
       margin: 0 0.5px;
@@ -352,7 +378,7 @@
     position: relative;
     border-radius: 3px;
     @include button-with-icon();
-    
+
     &.clickable:hover {
       color: $color-text-medium-grey;
     }
@@ -360,7 +386,13 @@
 }
 
 // Entry popup
-.overlay .overlay-content .content-items .item.has-mouse-pointer .entry-popup-wrapper .popup-button { // stack all the selectors!
+.overlay
+  .overlay-content
+  .content-items
+  .item.has-mouse-pointer
+  .entry-popup-wrapper
+  .popup-button {
+  // stack all the selectors!
   border: 1px solid transparentize($color-primary, 0.5);
   .svg-icon {
     svg {
@@ -421,7 +453,7 @@
       background-color: transparent;
       color: $color-primary;
       border-radius: 3px;
-        
+
       div {
         flex: 1;
       }
@@ -429,8 +461,9 @@
       svg {
         fill: transparent;
       }
-     
-      &:hover, &.is-open {
+
+      &:hover,
+      &.is-open {
         background-color: $color-primary;
         svg {
           fill: $color-white;
@@ -439,7 +472,7 @@
 
       &.is-open {
         @include rounded-upper-borders;
-     
+
         &.menu-is-right {
           border-radius: 3px 0 0 3px;
         }
@@ -508,17 +541,17 @@
   }
 }
 .button--disabled {
-    color: white;
-    padding: 0.5em 1em;
-    border: 1px solid $color-text-light-grey;
-    border-radius: 3px;
-    position: relative;
-    display: block;
-    cursor: not-allowed;
-    background-color: $color-button-grey;
-    a {
-      @include button-with-icon();
-    }
+  color: white;
+  padding: 0.5em 1em;
+  border: 1px solid $color-text-light-grey;
+  border-radius: 3px;
+  position: relative;
+  display: block;
+  cursor: not-allowed;
+  background-color: $color-button-grey;
+  a {
+    @include button-with-icon();
+  }
 }
 
 .language-info-toast {
@@ -610,9 +643,9 @@
           flex: 1;
           max-width: none;
         }
-     
 
-        &:hover, &.is-open {
+        &:hover,
+        &.is-open {
           border-color: $color-primary;
           background-color: $color-primary;
           color: $color-primary-contrast-text;
@@ -634,7 +667,6 @@
         }
       }
     }
-
   }
 }
 
