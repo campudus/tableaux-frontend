@@ -374,6 +374,13 @@
   height: 0.8em;
 }
 
+.view-link,
+.view-attachment {
+  .linked-items {
+    overflow-y: auto;
+  }
+}
+
 .overlay .entity-view .item-header .column-icon.svg-icon {
   @media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
     flex: 1;
