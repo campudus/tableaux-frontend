@@ -105,16 +105,11 @@
     "typescript": "4.5.4"
   },
   "dependencies": {
-    "@types/hoist-non-react-statics": "3.3.5",
-    "@types/node": "20.12.7",
-    "@types/react": "18.2.78",
     "connect-loki": "1.1.0",
     "express": "4.19.2",
     "express-session": "1.16.2",
     "finalhandler": "^1.1.2",
     "http-proxy": "^1.18.1",
-    "react-dnd": "16.0.1",
-    "react-dnd-html5-backend": "16.0.1",
     "serve-static": "^1.14.1",
     "uuid": "3.3.3"
   },
