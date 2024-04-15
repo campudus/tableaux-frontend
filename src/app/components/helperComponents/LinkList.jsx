@@ -36,12 +36,13 @@ const LinkList = props => {
   const linksToRender = expanded
     ? links.length
     : f.take(MAX_DISPLAYED_LINKS, links).length;
-  const applySwap = ordering => () => {
+  const applySwap = ordering => {
     const rearranged = f
       .map(id => f.find(linkedItem => linkedItem.id === id, links), ordering)
       .map((el, idx) => ({ ...el, ordering: idx + 1 }));
 
     actions.changeCellValue({
+      cell,
       columnId: column.id,
       rowId: row.id,
       tableId: table.id,
@@ -110,7 +111,7 @@ const LinkList = props => {
           rowsToRender={linksToRender}
           renderListItem={renderSortableListItem}
           loading={false}
-          applySwap={applySwap}
+          onReorder={applySwap}
         />
       </div>
     </div>

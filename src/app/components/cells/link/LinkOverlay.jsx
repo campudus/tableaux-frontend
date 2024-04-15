@@ -291,7 +291,7 @@ class LinkOverlay extends PureComponent {
     });
   };
 
-  applySwap = ordering => () => {
+  applySwap = ordering => {
     const {
       value,
       rowResults,
@@ -376,7 +376,7 @@ class LinkOverlay extends PureComponent {
             linkEmptyLines={linkEmptyLines}
             renderListItem={this.renderListItem}
             swapItems={this.swapLinkedItems}
-            applySwap={this.applySwap}
+            onReorder={this.applySwap}
             entries={f.map("id", rowResults.linked)}
           />
         </div>
