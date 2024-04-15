@@ -122,7 +122,7 @@ const withCachedLinks = Component => props => {
         f.uniqBy(f.prop("id")),
         f.map(addDisplayValues)
       ),
-    [f.prop(["displayValues", column.toTable], grudData)]
+    [f.prop(["displayValues", column.toTable], grudData), ...cell.value]
   );
 
   const rowResults = loading
