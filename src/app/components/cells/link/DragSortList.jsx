@@ -17,7 +17,9 @@ const DragSortList = ({
     addedIndex // Index where item was dropped
   }) => {
     const reordered = dragReorder(removedIndex, addedIndex, entries);
-    onReorder(reordered);
+    if (!f.equals(entries, reordered)) {
+      onReorder(reordered);
+    }
   };
 
   return (
