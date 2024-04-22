@@ -208,7 +208,7 @@ const format = f.curryN(2)((column, displayValue) => {
 
     // replace all occurences of {{n+1}} with displayValue[n]; then recur with n = n+1
     // Because the formatPatterns consists of absolute columnId we first have to map index to columnId
-    const applyFormat = function(result, dVal, i = 1) {
+    const applyFormat = (result, dVal, i = 1) => {
       const colIdx = getColumnIdForIndex(column, i);
 
       // Boolean columns are a special case; falsy bool values deliver an empty string which we want to keep
