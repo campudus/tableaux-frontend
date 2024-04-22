@@ -9,6 +9,7 @@ import * as f from "lodash/fp";
 import Moment from "moment";
 import { getCountryOfLangtag, getCurrencyCode } from "./multiLanguage";
 import { getCurrencyWithCountry } from "../components/cells/currency/currencyHelper";
+import { when } from "./functools";
 
 // (obj, obj) -> obj
 //
@@ -104,7 +105,9 @@ const getBoolValue = f.curry((column, value) => {
       false
     ]); // allow false
     return isTrue && !isLangObj(column)
-      ? column.displayName[lt] || column.displayName[DefaultLangtag]
+      ? column.displayName[lt] ||
+          column.displayName[DefaultLangtag] ||
+          column.name
       : "";
   };
   return applyToAllLangs(getValue);
@@ -188,6 +191,8 @@ const moustache = f.memoize(
 // with displayValue[i]
 const format = f.curryN(2)((column, displayValue) => {
   const formatPattern = f.get("formatPattern", column);
+  const placeholder = "_"; // Set to "" to disable placeholders
+
   if (f.isEmpty(formatPattern)) {
     // no or empty format string => simple concat
     return f.isArray(displayValue)
@@ -196,26 +201,40 @@ const format = f.curryN(2)((column, displayValue) => {
           .join(" ")
           .trim()
       : f.trim(displayValue);
+  } else {
+    const valueArray = f.isArray(displayValue) ? displayValue : [displayValue];
+    const hasAnyValues =
+      !f.isEmpty(valueArray) && !f.every(f.isEmpty, valueArray);
+
+    // replace all occurences of {{n+1}} with displayValue[n]; then recur with n = n+1
+    // Because the formatPatterns consists of absolute columnId we first have to map index to columnId
+    const applyFormat = function(result, dVal, i = 1) {
+      const colIdx = getColumnIdForIndex(column, i);
+
+      // Boolean columns are a special case; falsy bool values deliver an empty string which we want to keep
+      const isEmptyValue =
+        f.get(`groups.${i - 1}.kind`, column) === ColumnKinds.boolean
+          ? f.F
+          : f.isEmpty;
+
+      const formattedValue = f.trim(
+        when(isEmptyValue, () => placeholder, f.first(dVal))
+      );
+      return f.isEmpty(dVal)
+        ? result
+        : applyFormat(
+            result.replace(moustache(colIdx), formattedValue),
+            f.tail(dVal),
+            i + 1
+          );
+    };
+
+    const formattedString =
+      hasAnyValues || !f.isEmpty(placeholder)
+        ? f.trim(applyFormat(formatPattern, valueArray))
+        : "";
+    return formattedString.replace(/\{.*?\}\}/g, placeholder); // remove remaining placeholders
   }
-
-  const valueArray = f.isArray(displayValue) ? displayValue : [displayValue];
-  // replace all occurences of {{n+1}} with displayValue[n]; then recur with n = n+1
-  // Because the formatPatterns consists of absolute columnId we first have to map index to columnId
-  const applyFormat = function(result, dVal = valueArray, i = 1) {
-    return f.isEmpty(dVal)
-      ? result
-      : applyFormat(
-          result.replace(
-            moustache(getColumnIdForIndex(column, i)),
-            f.trim(f.first(dVal))
-          ),
-          f.tail(dVal),
-          i + 1
-        );
-  };
-
-  const result = f.trim(applyFormat(formatPattern));
-  return result;
 });
 
 export { format };
