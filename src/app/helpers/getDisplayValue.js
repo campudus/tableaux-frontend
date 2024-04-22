@@ -206,32 +206,26 @@ const format = f.curryN(2)((column, displayValue) => {
     const hasAnyValues =
       !f.isEmpty(valueArray) && !f.every(f.isEmpty, valueArray);
 
-    // replace all occurences of {{n+1}} with displayValue[n]; then recur with n = n+1
+    // replace all occurences of {{n+1}} with displayValue[n];
     // Because the formatPatterns consists of absolute columnId we first have to map index to columnId
-    const applyFormat = (result, dVal, i = 1) => {
-      const colIdx = getColumnIdForIndex(column, i);
+    const applyFormat = (result, dVal, idx) => {
+      const colIdx = getColumnIdForIndex(column, idx + 1);
 
       // Boolean columns are a special case; falsy bool values deliver an empty string which we want to keep
       const isEmptyValue =
-        f.get(`groups.${i - 1}.kind`, column) === ColumnKinds.boolean
+        f.get(`groups.${idx}.kind`, column) === ColumnKinds.boolean
           ? f.F
           : f.isEmpty;
 
       const formattedValue = f.trim(
         when(isEmptyValue, () => placeholder, f.first(dVal))
       );
-      return f.isEmpty(dVal)
-        ? result
-        : applyFormat(
-            result.replace(moustache(colIdx), formattedValue),
-            f.tail(dVal),
-            i + 1
-          );
+      return result.replace(moustache(colIdx), formattedValue);
     };
 
     const formattedString =
       hasAnyValues || !f.isEmpty(placeholder)
-        ? f.trim(applyFormat(formatPattern, valueArray))
+        ? f.trim(valueArray.reduce(applyFormat, formatPattern))
         : "";
     return formattedString.replace(/\{.*?\}\}/g, placeholder); // remove remaining placeholders
   }
