@@ -1,20 +1,31 @@
-import { Provider, useSelector, batch } from "react-redux";
-import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
-import { bindActionCreators } from "redux";
-import React from "react";
-import f from "lodash/fp";
 import i18n from "i18next";
-
-import { ViewNames, Langtags } from "../constants/TableauxConstants";
-import { initGrud } from "../initGrud";
-import { unless } from "../helpers/functools";
+import f from "lodash/fp";
+import React from "react";
+import { batch, Provider, useSelector } from "react-redux";
+import {
+  BrowserRouter as Router,
+  Redirect,
+  Route,
+  Switch,
+  useHistory,
+  useLocation
+} from "react-router-dom";
+import { CompatRoute, CompatRouter } from "react-router-dom-v5-compat";
+import { bindActionCreators } from "redux";
+import {
+  DefaultLangtag,
+  Langtags,
+  ViewNames
+} from "../constants/TableauxConstants";
 import { withUserAuthentication } from "../helpers/authenticate";
-import Spinner from "./header/Spinner";
-import Tableaux from "./Tableaux";
+import { unless } from "../helpers/functools";
+import { initGrud } from "../initGrud";
 import actionCreators from "../redux/actionCreators";
 import store from "../redux/store";
 import parseOptions from "../router/urlOptionParser";
+import Spinner from "./header/Spinner";
 import { PROFILE_TAB } from "./profile/constants";
+import Tableaux from "./Tableaux";
 
 const tablesSelector = state => state.tables;
 const currentTableSelector = state => state.tableView.currentTable;
@@ -38,6 +49,7 @@ const GRUDRouter = React.memo(() => {
   const renderProfile = React.useCallback(renderView(ViewNames.PROFILE_VIEW));
 
   const renderTaxonomyDashboard = renderView(ViewNames.TAXONOMY_DASHBOARD_VIEW);
+  const history = useHistory();
 
   const renderTableView = React.useCallback(routeProps => {
     const validParams = validateRouteParams(routeProps.match.params, tables);
@@ -48,7 +60,7 @@ const GRUDRouter = React.memo(() => {
     // only load table if we're allowed to see at least one
     if ((!currentTable || tableId !== currentTable) && tableId) {
       batch(() => {
-        switchTable(tableId);
+        switchTable(history, tableId);
         store.dispatch(actionCreators.cleanUp(tableId));
         store.dispatch(actionCreators.toggleCellSelection(validParams));
         store.dispatch(actionCreators.loadCompleteTable(tableId));
@@ -82,24 +94,87 @@ const GRUDRouter = React.memo(() => {
 
   const routerProps = { langtags: Langtags, tables };
 
+  const location = useLocation();
+  const withLangtag = `/${DefaultLangtag}${location.pathname}`;
+
   return isInitialized ? (
-    <Router>
+    <CompatRouter>
       <Switch>
-        <Route path="/:langtag?/dashboard" render={renderDashboard} />
-        <Route path="/:langtag?/profile/:profileTab?" render={renderProfile} />
-        <Route path="/:langtag?/taxonomies" render={renderTaxonomyDashboard} />
+        <CompatRoute path="/:langtag/dashboard" render={renderDashboard} />
+        <Route path="/dashboard" render={() => <Redirect to={withLangtag} />} />
+
+        <CompatRoute
+          path="/:langtag/profile/:profileTab"
+          render={renderProfile}
+        />
+        <CompatRoute path="/:langtag/profile" render={renderProfile} />
+        <Route path="/profile/*" render={() => <Redirect to={withLangtag} />} />
+        <Route path="/profile" render={() => <Redirect to={withLangtag} />} />
+
+        <CompatRoute
+          path="/:langtag/taxonomies"
+          render={renderTaxonomyDashboard}
+        />
         <Route
-          path="/:langtag?/(table|tables)/:tableId?/(columns)?/:columnId?/(rows)?/:rowId?"
+          path="/taxonomies"
+          render={() => <Redirect to={withLangtag} />}
+        />
+
+        <CompatRoute
+          path="/:langtag/tables/:tableId/columns/:columnId/rows/:rowId"
           render={renderTableView}
         />
-        <Route
-          path="/:langtag?/(service|services)/:serviceId?/(table|tables)?/:tableId?/(columns)?/:columnId?/(rows)?/:rowId?"
+        <CompatRoute
+          path="/:langtag/tables/:tableId/columns/:columnId"
+          render={renderTableView}
+        />
+        <CompatRoute
+          path="/:langtag/tables/:tableId/rows/:rowId"
+          render={renderTableView}
+        />
+        <CompatRoute
+          path="/:langtag/tables/:tableId"
+          render={renderTableView}
+        />
+        <CompatRoute path="/:langtag/tables" render={renderTableView} />
+        <Route path="/tables/*" render={() => <Redirect to={withLangtag} />} />
+        <Route path="/tables" render={() => <Redirect to={withLangtag} />} />
+
+        <CompatRoute
+          path="/:langtag/services/:serviceId/tables/:tableId/columns/:columnId/rows/:rowId"
           render={renderServiceView}
         />
-        <Route path="/:langtag?/media/:folderId?" render={renderMediaView} />
-        <Route path="/*" render={renderDashboard} />
+        <CompatRoute
+          path="/:langtag/services/:serviceId/tables/:tableId/columns/:columnId"
+          render={renderServiceView}
+        />
+        <CompatRoute
+          path="/:langtag/services/:serviceId/tables/:tableId/rows/:rowId"
+          render={renderServiceView}
+        />
+        <CompatRoute
+          path="/:langtag/services/:serviceId"
+          render={renderServiceView}
+        />
+        <Route
+          path="/services/*"
+          render={() => <Redirect to={withLangtag} />}
+        />
+
+        <CompatRoute
+          path="/:langtag/media/:folderId"
+          render={renderMediaView}
+        />
+        <CompatRoute path="/:langtag/media" render={renderMediaView} />
+        <Route path="/media/*" render={() => <Redirect to={withLangtag} />} />
+        <Route path="/media" render={() => <Redirect to={withLangtag} />} />
+
+        <Route
+          path="*"
+          render={() => <Redirect to={`/${DefaultLangtag}/dashboard`} />}
+        />
       </Switch>
-    </Router>
+    </CompatRouter>
   ) : (
     <Spinner isLoading={true} />
   );
@@ -146,7 +221,7 @@ const validateRouteParams = (routeParams, tables) => {
     f.prop("data")
   );
   return {
-    langtag: isValidLangtag(langtag) ? langtag : f.first(Langtags),
+    langtag: isValidLangtag(langtag) ? langtag : DefaultLangtag,
     tableId: isValidTableId(tableId, tables)
       ? parseInt(tableId)
       : getFirstTableId(tables),
@@ -203,4 +278,8 @@ export const navigate = (history, path) => {
   history.push(path);
 };
 
-export default withUserAuthentication(GRUDRouter);
+export default withUserAuthentication(props => (
+  <Router>
+    <GRUDRouter {...props} />
+  </Router>
+));
