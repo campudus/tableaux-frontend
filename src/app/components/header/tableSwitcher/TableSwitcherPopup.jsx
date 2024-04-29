@@ -1,20 +1,17 @@
-import { translate } from "react-i18next";
-import React from "react";
 import f from "lodash/fp";
+import PropTypes from "prop-types";
+import React from "react";
+import { translate } from "react-i18next";
 import listensToClickOutside from "react-onclickoutside";
 import { withRouter } from "react-router-dom";
-
-import PropTypes from "prop-types";
-
 import { FilterModes } from "../../../constants/TableauxConstants";
 import { forkJoin, maybe } from "../../../helpers/functools";
+import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
 import {
   getTableDisplayName,
   retrieveTranslation
 } from "../../../helpers/multiLanguage";
-import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
 import SearchFunctions from "../../../helpers/searchFunctions";
-import route from "../../../helpers/apiRoutes";
 
 @translate(["header"])
 @listensToClickOutside
@@ -98,12 +95,14 @@ class SwitcherPopup extends React.PureComponent {
   };
 
   onClickTable = table => () => {
-    const { langtag, history } = this.props;
+    const { history } = this.props;
     this.setState({
       focusTableId: table.id
     });
     this.handleClickOutside(null);
-    history.push(route.toTable({ langtag, tableId: table.id }));
+    history.push(
+      history.location.pathname.replace(/tables\/\d+/, `tables/${table.id}`)
+    );
   };
 
   filterInputChange = event => {
