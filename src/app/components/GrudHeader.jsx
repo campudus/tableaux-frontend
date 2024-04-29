@@ -2,7 +2,6 @@ import f from "lodash/fp";
 import PropTypes from "prop-types";
 import React from "react";
 import { useSelector } from "react-redux";
-import { useParams } from "react-router";
 import { ConnectionStatus } from "./header/ConnectionStatus";
 import LanguageSwitcher from "./header/LanguageSwitcher";
 import Navigation from "./header/Navigation";
