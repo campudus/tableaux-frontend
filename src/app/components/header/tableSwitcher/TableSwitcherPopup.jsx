@@ -101,7 +101,7 @@ class SwitcherPopup extends React.PureComponent {
     });
     this.handleClickOutside(null);
     history.push(
-      history.location.pathname.replace(/tables\/\d+/, `tables/${table.id}`)
+      history.location.pathname.replace(/tables.*/, `tables/${table.id}`)
     );
   };
 
