@@ -73,6 +73,11 @@
     "unlock_toast": "2x left click or enter key to unlock",
     "set_all_rows_final": "Mark the whole table as \"final\""
   },
+
+  "archived": {
+    "set-archived": "Archive",
+    "unset-archived": "Retrieve from archive"
+  },
   "translations": {
     "dialog_headline": "Multi language cell modified",
     "dialog_question": "You modified content which had already been translated. Would you like to inform other languages' translators?\nChoose \"no\" if you just fixed a mistake.",
