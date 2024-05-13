@@ -98,6 +98,7 @@ export const rowValuesToCells = (table, columns) => rows => {
     return {
       id: row.id,
       final: row.final,
+      archived: row.archived,
       annotations: row.annotations,
       values: row.values,
       cells: row.values.map((cellValue, idx) =>
