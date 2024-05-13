@@ -23,6 +23,7 @@ import {
   getAnnotation,
   removeTranslationNeeded,
   setCellAnnotation,
+  setRowArchived,
   setRowFinal
 } from "../../helpers/annotationHelper";
 import { canConvert } from "../../helpers/cellValueConverter";
@@ -284,6 +285,13 @@ class RowContextMenu extends React.Component {
     setRowFinal({ table, row, value: valueToSet });
   };
 
+  setArchived = archived => () => {
+    const {
+      cell: { row, table }
+    } = this.props;
+    setRowArchived({ table, row, archived });
+  };
+
   setFinalItem = () => {
     if (!canUserEditRowAnnotations(this.props.cell)) {
       return null;
@@ -296,6 +304,23 @@ class RowContextMenu extends React.Component {
     } = this.props;
     const label = final ? t("final.set_not_final") : t("final.set_final");
     return this.mkItem(this.setFinal(!final), label, "lock");
+  };
+
+  setArchivedItem = () => {
+    if (!canUserEditRowAnnotations(this.props.cell)) {
+      return null;
+    } else {
+      const {
+        t,
+        cell: {
+          row: { archived }
+        }
+      } = this.props;
+      const label = t(
+        archived ? "archived.unset-archived" : "archived.set-archived"
+      );
+      return this.mkItem(this.setArchived(!archived), label, "archive");
+    }
   };
 
   openLinksFilteredItem = () => {
@@ -414,6 +439,7 @@ class RowContextMenu extends React.Component {
           {this.mkItem(showDependency, "show_dependency", "code-fork")}
           {this.mkItem(showTranslations, "show_translation", "flag")}
           {this.setFinalItem()}
+          {this.setArchivedItem()}
           {isDeletingRowAllowed || isDuplicatingRowAllowed ? (
             <div className="separator--internal" />
           ) : null}
