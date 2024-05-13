@@ -12,20 +12,6 @@ import { setRowFlag } from "../redux/actions/annotationActions";
 import actions from "../redux/actionCreators";
 import store from "../redux/store";
 
-// function annotationError(heading, error) {
-//   const { message } = error;
-//   console.error(heading, "\n->", message);
-//   Sentry.captureException(error);
-//   showDialog({
-//     type: "warning",
-//     context: i18n.t("common:error"),
-//     title: i18n.t("table:error_occured_hl"),
-//     heading,
-//     message,
-//     actions: { neutral: [i18n.t("common:ok"), null] }
-//   });
-// }
-
 const getAnnotation = (annotation, cell) => {
   const cellAnnotations = cell.annotations;
   const getFlag = ann => f.prop([ann.value], cellAnnotations);
@@ -102,6 +88,10 @@ const setRowFinal = ({ table, row, value = true }) => {
   setRowAnnotation({ table, row, flagName: "final", flagValue: value });
 };
 
+const setRowArchived = ({ table, row, archived = true }) => {
+  setRowAnnotation({ table, row, flagName: "archived", flagValue: archived });
+};
+
 const setRowAnnotation = ({ table, row, flagName, flagValue }) => {
   store.dispatch(setRowFlag({ table, row, flagName, flagValue }));
 };
@@ -156,6 +146,7 @@ export {
   getAnnotation,
   extractAnnotations,
   refreshAnnotations,
+  setRowArchived,
   setRowAnnotation,
   setCellAnnotation,
   setRowFinal,
