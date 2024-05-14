@@ -487,22 +487,25 @@ const completeRowInformation = (columns, table, rows, allDisplayValues) => {
     })
   );
 
-  return rows.map(({ id, cells, values, annotations, final }, rowIndex) => ({
-    rowIndex,
-    id,
-    annotations,
-    final,
-    values: cells.map((cell, colIndex) => ({
-      ...cell,
-      displayValue:
-        cell.kind === ColumnKinds.link
-          ? values[colIndex].map(link =>
-              getLinkDisplayValue(columns[colIndex].toTable)(link.id)
-            )
-          : f.get([rowIndex, "values", colIndex], tableDisplayValues),
-      value: values[colIndex]
-    }))
-  }));
+  return rows.map(
+    ({ id, cells, values, annotations, final, archived }, rowIndex) => ({
+      rowIndex,
+      id,
+      annotations,
+      final,
+      archived,
+      values: cells.map((cell, colIndex) => ({
+        ...cell,
+        displayValue:
+          cell.kind === ColumnKinds.link
+            ? values[colIndex].map(link =>
+                getLinkDisplayValue(columns[colIndex].toTable)(link.id)
+              )
+            : f.get([rowIndex, "values", colIndex], tableDisplayValues),
+        value: values[colIndex]
+      }))
+    })
+  );
 };
 
 export default getFilteredRows;
