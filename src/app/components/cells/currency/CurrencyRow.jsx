@@ -55,11 +55,13 @@ export default class CurrencyRow extends PureComponent {
     this.setState({ modified: true });
     this.props.updateValue(this.props.country, [
       this.currencyInteger.value,
-      this.currencyDecimals.value
+      this.currencyDecimals.value.substr(0, 2)
     ]);
     const { caretElement, caretPosition } = this.state;
     if (!f.isNil(caretPosition)) {
-      caretElement.setSelectionRange(caretPosition, caretPosition);
+      setTimeout(() => {
+        caretElement.setSelectionRange(caretPosition, caretPosition);
+      }, 0);
     }
   };
 
@@ -106,7 +108,6 @@ export default class CurrencyRow extends PureComponent {
           onFocus={this.handleFocus("currencyDecimals")}
           disabled={isDisabled}
           placeholder="00"
-          maxLength="2"
         />
       </div>
     );
