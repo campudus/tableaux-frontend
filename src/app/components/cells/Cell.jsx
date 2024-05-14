@@ -129,7 +129,8 @@ class Cell extends React.Component {
       !f.isEqual(
         getRelevantCellProps(this.props.cell),
         getRelevantCellProps(nextProps.cell)
-      )
+      ) ||
+      cell.row.archived !== nextCell.row.archived
     );
   };
 
