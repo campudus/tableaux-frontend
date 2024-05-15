@@ -30,6 +30,7 @@ import withCachedLinks from "./LinkOverlayCache.jsx";
 import { isTaxonomyTable } from "../../taxonomy/taxonomy";
 import store from "../../../redux/store";
 import { buildClassName } from "../../../helpers/buildClassName";
+import { isRowArchived } from "../../../archivedRows/helpers";
 const MAIN_BUTTON = 0;
 const LINK_BUTTON = 1;
 const LINKED_ITEMS = 0;
@@ -247,13 +248,14 @@ class LinkOverlay extends PureComponent {
       }
     };
 
-    return (
+    return row && cell ? (
       <LinkItem
         key={`${key}-${row.id}`}
         refIfLinked={refIfLinked}
         clickHandler={this.addLinkValue}
         isLinked={isLinked}
         isSelected={isSelected}
+        archived={isRowArchived(row)}
         row={row}
         toTable={f.get(["column", "toTable"], cell)}
         cell={cell}
@@ -263,6 +265,8 @@ class LinkOverlay extends PureComponent {
         selectedMode={selectedMode}
         isPermissionDenied={row.hiddenByRowPermissions}
       />
+    ) : (
+      undefined
     );
   };
 
