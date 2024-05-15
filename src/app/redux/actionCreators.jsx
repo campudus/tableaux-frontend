@@ -232,8 +232,8 @@ const checkIfSelectedCellExists = (dispatch, tableId, state) => {
   }
 };
 
-const loadAllRows = tableId => async (dispatch, getState) => {
-  await Row.loadAllRows(tableId)(dispatch);
+const loadAllRows = (tableId, ...params) => async (dispatch, getState) => {
+  await Row.loadAllRows(tableId, ...params)(dispatch);
   checkIfSelectedCellExists(dispatch, tableId, getState());
 };
 

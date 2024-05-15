@@ -93,18 +93,24 @@ export const safelyDuplicateRow = ({
   }
 };
 
-export const loadAllRows = tableId => async dispatch => {
+export const loadAllRows = (tableId, archived = false) => async dispatch => {
   const PARALLELL_CHUNKS = 4;
   const ROWS_PER_CHUNK = 500;
   const INITIAL_ROWS = 30;
 
+  const preloadParam = {
+    offset: 0,
+    limit: INITIAL_ROWS,
+    archived
+  };
+
   const buildParams = (allRows, rowsPerRequest) => {
     if (allRows <= rowsPerRequest) {
-      return [{ offset: INITIAL_ROWS, limit: allRows }];
+      return [{ ...preloadParam, offset: INITIAL_ROWS, limit: allRows }];
     }
     return f.compose(
       f.map(offset => {
-        return { offset, limit: rowsPerRequest };
+        return { ...preloadParam, offset, limit: rowsPerRequest };
       }),
       f.rangeStep(rowsPerRequest, INITIAL_ROWS)
     )(allRows % rowsPerRequest !== 0 ? allRows + 1 : allRows);
@@ -118,11 +124,6 @@ export const loadAllRows = tableId => async dispatch => {
     });
     dispatch(addRows(tableId, paginatedRows.rows));
     return paginatedRows;
-  };
-
-  const preloadParam = {
-    offset: 0,
-    limit: INITIAL_ROWS
   };
 
   const {
