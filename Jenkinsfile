@@ -63,7 +63,7 @@ pipeline {
 
     stage('Build app/test') {
       steps {
-        sh "docker build -t ${IMAGE_NAME}-base --target base -f Dockerfile ."
+        sh "docker build -t ${IMAGE_NAME}-build --target build -f Dockerfile ."
       }
     }
 
