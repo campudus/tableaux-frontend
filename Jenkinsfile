@@ -104,34 +104,34 @@ pipeline {
     }
   }
 
-  // post {
-  //   success {
-  //     wrap([$class: 'BuildUser']) {
-  //       script {
-  //         if (NOTIFY_SLACK_ON_SUCCESS) {
-  //           final String logParams = [
-  //               BRANCH ? "BRANCH=${BRANCH}" : null,
-  //               "image: ${IMAGE_NAME}:${IMAGE_TAG}",
-  //           ].minus(null).join(' ')
+  post {
+    success {
+      wrap([$class: 'BuildUser']) {
+        script {
+          if (NOTIFY_SLACK_ON_SUCCESS) {
+            final String logParams = [
+                BRANCH ? "BRANCH=${BRANCH}" : null,
+                "image: ${IMAGE_NAME}:${IMAGE_TAG}",
+            ].minus(null).join(' ')
 
-  //           slackOk(channel: SLACK_CHANNEL, message: "${logParams}")
-  //         }
-  //       }
-  //     }
-  //   }
+            slackOk(channel: SLACK_CHANNEL, message: "${logParams}")
+          }
+        }
+      }
+    }
 
-  //   failure {
-  //     wrap([$class: 'BuildUser']) {
-  //       script {
-  //         if (NOTIFY_SLACK_ON_FAILURE) {
-  //           final String logParams = [
-  //               BRANCH ? "BRANCH=${BRANCH}" : null,
-  //           ].minus(null).join(' ')
+    failure {
+      wrap([$class: 'BuildUser']) {
+        script {
+          if (NOTIFY_SLACK_ON_FAILURE) {
+            final String logParams = [
+                BRANCH ? "BRANCH=${BRANCH}" : null,
+            ].minus(null).join(' ')
 
-  //           slackError(channel: SLACK_CHANNEL, message: "${logParams}")
-  //         }
-  //       }
-  //     }
-  //   }
-  // }
+            slackError(channel: SLACK_CHANNEL, message: "${logParams}")
+          }
+        }
+      }
+    }
+  }
 }
