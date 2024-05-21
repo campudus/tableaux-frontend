@@ -20,7 +20,10 @@ const ToggleArchivedRowsButton = ({ table }) => {
 
   return (
     <div className={className}>
-      <button className="filter-popup-button" onClick={toggleArchivedRows}>
+      <button
+        className="filter-popup-button button__toggle-archived-rows"
+        onClick={toggleArchivedRows}
+      >
         <i className="fa fa-archive" />
       </button>
     </div>

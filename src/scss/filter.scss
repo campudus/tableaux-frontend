@@ -3,13 +3,10 @@
 .filter-wrapper {
   display: flex;
 
-
   margin-top: 10px;
   margin-right: 20px;
 
   outline-style: none;
-
-
 
   &.active {
     .filter-popup-button {
@@ -82,7 +79,8 @@
       background-color: $color-primary-contrast-text;
       padding: 0;
 
-      .filter-mode-popup .item, .item a {
+      .filter-mode-popup .item,
+      .item a {
         &.active {
           color: $color-primary-contrast-text;
           background-color: $color-primary;
@@ -96,7 +94,8 @@
     }
   }
 
-  .filter-row, .sort-row {
+  .filter-row,
+  .sort-row {
     $button-radius: 30px;
     overflow: visible;
     width: 100%;
@@ -105,7 +104,6 @@
     display: grid;
     grid-template-columns: $button-radius 3fr 2fr 5fr $button-radius;
     grid-column-gap: 8px;
-
 
     .filter-array-button {
       border-radius: 50%;
@@ -129,7 +127,6 @@
         top: 50%;
         transform: translate(-50%, -50%);
       }
-
     }
 
     .filter-input {
@@ -140,7 +137,8 @@
       @include border-radius(3px);
       width: 200px;
 
-      &:focus, &:active {
+      &:focus,
+      &:active {
         border-color: $color-primary-lighter;
       }
 
@@ -201,6 +199,12 @@
     }
   }
 
+  .button__toggle-archived-rows {
+    i {
+      margin: 0;
+    }
+  }
+
   .description-row {
     .info {
       color: $color-text-light-grey;
@@ -230,7 +234,6 @@
       }
     }
   }
-
 }
 
 .filter-popup__button {
@@ -258,10 +261,10 @@
 
   background-color: $color-primary-contrast-text;
   padding: 8px 20px;
-  color: $color-primary-text;;
+  color: $color-primary-text;
 
   &:hover {
-    background-color: $color-hover-background
+    background-color: $color-hover-background;
   }
 }
 
@@ -298,7 +301,8 @@
 }
 
 .filter-wrapper .filter-popup {
-  .filter-popup__save-link-button, .filter-popup__toggle-list-button {
+  .filter-popup__save-link-button,
+  .filter-popup__toggle-list-button {
     background-color: transparent;
     border: none;
     color: $color-text-light-grey;
