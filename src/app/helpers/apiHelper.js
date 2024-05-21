@@ -2,7 +2,6 @@ import f from "lodash/fp";
 import fetch from "cross-fetch";
 import request from "superagent";
 
-import { doto } from "./functools.js";
 import { getLogin, noAuthNeeded } from "./authenticate";
 import apiUrl from "./apiUrl";
 
