@@ -4,11 +4,13 @@ final String BRANCH = params.BRANCH
 final boolean NOTIFY_SLACK_ON_FAILURE = params.NOTIFY_SLACK_ON_FAILURE
 final boolean NOTIFY_SLACK_ON_SUCCESS = params.NOTIFY_SLACK_ON_SUCCESS
 
-final String BRANCH_NAME = BRANCH ? BRANCH.tokenize('/').last() : ""
+final String CLEAN_BRANCH_NAME = BRANCH ? BRANCH.replaceAll("[\\.\\_\\#]", "-").tokenize('/').last() : ""
+
 final String DEPLOY_DIR = 'build/deploy'
 final String TEST_COVERAGE_FILE = 'output/coverage/junit.xml'
 
 final String IMAGE_NAME = "campudus/grud-frontend"
+final String IMAGE_TAG = CLEAN_BRANCH_NAME && CLEAN_BRANCH_NAME != "master" ? CLEAN_BRANCH_NAME : "latest"
 final String ARCHIVE_FILENAME_DIST = "grud-frontend-dist.tar.gz"
 final GString DOCKER_BASE_IMAGE_TAG = "build-${BUILD_NUMBER}"
 
@@ -85,8 +87,7 @@ pipeline {
           --label "GIT_COMMIT_DATE=${GIT_COMMIT_DATE}" \
           --label "BUILD_DATE=${BUILD_DATE}" \
           -t ${IMAGE_NAME}:${DOCKER_BASE_IMAGE_TAG}-${GIT_HASH} \
-          ${BRANCH_NAME ? "-t ${IMAGE_NAME}:${BRANCH_NAME}" : ""} \
-          -t ${IMAGE_NAME}:latest \
+          -t ${IMAGE_NAME}:${IMAGE_TAG} \
           -f Dockerfile --rm .
         """
       }
@@ -102,16 +103,7 @@ pipeline {
       steps {
         withDockerRegistry([credentialsId: "dockerhub", url: ""]) {
           sh "docker push ${IMAGE_NAME}:${DOCKER_BASE_IMAGE_TAG}-${GIT_HASH}"
-
-          script {
-            if (BRANCH_NAME) {
-              sh "docker push ${IMAGE_NAME}:${BRANCH_NAME}"
-            }
-
-            if (!BRANCH_NAME || BRANCH_NAME == 'master') {
-              sh "docker push ${IMAGE_NAME}:latest"
-            }
-          }
+          sh "docker push ${IMAGE_NAME}:${IMAGE_TAG}"
         }
       }
     }
@@ -122,7 +114,12 @@ pipeline {
       wrap([$class: 'BuildUser']) {
         script {
           if (NOTIFY_SLACK_ON_SUCCESS) {
-            slackOk(channel: SLACK_CHANNEL, message: BRANCH ? "BRANCH=${BRANCH}" : "")
+            final String logParams = [
+                BRANCH ? "BRANCH=${BRANCH}" : null,
+                "image: ${IMAGE_NAME}:${IMAGE_TAG}",
+            ].minus(null).join(' ')
+
+            slackOk(channel: SLACK_CHANNEL, message: "${logParams}")
           }
         }
       }
@@ -132,7 +129,11 @@ pipeline {
       wrap([$class: 'BuildUser']) {
         script {
           if (NOTIFY_SLACK_ON_FAILURE) {
-            slackError(channel: SLACK_CHANNEL, message: BRANCH ? "BRANCH=${BRANCH}" : "")
+            final String logParams = [
+                BRANCH ? "BRANCH=${BRANCH}" : null,
+            ].minus(null).join(' ')
+
+            slackError(channel: SLACK_CHANNEL, message: "${logParams}")
           }
         }
       }
