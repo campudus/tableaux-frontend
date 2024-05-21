@@ -11,7 +11,6 @@ final String TEST_COVERAGE_FILE = 'output/coverage/junit.xml'
 
 final String IMAGE_NAME = "campudus/grud-frontend"
 final String IMAGE_TAG = CLEAN_BRANCH_NAME && CLEAN_BRANCH_NAME != "master" ? CLEAN_BRANCH_NAME : "latest"
-final String ARCHIVE_FILENAME_DIST = "grud-frontend-dist.tar.gz"
 final GString DOCKER_BASE_IMAGE_TAG = "build-${BUILD_NUMBER}"
 
 final String SLACK_CHANNEL = "#grud"
@@ -46,6 +45,7 @@ pipeline {
       steps {
         echo "Build with BUILD_ID: $COMMIT_INFO"
         sh "rm -rf build"
+        sh "rm -rf output"
         sh "mkdir -p ${DEPLOY_DIR}"
         sh "mkdir -p output/coverage"
 
@@ -55,21 +55,21 @@ pipeline {
       }
     }
 
-    stage('Build dist') {
+    stage('Build base') {
       steps {
-        script {
-          def image = docker.build("${IMAGE_NAME}builder", "--target build -f Dockerfile . --build-arg BUILD_ID=${COMMIT_INFO}")
+        sh "docker build -t ${IMAGE_NAME}-base --target base -f Dockerfile ."
+      }
+    }
 
-          image.inside {
-            /*
-            * Jenkins Docker Plugin automatically mounts WORKSPACE on host to the same directory within the container.
-            * Also, we need to explicitly use the defined BUILDER_WORKING_DIRECTORY
-            * because Jenkins runs the docker container automatically within the WORKSPACE directory.
-            */
-            sh "cd /usr/app && ls -la && tar -czf ${WORKSPACE}/${DEPLOY_DIR}/${ARCHIVE_FILENAME_DIST} node_modules out package.json"
-            sh "cd /usr/app && ls -la && cp ${TEST_COVERAGE_FILE} ${WORKSPACE}/${TEST_COVERAGE_FILE}"
-          }
-        }
+    stage('Build app/test') {
+      steps {
+        sh "docker build -t ${IMAGE_NAME}-base --target base -f Dockerfile ."
+      }
+    }
+
+    stage('Publish coverage') {
+      steps {
+        sh "docker build -t ${IMAGE_NAME}-test --target testoutput -f Dockerfile . --output=output"
       }
       post {
         always {
@@ -78,7 +78,7 @@ pipeline {
       }
     }
 
-    stage('Build docker image') {
+    stage('Build prod docker image') {
       steps {
         sh """
           docker build \
@@ -86,16 +86,11 @@ pipeline {
           --label "GIT_COMMIT=${GIT_COMMIT}" \
           --label "GIT_COMMIT_DATE=${GIT_COMMIT_DATE}" \
           --label "BUILD_DATE=${BUILD_DATE}" \
+          --target prod \
           -t ${IMAGE_NAME}:${DOCKER_BASE_IMAGE_TAG}-${GIT_HASH} \
           -t ${IMAGE_NAME}:${IMAGE_TAG} \
           -f Dockerfile --rm .
         """
-      }
-    }
-
-    stage('Artifacts') {
-      steps {
-        archiveArtifacts artifacts: "${DEPLOY_DIR}/${ARCHIVE_FILENAME_DIST}", fingerprint: true
       }
     }
 
@@ -109,34 +104,34 @@ pipeline {
     }
   }
 
-  post {
-    success {
-      wrap([$class: 'BuildUser']) {
-        script {
-          if (NOTIFY_SLACK_ON_SUCCESS) {
-            final String logParams = [
-                BRANCH ? "BRANCH=${BRANCH}" : null,
-                "image: ${IMAGE_NAME}:${IMAGE_TAG}",
-            ].minus(null).join(' ')
+  // post {
+  //   success {
+  //     wrap([$class: 'BuildUser']) {
+  //       script {
+  //         if (NOTIFY_SLACK_ON_SUCCESS) {
+  //           final String logParams = [
+  //               BRANCH ? "BRANCH=${BRANCH}" : null,
+  //               "image: ${IMAGE_NAME}:${IMAGE_TAG}",
+  //           ].minus(null).join(' ')
 
-            slackOk(channel: SLACK_CHANNEL, message: "${logParams}")
-          }
-        }
-      }
-    }
+  //           slackOk(channel: SLACK_CHANNEL, message: "${logParams}")
+  //         }
+  //       }
+  //     }
+  //   }
 
-    failure {
-      wrap([$class: 'BuildUser']) {
-        script {
-          if (NOTIFY_SLACK_ON_FAILURE) {
-            final String logParams = [
-                BRANCH ? "BRANCH=${BRANCH}" : null,
-            ].minus(null).join(' ')
+  //   failure {
+  //     wrap([$class: 'BuildUser']) {
+  //       script {
+  //         if (NOTIFY_SLACK_ON_FAILURE) {
+  //           final String logParams = [
+  //               BRANCH ? "BRANCH=${BRANCH}" : null,
+  //           ].minus(null).join(' ')
 
-            slackError(channel: SLACK_CHANNEL, message: "${logParams}")
-          }
-        }
-      }
-    }
-  }
+  //           slackError(channel: SLACK_CHANNEL, message: "${logParams}")
+  //         }
+  //       }
+  //     }
+  //   }
+  // }
 }
