@@ -30,6 +30,7 @@ import Tableaux from "./Tableaux";
 const tablesSelector = state => state.tables;
 const currentTableSelector = state => state.tableView.currentTable;
 const currentFolderSelector = state => state.media.currentFolderId;
+const currentLanguageSelector = state => state.tableView.currentLanguage;
 
 const GRUDRouter = React.memo(() => {
   const [isInitialized, setInitSuccess] = React.useState(false);
@@ -53,8 +54,9 @@ const GRUDRouter = React.memo(() => {
 
   const renderTableView = React.useCallback(routeProps => {
     const validParams = validateRouteParams(routeProps.match.params, tables);
-    const { tableId } = validParams;
+    const { tableId, langtag } = validParams;
     const currentTable = currentTableSelector(store.getState());
+    const currentLanguage = currentLanguageSelector(store.getState());
     const { filter } = parseOptions(routeProps.location.search);
 
     // only load table if we're allowed to see at least one
@@ -68,8 +70,12 @@ const GRUDRouter = React.memo(() => {
       });
     }
 
-    if (tableId && tableId === currentTable) {
+    if (tableId && tableId === currentTable && langtag === currentLanguage) {
       store.dispatch(actionCreators.loadTableView(tableId));
+    }
+
+    if (langtag !== currentLanguage) {
+      store.dispatch(actionCreators.setCurrentLanguage(langtag));
     }
 
     return renderView(ViewNames.TABLE_VIEW)(routeProps);
