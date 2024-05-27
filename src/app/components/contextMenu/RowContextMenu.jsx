@@ -287,9 +287,17 @@ class RowContextMenu extends React.Component {
 
   setArchived = archived => () => {
     const {
+      langtag,
       cell: { row, table }
     } = this.props;
     setRowArchived({ table, row, archived });
+    if (archived) {
+      this.props.actions.toggleCellSelection({
+        select: false,
+        langtag,
+        tableId: table.id
+      });
+    }
   };
 
   setFinalItem = () => {
