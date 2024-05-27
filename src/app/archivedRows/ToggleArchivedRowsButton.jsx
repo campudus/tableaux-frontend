@@ -9,7 +9,7 @@ const ToggleArchivedRowsButton = ({ table }) => {
 
   const showArchived = useSelector(selectShowArchivedState);
   const dispatch = useDispatch();
-  const className = `filter-wrapper ${showArchived ? "active" : ""}`;
+  const className = `filter-wrapper ${showArchived ? "has-filter" : ""}`;
   const toggleArchivedRows = useCallback(() => {
     if (mustFetchArchivedRows) {
       dispatch(Action.loadAllRows(table.id, true));
