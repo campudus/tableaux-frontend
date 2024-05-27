@@ -93,5 +93,8 @@
   &.archived {
     background: $color-archived-row-bg;
     color: $color-archived-row-fg;
+    &.in-selected-row {
+      background: darken($color-archived-row-bg, 5%);
+    }
   }
 }
