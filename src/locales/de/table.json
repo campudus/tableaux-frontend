@@ -74,7 +74,6 @@
     "set_all_rows_final": "Ganze Tabelle \"Final\" markieren"
   },
   "archived": {
-    "is-archived": "Datensatz ist achiviert",
     "set-archived": "Archivieren",
     "unset-archived": "Zurückholen"
   },
