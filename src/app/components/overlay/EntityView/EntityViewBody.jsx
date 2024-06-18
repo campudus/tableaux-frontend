@@ -14,11 +14,7 @@ import {
 import { addCellId } from "../../../helpers/getCellId";
 import { doto, ifElse, maybe, merge } from "../../../helpers/functools";
 import { getLanguageOrCountryIcon } from "../../../helpers/multiLanguage";
-import {
-  isLocked,
-  setRowArchived,
-  unlockRow
-} from "../../../helpers/annotationHelper";
+import { isLocked, unlockRow } from "../../../helpers/annotationHelper";
 import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
 import TranslationPopup from "../../entityView/TranslationPopup";
 
@@ -297,36 +293,31 @@ class EntityViewBody extends Component {
     this.forceUpdate();
   };
 
-  restoreRowFromArchive = () => {
-    const { table, row } = this.props;
-    setRowArchived({ table, row, archived: false });
-  };
-
   renderUnlockBar = row => {
     const buttonClass = classNames("button", { shake: this.state.shaking });
     const rowIsArchived = isRowArchived(row);
     const rowIsLocked = isLocked(row);
-    const unlock = rowIsArchived
-      ? this.restoreRowFromArchive
-      : this.unlockRowTemporary;
+    const unlock = this.unlockRowTemporary;
     const barTitle = rowIsArchived
       ? "table:archived.is-archived"
       : "table:row-is-locked";
-    const buttonAction = rowIsArchived
-      ? "table:archived.unset-archived"
-      : "table:unlock-row";
+    const buttonAction = "table:unlock-row";
 
-    return rowIsArchived || rowIsLocked ? (
-      <div className="unlock-bar">
-        <div className="text">
-          <i className="fa fa-lock" />
-          <span>{i18n.t(barTitle)}</span>
+    return (
+      (rowIsArchived || rowIsLocked) && (
+        <div className="unlock-bar">
+          <div className="text">
+            <i className="fa fa-lock" />
+            <span>{i18n.t(barTitle)}</span>
+          </div>
+          {!rowIsArchived && rowIsLocked && (
+            <button className={buttonClass} onClick={unlock}>
+              {i18n.t(buttonAction)}
+            </button>
+          )}
         </div>
-        <button className={buttonClass} onClick={unlock}>
-          {i18n.t(buttonAction)}
-        </button>
-      </div>
-    ) : null;
+      )
+    );
   };
 
   // (filterColumn?: groupColumn, cells: cell[]) -> (cell) -> boolean
