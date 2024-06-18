@@ -75,7 +75,6 @@
   },
 
   "archived": {
-    "is-archived": "Data set is archived",
     "set-archived": "Archive",
     "unset-archived": "Retrieve from archive"
   },
