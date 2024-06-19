@@ -73,6 +73,11 @@
     "unlock_toast": "Zum Entsperren 2x klicken/Enter",
     "set_all_rows_final": "Ganze Tabelle \"Final\" markieren"
   },
+  "archived": {
+    "is-archived": "Datensatz ist achiviert",
+    "set-archived": "Archivieren",
+    "unset-archived": "Zurückholen"
+  },
   "translations": {
     "dialog_headline": "Änderung einer mehrsprachigen Zelle",
     "dialog_question": "Sie haben einen bereits übersetzen Inhalt verändert. Möchten Sie die Übersetzer der anderen Sprachen informieren?\nWählen Sie \"Nein\" falls Sie bspw. nur einen Rechtschreibfehler korrigiert haben.",

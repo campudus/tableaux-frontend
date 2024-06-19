@@ -98,6 +98,7 @@ export const rowValuesToCells = (table, columns) => rows => {
     return {
       id: row.id,
       final: row.final,
+      archived: row.archived,
       annotations: row.annotations,
       values: row.values,
       cells: row.values.map((cellValue, idx) =>
@@ -168,25 +169,39 @@ const deleteRow = (action, completeState) => {
 const addRows = (completeState, state, action) => {
   const columns = f.prop(["columns", action.tableId, "data"], completeState);
   const table = f.prop(["tables", "data", action.tableId], completeState);
+  const newRows = rowValuesToCells(table, columns)(action.rows);
   const temp = f.update(
     [action.tableId, "data"],
-    arr => insert(arr, rowValuesToCells(table, columns)(action.rows)),
+    mergeRows(newRows || []),
     state
   );
   return temp;
 };
 
-const insert = (prev, rows) => {
-  const firstElement = f.first(rows);
-  const index = f.sortedIndexBy(f.get("id"), firstElement, prev);
-  if (index === 0) {
-    return rows;
-  } else {
-    return f.concat(
-      f.concat(f.slice(0, index, prev), rows),
-      f.slice(index, prev.length, prev)
-    );
+// JavaScript would be very slow and/or run out of stack if we'd implement that
+// cleanly.
+const mergeRows = a => b => {
+  const rowsA = f.sortBy("id", a);
+  const rowsB = f.sortBy("id", b);
+  const rows = [];
+
+  while (rowsA.length > 0 || rowsB.length > 0) {
+    const headA = rowsA[0];
+    const headB = rowsB[0];
+    switch (true) {
+      case headA && !headB:
+        return f.uniqBy("id", rows.concat(rowsA)); // recursion base
+      case headB && !headA:
+        return f.uniqBy("id", rows.concat(rowsB)); // recursion base
+      case headA.id < headB.id:
+        rows.push(rowsA.shift()); // multiple mutation, simulate recursion
+        break; // recur
+      case headA.id >= headB.id:
+        rows.push(rowsB.shift()); // multiple mutation, simulate recursion
+        break; // recur
+    }
   }
+  return f.uniqBy("id", rows); // remote return and/or recursion base
 };
 
 const setCellValue = (state, action, completeState, isRollback = false) => {

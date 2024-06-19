@@ -1,11 +1,12 @@
 import f from "lodash/fp";
+import { isRowArchived } from "../../archivedRows";
 import {
   ColumnKinds,
   FilterModes,
   RowIdColumn,
   SortValues
 } from "../../constants/TableauxConstants";
-import { doto, either, withTryCatch } from "../../helpers/functools";
+import { doto, either, unless, withTryCatch } from "../../helpers/functools";
 import {
   getCountryOfLangtag,
   getLanguageOfLangtag
@@ -13,6 +14,7 @@ import {
 import searchFunctions, {
   StatusSearchFunction
 } from "../../helpers/searchFunctions";
+import * as t from "../../helpers/transduce";
 
 export const FilterableCellKinds = [
   ColumnKinds.concat,
@@ -53,16 +55,18 @@ const getFilteredRows = (
   filterSettings
 ) => {
   const closures = mkClosures(columns, rowsWithIndex, langtag, filterSettings);
+
   const allFilters = f.flow(
     // eslint-disable-line lodash-fp/prefer-composition-grouping
     f.map(mkFilterFn(closures)),
-    f.map(fn => withTryCatch(fn, console.error)) // to get errors, replace f.always(false) with eg. console.error
+    f.map(fn => withTryCatch(fn, console.error)), // to get errors, replace f.always(false) with eg. console.error
+    f.map(t.filter),
+    unless(() => filterSettings.showArchived, f.concat(t.reject(isRowArchived)))
   )(filterSettings.filters || []);
-  const combinedFilter = f.flow(
-    f.juxt(allFilters),
-    f.every(f.identity)
-  );
-  const filteredRows = f.filter(combinedFilter, rowsWithIndex);
+  const filteredRows = f.isEmpty(allFilters)
+    ? rowsWithIndex
+    : t.transduceList(...allFilters)(rowsWithIndex);
+
   const { sortColumnId, sortValue } = filterSettings;
 
   // sort by ID
@@ -483,22 +487,25 @@ const completeRowInformation = (columns, table, rows, allDisplayValues) => {
     })
   );
 
-  return rows.map(({ id, cells, values, annotations, final }, rowIndex) => ({
-    rowIndex,
-    id,
-    annotations,
-    final,
-    values: cells.map((cell, colIndex) => ({
-      ...cell,
-      displayValue:
-        cell.kind === ColumnKinds.link
-          ? values[colIndex].map(link =>
-              getLinkDisplayValue(columns[colIndex].toTable)(link.id)
-            )
-          : f.get([rowIndex, "values", colIndex], tableDisplayValues),
-      value: values[colIndex]
-    }))
-  }));
+  return rows.map(
+    ({ id, cells, values, annotations, final, archived }, rowIndex) => ({
+      rowIndex,
+      id,
+      annotations,
+      final,
+      archived,
+      values: cells.map((cell, colIndex) => ({
+        ...cell,
+        displayValue:
+          cell.kind === ColumnKinds.link
+            ? values[colIndex].map(link =>
+                getLinkDisplayValue(columns[colIndex].toTable)(link.id)
+              )
+            : f.get([rowIndex, "values", colIndex], tableDisplayValues),
+        value: values[colIndex]
+      }))
+    })
+  );
 };
 
 export default getFilteredRows;

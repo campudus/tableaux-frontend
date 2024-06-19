@@ -29,7 +29,7 @@ import {
 } from "./actions/annotationActions";
 import { changeCellValue, modifyHistory } from "./actions/cellActions";
 import { queryFrontendServices } from "./actions/frontendServices";
-import { addEmptyRow, safelyDuplicateRow } from "./actions/rowActions";
+import * as Row from "./actions/rowActions";
 import actionTypes from "./actionTypes";
 import { overlayParamsSpec } from "./reducers/overlays";
 
@@ -45,7 +45,6 @@ const {
 
 const {
   ADDITIONAL_ROWS_DATA_LOADED,
-  ALL_ROWS_DATA_LOADED,
   CLEAN_UP,
   COLUMNS_DATA_LOADED,
   COLUMNS_DATA_LOAD_ERROR,
@@ -168,137 +167,74 @@ const addRows = (tableId, rows) => {
   };
 };
 
-const loadAllRows = tableId => (dispatch, getState) => {
-  const buildParams = (allRows, rowsPerRequest) => {
-    if (allRows <= rowsPerRequest) {
-      return [{ offset: 30, limit: allRows }];
-    }
-    return f.compose(
-      f.map(offset => {
-        return { offset, limit: rowsPerRequest };
-      }),
-      f.rangeStep(rowsPerRequest, 30)
-    )(allRows % rowsPerRequest !== 0 ? allRows + 1 : allRows);
-  };
-
-  const fetchRowsPaginated = async (tableId, parallelRequests) => {
-    const { toRows } = API_ROUTES;
-    const {
-      page: { totalSize },
-      rows
-    } = await makeRequest({
-      apiRoute: toRows(tableId),
-      params: {
-        offset: 0,
-        limit: 30
-      },
-      method: "GET"
-    });
-    dispatch(addRows(tableId, rows));
-    const params = buildParams(totalSize, 500);
-    var resultLength = rows.length;
-    var index = 0;
-
-    const validateSelectedCell = () => {
-      const state = getState();
-
-      const dispatchToast = content =>
-        dispatch(
-          showToast({
-            content: <div id="cell-jump-toast">{content}</div>
-          })
-        );
-
-      const notFound = (id, validId) => !f.eq(validId, id) && !f.isNil(id);
-
-      const [selectedCell, rows, columns, table, visibleColumns] = f.props(
-        [
-          ["selectedCell", "selectedCell"],
-          ["rows", tableId, "data"],
-          ["columns", tableId, "data"],
-          ["tables", "data", tableId],
-          ["tableView", "visibleColumns"]
-        ],
-        state
-      );
-
-      const { rowId, columnId, langtag } = selectedCell;
-
-      if (f.isNil(rowId) && f.isNil(columnId)) {
-        return;
-      }
-
-      const containsId = id =>
-        f.flow(
-          f.map("id"),
-          f.includes(id),
-          exists => (exists ? id : false)
-        );
-
-      const validRowId = containsId(rowId)(rows) || f.get([0, "id"], rows);
-      const validColumnId =
-        containsId(columnId)(columns) || f.get([0, "id"], columns);
-
-      if (!f.includes(validColumnId, visibleColumns)) {
-        dispatch(setColumnsVisible(f.concat(visibleColumns, [validColumnId])));
-      }
-
-      if (notFound(rowId, validRowId)) {
-        dispatchToast(i18n.t("table:jump.no_such_row", { row: rowId }));
-      }
-
-      if (notFound(columnId, validColumnId)) {
-        dispatchToast(i18n.t("table:jump.no_such_column", { col: columnId }));
-      }
-
-      const anyIdChanged =
-        !f.eq(validRowId, rowId) || !f.eq(validColumnId, columnId);
-
-      if (anyIdChanged) {
-        dispatch(
-          toggleCellSelection({
-            tableId: table.id,
-            columnId: validColumnId,
-            rowId: validRowId,
-            langtag
-          })
-        );
-      }
-    };
-
-    const recReq = () => {
-      if (index >= params.length) {
-        return;
-      }
-      const oldIndex = index;
-      index++;
-      return makeRequest({
-        apiRoute: toRows(tableId),
-        params: params[oldIndex],
-        method: "GET"
-      }).then(result => {
-        resultLength = resultLength + result.rows.length;
-        dispatch(addRows(tableId, result.rows));
-        if (resultLength >= totalSize) {
-          dispatch({ type: ALL_ROWS_DATA_LOADED, tableId });
-          validateSelectedCell();
-          return;
-        }
-        recReq();
-      });
-    };
-    if (totalSize <= 30) {
-      dispatch({ type: ALL_ROWS_DATA_LOADED, tableId });
-      return;
-    }
-    f.forEach(
-      recReq,
-      new Array(
-        parallelRequests > params.length ? params.length : parallelRequests
-      )
+const checkIfSelectedCellExists = (dispatch, tableId, state) => {
+  const dispatchToast = content =>
+    dispatch(
+      showToast({
+        content: <div id="cell-jump-toast">{content}</div>
+      })
     );
-  };
-  fetchRowsPaginated(tableId, 4);
+
+  const notFound = (id, validId) => !f.eq(validId, id) && !f.isNil(id);
+
+  const [selectedCell, rows, columns, table, visibleColumns] = f.props(
+    [
+      ["selectedCell", "selectedCell"],
+      ["rows", tableId, "data"],
+      ["columns", tableId, "data"],
+      ["tables", "data", tableId],
+      ["tableView", "visibleColumns"]
+    ],
+    state
+  );
+
+  const { rowId, columnId, langtag } = selectedCell;
+
+  if (f.isNil(rowId) && f.isNil(columnId)) {
+    return;
+  }
+
+  const containsId = id =>
+    f.flow(
+      f.map("id"),
+      f.includes(id),
+      exists => (exists ? id : false)
+    );
+
+  const validRowId = containsId(rowId)(rows) || f.get([0, "id"], rows);
+  const validColumnId =
+    containsId(columnId)(columns) || f.get([0, "id"], columns);
+
+  if (!f.includes(validColumnId, visibleColumns)) {
+    dispatch(setColumnsVisible(f.concat(visibleColumns, [validColumnId])));
+  }
+
+  if (notFound(rowId, validRowId)) {
+    dispatchToast(i18n.t("table:jump.no_such_row", { row: rowId }));
+  }
+
+  if (notFound(columnId, validColumnId)) {
+    dispatchToast(i18n.t("table:jump.no_such_column", { col: columnId }));
+  }
+
+  const anyIdChanged =
+    !f.eq(validRowId, rowId) || !f.eq(validColumnId, columnId);
+
+  if (anyIdChanged) {
+    dispatch(
+      toggleCellSelection({
+        tableId: table.id,
+        columnId: validColumnId,
+        rowId: validRowId,
+        langtag
+      })
+    );
+  }
+};
+
+const loadAllRows = (tableId, ...params) => async (dispatch, getState) => {
+  await Row.loadAllRows(tableId, ...params)(dispatch);
+  checkIfSelectedCellExists(dispatch, tableId, getState());
 };
 
 const toggleColumnVisibility = columnId => (dispatch, getState) => {
@@ -669,6 +605,11 @@ const setFiltersAndSorting = (filters, sorting, shouldSave) => (
   }
 };
 
+const setShowArchivedRows = (_table, shouldShow = false) => dispatch => {
+  // TODO: Fetch rows once we have the endpoint
+  dispatch({ type: SET_FILTERS_AND_SORTING, showArchived: shouldShow });
+};
+
 const deleteRow = action => {
   const { mergeWithRowId, tableId, rowId } = action;
   const queryString =
@@ -785,7 +726,7 @@ const actionCreators = {
   copyCellValue: dispatchParamsFor(COPY_CELL_VALUE_TO_CLIPBOARD),
   changeCellValue,
   deleteRow,
-  duplicateRow: safelyDuplicateRow,
+  duplicateRow: Row.safelyDuplicateRow,
   addAnnotationLangtags,
   removeAnnotationLangtags,
   addTextAnnotation,
@@ -809,7 +750,7 @@ const actionCreators = {
   appendFilters: appendFilters,
   cleanUp: cleanUp,
   modifyHistory,
-  addEmptyRow: addEmptyRow,
+  addEmptyRow: Row.addEmptyRow,
   setAllRowsFinal,
   editColumn,
   addEmptyRowAndOpenEntityView,
@@ -828,7 +769,8 @@ const actionCreators = {
     ["cell"],
     MultiSelect.TOGGLE_MULTISELECT_CELL
   ),
-  clearMultiselect: dispatchParamsFor(MultiSelect.CLEAR_MULTISELECT)
+  clearMultiselect: dispatchParamsFor(MultiSelect.CLEAR_MULTISELECT),
+  setShowArchivedRows
 };
 
 export default actionCreators;

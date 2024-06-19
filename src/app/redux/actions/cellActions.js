@@ -222,7 +222,7 @@ const dispatchCellValueChange = action => (dispatch, getState) => {
   const isMultiLanguage =
     column.multilanguage && (f.isPlainObject(newValue) || f.isNil(newValue));
 
-  const update = calculateCellUpdate(action);
+  const update = calculateCellUpdate({ ...cell, ...action });
   if (f.isNil(update)) {
     return Promise.resolve();
   }

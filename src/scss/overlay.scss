@@ -32,6 +32,10 @@ $overlay-border-radius: 5px;
           transition: transform 0.4s;
           transform: translateX(20vw);
 
+          .smooth-dnd-ghost {
+            transform: translateX(-40vw);
+          }
+
           &.is-new {
             animation: from-right 0.4s 1;
           }

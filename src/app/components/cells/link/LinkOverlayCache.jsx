@@ -49,16 +49,21 @@ const withCachedLinks = Component => props => {
       .then(
         // row response -> link label format
         f.compose(
-          f.map(({ id, values }) => ({ id, value: f.first(values) })),
+          f.map(({ values, ...foreignRow }) => ({
+            ...foreignRow,
+            value: f.first(values)
+          })),
           f.prop("rows")
         )
       )
       .then(foreignRows => {
         // update display values in state
-        const loadedDisplayValues = foreignRows.map(({ id, value }) => ({
-          id,
-          values: [getDisplayValue(column.toColumn, value)]
-        }));
+        const loadedDisplayValues = foreignRows.map(
+          ({ value, ...foreignRow }) => ({
+            ...foreignRow,
+            values: [getDisplayValue(column.toColumn, value)]
+          })
+        );
         actions.addDisplayValues({
           displayValues: [
             { tableId: column.toTable, values: loadedDisplayValues }
@@ -122,7 +127,7 @@ const withCachedLinks = Component => props => {
         f.uniqBy(f.prop("id")),
         f.map(addDisplayValues)
       ),
-    [f.prop(["displayValues", column.toTable], grudData)]
+    [f.prop(["displayValues", column.toTable], grudData), ...cell.value]
   );
 
   const rowResults = loading

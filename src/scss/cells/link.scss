@@ -1,8 +1,8 @@
 @import "../variables";
 @import "../helper";
 
-.cell.cell-link, .cell.cell-attachment {
-
+.cell.cell-link,
+.cell.cell-attachment {
   //Overwrite editing styling because editing mode is with overlay
   &.cell-link.editing .cell-content {
     @include box-shadow(none);
@@ -25,9 +25,20 @@
       text-overflow: ellipsis;
       padding: 6px 8px;
     }
+
+    &--archived {
+      background: $color-archived-bg;
+      color: $color-archived-fg;
+      ::before {
+        content: "\f187";
+        font-family: FontAwesome;
+        padding-right: 8px;
+      }
+    }
   }
 
-  &.selected, &.editing {
+  &.selected,
+  &.editing {
     .cell-content {
       flex-flow: row wrap;
       padding-bottom: 3px;

@@ -48,10 +48,6 @@
       fill: $color-text-medium-grey;
     }
 
-    &.is-dragging {
-      opacity: 0;
-    }
-
     &.is-hovered {
       opacity: 0.2;
     }
@@ -116,6 +112,18 @@
   align-items: center;
   box-sizing: border-box;
 
+  .link-item-button.archived {
+    background: $color-archived-bg;
+    color: $color-archived-fg;
+
+    svg {
+      fill: $color-archived-fg;
+    }
+    &:hover {
+      background: transparentize($color: $color-archived-bg, $amount: 0.5);
+    }
+  }
+
   .link-label {
     height: $line-height-standard;
     overflow: hidden;
@@ -145,6 +153,15 @@
     &.linked {
       background-color: $color-primary;
       color: $color-primary-contrast-text;
+    }
+    &.archived {
+      background: $color-archived-bg;
+      color: $color-archived-fg;
+      ::before {
+        content: "\f187";
+        font-family: FontAwesome;
+        padding-right: 8px;
+      }
     }
   }
 

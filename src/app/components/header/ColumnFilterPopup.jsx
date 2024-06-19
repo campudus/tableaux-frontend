@@ -111,7 +111,7 @@ class ColumnFilterPopup extends React.Component {
     };
   };
 
-  applyColumnOrdering = columns => newOrdering => () => {
+  applyColumnOrdering = columns => newOrdering => {
     const {
       columnActions: { setColumnOrdering }
     } = this.props;
@@ -160,7 +160,7 @@ class ColumnFilterPopup extends React.Component {
           {...sharedListProps}
           wrapperClass="column-checkbox-list"
           renderListItem={this.renderCheckboxItems(columns, false)}
-          applySwap={this.applyColumnOrdering(columns)}
+          onReorder={this.applyColumnOrdering(columns)}
           entries={f.compose(
             f.tail,
             f.map("id")

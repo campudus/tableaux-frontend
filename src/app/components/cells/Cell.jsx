@@ -9,6 +9,7 @@ import {
   renderComponent,
   withHandlers
 } from "recompose";
+import { isRowArchived } from "../../archivedRows/helpers";
 import { ColumnKinds, Langtags } from "../../constants/TableauxConstants";
 import {
   canUserChangeAnyCountryTypeCell,
@@ -128,7 +129,8 @@ class Cell extends React.Component {
       !f.isEqual(
         getRelevantCellProps(this.props.cell),
         getRelevantCellProps(nextProps.cell)
-      )
+      ) ||
+      cell.row.archived !== nextCell.row.archived
     );
   };
 
@@ -297,7 +299,8 @@ class Cell extends React.Component {
       editing: this.userCanEditValue() && editing,
       "in-selected-row": inSelectedRow,
       "cell-disabled": cell.isReadOnly || !this.userCanEditValue(),
-      "in-multi-selection": inMultiSelection
+      "in-multi-selection": inMultiSelection,
+      archived: isRowArchived(row)
     });
 
     const CellKind =

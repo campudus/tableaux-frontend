@@ -4,15 +4,16 @@
  *        links: [{displayName, linkTarget: url-string},...]
  */
 
-import React, { useCallback, useState } from "react";
 import i18n from "i18next";
 import f from "lodash/fp";
+import React, { useCallback, useMemo, useState } from "react";
 import { List } from "react-virtualized";
-import { LinkedRows } from "../cells/link/LinkOverlayFragments";
-import LinkItem from "../cells/link/LinkItem";
+import { isLinkArchived } from "../../archivedRows";
 import { canUserChangeCell } from "../../helpers/accessManagementHelper.js";
-import { retrieveTranslation } from "../../helpers/multiLanguage";
 import apiUrl from "../../helpers/apiUrl";
+import { retrieveTranslation } from "../../helpers/multiLanguage";
+import LinkItem from "../cells/link/LinkItem";
+import { LinkedRows } from "../cells/link/LinkOverlayFragments";
 
 const MAX_DISPLAYED_LINKS = 4;
 
@@ -35,12 +36,13 @@ const LinkList = props => {
   const linksToRender = expanded
     ? links.length
     : f.take(MAX_DISPLAYED_LINKS, links).length;
-  const applySwap = ordering => () => {
+  const applySwap = ordering => {
     const rearranged = f
       .map(id => f.find(linkedItem => linkedItem.id === id, links), ordering)
       .map((el, idx) => ({ ...el, ordering: idx + 1 }));
 
     actions.changeCellValue({
+      cell,
       columnId: column.id,
       rowId: row.id,
       tableId: table.id,
@@ -52,86 +54,54 @@ const LinkList = props => {
   const getViewUrl = link =>
     isAttachment ? apiUrl(retrieveTranslation(langtag, link.url)) : undefined;
 
-  const renderSortableListItem = () => ({ key, style = {} }) => {
-    const link = f.find(f.propEq("id", key), links);
+  const mkListItemRenderer = fetchKey => () => ({ key, index, style = {} }) => {
+    const findFn =
+      fetchKey === "key" ? f.find(f.propEq("id", key)) : f.nth(index);
+    const link = findFn(links);
     const {
       linkTarget: { tableId, rowId }
     } = link;
+    const clickHandler = (_, link, evt) => {
+      evt.preventDefault();
+      if (!changeCellAuthorized) {
+        return;
+      }
+      actions.changeCellValue({
+        cell,
+        tableId,
+        rowId,
+        columnId: cell.column.id,
+        oldValue: cell.value,
+        newValue: f.remove(
+          f.matchesProperty(isAttachment ? "uuid" : "id", f.get("id", link))
+        )(cell.value)
+      });
+    };
+    const isArchived = isLinkArchived(link);
+    const id = link.linkTarget.rowId || link.uuid;
+    return (
+      <LinkItem
+        key={id}
+        showToggleButton={showToggleButton}
+        row={{ id }}
+        cell={cell}
+        toTable={link.linkTarget.tableId}
+        label={link.label || link.displayName}
+        langtag={langtag}
+        clickHandler={clickHandler}
+        style={style}
+        isLinked
+        viewUrl={getViewUrl(link)}
+        isPermissionDenied={link.hiddenByRowPermissions}
+        archived={isArchived}
+      />
+    );
+  };
 
-    const clickHandler = (_, link, evt) => {
-      evt.preventDefault();
-      if (!changeCellAuthorized) {
-        return;
-      }
-      actions.changeCellValue({
-        cell,
-        tableId,
-        rowId,
-        columnId: cell.column.id,
-        oldValue: cell.value,
-        newValue: f.remove(
-          f.matchesProperty(isAttachment ? "uuid" : "id", f.get("id", link))
-        )(cell.value)
-      });
-    };
-    const id = link.linkTarget.rowId || link.uuid;
-    return (
-      <LinkItem
-        key={id}
-        showToggleButton={showToggleButton}
-        row={{ id }}
-        cell={cell}
-        toTable={link.linkTarget.tableId}
-        label={link.label || link.displayName}
-        langtag={langtag}
-        clickHandler={clickHandler}
-        style={style}
-        isLinked
-        viewUrl={getViewUrl(link)}
-        isPermissionDenied={link.hiddenByRowPermissions}
-      />
-    );
-  };
-  const renderListItem = ({ index, style }) => {
-    const link = links[index];
-    const {
-      linkTarget: { tableId, rowId }
-    } = link;
-    const clickHandler = (_, link, evt) => {
-      evt.preventDefault();
-      if (!changeCellAuthorized) {
-        return;
-      }
-      actions.changeCellValue({
-        cell,
-        tableId,
-        rowId,
-        columnId: cell.column.id,
-        oldValue: cell.value,
-        newValue: f.remove(
-          f.matchesProperty(isAttachment ? "uuid" : "id", f.get("id", link))
-        )(cell.value)
-      });
-    };
-    const id = link.linkTarget.rowId || link.uuid;
-    return (
-      <LinkItem
-        key={id}
-        showToggleButton={showToggleButton}
-        row={{ id }}
-        cell={cell}
-        toTable={link.linkTarget.tableId}
-        label={link.label || link.displayName}
-        langtag={langtag}
-        clickHandler={clickHandler}
-        style={style}
-        userCanEdit={changeCellAuthorized}
-        isLinked
-        viewUrl={getViewUrl(link)}
-        isPermissionDenied={link.hiddenByRowPermissions}
-      />
-    );
-  };
+  const renderSortableListItem = useMemo(() => mkListItemRenderer("key"), [
+    links
+  ]);
+  const renderListItem = useMemo(mkListItemRenderer("index"), [links]);
 
   const ListRenderer = sortable ? (
     <div className={`sortable ${expanded && "sortable_expanded"}`}>
@@ -141,7 +111,7 @@ const LinkList = props => {
           rowsToRender={linksToRender}
           renderListItem={renderSortableListItem}
           loading={false}
-          applySwap={applySwap}
+          onReorder={applySwap}
         />
       </div>
     </div>

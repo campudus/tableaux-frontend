@@ -1,7 +1,6 @@
-import React from "react";
-import f from "lodash/fp";
 import i18n from "i18next";
-
+import f from "lodash/fp";
+import React from "react";
 import { ifElse, when } from "../../../helpers/functools";
 
 const FlagDiff = props => {
@@ -21,6 +20,9 @@ const FlagDiff = props => {
     revision.value || revision.valueType
   );
 
+  const translationKey =
+    value === "archived" ? "table:archived:is-archived" : `table:${value}`;
+
   return (
     <div
       className={
@@ -34,7 +36,7 @@ const FlagDiff = props => {
         event
       }
     >
-      {i18n.t(`table:${value}`)}
+      {i18n.t(translationKey)}
     </div>
   );
 };

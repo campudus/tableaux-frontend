@@ -2,27 +2,13 @@ import f from "lodash/fp";
 import fetch from "cross-fetch";
 import request from "superagent";
 
-import { doto } from "./functools.js";
 import { getLogin, noAuthNeeded } from "./authenticate";
 import apiUrl from "./apiUrl";
 
 const buildURL = apiRoute => apiUrl(apiRoute);
 
 const paramsToString = params =>
-  f.isEmpty(params)
-    ? ""
-    : doto(
-        params,
-        f.toPairs,
-        f.map(([param, value]) =>
-          f.isArray(value)
-            ? value.map(v => `${param}=${v}`).join("&")
-            : `${param}=${value}`
-        ),
-        f.join("&"),
-        f.concat("?"),
-        f.join("")
-      );
+  f.isEmpty(params) ? "" : `?${new URLSearchParams(params).toString()}`;
 
 /**
  * Make a promisified cross-browser-compatible XHR-request, using

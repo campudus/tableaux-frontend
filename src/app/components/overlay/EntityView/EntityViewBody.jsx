@@ -21,6 +21,7 @@ import TranslationPopup from "../../entityView/TranslationPopup";
 import View from "../../entityView/RowView";
 import columnFilter from "./columnFilter";
 import getDisplayValue from "../../../helpers/getDisplayValue";
+import { isRowArchived } from "../../../archivedRows/helpers";
 
 const CLOSE_POPUP_DELAY = 200; // milliseconds
 const SHAKE_DURATION = 800;
@@ -293,20 +294,29 @@ class EntityViewBody extends Component {
   };
 
   renderUnlockBar = row => {
-    if (!isLocked(row)) {
-      return null;
-    }
     const buttonClass = classNames("button", { shake: this.state.shaking });
+    const rowIsArchived = isRowArchived(row);
+    const rowIsLocked = isLocked(row);
+    const unlock = this.unlockRowTemporary;
+    const barTitle = rowIsArchived
+      ? "table:archived.is-archived"
+      : "table:row-is-locked";
+    const buttonAction = "table:unlock-row";
+
     return (
-      <div className="unlock-bar">
-        <div className="text">
-          <i className="fa fa-lock" />
-          <span>{i18n.t("table:row-is-locked")}</span>
+      (rowIsArchived || rowIsLocked) && (
+        <div className="unlock-bar">
+          <div className="text">
+            <i className="fa fa-lock" />
+            <span>{i18n.t(barTitle)}</span>
+          </div>
+          {!rowIsArchived && rowIsLocked && (
+            <button className={buttonClass} onClick={unlock}>
+              {i18n.t(buttonAction)}
+            </button>
+          )}
         </div>
-        <button className={buttonClass} onClick={this.unlockRowTemporary}>
-          {i18n.t("table:unlock-row")}
-        </button>
-      </div>
+      )
     );
   };
 

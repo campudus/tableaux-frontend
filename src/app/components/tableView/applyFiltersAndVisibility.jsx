@@ -5,9 +5,11 @@ import { ColumnKinds } from "../../constants/TableauxConstants";
 import DVWorkerCtl from "../../helpers/DisplayValueWorkerControls";
 import { maybe } from "../../helpers/functools";
 import * as t from "../../helpers/transduce";
+import { selectShowArchivedState } from "../../redux/reducers/tableView";
 import getFilteredRows, { completeRowInformation } from "../table/RowFilters";
 
 const withFiltersAndVisibility = Component => props => {
+  const showArchived = useSelector(selectShowArchivedState);
   const { tables, rows, columns, colsWithMatches } = props;
   const shouldLaunchDisplayValueWorker = DVWorkerCtl.shouldStartForTable(props);
   useEffect(() => {
@@ -38,17 +40,17 @@ const withFiltersAndVisibility = Component => props => {
       selectedCell.rowId
         ? rows?.findIndex(row => row.id === selectedCell.rowId)
         : undefined,
-      filterRows(props).visibleRows ?? []
+      filterRows(props, showArchived).visibleRows ?? []
     ).filter(idx => idx >= 0);
     return filteredRowIdces.map(idx => rows[idx]);
   }, [
     arrayToKey(props.visibleRows),
     rows,
+    showArchived,
     props.filters,
     props.sorting,
     f.isEmpty(props.allDisplayValues[props.table.id])
   ]);
-
   const visibleRowIDs = useMemo(() => f.map("id", visibleRows), [visibleRows]);
 
   const hasRowJumpTarget = isNotNil(selectedCell.rowId);
@@ -133,17 +135,21 @@ const getSortedVisibleColumns = (columnOrdering, visibleColumns, columns) => {
   )(columnOrdering);
 };
 
-const filterRows = ({
-  filters,
-  sorting,
-  rows,
-  table,
-  langtag,
-  columns,
-  allDisplayValues,
-  actions: { setColumnsVisible }
-}) => {
-  const nothingToFilter = f.isEmpty(sorting) && f.isEmpty(filters);
+const filterRows = (
+  {
+    filters,
+    sorting,
+    rows,
+    table,
+    langtag,
+    columns,
+    allDisplayValues,
+    actions: { setColumnsVisible }
+  },
+  showArchived
+) => {
+  const nothingToFilter =
+    f.isEmpty(sorting) && f.isEmpty(filters) && showArchived;
   if (f.isNil(rows) || f.isEmpty(allDisplayValues) || nothingToFilter) {
     return {
       visibleRows: f.range(0, f.size(rows)),
@@ -152,10 +158,12 @@ const filterRows = ({
   }
   const isFilterEmpty = filter =>
     f.isEmpty(filter.value) && !f.isString(filter.mode);
+
   const rowsFilter = {
     sortColumnId: sorting.columnId,
     sortValue: sorting.value,
-    filters: f.reject(isFilterEmpty, filters)
+    filters: f.reject(isFilterEmpty, filters),
+    showArchived
   };
   const rowsWithIndex = completeRowInformation(
     columns,

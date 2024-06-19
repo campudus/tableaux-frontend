@@ -60,17 +60,20 @@ const LinkItem = props => {
     toTable,
     userCanEdit = true,
     viewUrl,
-    isPermissionDenied = false
+    isPermissionDenied = false,
+    archived = false
   } = props;
   const isAttachment = props.isAttachment || Boolean(viewUrl);
   const isDisabled = isPermissionDenied || !userCanEdit;
 
   const mainButtonClass = classNames("left", {
     linked: props.isLinked,
-    "has-focus": props.selectedMode === 0
+    "has-focus": props.selectedMode === 0,
+    archived
   });
-  const secondaryButtonClass = classNames({
-    "has-focus": props.selectedMode === 1
+  const secondaryButtonClass = classNames("link-item-button", {
+    "has-focus": props.selectedMode === 1,
+    archived
   });
 
   const handleClickEdit = () =>
@@ -123,7 +126,11 @@ const LinkItem = props => {
             onClick={handleClickEdit}
             disabled={isDisabled}
           >
-            <SvgIcon icon="edit" containerClasses="color-primary" />
+            {archived ? (
+              <i className="fa fa-eye" />
+            ) : (
+              <SvgIcon icon="edit" containerClasses="color-primary" />
+            )}
           </LinkButton>
         )}
         <div className={mainButtonClass}>

@@ -18,10 +18,10 @@ ARG BUILD_ID=unknown
 ENV BUILD_ID=${BUILD_ID}
 
 RUN echo "Build with BUILD_ID: $BUILD_ID"
-RUN npm run lint
-RUN npm run test:ci
-RUN npm run build
-RUN npm prune --production
+RUN npm run lint && \
+    npm run test:ci && \
+    npm run build && \
+    npm prune --production
 
 FROM node:20.10.0-alpine
 

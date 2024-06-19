@@ -1,14 +1,14 @@
 import f from "lodash/fp";
-
-import { doto } from "../../helpers/functools";
 import {
-  getSaveableRowDuplicate,
-  createRowDuplicatesRequest
+  createRowDuplicatesRequest,
+  getSaveableRowDuplicate
 } from "../../components/cells/cellCopyHelper";
 import { makeRequest } from "../../helpers/apiHelper";
-import { toggleAnnotationFlag } from "./annotationActions";
-import ActionTypes from "../actionTypes";
 import route from "../../helpers/apiRoutes.js";
+import { doto } from "../../helpers/functools";
+import P from "../../helpers/promise";
+import ActionTypes from "../actionTypes";
+import { toggleAnnotationFlag } from "./annotationActions";
 
 const {
   ADDITIONAL_ROWS_DATA_LOADED,
@@ -93,64 +93,47 @@ export const safelyDuplicateRow = ({
   }
 };
 
-export const loadAllRows = tableId => dispatch => {
+export const loadAllRows = (tableId, archived = false) => async dispatch => {
+  const PARALLELL_CHUNKS = 4;
+  const ROWS_PER_CHUNK = 500;
+  const INITIAL_ROWS = 30;
+
+  const preloadParam = {
+    offset: 0,
+    limit: INITIAL_ROWS,
+    archived
+  };
+
   const buildParams = (allRows, rowsPerRequest) => {
     if (allRows <= rowsPerRequest) {
-      return [{ offset: 30, limit: allRows }];
+      return [{ ...preloadParam, offset: INITIAL_ROWS, limit: allRows }];
     }
     return f.compose(
       f.map(offset => {
-        return { offset, limit: rowsPerRequest };
+        return { ...preloadParam, offset, limit: rowsPerRequest };
       }),
-      f.rangeStep(rowsPerRequest, 30)
+      f.rangeStep(rowsPerRequest, INITIAL_ROWS)
     )(allRows % rowsPerRequest !== 0 ? allRows + 1 : allRows);
   };
 
-  const fetchRowsPaginated = async (tableId, parallelRequests) => {
-    const { toRows } = route;
-    const {
-      page: { totalSize },
-      rows
-    } = await makeRequest({
-      apiRoute: toRows(tableId),
-      params: {
-        offset: 0,
-        limit: 30
-      },
-      method: "GET"
+  const loadPaginatedRows = async params => {
+    const paginatedRows = await makeRequest({
+      apiRoute: route.toRows(tableId),
+      params,
+      method: "get"
     });
-    dispatch(addRows(tableId, rows));
-    const params = buildParams(totalSize, 500);
-    var resultLength = rows.length;
-    var index = 0;
-    const recReq = () => {
-      if (index >= params.length) {
-        return;
-      }
-      const oldIndex = index;
-      index++;
-      return makeRequest({
-        apiRoute: toRows(tableId),
-        params: params[oldIndex],
-        method: "GET"
-      }).then(result => {
-        resultLength = resultLength + result.rows.length;
-        dispatch(addRows(tableId, result.rows));
-        if (resultLength >= totalSize) {
-          dispatch({ type: ALL_ROWS_DATA_LOADED, tableId });
-          return;
-        }
-        recReq();
-      });
-    };
-    f.forEach(
-      recReq,
-      new Array(
-        parallelRequests > params.length ? params.length : parallelRequests
-      )
-    );
+    dispatch(addRows(tableId, paginatedRows.rows));
+    return paginatedRows;
   };
-  fetchRowsPaginated(tableId, 4);
+
+  const {
+    page: { totalSize }
+  } = await loadPaginatedRows(preloadParam);
+  if (totalSize > INITIAL_ROWS) {
+    const pageConfigs = buildParams(totalSize, ROWS_PER_CHUNK);
+    await P.chunk(PARALLELL_CHUNKS, loadPaginatedRows, pageConfigs);
+  }
+  dispatch({ type: ALL_ROWS_DATA_LOADED, tableId });
 };
 
 const addRows = (tableId, rows) => {
