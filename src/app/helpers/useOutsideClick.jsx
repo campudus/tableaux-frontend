@@ -17,12 +17,10 @@ const outsideClickEffect = ({
   containerRef, // React.leagacyRef
   onOutsideClick // Html.Event -> ()
 }) => () => {
-  if (!shouldListen || !containerRef.current) return;
-  else {
+  if (shouldListen && containerRef.current) {
+    console.log("register handler");
     const handleOutsideClick = event => {
-      if (!containerRef.current || containerRef.current.contains(event.target))
-        return;
-      onOutsideClick(event);
+      if (!containerRef.current?.contains(event.target)) onOutsideClick(event);
     };
     const handleCleanUp = () => {
       document.removeEventListener("click", handleOutsideClick);
