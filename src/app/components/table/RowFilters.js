@@ -71,7 +71,6 @@ const getFilteredRows = (
     )
   )(filterSettings.filters || []);
 
-  console.log(filterSettings, allFilters);
   const filteredRows = f.isEmpty(allFilters)
     ? rowsWithIndex
     : t.transduceList(...allFilters)(rowsWithIndex);
