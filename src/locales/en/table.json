@@ -80,7 +80,8 @@
     "unset-archived": "Retrieve from archive",
     "only-unarchived": "Only current",
     "only-archived": "Only archived",
-    "all": "Current and archived"
+    "all": "Current and archived",
+    "popup-title": "Show rows"
   },
   "translations": {
     "dialog_headline": "Multi language cell modified",
