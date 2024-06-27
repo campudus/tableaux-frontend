@@ -313,7 +313,7 @@ class TableView extends PureComponent {
                   columnOrdering={columnOrdering}
                 />
               ) : null}
-              <ToggleArchivedRowsButton table={table} />
+              <ToggleArchivedRowsButton table={table} langtag={langtag} />
               <HistoryButtons
                 tableId={tableId}
                 actions={actions}
