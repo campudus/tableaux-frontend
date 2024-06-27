@@ -14,6 +14,7 @@ import {
 } from "../../helpers/functools";
 import ActionTypes from "../actionTypes";
 import getDisplayValue from "../../helpers/getDisplayValue";
+import { ShowArchived } from "../../archivedRows/helpers";
 
 const {
   TOGGLE_EXPANDED_ROW,
@@ -56,7 +57,7 @@ const initialState = {
   visibleRows: [],
   filters: [],
   sorting: [],
-  showArchived: false,
+  showArchived: ShowArchived.hide,
   history: {
     undoQueue: [],
     redoQueue: []

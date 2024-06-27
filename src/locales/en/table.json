@@ -77,7 +77,10 @@
   "archived": {
     "is-archived": "Data set is archived",
     "set-archived": "Archive",
-    "unset-archived": "Retrieve from archive"
+    "unset-archived": "Retrieve from archive",
+    "only-unarchived": "Only current",
+    "only-archived": "Only archived",
+    "all": "Current and archived"
   },
   "translations": {
     "dialog_headline": "Multi language cell modified",

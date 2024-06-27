@@ -1,5 +1,5 @@
 import f from "lodash/fp";
-import { isRowArchived } from "../../archivedRows";
+import { isRowArchived, ShowArchived } from "../../archivedRows";
 import {
   ColumnKinds,
   FilterModes,
@@ -55,14 +55,23 @@ const getFilteredRows = (
   filterSettings
 ) => {
   const closures = mkClosures(columns, rowsWithIndex, langtag, filterSettings);
+  const archiveFilter =
+    filterSettings.showArchived === ShowArchived.exclusive
+      ? t.filter(isRowArchived)
+      : t.reject(isRowArchived);
 
   const allFilters = f.flow(
     // eslint-disable-line lodash-fp/prefer-composition-grouping
     f.map(mkFilterFn(closures)),
     f.map(fn => withTryCatch(fn, console.error)), // to get errors, replace f.always(false) with eg. console.error
     f.map(t.filter),
-    unless(() => filterSettings.showArchived, f.concat(t.reject(isRowArchived)))
+    unless(
+      () => filterSettings.showArchived === ShowArchived.show,
+      f.concat(archiveFilter)
+    )
   )(filterSettings.filters || []);
+
+  console.log(filterSettings, allFilters);
   const filteredRows = f.isEmpty(allFilters)
     ? rowsWithIndex
     : t.transduceList(...allFilters)(rowsWithIndex);
