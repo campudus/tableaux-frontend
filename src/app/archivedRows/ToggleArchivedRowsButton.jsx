@@ -1,7 +1,8 @@
 import { t } from "i18next";
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import SvgIcon from "../components/helperComponents/SvgIcon";
+import { outsideClickEffect } from "../helpers/useOutsideClick";
 import actionCreators from "../redux/actionCreators";
 import Action from "../redux/actionCreators";
 import { selectShowArchivedState } from "../redux/reducers/tableView";
@@ -35,7 +36,7 @@ const Item = ({ onClick, active, content }) => {
     </button>
   );
 };
-const ToggleArchivedRowsButton = ({ table }) => {
+const ToggleArchivedRowsButton = ({ table, langtag }) => {
   // prevent potential massive reload of archived rows
   const [mustFetchArchivedRows, setMustFetchArchivedRows] = useState(true);
   const [showPopup, setShowPopup] = useState(false);
@@ -59,6 +60,16 @@ const ToggleArchivedRowsButton = ({ table }) => {
 
   const className = `archive-mode-toggle ${showPopup ? "active" : ""}`;
 
+  const containerRef = useRef();
+  useEffect(
+    outsideClickEffect({
+      shouldListen: showPopup,
+      containerRef,
+      onOutsideClick: () => setShowPopup(false)
+    }),
+    [showPopup, containerRef.current]
+  );
+
   return (
     <div className="archive-mode-toggle__wrapper">
       <div className={className}>
@@ -70,7 +81,7 @@ const ToggleArchivedRowsButton = ({ table }) => {
         </button>
       </div>
       {showPopup ? (
-        <div className="archive-mode-toggle__popup">
+        <div className="archive-mode-toggle__popup" ref={containerRef}>
           <span className="title">{t("table:archived.popup-title")}</span>
           {Object.keys(StateCfg).map(mode => (
             <Item
