@@ -2,6 +2,7 @@ import { t } from "i18next";
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import SvgIcon from "../components/helperComponents/SvgIcon";
+import actionCreators from "../redux/actionCreators";
 import Action from "../redux/actionCreators";
 import { selectShowArchivedState } from "../redux/reducers/tableView";
 import { ShowArchived } from "./helpers";
@@ -44,6 +45,12 @@ const ToggleArchivedRowsButton = ({ table }) => {
   const dispatch = useDispatch();
   const showArchived = mode => () => {
     dispatch(Action.setShowArchivedRows(table, mode));
+    if (mode !== ShowArchived.show) {
+      dispatch(
+        actionCreators.toggleCellSelection({ selected: false, table, langtag })
+      );
+    }
+
     if (mustFetchArchivedRows) {
       dispatch(Action.loadAllRows(table.id, true));
       setMustFetchArchivedRows(false);
