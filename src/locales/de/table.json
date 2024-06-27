@@ -79,7 +79,8 @@
     "unset-archived": "Zurückholen",
     "only-unarchived": "Nur aktuelle",
     "only-archived": "Nur archivierte",
-    "all": "Aktuelle und archivierte"
+    "all": "Aktuelle und archivierte",
+    "popup-title": "Datensatzansicht"
   },
   "translations": {
     "dialog_headline": "Änderung einer mehrsprachigen Zelle",

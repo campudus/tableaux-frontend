@@ -284,4 +284,51 @@
       }
     }
   }
+
+  .archive-mode-toggle {
+    &__wrapper {
+      margin-top: 10px;
+      margin-right: 20px;
+      position: relative;
+    }
+    &__popup-button {
+      @include header-button-look();
+    }
+    &__popup {
+      position: absolute;
+      top: 100%;
+      display: flex;
+      flex-direction: column;
+      background: white;
+      border-top: 5px solid black;
+      width: 190px;
+      box-shadow: $box-shadow-light;
+      & > * {
+        padding: 8px 12px;
+      }
+      .title {
+        font-weight: bold;
+      }
+
+      .list-item {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        &:hover {
+          background: $color-hover-background;
+        }
+        &.active {
+          font-weight: bold;
+          cursor: default;
+          color: $color-primary-text;
+        }
+        .svg-icon {
+          margin-right: 5px;
+        }
+        span {
+          white-space: nowrap;
+        }
+      }
+    }
+  }
 }

@@ -22,8 +22,13 @@ const StateCfg = {
 };
 
 const Item = ({ onClick, active, content }) => {
+  const cssClass = `list-item ${active ? "active" : ""}`;
   return (
-    <button onClick={active ? undefined : onClick}>
+    <button
+      className={cssClass}
+      onClick={active ? undefined : onClick}
+      disabled={active}
+    >
       {content.icon}
       <span>{t(`table:archived.${content.trnKey}`)}</span>
     </button>
@@ -45,20 +50,21 @@ const ToggleArchivedRowsButton = ({ table }) => {
     }
   };
 
-  const className = `filter-wrapper ${showPopup ? "active" : ""}`;
+  const className = `archive-mode-toggle ${showPopup ? "active" : ""}`;
 
   return (
-    <>
+    <div className="archive-mode-toggle__wrapper">
       <div className={className}>
         <button
-          className="filter-popup-button button__toggle-archived-rows"
+          className="archive-mode-toggle__popup-button"
           onClick={togglePopup}
         >
           {StateCfg[showArchivedMode || ShowArchived.hide]?.icon}
         </button>
       </div>
       {showPopup ? (
-        <div>
+        <div className="archive-mode-toggle__popup">
+          <span className="title">{t("table:archived.popup-title")}</span>
           {Object.keys(StateCfg).map(mode => (
             <Item
               key={mode}
@@ -69,7 +75,7 @@ const ToggleArchivedRowsButton = ({ table }) => {
           ))}
         </div>
       ) : null}
-    </>
+    </div>
   );
 };
 
