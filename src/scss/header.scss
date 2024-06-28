@@ -293,9 +293,6 @@
     }
     &__popup-button {
       @include header-button-look();
-      svg {
-        margin-bottom: -1px;
-      }
     }
     &.active .archive-mode-toggle__popup-button {
       background: black;
@@ -338,6 +335,16 @@
           white-space: nowrap;
         }
       }
+    }
+  }
+  .small-button {
+    width: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0;
+    svg {
+      transform: translateY(-6px);
     }
   }
 }
