@@ -74,7 +74,7 @@ const ToggleArchivedRowsButton = ({ table, langtag }) => {
     <div className="archive-mode-toggle__wrapper">
       <div className={className}>
         <button
-          className="archive-mode-toggle__popup-button"
+          className="small-button archive-mode-toggle__popup-button"
           onClick={togglePopup}
         >
           {StateCfg[showArchivedMode || ShowArchived.hide]?.icon}
