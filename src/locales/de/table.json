@@ -77,9 +77,9 @@
     "is-archived": "Datensatz ist achiviert",
     "set-archived": "Archivieren",
     "unset-archived": "Zurückholen",
-    "only-unarchived": "Nur aktuelle",
-    "only-archived": "Nur archivierte",
-    "all": "Aktuelle und archivierte",
+    "hide": "Nur aktuelle",
+    "exclusive": "Nur archivierte",
+    "show": "Aktuelle und archivierte",
     "popup-title": "Datensatzansicht"
   },
   "translations": {

@@ -293,6 +293,9 @@
     }
     &__popup-button {
       @include header-button-look();
+      svg {
+        margin-bottom: -1px;
+      }
     }
     &.active .archive-mode-toggle__popup-button {
       background: black;

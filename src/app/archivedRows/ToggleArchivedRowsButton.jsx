@@ -10,16 +10,16 @@ import { ShowArchived } from "./helpers";
 
 const StateCfg = {
   [ShowArchived.hide]: {
-    icon: <SvgIcon icon="/img/icons/database-current.svg" />,
-    trnKey: "only-unarchived"
+    icon: <SvgIcon icon="/img/icons/database.svg" />,
+    trnKey: "hide"
   },
   [ShowArchived.show]: {
     icon: <SvgIcon icon="/img/icons/database-current-archived.svg" />,
-    trnKey: "all"
+    trnKey: "show"
   },
   [ShowArchived.exclusive]: {
     icon: <SvgIcon icon="/img/icons/database-archived.svg" />,
-    trnKey: "only-archived"
+    trnKey: "exclusive"
   }
 };
 
