@@ -296,8 +296,8 @@
     }
     &.active .archive-mode-toggle__popup-button {
       background: black;
-      .svg-icon svg path:last-of-type {
-        fill: white;
+      .svg-icon svg {
+        filter: invert(100%) brightness(150%);
       }
     }
     &__popup {
