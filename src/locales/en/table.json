@@ -78,9 +78,9 @@
     "is-archived": "Data set is archived",
     "set-archived": "Archive",
     "unset-archived": "Retrieve from archive",
-    "only-unarchived": "Only current",
-    "only-archived": "Only archived",
-    "all": "Current and archived",
+    "hide": "Only current",
+    "exclusive": "Only archived",
+    "show": "Current and archived",
     "popup-title": "Show rows"
   },
   "translations": {
