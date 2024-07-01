@@ -31,12 +31,14 @@ const Navigation = ({ langtag }) => {
       >
         <i className="fa fa-bars" />
       </button>
-      <SelfClosingNavigationPopup
-        langtag={langtag}
-        handleClickOutside={closePopup}
-        navigationOpen={popupOpen}
-        services={services || []}
-      />
+      <div onClick={closePopup}>
+        <SelfClosingNavigationPopup
+          langtag={langtag}
+          handleClickOutside={closePopup}
+          navigationOpen={popupOpen}
+          services={services || []}
+        />
+      </div>
     </nav>
   );
 };
