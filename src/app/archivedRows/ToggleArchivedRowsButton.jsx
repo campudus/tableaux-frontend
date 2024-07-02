@@ -56,6 +56,7 @@ const ToggleArchivedRowsButton = ({ table, langtag }) => {
       dispatch(Action.loadAllRows(table.id, true));
       setMustFetchArchivedRows(false);
     }
+    setShowPopup(false);
   };
 
   const className = `archive-mode-toggle ${showPopup ? "active" : ""}`;
