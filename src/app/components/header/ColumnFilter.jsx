@@ -1,9 +1,9 @@
-import React from "react";
-import ColumnFilterPopup from "./ColumnFilterPopup";
-import i18n from "i18next";
 import classNames from "classnames";
+import i18n from "i18next";
 import f from "lodash/fp";
 import PropTypes from "prop-types";
+import React from "react";
+import ColumnFilterPopup, { countHiddenColumns } from "./ColumnFilterPopup";
 
 class ColumnFilter extends React.Component {
   state = { open: false };
@@ -37,11 +37,8 @@ class ColumnFilter extends React.Component {
     }, []);
 
     const { open } = this.state;
-    const nHidden = f.flow(
-      f.drop(1),
-      f.reject(f.prop("visible")),
-      f.size
-    )(columns);
+    const nHidden = countHiddenColumns(columns);
+
     const message = nHidden + " " + i18n.t("table:hidden_items");
     const cssClass = classNames({
       active: open,
