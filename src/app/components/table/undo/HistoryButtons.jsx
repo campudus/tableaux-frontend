@@ -5,7 +5,9 @@ import { compose, lifecycle, withStateHandlers } from "recompose";
 import classNames from "classnames";
 
 const HistoryButtons = ({ canUndo, canRedo, undo, redo, active }) => {
-  const buttonBaseClass = classNames("button", { inactive: !active });
+  const buttonBaseClass = classNames("button small-button", {
+    inactive: !active
+  });
 
   return (
     <div className="history-buttons">
