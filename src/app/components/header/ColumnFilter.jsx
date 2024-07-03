@@ -48,8 +48,9 @@ class ColumnFilter extends React.Component {
       "has-filter": !open && nHidden > 0
     });
 
-    const buttonClass = classNames("small-button button", {
-      "ignore-react-onclickoutside": open
+    const buttonClass = classNames("button", {
+      "ignore-react-onclickoutside": open,
+      "small-button": nHidden < 1
     });
     return (
       <div id="column-filter-wrapper" className={cssClass}>
