@@ -4,6 +4,7 @@ import React from "react";
 import { translate } from "react-i18next";
 import listensToClickOutside from "react-onclickoutside";
 import { withRouter } from "react-router-dom";
+import { ShowArchived } from "../../../archivedRows/helpers";
 import { FilterModes } from "../../../constants/TableauxConstants";
 import { forkJoin, maybe } from "../../../helpers/functools";
 import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
@@ -12,6 +13,8 @@ import {
   retrieveTranslation
 } from "../../../helpers/multiLanguage";
 import SearchFunctions from "../../../helpers/searchFunctions";
+import Action from "../../../redux/actionCreators";
+import store from "../../../redux/store";
 
 @translate(["header"])
 @listensToClickOutside
@@ -99,6 +102,7 @@ class SwitcherPopup extends React.PureComponent {
     this.setState({
       focusTableId: table.id
     });
+    store.dispatch(Action.setShowArchivedRows(ShowArchived.hide));
     this.handleClickOutside(null);
     history.push(
       history.location.pathname.replace(/tables.*/, `tables/${table.id}`)
