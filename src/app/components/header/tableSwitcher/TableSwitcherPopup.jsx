@@ -102,7 +102,7 @@ class SwitcherPopup extends React.PureComponent {
     this.setState({
       focusTableId: table.id
     });
-    store.dispatch(Action.setShowArchivedRows(ShowArchived.hide));
+    store.dispatch(Action.setShowArchivedRows(table, ShowArchived.hide));
     this.handleClickOutside(null);
     history.push(
       history.location.pathname.replace(/tables.*/, `tables/${table.id}`)
