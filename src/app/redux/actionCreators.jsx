@@ -1,6 +1,7 @@
 import i18n from "i18next";
 import f from "lodash/fp";
 import React from "react";
+import { ShowArchived } from "../archivedRows/helpers";
 import askForSessionUnlock from "../components/helperComponents/SessionUnlockDialog";
 import { loadAndOpenEntityView } from "../components/overlay/EntityViewOverlay";
 import { Langtags } from "../constants/TableauxConstants";
@@ -605,8 +606,10 @@ const setFiltersAndSorting = (filters, sorting, shouldSave) => (
   }
 };
 
-const setShowArchivedRows = (_table, shouldShow = false) => dispatch => {
-  // TODO: Fetch rows once we have the endpoint
+const setShowArchivedRows = (
+  _table,
+  shouldShow = ShowArchived.hide
+) => dispatch => {
   dispatch({ type: SET_FILTERS_AND_SORTING, showArchived: shouldShow });
 };
 

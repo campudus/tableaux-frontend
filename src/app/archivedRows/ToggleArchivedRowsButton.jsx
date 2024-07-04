@@ -1,31 +1,99 @@
-import React, { useCallback, useState } from "react";
+import { t } from "i18next";
+import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import SvgIcon from "../components/helperComponents/SvgIcon";
+import { outsideClickEffect } from "../helpers/useOutsideClick";
+import actionCreators from "../redux/actionCreators";
 import Action from "../redux/actionCreators";
 import { selectShowArchivedState } from "../redux/reducers/tableView";
+import { ShowArchived } from "./helpers";
 
-const ToggleArchivedRowsButton = ({ table }) => {
+const StateCfg = {
+  [ShowArchived.hide]: {
+    icon: <SvgIcon icon="/img/icons/database.svg" />,
+    trnKey: "hide"
+  },
+  [ShowArchived.show]: {
+    icon: <SvgIcon icon="/img/icons/database-current-archived.svg" />,
+    trnKey: "show"
+  },
+  [ShowArchived.exclusive]: {
+    icon: <SvgIcon icon="/img/icons/database-archived.svg" />,
+    trnKey: "exclusive"
+  }
+};
+
+const Item = ({ onClick, active, content }) => {
+  const cssClass = `list-item ${active ? "active" : ""}`;
+  return (
+    <button
+      className={cssClass}
+      onClick={active ? undefined : onClick}
+      disabled={active}
+    >
+      {content.icon}
+      <span>{t(`table:archived.${content.trnKey}`)}</span>
+    </button>
+  );
+};
+const ToggleArchivedRowsButton = ({ table, langtag }) => {
   // prevent potential massive reload of archived rows
   const [mustFetchArchivedRows, setMustFetchArchivedRows] = useState(true);
+  const [showPopup, setShowPopup] = useState(false);
+  const togglePopup = () => setShowPopup(!showPopup);
 
-  const showArchived = useSelector(selectShowArchivedState);
+  const showArchivedMode = useSelector(selectShowArchivedState);
   const dispatch = useDispatch();
-  const className = `filter-wrapper ${showArchived ? "has-filter" : ""}`;
-  const toggleArchivedRows = useCallback(() => {
+  const showArchived = mode => () => {
+    dispatch(Action.setShowArchivedRows(table, mode));
+    if (mode !== ShowArchived.show) {
+      dispatch(
+        actionCreators.toggleCellSelection({ selected: false, table, langtag })
+      );
+    }
+
     if (mustFetchArchivedRows) {
       dispatch(Action.loadAllRows(table.id, true));
       setMustFetchArchivedRows(false);
     }
-    dispatch(Action.setShowArchivedRows(table, !showArchived));
-  }, [showArchived, mustFetchArchivedRows]);
+    setShowPopup(false);
+  };
+
+  const className = `archive-mode-toggle ${showPopup ? "active" : ""}`;
+
+  const containerRef = useRef();
+  useEffect(
+    outsideClickEffect({
+      shouldListen: showPopup,
+      containerRef,
+      onOutsideClick: () => setShowPopup(false)
+    }),
+    [showPopup, containerRef.current]
+  );
 
   return (
-    <div className={className}>
-      <button
-        className="filter-popup-button button__toggle-archived-rows"
-        onClick={toggleArchivedRows}
-      >
-        <i className="fa fa-archive" />
-      </button>
+    <div className="archive-mode-toggle__wrapper">
+      <div className={className}>
+        <button
+          className="small-button archive-mode-toggle__popup-button"
+          onClick={togglePopup}
+        >
+          {StateCfg[showArchivedMode || ShowArchived.hide]?.icon}
+        </button>
+      </div>
+      {showPopup ? (
+        <div className="archive-mode-toggle__popup" ref={containerRef}>
+          <span className="title">{t("table:archived.popup-title")}</span>
+          {Object.keys(StateCfg).map(mode => (
+            <Item
+              key={mode}
+              onClick={showArchived(mode)}
+              active={mode === showArchivedMode}
+              content={StateCfg[mode]}
+            />
+          ))}
+        </div>
+      ) : null}
     </div>
   );
 };

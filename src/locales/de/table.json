@@ -76,7 +76,11 @@
   "archived": {
     "is-archived": "Datensatz ist achiviert",
     "set-archived": "Archivieren",
-    "unset-archived": "Zurückholen"
+    "unset-archived": "Zurückholen",
+    "hide": "Nur aktuelle",
+    "exclusive": "Nur archivierte",
+    "show": "Aktuelle und archivierte",
+    "popup-title": "Datensatzansicht"
   },
   "translations": {
     "dialog_headline": "Änderung einer mehrsprachigen Zelle",

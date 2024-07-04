@@ -1,6 +1,7 @@
 import f from "lodash/fp";
 import React, { useEffect, useMemo } from "react";
 import { useSelector } from "react-redux";
+import { ShowArchived } from "../../archivedRows";
 import { ColumnKinds } from "../../constants/TableauxConstants";
 import DVWorkerCtl from "../../helpers/DisplayValueWorkerControls";
 import { maybe } from "../../helpers/functools";
@@ -149,7 +150,9 @@ const filterRows = (
   showArchived
 ) => {
   const nothingToFilter =
-    f.isEmpty(sorting) && f.isEmpty(filters) && showArchived;
+    f.isEmpty(sorting) &&
+    f.isEmpty(filters) &&
+    showArchived === ShowArchived.show;
   if (f.isNil(rows) || f.isEmpty(allDisplayValues) || nothingToFilter) {
     return {
       visibleRows: f.range(0, f.size(rows)),
