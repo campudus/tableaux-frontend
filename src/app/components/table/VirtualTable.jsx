@@ -51,20 +51,6 @@ export default class VirtualTable extends PureComponent {
     };
   }
 
-  visibleColumns = [];
-  hideGroupMemberColumns() {
-    const groupMemberIds = f.compose(
-      xs => new Set(xs),
-      f.map("id"),
-      f.flatMap("groups"),
-      f.filter(f.whereEq({ kind: ColumnKinds.group }))
-    )(this.props.columns);
-    this.visibleColumns = f.reject(
-      id => groupMemberIds.has(id),
-      this.props.visibleColumnOrdering
-    );
-  }
-
   colWidths = new Map([[0, META_CELL_WIDTH]]);
   columnStartSize = null;
 
@@ -204,8 +190,8 @@ export default class VirtualTable extends PureComponent {
   };
 
   getFixedColumnCount = () => {
-    const { hasStatusColumn } = this.props;
-    const columnCount = f.size(this.visibleColumns) + 1;
+    const { visibleColumnOrdering, hasStatusColumn } = this.props;
+    const columnCount = f.size(visibleColumnOrdering) + 1;
     return columnCount < 3 ? 0 : f.min([columnCount, hasStatusColumn ? 3 : 2]);
   };
 
@@ -318,7 +304,7 @@ export default class VirtualTable extends PureComponent {
         selectedCell={this.getSelectedCell()}
         toggleAnnotationPopup={this.setOpenAnnotations}
         value={value}
-        visibleColumns={this.visibleColumns}
+        visibleColumns={this.props.visibleColumnOrdering}
         width={width}
       />
     );
@@ -368,7 +354,7 @@ export default class VirtualTable extends PureComponent {
               selectedCell={this.getSelectedCell()}
               toggleAnnotationPopup={this.setOpenAnnotations}
               value={cell.value}
-              visibleColumns={this.visibleColumns}
+              visibleColumns={this.props.visibleColumnOrdering}
               width={width}
               style={style}
             />
@@ -460,7 +446,8 @@ export default class VirtualTable extends PureComponent {
   filterVisibleCells = (cell, columnIdx) =>
     columnIdx === 0 || f.get("visible", this.props.columns[columnIdx]);
 
-  getVisibleElement = (elements, idx) => elements[this.visibleColumns[idx]];
+  getVisibleElement = (elements, idx) =>
+    elements[this.props.visibleColumnOrdering[idx]];
 
   componentWillReceiveProps(next) {
     const newPropKeys = f.keys(next);
@@ -479,7 +466,7 @@ export default class VirtualTable extends PureComponent {
   }
 
   getScrollInfo = () => {
-    const { rows, columns } = this.props;
+    const { rows, columns, visibleColumnOrdering } = this.props;
     const { rowId, columnId, align } = this.getSelectedCell();
 
     const rowIndex = f.findIndex(f.matchesProperty("id", rowId), rows);
@@ -488,7 +475,7 @@ export default class VirtualTable extends PureComponent {
       f.find(({ id }) => id === columnId),
       mapIndexed((obj, orderIdx) => ({ ...obj, orderIdx })),
       f.map(index => ({ id: f.get("id", columns[index]), idx: index }))
-    )(this.visibleColumns);
+    )(visibleColumnOrdering);
 
     return {
       columnIndex: columnIndex + 1,
@@ -518,19 +505,24 @@ export default class VirtualTable extends PureComponent {
         newRowAdded: false
       });
     }
-    this.hideGroupMemberColumns();
     this.focusTable();
   }
-  g;
+
   divRef = null;
 
   render() {
-    const { rows, expandedRowIds, columns, columnKeys, langtag } = this.props;
-
+    const {
+      rows,
+      expandedRowIds,
+      columns,
+      langtag,
+      visibleColumnOrdering
+    } = this.props;
+    const columnKeys = visibleColumnOrdering.join(",");
     const { openAnnotations, showResizeBar } = this.state;
     const { rowIndex, columnIndex, align } = this.getScrollInfo();
 
-    const columnCount = f.size(this.visibleColumns) + 1;
+    const columnCount = f.size(visibleColumnOrdering) + 1;
     const rowCount = f.size(rows) + 2; // one for headers, one for button line
 
     const resizeBarClass = showResizeBar
@@ -610,6 +602,5 @@ VirtualTable.propTypes = {
   selectedCell: PropTypes.object,
   selectedCellEditing: PropTypes.bool,
   selectedCellExpandedRow: PropTypes.string,
-  visibleColumns: PropTypes.string, // Re-render trigger
-  visibleColumnOrdering: PropTypes.arrayOf(PropTypes.number)
+  visibleColumns: PropTypes.string.isRequired
 };

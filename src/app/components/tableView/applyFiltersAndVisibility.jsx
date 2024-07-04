@@ -20,10 +20,16 @@ const withFiltersAndVisibility = Component => props => {
   }, [shouldLaunchDisplayValueWorker]);
 
   const selectedCell = useSelector(state => state.selectedCell?.selectedCell);
+  const groupMemberIds = f.compose(
+    xs => new Set(xs),
+    f.map("id"),
+    f.flatMap("groups"),
+    f.filter(f.whereEq({ kind: ColumnKinds.group }))
+  )(columns);
   const visibleColumnIds = maybeAddNullable(
     selectedCell?.columnId,
     f.isEmpty(colsWithMatches) ? props.visibleColumns : colsWithMatches
-  );
+  ).filter(id => !groupMemberIds.has(id));
 
   const sortedVisibleColumns = useMemo(
     () =>
