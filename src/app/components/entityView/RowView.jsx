@@ -1,16 +1,19 @@
-import React, { PureComponent } from "react";
-import * as f from "lodash/fp";
-import i18n from "i18next";
-
-import PropTypes from "prop-types";
 import classNames from "classnames";
-
+import i18n from "i18next";
+import * as f from "lodash/fp";
+import { match, otherwise, when as on } from "match-iz";
+import PropTypes from "prop-types";
+import React, { PureComponent } from "react";
 import { ColumnKinds, Langtags } from "../../constants/TableauxConstants";
-import { connectOverlayToCellValue } from "../helperComponents/connectOverlayToCellHOC";
-import { retrieveTranslation } from "../../helpers/multiLanguage";
-import { unless } from "../../helpers/functools";
 import * as Access from "../../helpers/accessManagementHelper";
 import * as Annotations from "../../helpers/annotationHelper";
+import { unless } from "../../helpers/functools";
+import {
+  getCountryOfLangtag,
+  retrieveTranslation
+} from "../../helpers/multiLanguage";
+import Spinner from "../header/Spinner";
+import { connectOverlayToCellValue } from "../helperComponents/connectOverlayToCellHOC";
 import AttachmentView from "./attachment/AttachmentView";
 import BooleanView from "./boolean/BooleanView";
 import CurrencyView from "./currency/CurrencyView";
@@ -19,11 +22,9 @@ import GroupView from "./group/GroupView";
 import LinkView from "./link/LinkView";
 import NumericView from "./numeric/NumericView";
 import RowHeadline from "./RowHeadline";
+import StatusView from "./status/StatusView";
 import ShortTextView from "./text/ShortTextView";
 import TextView from "./text/TextView";
-import StatusView from "./status/StatusView";
-import { getCountryOfLangtag } from "../../helpers/multiLanguage";
-import Spinner from "../header/Spinner";
 
 class View extends PureComponent {
   static propTypes = {
@@ -86,7 +87,7 @@ class View extends PureComponent {
       uiLangtag, // for view headers
       setTranslationView,
       hasFocusedChild,
-      lockStatus
+      lockStatus: isLocked
     } = this.props;
 
     if (!cell || !cell.column) {
@@ -112,11 +113,12 @@ class View extends PureComponent {
       [ColumnKinds.status]: StatusView
     };
 
-    const isDisabled = !(
-      this.canEditValue() &&
-      !lockStatus &&
-      kind !== ColumnKinds.status
+    const isDisabled = match(kind)(
+      on(ColumnKinds.status, true),
+      on(ColumnKinds.group, false),
+      otherwise(!this.canEditValue() || isLocked)
     );
+
     const isMyTranslationNeeded =
       langtag !== f.first(Langtags) &&
       Annotations.isTranslationNeeded(langtag)(cell);
