@@ -6,11 +6,13 @@ final boolean NOTIFY_SLACK_ON_SUCCESS = params.NOTIFY_SLACK_ON_SUCCESS
 
 final String CLEAN_BRANCH_NAME = BRANCH ? BRANCH.replaceAll("[\\.\\_\\#]", "-").tokenize('/').last() : ""
 
+final boolean isBranch = CLEAN_BRANCH_NAME != "master"
+
 final String DEPLOY_DIR = 'build/deploy'
 final String TEST_COVERAGE_FILE = 'output/coverage/junit.xml'
 
 final String IMAGE_NAME = "campudus/grud-frontend"
-final String IMAGE_TAG = CLEAN_BRANCH_NAME && CLEAN_BRANCH_NAME != "master" ? CLEAN_BRANCH_NAME : "latest"
+final String IMAGE_TAG = CLEAN_BRANCH_NAME && isBranch ? CLEAN_BRANCH_NAME : "latest"
 final String ARCHIVE_FILENAME_DIST = "grud-frontend-dist.tar.gz"
 final GString DOCKER_BASE_IMAGE_TAG = "build-${BUILD_NUMBER}"
 
@@ -44,7 +46,10 @@ pipeline {
   stages {
     stage('Init Build') {
       steps {
+        buildName "#${env.BUILD_NUMBER} ${isBranch ? CLEAN_BRANCH_NAME : ''}".trim()
+
         echo "Build with BUILD_ID: $COMMIT_INFO"
+
         sh "rm -rf build"
         sh "mkdir -p ${DEPLOY_DIR}"
         sh "mkdir -p output/coverage"
