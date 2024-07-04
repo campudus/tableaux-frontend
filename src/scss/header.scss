@@ -324,9 +324,9 @@
           background: $color-hover-background;
         }
         &.active {
-          font-weight: bold;
           cursor: default;
           color: $color-primary-text;
+          background: #ebebeb;
         }
         .svg-icon {
           margin-right: 5px;
