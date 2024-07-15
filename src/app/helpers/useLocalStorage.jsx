@@ -64,7 +64,7 @@ export const useLocalStorage = (key, initialValue = null, raw = false) => {
         streams[key] = null;
       }
     };
-  }, []);
+  }, [setValue]);
 
   return [value, x => stream.next(x)];
 };

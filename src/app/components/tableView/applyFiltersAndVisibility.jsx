@@ -34,7 +34,11 @@ const withFiltersAndVisibility = Component => props => {
   const sortedVisibleColumns = useMemo(
     () =>
       getSortedVisibleColumns(props.columnOrdering, visibleColumnIds, columns),
-    [arrayToKey(f.map("id", columns)), arrayToKey(visibleColumnIds)]
+    [
+      arrayToKey(f.map("id", columns)),
+      arrayToKey(visibleColumnIds),
+      props.columnOrdering
+    ]
   );
 
   const visibleColumns = useMemo(
