@@ -24,7 +24,11 @@ const DragSortList = ({
 
   return (
     <div className={wrapperClass}>
-      <Container onDrop={handleReorder} lockAxis="y">
+      <Container
+        dragHandleSelector=".drag-handle"
+        onDrop={handleReorder}
+        lockAxis="y"
+      >
         {f.take(rowsToRender ?? entries.length, entries).map((id, idx) => (
           <DragItem key={`${id}-${idx}`}>
             {renderListItem({ index: idx, key: id })}

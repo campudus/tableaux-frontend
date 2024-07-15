@@ -10,7 +10,6 @@
 
   .button {
     @include header-button-look();
-
   }
 
   .infotext {
@@ -111,11 +110,11 @@
     .draggable {
       display: flex;
       align-items: center;
-      .drag-handle{
-        cursor: pointer;
+      .drag-handle {
+        cursor: ns-resize;
       }
-      &:nth-child(odd){
-        .drag-handle{
+      &:nth-child(odd) {
+        .drag-handle {
           background-color: $color-background-very-light-grey;
         }
       }
@@ -142,7 +141,7 @@
       line-height: 30px;
       height: 300px;
       width: 440px;
-      overflow-y:scroll;
+      overflow-y: scroll;
       margin-left: 15px;
 
       .column-filter-checkbox-wrapper {
@@ -157,7 +156,6 @@
       }
     }
   }
-
 }
 
 .column-filter__to-column-item {
