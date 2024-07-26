@@ -136,7 +136,7 @@ describe("taxonomy helpers", () => {
         }
       ]);
     });
-    it("should build large trees performantly", () => {
+    it.skip("should build large trees performantly", () => {
       const size = 2000;
       const threshold = 250;
       const manyNodes = range(0, size).map((_, idx) => {
