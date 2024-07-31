@@ -14,6 +14,14 @@ const time = fn => (...args) => {
   return performance.now() - start;
 };
 
+const srand = seed => {
+  let val = seed;
+  return () => {
+    const x = Math.sin(val++) * 10000;
+    return x - Math.floor(x);
+  };
+};
+
 describe("taxonomy helpers", () => {
   const nodes = [
     { id: 1, parent: null },
@@ -137,18 +145,19 @@ describe("taxonomy helpers", () => {
       ]);
     });
     it("should build large trees performantly", () => {
+      const random = srand(0xdeadbeef);
       const size = 2000;
       const threshold = 250;
       const manyNodes = range(0, size).map((_, idx) => {
-        const isRootNode = Math.random() < 0.05;
+        const isRootNode = random() < 0.05;
         return {
           id: idx,
-          parent: isRootNode ? null : Math.round(Math.random() * size)
+          parent: isRootNode ? null : Math.round(random() * size)
         };
       });
       const buildUnexpanded = t.buildTree({});
       const buildExpanded = t.buildTree({
-        expandedNodeId: Math.round(Math.random() * size)
+        expandedNodeId: Math.round(random() * size)
       });
       expect(time(buildUnexpanded)(manyNodes)).toBeLessThan(threshold);
       expect(time(buildExpanded)(manyNodes)).toBeLessThan(threshold);
