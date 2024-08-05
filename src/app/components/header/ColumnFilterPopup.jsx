@@ -4,20 +4,13 @@ import f from "lodash/fp";
 import PropTypes from "prop-types";
 import React, { useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
-import { ColumnKinds, FilterModes } from "../../constants/TableauxConstants";
+import { FilterModes } from "../../constants/TableauxConstants";
+import { findGroupMemberIds } from "../../helpers/columnHelper";
 import { getColumnDisplayName } from "../../helpers/multiLanguage";
 import SearchFunctions from "../../helpers/searchFunctions";
 import { outsideClickEffect } from "../../helpers/useOutsideClick";
 import actions from "../../redux/actionCreators";
 import DragSortList from "../cells/link/DragSortList";
-
-// Array<Column> -> Set<ColumnID>
-const findGroupMemberIds = f.compose(
-  xs => new Set(xs),
-  f.map("id"),
-  f.flatMap("groups"),
-  f.filter(f.whereEq({ kind: ColumnKinds.group }))
-);
 
 export const countHiddenColumns = columns => {
   const groupMemberIds = findGroupMemberIds(columns);
