@@ -59,6 +59,7 @@ const NumericCell = props => {
     return (
       <NumericEditCell
         langtag={langtag}
+        column={column}
         actions={actions}
         value={value}
         isMultiLanguage={isMultiLanguage}

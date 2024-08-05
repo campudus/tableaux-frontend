@@ -21,6 +21,7 @@ const MAX_DIGITS = 14;
 const NumberInput = (props, ref) => {
   const {
     autoFocus,
+    decimalDigits,
     disabled,
     className,
     value,
@@ -30,7 +31,6 @@ const NumberInput = (props, ref) => {
     onBlur,
     placeholder,
     localize = true,
-    integer = false,
     onClick = f.noop,
     onMouseDown = f.noop,
     separator
@@ -90,7 +90,7 @@ const NumberInput = (props, ref) => {
       decimalSeparator={decimalSeparator}
       value={value}
       defaultValue={0}
-      decimalScale={integer ? 0 : 3}
+      decimalScale={decimalDigits}
       onBlur={onBlur}
       onChange={handleChange}
       placeholder={placeholder}
@@ -109,6 +109,7 @@ export default forwardRef(NumberInput);
 
 NumberInput.propTypes = {
   autoFocus: PropTypes.bool,
+  decimalDigits: PropTypes.number.isRequired,
   value: PropTypes.number.isRequired,
   onChange: PropTypes.func.isRequired,
   onKeyDown: PropTypes.func,
