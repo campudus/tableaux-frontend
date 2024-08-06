@@ -3,6 +3,7 @@ import React, { useEffect, useMemo } from "react";
 import { useSelector } from "react-redux";
 import { ShowArchived } from "../../archivedRows";
 import { ColumnKinds } from "../../constants/TableauxConstants";
+import { findGroupMemberIds } from "../../helpers/columnHelper";
 import DVWorkerCtl from "../../helpers/DisplayValueWorkerControls";
 import { maybe } from "../../helpers/functools";
 import * as t from "../../helpers/transduce";
@@ -20,15 +21,20 @@ const withFiltersAndVisibility = Component => props => {
   }, [shouldLaunchDisplayValueWorker]);
 
   const selectedCell = useSelector(state => state.selectedCell?.selectedCell);
+  const groupMemberIds = findGroupMemberIds(columns);
   const visibleColumnIds = maybeAddNullable(
     selectedCell?.columnId,
     f.isEmpty(colsWithMatches) ? props.visibleColumns : colsWithMatches
-  );
+  ).filter(id => !groupMemberIds.has(id));
 
   const sortedVisibleColumns = useMemo(
     () =>
       getSortedVisibleColumns(props.columnOrdering, visibleColumnIds, columns),
-    [arrayToKey(f.map("id", columns)), arrayToKey(visibleColumnIds)]
+    [
+      arrayToKey(f.map("id", columns)),
+      arrayToKey(visibleColumnIds),
+      props.columnOrdering
+    ]
   );
 
   const visibleColumns = useMemo(

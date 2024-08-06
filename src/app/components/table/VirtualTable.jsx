@@ -515,10 +515,10 @@ export default class VirtualTable extends PureComponent {
       rows,
       expandedRowIds,
       columns,
-      columnKeys,
       langtag,
       visibleColumnOrdering
     } = this.props;
+    const columnKeys = visibleColumnOrdering.join(",");
     const { openAnnotations, showResizeBar } = this.state;
     const { rowIndex, columnIndex, align } = this.getScrollInfo();
 
