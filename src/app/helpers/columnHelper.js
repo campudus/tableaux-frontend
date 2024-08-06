@@ -35,5 +35,3 @@ export const getDecimalDigits = column => {
       return 3;
   }
 };
-
-const isFalsy = x => !x;
