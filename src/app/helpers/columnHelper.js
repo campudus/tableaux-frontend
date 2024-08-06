@@ -11,11 +11,7 @@ export const findGroupMemberIds = f.compose(
   f.map("id"),
   f.flatMap("groups"),
   f.filter(
-    f.where({
-      kind: f.eq(ColumnKinds.group),
-      showMemberColumns: isFalsy
-    })
+    ({ showMemberColumns, kind }) =>
+      kind === ColumnKinds.group && !showMemberColumns
   )
 );
-
-const isFalsy = x => !x;
