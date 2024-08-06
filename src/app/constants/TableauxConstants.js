@@ -18,20 +18,20 @@ const grudConstants = {
 
   // Lowercase on purpose. Reflects exact API naming
   ColumnKinds: keyMirror({
-    shorttext: null,
-    richtext: null,
-    text: null,
-    link: null,
-    numeric: null,
+    attachment: null,
     boolean: null,
     concat: null,
-    attachment: null,
-    datetime: null,
     currency: null,
     date: null,
+    datetime: null,
     group: null,
     integer: null,
-    status: null
+    link: null,
+    numeric: null,
+    richtext: null,
+    shorttext: null,
+    status: null,
+    text: null
   }),
 
   ImmutableColumnKinds: ["status", "concat"],
