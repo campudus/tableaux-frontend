@@ -6,6 +6,7 @@ import PropTypes from "prop-types";
 
 import NumberInput from "../../helperComponents/NumberInput";
 import { stopPropagation } from "../../../helpers/functools";
+import { getDecimalDigits } from "../../../helpers/columnHelper";
 
 @listensToClickOutside
 class NumericEditCell extends React.Component {
@@ -76,6 +77,7 @@ class NumericEditCell extends React.Component {
       <div className={"cell-content editing"}>
         <NumberInput
           autoFocus
+          decimalDigits={getDecimalDigits(this.props.column)}
           onFocus={this.moveCaretToEnd}
           className="input"
           value={this.state.value}
@@ -96,7 +98,8 @@ NumericEditCell.propTypes = {
   onSave: PropTypes.func.isRequired,
   isYear: PropTypes.bool,
   setCellKeyboardShortcuts: PropTypes.func,
-  separator: PropTypes.bool
+  separator: PropTypes.bool,
+  column: PropTypes.object.isRequired
 };
 
 export default NumericEditCell;
