@@ -254,6 +254,9 @@ const toPlainDate = timestamp => {
   );
 };
 
+export const toLangtag = lt =>
+  lt.length > 2 ? lt : `${lt.toLowerCase()}-${lt.toUpperCase()}`;
+
 // Formatters. Locale is automatically chosen by routing. It should
 // only be passed for tests.
 const formatDate = (timestamp, locale = i18n.language) =>
