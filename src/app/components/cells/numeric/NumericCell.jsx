@@ -1,4 +1,3 @@
-import i18n from "i18next";
 import f from "lodash/fp";
 import PropTypes from "prop-types";
 import React, { useMemo } from "react";
