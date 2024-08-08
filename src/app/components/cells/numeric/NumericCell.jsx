@@ -1,11 +1,10 @@
-import React from "react";
+import i18n from "i18next";
 import f from "lodash/fp";
-
 import PropTypes from "prop-types";
-
-import { formatNumber } from "../../../helpers/multiLanguage";
-import { isYearColumn } from "../../../helpers/columnHelper";
+import React, { useMemo } from "react";
+import { getDecimalDigits, isYearColumn } from "../../../helpers/columnHelper";
 import { unless, when } from "../../../helpers/functools";
+import { toLangtag } from "../../../helpers/multiLanguage";
 import NumericEditCell from "./NumericEditCell.jsx";
 
 const NumericCell = props => {
@@ -45,6 +44,21 @@ const NumericCell = props => {
 
     actions.toggleCellEditing({ editing: false });
   });
+
+  const formatter = useMemo(
+    () =>
+      new Intl.NumberFormat(toLangtag(langtag), {
+        maximumFractionDigits: getDecimalDigits(column)
+      }),
+    [langtag]
+  );
+  const formatNumber = x => (!isNaN(parseFloat(x)) ? formatter.format(x) : "");
+
+  console.log(
+    value,
+    displayValue[langtag],
+    formatNumber(displayValue[langtag])
+  );
 
   if (!editing) {
     return (
