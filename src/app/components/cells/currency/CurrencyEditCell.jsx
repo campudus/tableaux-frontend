@@ -36,8 +36,12 @@ const CurrencyEditCell = ({
   setCellKeyboardShortcuts,
   value
 }) => {
-  const container = useRef();
-  outsideClickEffect(true, container, exitEditMode);
+  const containerRef = useRef();
+  outsideClickEffect({
+    shouldListen: true,
+    containerRef,
+    onOutsideClick: exitEditMode
+  });
 
   useEffect(() => {
     setCellKeyboardShortcuts({
@@ -74,7 +78,7 @@ const CurrencyEditCell = ({
   return (
     <div
       className="cell-currency-rows"
-      ref={container}
+      ref={containerRef}
       onClick={evt => {
         evt.stopPropagation();
       }}
