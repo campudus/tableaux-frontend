@@ -53,7 +53,7 @@ const NumberInput = (props, ref) => {
   // decimal separator
   const handleKeyDown = useCallback(event => {
     const isDigit = f.contains(f.__, "0123456789");
-    const formattedNumber = formatNumber(value);
+    const formattedNumber = formatNumber(value, decimalDigits);
     const caretPosition = event.target.selectionStart;
 
     // When no decimal separator is typed yet, we assume it at the end

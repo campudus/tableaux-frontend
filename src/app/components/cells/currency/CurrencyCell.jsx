@@ -39,7 +39,7 @@ const DisplayPrice = translate(["table"])(({ country, t, currencyValues }) => {
   }`;
   return currencyCode ? (
     <div className={cssClass}>
-      <span className="currency-valye">{formatNumber(valueStrings[0])}</span>
+      <span className="currency-valye">{formatNumber(valueStrings[0], 0)}</span>
       <span className="currency-value-decimals">
         {getLocaleDecimalSeparator()}
         {valueStrings[1]}
