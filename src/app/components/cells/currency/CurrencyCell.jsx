@@ -124,6 +124,7 @@ const CurrencyCell = ({
           onChange={handleChange}
           setCellKeyboardShortcuts={setCellKeyboardShortcuts}
           value={value}
+          langtag={langtag}
         />
       ) : (
         <DisplayPrice

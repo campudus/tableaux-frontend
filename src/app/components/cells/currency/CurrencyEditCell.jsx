@@ -1,4 +1,4 @@
-import f from "lodash/fp";
+import f, { isNil } from "lodash/fp";
 import PropTypes from "prop-types";
 import React, { useCallback, useEffect, useRef } from "react";
 import { canUserChangeCountryTypeCell } from "../../../helpers/accessManagementHelper";
@@ -17,10 +17,7 @@ const splitFloat = f.compose(
 );
 
 // number -> [string, string]
-const toCurrencyInputValue = f.compose(
-  maybeAddZeroToDecimals,
-  splitFloat
-);
+const toCurrencyInputValue = splitFloat;
 
 // [string, string] -> number
 const fromCurrencyInputValue = f.compose(
@@ -32,6 +29,7 @@ const fromCurrencyInputValue = f.compose(
 const CurrencyEditCell = ({
   cell,
   exitEditMode,
+  langtag,
   onChange,
   setCellKeyboardShortcuts,
   value
@@ -92,10 +90,11 @@ const CurrencyEditCell = ({
             <CurrencyRow
               key={countryCode}
               country={countryCode}
-              isFallbackValue={!f.get(["value", countryCode], cell)}
+              isFallbackValue={isNil(value[countryCode])}
               countryCurrencyValue={value || ["", ""]}
               updateValue={handleChange}
               isDisabled={isDisabled}
+              langtag={langtag}
             />
           );
         })}

@@ -1,141 +1,92 @@
-import React, { PureComponent } from "react";
-import f from "lodash/fp";
 import classNames from "classnames";
-
+import f from "lodash/fp";
 import PropTypes from "prop-types";
-
+import React from "react";
+import { getModifiers } from "../../../helpers/modifierState";
 import {
   getCurrencyCode,
   getLanguageOrCountryIcon,
   getLocaleDecimalSeparator
 } from "../../../helpers/multiLanguage";
-import { isAllowedForNumberInput } from "../../../helpers/KeyboardShortcutsHelper";
-import { maybe } from "../../../helpers/functools";
 
-export default class CurrencyRow extends PureComponent {
-  static propTypes = {
-    country: PropTypes.string.isRequired,
-    countryCurrencyValue: PropTypes.arrayOf(PropTypes.string),
-    isFallbackValue: PropTypes.bool.isRequired,
-    updateValue: PropTypes.func.isRequired
-  };
+const Pos = {
+  pre: 0,
+  post: 1
+};
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      modified: false,
-      caretPosition: null,
-      caretElement: null
-    };
+const allowedKeys = [
+  ..."0123456789".split(""),
+  "Backspace",
+  "Delete",
+  "Tab",
+  "Enter",
+  "Escape",
+  "ArrowLeft",
+  "ArrowRight",
+  "ArrowUp",
+  "ArrowDown"
+];
+
+const filterKeys = event => {
+  const isAllowedKey = allowedKeys.includes(event.key);
+  const modifiers = getModifiers(event);
+  if (!isAllowedKey && modifiers.none) {
+    event.preventDefault();
   }
+};
 
-  onKeyDownInput = e => {
-    if (!isAllowedForNumberInput(e)) {
-      this.setState({ caretPosition: null });
-      e.preventDefault();
-    } else {
-      const input = e.target;
-      const modifier = f.cond([
-        [f.eq("Backspace"), f.always(-1)],
-        [f.eq("Delete"), f.always(0)],
-        [f.inRange("0", "9"), f.always(1)],
-        [f.stubTrue, f.always(null)]
-      ])(e.key);
-      const caretPosition = f.isNil(modifier)
-        ? null
-        : input.selectionStart + modifier;
-      this.setState({
-        caretPosition,
-        caretElement: input
-      });
-    }
+const CurrencyRow = ({
+  country,
+  countryCurrencyValue: value,
+  isFallbackValue,
+  updateValue,
+  isDisabled,
+  langtag
+}) => {
+  const handleChange = idx => event => {
+    const newValue = event.target.value;
+    const cleanValue = idx === Pos.post ? newValue.substring(0, 2) : newValue;
+    const updated = f.assoc(idx, cleanValue, value);
+    updateValue(country, updated);
   };
+  const rowClass = classNames("currency-row", {
+    "grey-out": isFallbackValue,
+    disabled: isDisabled
+  });
 
-  currencyInputChanged = () => {
-    this.setState({ modified: true });
-    this.props.updateValue(this.props.country, [
-      this.currencyInteger.value,
-      this.currencyDecimals.value.substr(0, 2)
-    ]);
-    const { caretElement, caretPosition } = this.state;
-    if (!f.isNil(caretPosition)) {
-      setTimeout(() => {
-        caretElement.setSelectionRange(caretPosition, caretPosition);
-      }, 0);
-    }
-  };
-
-  handleFocus = selector => () => {
-    const el = this[selector];
-    const l = maybe(el)
-      .map(x => x.value.length)
-      .getOrElse(0);
-    maybe(el).method("setSelectionRange", l, l);
-  };
-
-  inputRef = (id, el) => {
-    this[id] = el;
-    this.handleFocus(id);
-  };
-
-  currencyIntegerRef = node => this.inputRef("currencyInteger", node);
-  currencyDecimalsRef = node => this.inputRef("currencyDecimals", node);
-
-  renderCurrencyValue(value) {
-    const { isDisabled } = this.props;
-
-    return (
-      <div>
+  return (
+    <div className={rowClass}>
+      <div className="country-code">{getLanguageOrCountryIcon(country)}</div>
+      <div className="currency-value">
         <input
-          ref={this.currencyIntegerRef}
           className="currency-input integer"
-          type="text"
-          value={value[0]}
-          onKeyDown={this.onKeyDownInput}
-          onChange={this.currencyInputChanged}
-          onFocus={this.handleFocus("currencyInteger")}
           disabled={isDisabled}
+          onChange={handleChange(Pos.pre)}
+          onKeyDown={filterKeys}
           placeholder="0"
+          value={value[Pos.pre] ?? ""}
         />
-        <span className="delimiter">{getLocaleDecimalSeparator()}</span>
+        <span className="delimiter">{getLocaleDecimalSeparator(langtag)}</span>
         <input
-          ref={this.currencyDecimalsRef}
-          onChange={this.currencyInputChanged}
           className="currency-input decimals"
-          type="text"
-          value={value[1]}
-          onKeyDown={this.onKeyDownInput}
-          onFocus={this.handleFocus("currencyDecimals")}
           disabled={isDisabled}
+          onChange={handleChange(Pos.post)}
+          onKeyDown={filterKeys}
           placeholder="00"
+          value={value[Pos.post]}
         />
       </div>
-    );
-  }
+      <div className="currency-code">{getCurrencyCode(country)}</div>
+    </div>
+  );
+};
 
-  render() {
-    const {
-      country,
-      countryCurrencyValue,
-      isFallbackValue,
-      isDisabled
-    } = this.props;
+CurrencyRow.propTypes = {
+  country: PropTypes.string.isRequired,
+  countryCurrencyValue: PropTypes.arrayOf(PropTypes.string),
+  isFallbackValue: PropTypes.bool.isRequired,
+  updateValue: PropTypes.func.isRequired,
+  disabled: PropTypes.bool
+};
 
-    const currencyCode = getCurrencyCode(country);
-
-    const currencyValue = this.renderCurrencyValue(countryCurrencyValue);
-
-    const rowClass = classNames("currency-row", {
-      "grey-out": isFallbackValue && !this.state.modified,
-      disabled: isDisabled
-    });
-
-    return (
-      <div className={rowClass}>
-        <div className="country-code">{getLanguageOrCountryIcon(country)}</div>
-        <div className="currency-value">{currencyValue}</div>
-        <div className="currency-code">{currencyCode}</div>
-      </div>
-    );
-  }
-}
+export default CurrencyRow;
