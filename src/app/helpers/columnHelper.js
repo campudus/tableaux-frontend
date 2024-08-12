@@ -11,8 +11,7 @@ export const findGroupMemberIds = f.compose(
   f.map("id"),
   f.flatMap("groups"),
   f.filter(
-    ({ showMemberColumns, kind }) =>
-      kind === ColumnKinds.group && !showMemberColumns
+    column => column.kind === ColumnKinds.group && !column.showMemberColumns
   )
 );
 
