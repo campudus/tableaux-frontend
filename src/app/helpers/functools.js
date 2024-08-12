@@ -403,16 +403,12 @@ const stopPropagation = event => maybe(event).method("stopPropagation");
 
 const memoizeWith = (keyFn, fn) => {
   const cache = new Map();
-
   return (...args) => {
     const key = keyFn(...args);
-    if (cache.has(key)) {
-      return cache.get(key);
-    } else {
-      const result = fn(...args);
-      cache.set(key, result);
-      return result;
+    if (!cache.has(key)) {
+      cache.set(key, fn(...args));
     }
+    return cache.get(key);
   };
 };
 

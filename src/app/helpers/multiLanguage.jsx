@@ -280,13 +280,21 @@ const formatDateTime = (timestamp, locale = i18n.language) =>
     .exec("toLocaleString", locale)
     .getOrElse("");
 
-const formatNumber = (number, locale = i18n.language) => {
-  return f.isNil(number) ||
-    f.isNaN(number) ||
-    (!f.isNumber(number) && f.isEmpty(number)) ||
-    f.isObject(number)
-    ? ""
-    : f.toNumber(number).toLocaleString(locale);
+const mkNumberFormatter = memoizeWith(
+  (...args) => f.compact(args).join(","),
+  (langtag, digits = 3) =>
+    new Intl.NumberFormat(Intl.getCanonicalLocales(langtag ?? "de-DE")[0], {
+      maximumFractionDigits: digits
+    })
+);
+
+const formatNumber = (x, digits = 3, locale = i18n.language) => {
+  const formatter = mkNumberFormatter(locale, digits);
+  try {
+    return !isNaN(parseFloat(x)) ? formatter.format(x) : "";
+  } catch {
+    return x;
+  }
 };
 
 const readLocalizedNumber = (
@@ -319,7 +327,7 @@ const languageKey = (locale = i18n.language) => locale;
 
 const getLocaleDecimalSeparator = memoizeWith(
   languageKey,
-  (locale = i18n.language) => formatNumber(1.1, locale)[1]
+  (locale = i18n.language) => formatNumber(1.1, 1, locale ?? "de-DE")[1]
 );
 
 export {

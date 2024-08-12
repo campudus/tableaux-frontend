@@ -11,7 +11,7 @@ import i18n from "i18next";
 
 import PropTypes from "prop-types";
 
-import { isYearColumn } from "../../../helpers/columnHelper";
+import { getDecimalDigits, isYearColumn } from "../../../helpers/columnHelper";
 import { maybe } from "../../../helpers/functools";
 import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
 import NumberInput from "../../helperComponents/NumberInput";
@@ -118,6 +118,7 @@ const NumericView = ({
     <div className="item-content shorttext numeric" tabIndex={1}>
       <NumberInput
         ref={registerInput}
+        decimalDigits={getDecimalDigits(cell.column)}
         disabled={thisUserCantEdit}
         value={value}
         placeholder={i18n.t("table:empty.number")}

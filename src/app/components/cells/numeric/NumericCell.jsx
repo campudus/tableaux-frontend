@@ -1,11 +1,9 @@
-import React from "react";
 import f from "lodash/fp";
-
 import PropTypes from "prop-types";
-
-import { formatNumber } from "../../../helpers/multiLanguage";
-import { isYearColumn } from "../../../helpers/columnHelper";
+import React from "react";
+import { getDecimalDigits, isYearColumn } from "../../../helpers/columnHelper";
 import { unless, when } from "../../../helpers/functools";
+import { formatNumber } from "../../../helpers/multiLanguage";
 import NumericEditCell from "./NumericEditCell.jsx";
 
 const NumericCell = props => {
@@ -46,12 +44,14 @@ const NumericCell = props => {
     actions.toggleCellEditing({ editing: false });
   });
 
+  const formatWithDigits = x => formatNumber(x, getDecimalDigits(column));
+
   if (!editing) {
     return (
       <div className="cell-content">
         {f.compose(
           when(f.overSome([f.isNil, f.isNaN]), () => ""),
-          unless(() => isYear || !column.separator, formatNumber)
+          unless(() => isYear || !column.separator, formatWithDigits)
         )(displayValue[langtag])}
       </div>
     );
@@ -59,6 +59,7 @@ const NumericCell = props => {
     return (
       <NumericEditCell
         langtag={langtag}
+        column={column}
         actions={actions}
         value={value}
         isMultiLanguage={isMultiLanguage}
