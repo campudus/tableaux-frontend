@@ -155,13 +155,13 @@ describe("multiLanguage.js", () => {
       const decimalPoint = /^-?\d+(,\d{3})*(\.\d+)?$/;
 
       // No separators for [-999, 999]
-      expect(formatNumber(123, "de-DE")).toMatch(decimalComma);
-      expect(formatNumber(123, "de-DE")).toMatch(decimalPoint);
+      expect(formatNumber(123, 3, "de-DE")).toMatch(decimalComma);
+      expect(formatNumber(123, 3, "de-DE")).toMatch(decimalPoint);
 
-      expect(formatNumber(1.01, "de-DE")).toMatch(decimalComma);
-      expect(formatNumber(1.01, "en-US")).toMatch(decimalPoint);
-      expect(formatNumber(1000.01, "de-DE")).toMatch(decimalComma);
-      expect(formatNumber(1000.01, "en-US")).toMatch(decimalPoint);
+      expect(formatNumber(1.01, 3, "de-DE")).toMatch(decimalComma);
+      expect(formatNumber(1.01, 3, "en-US")).toMatch(decimalPoint);
+      expect(formatNumber(1000.01, 3, "de-DE")).toMatch(decimalComma);
+      expect(formatNumber(1000.01, 3, "en-US")).toMatch(decimalPoint);
     });
   });
 
@@ -171,6 +171,8 @@ describe("multiLanguage.js", () => {
       expect(readLocalizedNumber("-1.000", "en-US")).toBe(-1);
       expect(readLocalizedNumber("1,000", "en-US")).toBe(1000);
       expect(readLocalizedNumber("1,000.000", "en-US")).toBe(1000);
+      expect(readLocalizedNumber("1,000.000", "en")).toBe(1000);
+      expect(readLocalizedNumber("1,000.000", "US")).toBe(1000);
     });
 
     it("transforms comma-separated numbers", () => {
@@ -178,6 +180,8 @@ describe("multiLanguage.js", () => {
       expect(readLocalizedNumber("1,000", "de-DE")).toBe(1);
       expect(readLocalizedNumber("1.000", "de-DE")).toBe(1000);
       expect(readLocalizedNumber("1.000,000", "de-DE")).toBe(1000);
+      expect(readLocalizedNumber("1.000,000", "DE")).toBe(1000);
+      expect(readLocalizedNumber("1.000,000", "de")).toBe(1000);
     });
 
     it("handles bad input gracefully", () => {
