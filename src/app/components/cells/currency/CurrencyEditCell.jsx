@@ -1,12 +1,9 @@
-import f, { isNil } from "lodash/fp";
+import f from "lodash/fp";
 import PropTypes from "prop-types";
 import React, { useCallback, useEffect, useRef } from "react";
 import { canUserChangeCountryTypeCell } from "../../../helpers/accessManagementHelper";
 import { outsideClickEffect } from "../../../helpers/useOutsideClick";
-import {
-  getCurrencyWithCountry,
-  maybeAddZeroToDecimals
-} from "./currencyHelper";
+import { getCurrencyWithCountry } from "./currencyHelper";
 import CurrencyRow from "./CurrencyRow";
 
 const splitFloat = f.compose(
@@ -83,15 +80,19 @@ const CurrencyEditCell = ({
     >
       <div className="rows-container">
         {cell.column.countryCodes.map(countryCode => {
-          const value = getCurrencyWithCountry(inputValues, countryCode, true);
+          const countryValue = getCurrencyWithCountry(
+            inputValues,
+            countryCode,
+            true
+          );
           const isDisabled = !canUserChangeCountryTypeCell(cell, countryCode);
 
           return (
             <CurrencyRow
               key={countryCode}
               country={countryCode}
-              isFallbackValue={isNil(value[countryCode])}
-              countryCurrencyValue={value || ["", ""]}
+              isFallbackValue={f.isNil(value[countryCode])}
+              countryCurrencyValue={countryValue || ["", ""]}
               updateValue={handleChange}
               isDisabled={isDisabled}
               langtag={langtag}
