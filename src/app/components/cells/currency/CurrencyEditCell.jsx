@@ -1,15 +1,14 @@
 import f from "lodash/fp";
 import PropTypes from "prop-types";
-import React, { useCallback, useEffect, useRef } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { canUserChangeCountryTypeCell } from "../../../helpers/accessManagementHelper";
 import { outsideClickEffect } from "../../../helpers/useOutsideClick";
-import { getCurrencyWithCountry } from "./currencyHelper";
 import CurrencyRow from "./CurrencyRow";
 
 const splitFloat = f.compose(
   splittedValue =>
     splittedValue.length === 1 ? f.concat(splittedValue, "") : splittedValue,
-  f.split("."),
+  f.split(/[,.]/),
   f.toString
 );
 
@@ -38,6 +37,15 @@ const CurrencyEditCell = ({
     onOutsideClick: exitEditMode
   });
 
+  const [inputValues, setInputvalues] = useState(
+    Object.fromEntries(
+      cell.column.countryCodes.map(country => [
+        country,
+        toCurrencyInputValue(value[country])
+      ])
+    )
+  );
+
   useEffect(() => {
     setCellKeyboardShortcuts({
       always: event => {
@@ -60,6 +68,10 @@ const CurrencyEditCell = ({
 
   const handleChange = useCallback(
     (country, inputValue) => {
+      setInputvalues({
+        ...inputValues,
+        [country]: toCurrencyInputValue(inputValue)
+      });
       onChange({
         ...value,
         [country]: fromCurrencyInputValue(inputValue)
@@ -67,8 +79,6 @@ const CurrencyEditCell = ({
     },
     [value]
   );
-
-  const inputValues = f.mapValues(toCurrencyInputValue, value);
 
   return (
     <div
@@ -80,11 +90,7 @@ const CurrencyEditCell = ({
     >
       <div className="rows-container">
         {cell.column.countryCodes.map(countryCode => {
-          const countryValue = getCurrencyWithCountry(
-            inputValues,
-            countryCode,
-            true
-          );
+          const countryValue = inputValues[countryCode];
           const isDisabled = !canUserChangeCountryTypeCell(cell, countryCode);
 
           return (
