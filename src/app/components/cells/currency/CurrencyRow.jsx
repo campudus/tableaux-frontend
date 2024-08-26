@@ -44,9 +44,7 @@ const CurrencyRow = ({
   langtag
 }) => {
   const handleChange = idx => event => {
-    const newValue = event.target.value;
-    const cleanValue = idx === Pos.post ? newValue.substring(0, 2) : newValue;
-    const updated = f.assoc(idx, cleanValue, value);
+    const updated = f.assoc(idx, event.target.value, value);
     updateValue(country, updated);
   };
   const rowClass = classNames("currency-row", {
@@ -70,6 +68,7 @@ const CurrencyRow = ({
         <input
           className="currency-input decimals"
           disabled={isDisabled}
+          maxLength={2}
           onChange={handleChange(Pos.post)}
           onKeyDown={filterKeys}
           placeholder="00"
