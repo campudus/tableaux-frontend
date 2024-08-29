@@ -270,6 +270,12 @@ describe("buildContext()", () => {
   });
   describe("parse and compose", () => {
     const parse = RowFilters.parse(ctx);
+    it("rejects bad operation names", () => {
+      expect(() =>
+        parse(["value", "boolean", Text.equals, "anything"])
+      ).toThrow();
+      expect(() => parse(["value", "boolean", "no-such-operation"])).toThrow();
+    });
     it("VALUE", () => {
       const filter = parse(["value", "text", Text.startsWith, "lorem"]);
       expect(filter(rows[0])).toBe(false);

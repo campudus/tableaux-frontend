@@ -143,7 +143,16 @@ const buildContext = (tableId, langtag, store) => {
     getValueFilter: (name, op, query) => {
       const kind = columnKindLookup[name];
       const modes = FilterModeMap[kind];
-      return modes[op](query);
+      const pred = modes && modes[op];
+      if (typeof pred !== "function") {
+        throw new Error(
+          `Filter operation <${op}${
+            query === undefined ? "" : " " + query
+          }> is unknown for column <${name}> of kind <${kind}>`
+        );
+      } else {
+        return pred(query);
+      }
     }
   };
 };
