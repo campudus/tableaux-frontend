@@ -1,10 +1,10 @@
 import f from "lodash/fp";
+import { ColumnKinds } from "../constants/TableauxConstants";
+import FilterBoolean from "./Boolean";
 import FilterDate from "./Date";
 import FilterDateTime from "./DateTime";
 import FilterNumber from "./Number";
-import FilterBoolean from "./Boolean";
 import FilterText from "./Text";
-import { ColumnKinds } from "../constants/TableauxConstants";
 
 export const Boolean = FilterBoolean.Mode;
 export const Date = FilterDate.Mode;
@@ -35,14 +35,31 @@ const filterableColumnKinds = new Set(
 
 const canFilterByColumnKind = filterableColumnKinds.has;
 
+/*
+ * Parses filter expressions according to the following BNF from Arrays
+ * (commas omitted for legibility):
+ *
+ * Filter         := [ValuePredicate | And | Or]
+ * ValuePredicate := ["value" ColumnName Operator] | ["value" ColumnName Operator OperatorValue]
+ * And            := ["and" Filter+]
+ * Or             := ["or" Filter+]
+ *
+ * With `ColumnName`s being obvious and `Operator`s from filters matching the column type.
+ * Some operators may require an additional operator value `["value", "year", "equals", 2024]`,
+ * while other operators don't `["value", "year", "is-not-empty"]`
+ *
+ * Produces Row -> Boolean
+ */
 const parse = ctx => {
   const parseImpl = list => {
     const [kind, ...args] = list;
     switch (kind) {
       case "and":
-        return args.reduce((match, arg) => match && parseImpl(arg), true);
+        return row =>
+          args.reduce((match, arg) => match && parseImpl(arg)(row), true);
       case "or":
-        return args.reduce((match, arg) => match || parseImpl(arg), false);
+        return row =>
+          args.reduce((match, arg) => match || parseImpl(arg)(row), false);
       case "value":
         return parseValueFilter(ctx, list);
       default:

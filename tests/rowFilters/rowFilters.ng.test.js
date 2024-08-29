@@ -1,19 +1,18 @@
-import store from "./fixtures/store.json";
-import RF from "../../src/app/RowFilters";
-import {
+import RowFilters, {
   Boolean,
   Date,
   DateTime,
   Number,
   Text
 } from "../../src/app/RowFilters";
+import store from "./fixtures/store.json";
 
 const tableId = 3;
 const langtag = "de-DE";
 
 const rows = store.rows[3].data;
 describe("buildContext()", () => {
-  const ctx = RF.buildContext(tableId, langtag, store);
+  const ctx = RowFilters.buildContext(tableId, langtag, store);
   describe("getValues()", () => {
     it("boolean", () => {
       expect(ctx.getValue("boolean")(rows[0])).toEqual(true);
@@ -267,6 +266,67 @@ describe("buildContext()", () => {
         expect(matches(valueOf(rows[0]))).toBe(true);
         expect(matches(valueOf(rows[1]))).toBe(false);
       });
+    });
+  });
+  describe("parse and compose", () => {
+    const parse = RowFilters.parse(ctx);
+    it("VALUE", () => {
+      const filter = parse(["value", "text", Text.startsWith, "lorem"]);
+      expect(filter(rows[0])).toBe(false);
+      expect(filter(rows[1])).toBe(true);
+    });
+    it("and, same column", () => {
+      const isBetween0and200 = parse([
+        "and",
+        ["value", "integer", Number.gte, 0],
+        ["value", "integer", Number.lte, 200]
+      ]);
+      expect(isBetween0and200(rows[0])).toBe(true);
+      expect(isBetween0and200(rows[1])).toBe(false);
+    });
+    it("and, mixed column", () => {
+      const filter = parse([
+        "and",
+        ["value", "integer", Number.gte, 200],
+        ["value", "shorttext", Text.isNotEmpty]
+      ]);
+      expect(filter(rows[0])).toBe(false);
+      expect(filter(rows[1])).toBe(true);
+    });
+    it("or, same column", () => {
+      const filter = parse([
+        "or",
+        ["value", "integer", Number.gt, 200],
+        ["value", "integer", Number.equals, 123]
+      ]);
+      expect(filter(rows[0])).toBe(true);
+      expect(filter(rows[1])).toBe(true);
+      expect(filter(rows[2])).toBe(false);
+    });
+    it("or, mixed column", () => {
+      const filter = parse([
+        "or",
+        ["value", "integer", Number.gt, 200],
+        ["value", "richtext", Text.contains, "ritchie"]
+      ]);
+      expect(filter(rows[0])).toBe(true);
+      expect(filter(rows[1])).toBe(true);
+      expect(filter(rows[2])).toBe(false);
+    });
+    it("nesting", () => {
+      const filter = parse([
+        "or",
+        ["value", "richtext", Text.contains, "ritchie"],
+        [
+          "and",
+          ["value", "integer", Number.gte, 200],
+          ["value", "integer", Number.lte, 500]
+        ],
+        ["value", "datetime", DateTime.isEmpty]
+      ]);
+      expect(filter(rows[0])).toBe(true);
+      expect(filter(rows[1])).toBe(true);
+      expect(filter(rows[2])).toBe(true);
     });
   });
 });
