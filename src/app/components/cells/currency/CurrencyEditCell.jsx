@@ -1,26 +1,19 @@
 import f from "lodash/fp";
 import PropTypes from "prop-types";
-import React, { useCallback, useEffect, useRef } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { canUserChangeCountryTypeCell } from "../../../helpers/accessManagementHelper";
 import { outsideClickEffect } from "../../../helpers/useOutsideClick";
-import {
-  getCurrencyWithCountry,
-  maybeAddZeroToDecimals
-} from "./currencyHelper";
 import CurrencyRow from "./CurrencyRow";
 
 const splitFloat = f.compose(
   splittedValue =>
     splittedValue.length === 1 ? f.concat(splittedValue, "") : splittedValue,
-  f.split("."),
+  f.split(/[,.]/),
   f.toString
 );
 
 // number -> [string, string]
-const toCurrencyInputValue = f.compose(
-  maybeAddZeroToDecimals,
-  splitFloat
-);
+const toCurrencyInputValue = splitFloat;
 
 // [string, string] -> number
 const fromCurrencyInputValue = f.compose(
@@ -32,12 +25,26 @@ const fromCurrencyInputValue = f.compose(
 const CurrencyEditCell = ({
   cell,
   exitEditMode,
+  langtag,
   onChange,
   setCellKeyboardShortcuts,
   value
 }) => {
-  const container = useRef();
-  outsideClickEffect(true, container, exitEditMode);
+  const containerRef = useRef();
+  outsideClickEffect({
+    shouldListen: true,
+    containerRef,
+    onOutsideClick: exitEditMode
+  });
+
+  const [inputValues, setInputvalues] = useState(
+    Object.fromEntries(
+      cell.column.countryCodes.map(country => [
+        country,
+        toCurrencyInputValue(value[country])
+      ])
+    )
+  );
 
   useEffect(() => {
     setCellKeyboardShortcuts({
@@ -61,6 +68,10 @@ const CurrencyEditCell = ({
 
   const handleChange = useCallback(
     (country, inputValue) => {
+      setInputvalues({
+        ...inputValues,
+        [country]: toCurrencyInputValue(inputValue)
+      });
       onChange({
         ...value,
         [country]: fromCurrencyInputValue(inputValue)
@@ -69,29 +80,28 @@ const CurrencyEditCell = ({
     [value]
   );
 
-  const inputValues = f.mapValues(toCurrencyInputValue, value);
-
   return (
     <div
       className="cell-currency-rows"
-      ref={container}
+      ref={containerRef}
       onClick={evt => {
         evt.stopPropagation();
       }}
     >
       <div className="rows-container">
         {cell.column.countryCodes.map(countryCode => {
-          const value = getCurrencyWithCountry(inputValues, countryCode, true);
+          const countryValue = inputValues[countryCode];
           const isDisabled = !canUserChangeCountryTypeCell(cell, countryCode);
 
           return (
             <CurrencyRow
               key={countryCode}
               country={countryCode}
-              isFallbackValue={!f.get(["value", countryCode], cell)}
-              countryCurrencyValue={value || ["", ""]}
+              isFallbackValue={f.isNil(value[countryCode])}
+              countryCurrencyValue={countryValue || ["", ""]}
               updateValue={handleChange}
               isDisabled={isDisabled}
+              langtag={langtag}
             />
           );
         })}

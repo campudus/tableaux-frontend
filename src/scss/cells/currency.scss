@@ -2,7 +2,6 @@ $countryWidth: 50px;
 $currencyWidth: 50px;
 
 .cell.cell-currency {
-
   .open-country {
     margin-left: 10px;
     display: inline-block;
@@ -31,7 +30,6 @@ $currencyWidth: 50px;
     height: $space-height-cell;
     border-bottom: 1px solid $color-border-grey;
     line-height: $space-height-cell;
-
 
     .country-code,
     .currency-value,
@@ -84,17 +82,11 @@ $currencyWidth: 50px;
       &.integer {
         text-align: right;
       }
-
-      &.decimals {
-        color: $color-text-medium-grey
-      }
     }
 
     .delimiter {
       display: inline;
       color: $color-text-medium-grey;
     }
-
   }
-
 }
