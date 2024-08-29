@@ -1,0 +1,6166 @@
+{
+  "tables": {
+    "finishedLoading": true,
+    "error": false,
+    "data": {
+      "1": {
+        "id": 1,
+        "name": "Bundesländer",
+        "hidden": false,
+        "displayName": {},
+        "description": {},
+        "attributes": {},
+        "langtags": [
+          "de-DE",
+          "en-GB"
+        ],
+        "permission": {
+          "editDisplayProperty": false,
+          "editStructureProperty": false,
+          "delete": false,
+          "createRow": false,
+          "deleteRow": false,
+          "editCellAnnotation": false,
+          "editRowAnnotation": false
+        }
+      },
+      "2": {
+        "id": 2,
+        "name": "Regierungsbezirke",
+        "hidden": false,
+        "displayName": {},
+        "description": {},
+        "attributes": {},
+        "langtags": [
+          "de-DE",
+          "en-GB"
+        ],
+        "permission": {
+          "editDisplayProperty": false,
+          "editStructureProperty": false,
+          "delete": false,
+          "createRow": false,
+          "deleteRow": false,
+          "editCellAnnotation": false,
+          "editRowAnnotation": false
+        }
+      },
+      "3": {
+        "id": 3,
+        "name": "kitchen-sink",
+        "hidden": false,
+        "displayName": {
+          "en": "Everything and the kitchen sink"
+        },
+        "description": {},
+        "attributes": {},
+        "langtags": [
+          "de-DE",
+          "en-GB"
+        ],
+        "permission": {
+          "editDisplayProperty": false,
+          "editStructureProperty": false,
+          "delete": false,
+          "createRow": false,
+          "deleteRow": false,
+          "editCellAnnotation": false,
+          "editRowAnnotation": false
+        }
+      },
+      "4": {
+        "id": 4,
+        "name": "error-prone",
+        "hidden": false,
+        "displayName": {
+          "en": "Test for error"
+        },
+        "description": {},
+        "attributes": {},
+        "langtags": [
+          "de-DE",
+          "en-GB"
+        ],
+        "permission": {
+          "editDisplayProperty": false,
+          "editStructureProperty": false,
+          "delete": false,
+          "createRow": false,
+          "deleteRow": false,
+          "editCellAnnotation": false,
+          "editRowAnnotation": false
+        }
+      },
+      "5": {
+        "id": 5,
+        "name": "unit",
+        "hidden": false,
+        "displayName": {
+          "de": "Einheit"
+        },
+        "description": {},
+        "attributes": {},
+        "langtags": [
+          "de-DE",
+          "en-GB"
+        ],
+        "permission": {
+          "editDisplayProperty": false,
+          "editStructureProperty": false,
+          "delete": false,
+          "createRow": false,
+          "deleteRow": false,
+          "editCellAnnotation": false,
+          "editRowAnnotation": false
+        }
+      },
+      "6": {
+        "id": 6,
+        "name": "data",
+        "hidden": false,
+        "displayName": {
+          "de": "Daten"
+        },
+        "description": {},
+        "attributes": {},
+        "langtags": [
+          "de-DE",
+          "en-GB"
+        ],
+        "permission": {
+          "editDisplayProperty": false,
+          "editStructureProperty": false,
+          "delete": false,
+          "createRow": false,
+          "deleteRow": false,
+          "editCellAnnotation": false,
+          "editRowAnnotation": false
+        }
+      }
+    },
+    "permission": {
+      "create": false
+    }
+  },
+  "columns": {
+    "1": {
+      "error": false,
+      "finishedLoading": true,
+      "data": [
+        {
+          "id": 0,
+          "ordering": 0,
+          "name": "ID",
+          "kind": "concat",
+          "multilanguage": true,
+          "identifier": true,
+          "displayName": {},
+          "description": {},
+          "separator": false,
+          "attributes": {},
+          "hidden": false,
+          "languageType": "language",
+          "concats": [
+            {
+              "id": 1,
+              "ordering": 1,
+              "name": "state",
+              "kind": "shorttext",
+              "multilanguage": false,
+              "identifier": true,
+              "displayName": {
+                "de-DE": "Bundesland",
+                "en-GB": "federal state"
+              },
+              "description": {
+                "de-DE": "Ein Land ist nach der föderalen Verfassungsordnung der Bundesrepublik Deutschland einer ihrer teilsouveränen Gliedstaaten.",
+                "en-GB": "Germany is a federal republic consisting of sixteen federal states (German: Bundesland, or Land)."
+              },
+              "separator": true,
+              "attributes": {},
+              "hidden": false,
+              "permission": {
+                "editDisplayProperty": false,
+                "editStructureProperty": false,
+                "editCellValue": false,
+                "delete": false
+              }
+            },
+            {
+              "id": 2,
+              "ordering": 2,
+              "name": "capital",
+              "kind": "shorttext",
+              "multilanguage": true,
+              "identifier": true,
+              "displayName": {
+                "de-DE": "Hauptstadt",
+                "en-GB": "capital city"
+              },
+              "description": {
+                "de-DE": "Eine Hauptstadt ist ein politisches Zentrum eines Staates und oft Sitz der obersten Staatsgewalten: Parlament, Monarch, Regierung, Oberstes Gericht.",
+                "en-GB": "A capital city (or simply capital) is the municipality enjoying primary status in a country, state, province, or other region, usually as its seat of government."
+              },
+              "separator": true,
+              "attributes": {},
+              "hidden": false,
+              "languageType": "language",
+              "permission": {
+                "editDisplayProperty": false,
+                "editStructureProperty": false,
+                "editCellValue": {
+                  "de-DE": false,
+                  "en-GB": false
+                },
+                "delete": false
+              }
+            }
+          ],
+          "visible": true
+        },
+        {
+          "id": 1,
+          "ordering": 1,
+          "name": "state",
+          "kind": "shorttext",
+          "multilanguage": false,
+          "identifier": true,
+          "displayName": {
+            "de-DE": "Bundesland",
+            "en-GB": "federal state"
+          },
+          "description": {
+            "de-DE": "Ein Land ist nach der föderalen Verfassungsordnung der Bundesrepublik Deutschland einer ihrer teilsouveränen Gliedstaaten.",
+            "en-GB": "Germany is a federal republic consisting of sixteen federal states (German: Bundesland, or Land)."
+          },
+          "separator": true,
+          "attributes": {},
+          "hidden": false,
+          "permission": {
+            "editDisplayProperty": false,
+            "editStructureProperty": false,
+            "editCellValue": false,
+            "delete": false
+          },
+          "visible": true
+        },
+        {
+          "id": 2,
+          "ordering": 2,
+          "name": "capital",
+          "kind": "shorttext",
+          "multilanguage": true,
+          "identifier": true,
+          "displayName": {
+            "de-DE": "Hauptstadt",
+            "en-GB": "capital city"
+          },
+          "description": {
+            "de-DE": "Eine Hauptstadt ist ein politisches Zentrum eines Staates und oft Sitz der obersten Staatsgewalten: Parlament, Monarch, Regierung, Oberstes Gericht.",
+            "en-GB": "A capital city (or simply capital) is the municipality enjoying primary status in a country, state, province, or other region, usually as its seat of government."
+          },
+          "separator": true,
+          "attributes": {},
+          "hidden": false,
+          "languageType": "language",
+          "permission": {
+            "editDisplayProperty": false,
+            "editStructureProperty": false,
+            "editCellValue": {
+              "de-DE": false,
+              "en-GB": false
+            },
+            "delete": false
+          },
+          "visible": true
+        },
+        {
+          "id": 3,
+          "ordering": 3,
+          "name": "population",
+          "kind": "numeric",
+          "multilanguage": false,
+          "identifier": false,
+          "displayName": {
+            "de-DE": "Bevölkerung",
+            "en-GB": "population"
+          },
+          "description": {
+            "de-DE": "Der Begriff Bevölkerung wird als Bezeichnung für die menschliche Population innerhalb geografischer Grenzen verwendet[1] und unterscheidet sich von abstammungsbezogenen Gruppierungen wie Stamm, Volk und Ethnie.",
+            "en-GB": "A population is a summation of all the organisms of the same group or species, which live in a particular geographical area, and have the capability of interbreeding."
+          },
+          "separator": true,
+          "attributes": {},
+          "hidden": false,
+          "permission": {
+            "editDisplayProperty": false,
+            "editStructureProperty": false,
+            "editCellValue": false,
+            "delete": false
+          },
+          "visible": true
+        },
+        {
+          "id": 4,
+          "ordering": 4,
+          "name": "area",
+          "kind": "numeric",
+          "multilanguage": false,
+          "identifier": false,
+          "displayName": {
+            "de-DE": "Fläche in km²",
+            "en-GB": "area in km²"
+          },
+          "description": {
+            "de-DE": "Als Katasterfläche bezeichnet man in den Geowissenschaften den vermessungstechnisch ermittelten Flächeninhalt eines geographischen Raumes.",
+            "en-GB": "Area is the quantity that expresses the extent of a two-dimensional figure or shape, or planar lamina, in the plane."
+          },
+          "separator": true,
+          "attributes": {},
+          "hidden": false,
+          "permission": {
+            "editDisplayProperty": false,
+            "editStructureProperty": false,
+            "editCellValue": false,
+            "delete": false
+          },
+          "visible": true
+        },
+        {
+          "id": 5,
+          "ordering": 5,
+          "name": "Regierungsbezirke",
+          "kind": "link",
+          "multilanguage": false,
+          "identifier": false,
+          "displayName": {},
+          "description": {},
+          "separator": false,
+          "attributes": {},
+          "hidden": false,
+          "toTable": 2,
+          "toColumn": {
+            "id": 0,
+            "ordering": 0,
+            "name": "ID",
+            "kind": "concat",
+            "multilanguage": false,
+            "identifier": true,
+            "displayName": {},
+            "description": {},
+            "separator": false,
+            "attributes": {},
+            "hidden": false,
+            "concats": [
+              {
+                "id": 1,
+                "ordering": 1,
+                "name": "region",
+                "kind": "shorttext",
+                "multilanguage": false,
+                "identifier": true,
+                "displayName": {
+                  "de-DE": "Regierungsbezirk",
+                  "en-GB": "administrative region"
+                },
+                "description": {
+                  "de-DE": "In Deutschland ist ein Regierungsbezirk der Bezirk einer allgemeinen Landesmittelbehörde, in der ressortverschiedene Aufgaben gebündelt werden.",
+                  "en-GB": "Regierungsbezirk (pronounced [ʁeˈɡiːʁʊŋsbəˈt͡sɪʁk], abbreviated Reg.-Bez.) is an administrative region on federal state level in Germany."
+                },
+                "separator": true,
+                "attributes": {},
+                "hidden": false
+              },
+              {
+                "id": 2,
+                "ordering": 2,
+                "name": "centre",
+                "kind": "shorttext",
+                "multilanguage": false,
+                "identifier": true,
+                "displayName": {
+                  "de-DE": "Verwaltungssitz",
+                  "en-GB": "administrative centre"
+                },
+                "description": {
+                  "de-DE": "Der Verwaltungssitz beschreibt im Verwaltungsrecht den Ort, von dem aus das zu verwaltende Gebiet (der sog. Verwaltungsbezirk) verwaltet wird.",
+                  "en-GB": "An administrative centre is a seat of regional administration or local government, or a county town, or the place where the central administration of a commune is located."
+                },
+                "separator": true,
+                "attributes": {},
+                "hidden": false
+              }
+            ]
+          },
+          "constraint": {
+            "cardinality": {
+              "from": 1,
+              "to": 0
+            },
+            "deleteCascade": false,
+            "archiveCascade": false,
+            "finalCascade": false
+          },
+          "permission": {
+            "editDisplayProperty": false,
+            "editStructureProperty": false,
+            "editCellValue": false,
+            "delete": false
+          },
+          "visible": true
+        },
+        {
+          "id": 6,
+          "ordering": 6,
+          "name": "kitchen-sink",
+          "kind": "link",
+          "multilanguage": true,
+          "identifier": false,
+          "displayName": {
+            "en": "Everything and the kitchen sink"
+          },
+          "description": {},
+          "separator": false,
+          "attributes": {},
+          "hidden": false,
+          "languageType": "language",
+          "toTable": 3,
+          "toColumn": {
+            "id": 0,
+            "ordering": 0,
+            "name": "ID",
+            "kind": "concat",
+            "multilanguage": true,
+            "identifier": true,
+            "displayName": {},
+            "description": {},
+            "separator": false,
+            "attributes": {},
+            "hidden": false,
+            "languageType": "language",
+            "concats": [
+              {
+                "id": 11,
+                "ordering": 11,
+                "name": "shorttext",
+                "kind": "shorttext",
+                "multilanguage": false,
+                "identifier": true,
+                "displayName": {},
+                "description": {},
+                "separator": true,
+                "attributes": {},
+                "hidden": false
+              },
+              {
+                "id": 22,
+                "ordering": 22,
+                "name": "shorttext-multi",
+                "kind": "shorttext",
+                "multilanguage": true,
+                "identifier": true,
+                "displayName": {},
+                "description": {},
+                "separator": true,
+                "attributes": {},
+                "hidden": false,
+                "languageType": "language"
+              }
+            ]
+          },
+          "permission": {
+            "editDisplayProperty": false,
+            "editStructureProperty": false,
+            "editCellValue": {
+              "de-DE": false,
+              "en-GB": false
+            },
+            "delete": false
+          },
+          "visible": true
+        },
+        {
+          "id": 7,
+          "ordering": 7,
+          "name": "data",
+          "kind": "link",
+          "multilanguage": false,
+          "identifier": false,
+          "displayName": {
+            "de": "Daten"
+          },
+          "description": {},
+          "separator": false,
+          "attributes": {},
+          "hidden": false,
+          "toTable": 6,
+          "toColumn": {
+            "id": 6,
+            "ordering": 6,
+            "name": "useless",
+            "kind": "shorttext",
+            "multilanguage": false,
+            "identifier": true,
+            "displayName": {},
+            "description": {},
+            "separator": true,
+            "attributes": {},
+            "hidden": false
+          },
+          "permission": {
+            "editDisplayProperty": false,
+            "editStructureProperty": false,
+            "editCellValue": false,
+            "delete": false
+          },
+          "visible": true
+        }
+      ]
+    },
+    "3": {
+      "error": false,
+      "finishedLoading": true,
+      "data": [
+        {
+          "id": 0,
+          "ordering": 0,
+          "name": "ID",
+          "kind": "concat",
+          "multilanguage": true,
+          "identifier": true,
+          "displayName": {},
+          "description": {},
+          "separator": false,
+          "attributes": {},
+          "hidden": false,
+          "languageType": "language",
+          "concats": [
+            {
+              "id": 11,
+              "ordering": 11,
+              "name": "shorttext",
+              "kind": "shorttext",
+              "multilanguage": false,
+              "identifier": true,
+              "displayName": {},
+              "description": {},
+              "separator": true,
+              "attributes": {},
+              "hidden": false,
+              "permission": {
+                "editDisplayProperty": false,
+                "editStructureProperty": false,
+                "editCellValue": false,
+                "delete": false
+              }
+            },
+            {
+              "id": 22,
+              "ordering": 22,
+              "name": "shorttext-multi",
+              "kind": "shorttext",
+              "multilanguage": true,
+              "identifier": true,
+              "displayName": {},
+              "description": {},
+              "separator": true,
+              "attributes": {},
+              "hidden": false,
+              "languageType": "language",
+              "permission": {
+                "editDisplayProperty": false,
+                "editStructureProperty": false,
+                "editCellValue": {
+                  "de-DE": false,
+                  "en-GB": false
+                },
+                "delete": false
+              }
+            }
+          ],
+          "visible": true
+        },
+        {
+          "id": 1,
+          "ordering": 1,
+          "name": "attachment",
+          "kind": "attachment",
+          "multilanguage": false,
+          "identifier": false,
+          "displayName": {},
+          "description": {},
+          "separator": false,
+          "attributes": {},
+          "hidden": false,
+          "permission": {
+            "editDisplayProperty": false,
+            "editStructureProperty": false,
+            "editCellValue": false,
+            "delete": false
+          },
+          "visible": true
+        },
+        {
+          "id": 2,
+          "ordering": 2,
+          "name": "boolean",
+          "kind": "boolean",
+          "multilanguage": false,
+          "identifier": false,
+          "displayName": {},
+          "description": {},
+          "separator": true,
+          "attributes": {},
+          "hidden": false,
+          "permission": {
+            "editDisplayProperty": false,
+            "editStructureProperty": false,
+            "editCellValue": false,
+            "delete": false
+          },
+          "visible": true
+        },
+        {
+          "id": 3,
+          "ordering": 3,
+          "name": "date",
+          "kind": "date",
+          "multilanguage": false,
+          "identifier": false,
+          "displayName": {},
+          "description": {},
+          "separator": true,
+          "attributes": {},
+          "hidden": false,
+          "permission": {
+            "editDisplayProperty": false,
+            "editStructureProperty": false,
+            "editCellValue": false,
+            "delete": false
+          },
+          "visible": true
+        },
+        {
+          "id": 4,
+          "ordering": 4,
+          "name": "datetime",
+          "kind": "datetime",
+          "multilanguage": false,
+          "identifier": false,
+          "displayName": {},
+          "description": {},
+          "separator": true,
+          "attributes": {},
+          "hidden": false,
+          "permission": {
+            "editDisplayProperty": false,
+            "editStructureProperty": false,
+            "editCellValue": false,
+            "delete": false
+          },
+          "visible": true
+        },
+        {
+          "id": 5,
+          "ordering": 5,
+          "name": "integer",
+          "kind": "integer",
+          "multilanguage": false,
+          "identifier": false,
+          "displayName": {},
+          "description": {},
+          "separator": true,
+          "attributes": {},
+          "hidden": false,
+          "permission": {
+            "editDisplayProperty": false,
+            "editStructureProperty": false,
+            "editCellValue": false,
+            "delete": false
+          },
+          "visible": true
+        },
+        {
+          "id": 6,
+          "ordering": 6,
+          "name": "link",
+          "kind": "link",
+          "multilanguage": true,
+          "identifier": false,
+          "displayName": {},
+          "description": {},
+          "separator": false,
+          "attributes": {},
+          "hidden": false,
+          "languageType": "language",
+          "toTable": 1,
+          "toColumn": {
+            "id": 0,
+            "ordering": 0,
+            "name": "ID",
+            "kind": "concat",
+            "multilanguage": true,
+            "identifier": true,
+            "displayName": {},
+            "description": {},
+            "separator": false,
+            "attributes": {},
+            "hidden": false,
+            "languageType": "language",
+            "concats": [
+              {
+                "id": 1,
+                "ordering": 1,
+                "name": "state",
+                "kind": "shorttext",
+                "multilanguage": false,
+                "identifier": true,
+                "displayName": {
+                  "de-DE": "Bundesland",
+                  "en-GB": "federal state"
+                },
+                "description": {
+                  "de-DE": "Ein Land ist nach der föderalen Verfassungsordnung der Bundesrepublik Deutschland einer ihrer teilsouveränen Gliedstaaten.",
+                  "en-GB": "Germany is a federal republic consisting of sixteen federal states (German: Bundesland, or Land)."
+                },
+                "separator": true,
+                "attributes": {},
+                "hidden": false
+              },
+              {
+                "id": 2,
+                "ordering": 2,
+                "name": "capital",
+                "kind": "shorttext",
+                "multilanguage": true,
+                "identifier": true,
+                "displayName": {
+                  "de-DE": "Hauptstadt",
+                  "en-GB": "capital city"
+                },
+                "description": {
+                  "de-DE": "Eine Hauptstadt ist ein politisches Zentrum eines Staates und oft Sitz der obersten Staatsgewalten: Parlament, Monarch, Regierung, Oberstes Gericht.",
+                  "en-GB": "A capital city (or simply capital) is the municipality enjoying primary status in a country, state, province, or other region, usually as its seat of government."
+                },
+                "separator": true,
+                "attributes": {},
+                "hidden": false,
+                "languageType": "language"
+              }
+            ]
+          },
+          "permission": {
+            "editDisplayProperty": false,
+            "editStructureProperty": false,
+            "editCellValue": {
+              "de-DE": false,
+              "en-GB": false
+            },
+            "delete": false
+          },
+          "visible": true
+        },
+        {
+          "id": 7,
+          "ordering": 7,
+          "name": "numeric",
+          "kind": "numeric",
+          "multilanguage": false,
+          "identifier": false,
+          "displayName": {},
+          "description": {},
+          "separator": true,
+          "attributes": {},
+          "hidden": false,
+          "permission": {
+            "editDisplayProperty": false,
+            "editStructureProperty": false,
+            "editCellValue": false,
+            "delete": false
+          },
+          "visible": true
+        },
+        {
+          "id": 8,
+          "ordering": 8,
+          "name": "numeric-2",
+          "kind": "numeric",
+          "multilanguage": false,
+          "identifier": false,
+          "displayName": {},
+          "description": {},
+          "separator": true,
+          "attributes": {},
+          "hidden": false,
+          "decimalDigits": 2,
+          "permission": {
+            "editDisplayProperty": false,
+            "editStructureProperty": false,
+            "editCellValue": false,
+            "delete": false
+          },
+          "visible": true
+        },
+        {
+          "id": 9,
+          "ordering": 9,
+          "name": "numeric-4",
+          "kind": "numeric",
+          "multilanguage": false,
+          "identifier": false,
+          "displayName": {},
+          "description": {},
+          "separator": true,
+          "attributes": {},
+          "hidden": false,
+          "decimalDigits": 4,
+          "permission": {
+            "editDisplayProperty": false,
+            "editStructureProperty": false,
+            "editCellValue": false,
+            "delete": false
+          },
+          "visible": true
+        },
+        {
+          "id": 10,
+          "ordering": 10,
+          "name": "richtext",
+          "kind": "richtext",
+          "multilanguage": false,
+          "identifier": false,
+          "displayName": {},
+          "description": {},
+          "separator": true,
+          "attributes": {},
+          "hidden": false,
+          "permission": {
+            "editDisplayProperty": false,
+            "editStructureProperty": false,
+            "editCellValue": false,
+            "delete": false
+          },
+          "visible": true
+        },
+        {
+          "id": 11,
+          "ordering": 11,
+          "name": "shorttext",
+          "kind": "shorttext",
+          "multilanguage": false,
+          "identifier": true,
+          "displayName": {},
+          "description": {},
+          "separator": true,
+          "attributes": {},
+          "hidden": false,
+          "permission": {
+            "editDisplayProperty": false,
+            "editStructureProperty": false,
+            "editCellValue": false,
+            "delete": false
+          },
+          "visible": true
+        },
+        {
+          "id": 12,
+          "ordering": 12,
+          "name": "text",
+          "kind": "text",
+          "multilanguage": false,
+          "identifier": false,
+          "displayName": {},
+          "description": {},
+          "separator": true,
+          "attributes": {},
+          "hidden": false,
+          "permission": {
+            "editDisplayProperty": false,
+            "editStructureProperty": false,
+            "editCellValue": false,
+            "delete": false
+          },
+          "visible": true
+        },
+        {
+          "id": 13,
+          "ordering": 13,
+          "name": "attachment-multi",
+          "kind": "attachment",
+          "multilanguage": false,
+          "identifier": false,
+          "displayName": {},
+          "description": {},
+          "separator": false,
+          "attributes": {},
+          "hidden": false,
+          "permission": {
+            "editDisplayProperty": false,
+            "editStructureProperty": false,
+            "editCellValue": false,
+            "delete": false
+          },
+          "visible": true
+        },
+        {
+          "id": 14,
+          "ordering": 14,
+          "name": "boolean-multi",
+          "kind": "boolean",
+          "multilanguage": true,
+          "identifier": false,
+          "displayName": {},
+          "description": {},
+          "separator": true,
+          "attributes": {},
+          "hidden": false,
+          "languageType": "language",
+          "permission": {
+            "editDisplayProperty": false,
+            "editStructureProperty": false,
+            "editCellValue": {
+              "de-DE": false,
+              "en-GB": false
+            },
+            "delete": false
+          },
+          "visible": true
+        },
+        {
+          "id": 15,
+          "ordering": 15,
+          "name": "currency-multi",
+          "kind": "currency",
+          "multilanguage": true,
+          "identifier": false,
+          "displayName": {},
+          "description": {},
+          "separator": true,
+          "attributes": {},
+          "hidden": false,
+          "languageType": "country",
+          "countryCodes": [
+            "DE",
+            "GB",
+            "US",
+            "FR",
+            "CH",
+            "XY",
+            "ZZ",
+            "FOO",
+            "BAR"
+          ],
+          "permission": {
+            "editDisplayProperty": false,
+            "editStructureProperty": false,
+            "editCellValue": {
+              "DE": false,
+              "GB": false,
+              "US": false,
+              "FR": false,
+              "CH": false,
+              "XY": false,
+              "ZZ": false,
+              "FOO": false,
+              "BAR": false
+            },
+            "delete": false
+          },
+          "visible": true
+        },
+        {
+          "id": 16,
+          "ordering": 16,
+          "name": "date-multi",
+          "kind": "date",
+          "multilanguage": true,
+          "identifier": false,
+          "displayName": {},
+          "description": {},
+          "separator": true,
+          "attributes": {},
+          "hidden": false,
+          "languageType": "language",
+          "permission": {
+            "editDisplayProperty": false,
+            "editStructureProperty": false,
+            "editCellValue": {
+              "de-DE": false,
+              "en-GB": false
+            },
+            "delete": false
+          },
+          "visible": true
+        },
+        {
+          "id": 17,
+          "ordering": 17,
+          "name": "datetime-multi",
+          "kind": "datetime",
+          "multilanguage": true,
+          "identifier": false,
+          "displayName": {},
+          "description": {},
+          "separator": true,
+          "attributes": {},
+          "hidden": false,
+          "languageType": "language",
+          "permission": {
+            "editDisplayProperty": false,
+            "editStructureProperty": false,
+            "editCellValue": {
+              "de-DE": false,
+              "en-GB": false
+            },
+            "delete": false
+          },
+          "visible": true
+        },
+        {
+          "id": 18,
+          "ordering": 18,
+          "name": "integer-multi",
+          "kind": "integer",
+          "multilanguage": true,
+          "identifier": false,
+          "displayName": {},
+          "description": {},
+          "separator": true,
+          "attributes": {},
+          "hidden": false,
+          "languageType": "language",
+          "permission": {
+            "editDisplayProperty": false,
+            "editStructureProperty": false,
+            "editCellValue": {
+              "de-DE": false,
+              "en-GB": false
+            },
+            "delete": false
+          },
+          "visible": true
+        },
+        {
+          "id": 19,
+          "ordering": 19,
+          "name": "link-multi",
+          "kind": "link",
+          "multilanguage": false,
+          "identifier": false,
+          "displayName": {},
+          "description": {},
+          "separator": false,
+          "attributes": {},
+          "hidden": false,
+          "toTable": 2,
+          "toColumn": {
+            "id": 0,
+            "ordering": 0,
+            "name": "ID",
+            "kind": "concat",
+            "multilanguage": false,
+            "identifier": true,
+            "displayName": {},
+            "description": {},
+            "separator": false,
+            "attributes": {},
+            "hidden": false,
+            "concats": [
+              {
+                "id": 1,
+                "ordering": 1,
+                "name": "region",
+                "kind": "shorttext",
+                "multilanguage": false,
+                "identifier": true,
+                "displayName": {
+                  "de-DE": "Regierungsbezirk",
+                  "en-GB": "administrative region"
+                },
+                "description": {
+                  "de-DE": "In Deutschland ist ein Regierungsbezirk der Bezirk einer allgemeinen Landesmittelbehörde, in der ressortverschiedene Aufgaben gebündelt werden.",
+                  "en-GB": "Regierungsbezirk (pronounced [ʁeˈɡiːʁʊŋsbəˈt͡sɪʁk], abbreviated Reg.-Bez.) is an administrative region on federal state level in Germany."
+                },
+                "separator": true,
+                "attributes": {},
+                "hidden": false
+              },
+              {
+                "id": 2,
+                "ordering": 2,
+                "name": "centre",
+                "kind": "shorttext",
+                "multilanguage": false,
+                "identifier": true,
+                "displayName": {
+                  "de-DE": "Verwaltungssitz",
+                  "en-GB": "administrative centre"
+                },
+                "description": {
+                  "de-DE": "Der Verwaltungssitz beschreibt im Verwaltungsrecht den Ort, von dem aus das zu verwaltende Gebiet (der sog. Verwaltungsbezirk) verwaltet wird.",
+                  "en-GB": "An administrative centre is a seat of regional administration or local government, or a county town, or the place where the central administration of a commune is located."
+                },
+                "separator": true,
+                "attributes": {},
+                "hidden": false
+              }
+            ]
+          },
+          "permission": {
+            "editDisplayProperty": false,
+            "editStructureProperty": false,
+            "editCellValue": false,
+            "delete": false
+          },
+          "visible": true
+        },
+        {
+          "id": 20,
+          "ordering": 20,
+          "name": "numeric-multi",
+          "kind": "numeric",
+          "multilanguage": true,
+          "identifier": false,
+          "displayName": {},
+          "description": {},
+          "separator": true,
+          "attributes": {},
+          "hidden": false,
+          "languageType": "language",
+          "permission": {
+            "editDisplayProperty": false,
+            "editStructureProperty": false,
+            "editCellValue": {
+              "de-DE": false,
+              "en-GB": false
+            },
+            "delete": false
+          },
+          "visible": true
+        },
+        {
+          "id": 21,
+          "ordering": 21,
+          "name": "richtext-multi",
+          "kind": "richtext",
+          "multilanguage": true,
+          "identifier": false,
+          "displayName": {},
+          "description": {},
+          "separator": true,
+          "attributes": {},
+          "hidden": false,
+          "languageType": "language",
+          "permission": {
+            "editDisplayProperty": false,
+            "editStructureProperty": false,
+            "editCellValue": {
+              "de-DE": false,
+              "en-GB": false
+            },
+            "delete": false
+          },
+          "visible": true
+        },
+        {
+          "id": 22,
+          "ordering": 22,
+          "name": "shorttext-multi",
+          "kind": "shorttext",
+          "multilanguage": true,
+          "identifier": true,
+          "displayName": {},
+          "description": {},
+          "separator": true,
+          "attributes": {},
+          "hidden": false,
+          "languageType": "language",
+          "permission": {
+            "editDisplayProperty": false,
+            "editStructureProperty": false,
+            "editCellValue": {
+              "de-DE": false,
+              "en-GB": false
+            },
+            "delete": false
+          },
+          "visible": true
+        },
+        {
+          "id": 23,
+          "ordering": 23,
+          "name": "text-multi",
+          "kind": "text",
+          "multilanguage": true,
+          "identifier": false,
+          "displayName": {},
+          "description": {},
+          "separator": true,
+          "attributes": {},
+          "hidden": false,
+          "languageType": "language",
+          "permission": {
+            "editDisplayProperty": false,
+            "editStructureProperty": false,
+            "editCellValue": {
+              "de-DE": false,
+              "en-GB": false
+            },
+            "delete": false
+          },
+          "visible": true
+        }
+      ]
+    },
+    "undefined": []
+  },
+  "rows": {
+    "3": {
+      "data": [
+        {
+          "id": 1,
+          "values": [
+            [
+              "Schnappt Shortie",
+              {}
+            ],
+            [
+              {
+                "ordering": 1,
+                "url": {
+                  "de-DE": "/files/f93e38e2-c65e-4321-b296-a120459571d0/de-DE/b%C3%BCcher.txt"
+                },
+                "uuid": "f93e38e2-c65e-4321-b296-a120459571d0",
+                "folder": null,
+                "folders": [],
+                "title": {
+                  "de-DE": "bücher.txt"
+                },
+                "description": {
+                  "de-DE": ""
+                },
+                "internalName": {
+                  "de-DE": "f30937a5-a100-4ae0-8197-997e394e5ee6.txt"
+                },
+                "externalName": {
+                  "de-DE": "bücher.txt"
+                },
+                "mimeType": {
+                  "de-DE": "text/plain"
+                },
+                "createdAt": "2024-08-26T14:59:59.755+02:00",
+                "updatedAt": "2024-08-26T14:59:59.825+02:00"
+              }
+            ],
+            true,
+            "2024-08-05",
+            "2024-08-04T00:00:00.000Z",
+            123,
+            [
+              {
+                "id": 2,
+                "value": [
+                  "Bayern",
+                  {
+                    "de-DE": "München",
+                    "en-GB": "Munich"
+                  }
+                ]
+              }
+            ],
+            1.123,
+            1.123,
+            null,
+            "Ritchie der Textie",
+            "Schnappt Shortie",
+            "Laber den Rhabarber",
+            [],
+            {},
+            {},
+            {},
+            {},
+            {},
+            [],
+            {},
+            {},
+            {},
+            {}
+          ],
+          "cells": [
+            {
+              "kind": "concat",
+              "column": {
+                "id": 0,
+                "ordering": 0,
+                "name": "ID",
+                "kind": "concat",
+                "multilanguage": true,
+                "identifier": true,
+                "displayName": {},
+                "description": {},
+                "separator": false,
+                "attributes": {},
+                "hidden": false,
+                "languageType": "language",
+                "concats": [
+                  {
+                    "id": 11,
+                    "ordering": 11,
+                    "name": "shorttext",
+                    "kind": "shorttext",
+                    "multilanguage": false,
+                    "identifier": true,
+                    "displayName": {},
+                    "description": {},
+                    "separator": true,
+                    "attributes": {},
+                    "hidden": false,
+                    "permission": {
+                      "editDisplayProperty": false,
+                      "editStructureProperty": false,
+                      "editCellValue": false,
+                      "delete": false
+                    }
+                  },
+                  {
+                    "id": 22,
+                    "ordering": 22,
+                    "name": "shorttext-multi",
+                    "kind": "shorttext",
+                    "multilanguage": true,
+                    "identifier": true,
+                    "displayName": {},
+                    "description": {},
+                    "separator": true,
+                    "attributes": {},
+                    "hidden": false,
+                    "languageType": "language",
+                    "permission": {
+                      "editDisplayProperty": false,
+                      "editStructureProperty": false,
+                      "editCellValue": {
+                        "de-DE": false,
+                        "en-GB": false
+                      },
+                      "delete": false
+                    }
+                  }
+                ],
+                "visible": true
+              },
+              "table": {
+                "id": 3,
+                "name": "kitchen-sink",
+                "hidden": false,
+                "displayName": {
+                  "en": "Everything and the kitchen sink"
+                },
+                "description": {},
+                "attributes": {},
+                "langtags": [
+                  "de-DE",
+                  "en-GB"
+                ],
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "delete": false,
+                  "createRow": false,
+                  "deleteRow": false,
+                  "editCellAnnotation": false,
+                  "editRowAnnotation": false
+                }
+              },
+              "row": {
+                "id": 1
+              },
+              "id": "concat-3-0-1"
+            },
+            {
+              "kind": "attachment",
+              "column": {
+                "id": 1,
+                "ordering": 1,
+                "name": "attachment",
+                "kind": "attachment",
+                "multilanguage": false,
+                "identifier": false,
+                "displayName": {},
+                "description": {},
+                "separator": false,
+                "attributes": {},
+                "hidden": false,
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "editCellValue": false,
+                  "delete": false
+                },
+                "visible": true
+              },
+              "table": {
+                "id": 3,
+                "name": "kitchen-sink",
+                "hidden": false,
+                "displayName": {
+                  "en": "Everything and the kitchen sink"
+                },
+                "description": {},
+                "attributes": {},
+                "langtags": [
+                  "de-DE",
+                  "en-GB"
+                ],
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "delete": false,
+                  "createRow": false,
+                  "deleteRow": false,
+                  "editCellAnnotation": false,
+                  "editRowAnnotation": false
+                }
+              },
+              "row": {
+                "id": 1
+              },
+              "id": "attachment-3-1-1"
+            },
+            {
+              "kind": "boolean",
+              "column": {
+                "id": 2,
+                "ordering": 2,
+                "name": "boolean",
+                "kind": "boolean",
+                "multilanguage": false,
+                "identifier": false,
+                "displayName": {},
+                "description": {},
+                "separator": true,
+                "attributes": {},
+                "hidden": false,
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "editCellValue": false,
+                  "delete": false
+                },
+                "visible": true
+              },
+              "table": {
+                "id": 3,
+                "name": "kitchen-sink",
+                "hidden": false,
+                "displayName": {
+                  "en": "Everything and the kitchen sink"
+                },
+                "description": {},
+                "attributes": {},
+                "langtags": [
+                  "de-DE",
+                  "en-GB"
+                ],
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "delete": false,
+                  "createRow": false,
+                  "deleteRow": false,
+                  "editCellAnnotation": false,
+                  "editRowAnnotation": false
+                }
+              },
+              "row": {
+                "id": 1
+              },
+              "id": "boolean-3-2-1"
+            },
+            {
+              "kind": "date",
+              "column": {
+                "id": 3,
+                "ordering": 3,
+                "name": "date",
+                "kind": "date",
+                "multilanguage": false,
+                "identifier": false,
+                "displayName": {},
+                "description": {},
+                "separator": true,
+                "attributes": {},
+                "hidden": false,
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "editCellValue": false,
+                  "delete": false
+                },
+                "visible": true
+              },
+              "table": {
+                "id": 3,
+                "name": "kitchen-sink",
+                "hidden": false,
+                "displayName": {
+                  "en": "Everything and the kitchen sink"
+                },
+                "description": {},
+                "attributes": {},
+                "langtags": [
+                  "de-DE",
+                  "en-GB"
+                ],
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "delete": false,
+                  "createRow": false,
+                  "deleteRow": false,
+                  "editCellAnnotation": false,
+                  "editRowAnnotation": false
+                }
+              },
+              "row": {
+                "id": 1
+              },
+              "id": "date-3-3-1"
+            },
+            {
+              "kind": "datetime",
+              "column": {
+                "id": 4,
+                "ordering": 4,
+                "name": "datetime",
+                "kind": "datetime",
+                "multilanguage": false,
+                "identifier": false,
+                "displayName": {},
+                "description": {},
+                "separator": true,
+                "attributes": {},
+                "hidden": false,
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "editCellValue": false,
+                  "delete": false
+                },
+                "visible": true
+              },
+              "table": {
+                "id": 3,
+                "name": "kitchen-sink",
+                "hidden": false,
+                "displayName": {
+                  "en": "Everything and the kitchen sink"
+                },
+                "description": {},
+                "attributes": {},
+                "langtags": [
+                  "de-DE",
+                  "en-GB"
+                ],
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "delete": false,
+                  "createRow": false,
+                  "deleteRow": false,
+                  "editCellAnnotation": false,
+                  "editRowAnnotation": false
+                }
+              },
+              "row": {
+                "id": 1
+              },
+              "id": "datetime-3-4-1"
+            },
+            {
+              "kind": "integer",
+              "column": {
+                "id": 5,
+                "ordering": 5,
+                "name": "integer",
+                "kind": "integer",
+                "multilanguage": false,
+                "identifier": false,
+                "displayName": {},
+                "description": {},
+                "separator": true,
+                "attributes": {},
+                "hidden": false,
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "editCellValue": false,
+                  "delete": false
+                },
+                "visible": true
+              },
+              "table": {
+                "id": 3,
+                "name": "kitchen-sink",
+                "hidden": false,
+                "displayName": {
+                  "en": "Everything and the kitchen sink"
+                },
+                "description": {},
+                "attributes": {},
+                "langtags": [
+                  "de-DE",
+                  "en-GB"
+                ],
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "delete": false,
+                  "createRow": false,
+                  "deleteRow": false,
+                  "editCellAnnotation": false,
+                  "editRowAnnotation": false
+                }
+              },
+              "row": {
+                "id": 1
+              },
+              "id": "integer-3-5-1"
+            },
+            {
+              "kind": "link",
+              "column": {
+                "id": 6,
+                "ordering": 6,
+                "name": "link",
+                "kind": "link",
+                "multilanguage": true,
+                "identifier": false,
+                "displayName": {},
+                "description": {},
+                "separator": false,
+                "attributes": {},
+                "hidden": false,
+                "languageType": "language",
+                "toTable": 1,
+                "toColumn": {
+                  "id": 0,
+                  "ordering": 0,
+                  "name": "ID",
+                  "kind": "concat",
+                  "multilanguage": true,
+                  "identifier": true,
+                  "displayName": {},
+                  "description": {},
+                  "separator": false,
+                  "attributes": {},
+                  "hidden": false,
+                  "languageType": "language",
+                  "concats": [
+                    {
+                      "id": 1,
+                      "ordering": 1,
+                      "name": "state",
+                      "kind": "shorttext",
+                      "multilanguage": false,
+                      "identifier": true,
+                      "displayName": {
+                        "de-DE": "Bundesland",
+                        "en-GB": "federal state"
+                      },
+                      "description": {
+                        "de-DE": "Ein Land ist nach der föderalen Verfassungsordnung der Bundesrepublik Deutschland einer ihrer teilsouveränen Gliedstaaten.",
+                        "en-GB": "Germany is a federal republic consisting of sixteen federal states (German: Bundesland, or Land)."
+                      },
+                      "separator": true,
+                      "attributes": {},
+                      "hidden": false
+                    },
+                    {
+                      "id": 2,
+                      "ordering": 2,
+                      "name": "capital",
+                      "kind": "shorttext",
+                      "multilanguage": true,
+                      "identifier": true,
+                      "displayName": {
+                        "de-DE": "Hauptstadt",
+                        "en-GB": "capital city"
+                      },
+                      "description": {
+                        "de-DE": "Eine Hauptstadt ist ein politisches Zentrum eines Staates und oft Sitz der obersten Staatsgewalten: Parlament, Monarch, Regierung, Oberstes Gericht.",
+                        "en-GB": "A capital city (or simply capital) is the municipality enjoying primary status in a country, state, province, or other region, usually as its seat of government."
+                      },
+                      "separator": true,
+                      "attributes": {},
+                      "hidden": false,
+                      "languageType": "language"
+                    }
+                  ]
+                },
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "editCellValue": {
+                    "de-DE": false,
+                    "en-GB": false
+                  },
+                  "delete": false
+                },
+                "visible": true
+              },
+              "table": {
+                "id": 3,
+                "name": "kitchen-sink",
+                "hidden": false,
+                "displayName": {
+                  "en": "Everything and the kitchen sink"
+                },
+                "description": {},
+                "attributes": {},
+                "langtags": [
+                  "de-DE",
+                  "en-GB"
+                ],
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "delete": false,
+                  "createRow": false,
+                  "deleteRow": false,
+                  "editCellAnnotation": false,
+                  "editRowAnnotation": false
+                }
+              },
+              "row": {
+                "id": 1
+              },
+              "id": "link-3-6-1"
+            },
+            {
+              "kind": "numeric",
+              "column": {
+                "id": 7,
+                "ordering": 7,
+                "name": "numeric",
+                "kind": "numeric",
+                "multilanguage": false,
+                "identifier": false,
+                "displayName": {},
+                "description": {},
+                "separator": true,
+                "attributes": {},
+                "hidden": false,
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "editCellValue": false,
+                  "delete": false
+                },
+                "visible": true
+              },
+              "table": {
+                "id": 3,
+                "name": "kitchen-sink",
+                "hidden": false,
+                "displayName": {
+                  "en": "Everything and the kitchen sink"
+                },
+                "description": {},
+                "attributes": {},
+                "langtags": [
+                  "de-DE",
+                  "en-GB"
+                ],
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "delete": false,
+                  "createRow": false,
+                  "deleteRow": false,
+                  "editCellAnnotation": false,
+                  "editRowAnnotation": false
+                }
+              },
+              "row": {
+                "id": 1
+              },
+              "id": "numeric-3-7-1"
+            },
+            {
+              "kind": "numeric",
+              "column": {
+                "id": 8,
+                "ordering": 8,
+                "name": "numeric-2",
+                "kind": "numeric",
+                "multilanguage": false,
+                "identifier": false,
+                "displayName": {},
+                "description": {},
+                "separator": true,
+                "attributes": {},
+                "hidden": false,
+                "decimalDigits": 2,
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "editCellValue": false,
+                  "delete": false
+                },
+                "visible": true
+              },
+              "table": {
+                "id": 3,
+                "name": "kitchen-sink",
+                "hidden": false,
+                "displayName": {
+                  "en": "Everything and the kitchen sink"
+                },
+                "description": {},
+                "attributes": {},
+                "langtags": [
+                  "de-DE",
+                  "en-GB"
+                ],
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "delete": false,
+                  "createRow": false,
+                  "deleteRow": false,
+                  "editCellAnnotation": false,
+                  "editRowAnnotation": false
+                }
+              },
+              "row": {
+                "id": 1
+              },
+              "id": "numeric-3-8-1"
+            },
+            {
+              "kind": "numeric",
+              "column": {
+                "id": 9,
+                "ordering": 9,
+                "name": "numeric-4",
+                "kind": "numeric",
+                "multilanguage": false,
+                "identifier": false,
+                "displayName": {},
+                "description": {},
+                "separator": true,
+                "attributes": {},
+                "hidden": false,
+                "decimalDigits": 4,
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "editCellValue": false,
+                  "delete": false
+                },
+                "visible": true
+              },
+              "table": {
+                "id": 3,
+                "name": "kitchen-sink",
+                "hidden": false,
+                "displayName": {
+                  "en": "Everything and the kitchen sink"
+                },
+                "description": {},
+                "attributes": {},
+                "langtags": [
+                  "de-DE",
+                  "en-GB"
+                ],
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "delete": false,
+                  "createRow": false,
+                  "deleteRow": false,
+                  "editCellAnnotation": false,
+                  "editRowAnnotation": false
+                }
+              },
+              "row": {
+                "id": 1
+              },
+              "id": "numeric-3-9-1"
+            },
+            {
+              "kind": "richtext",
+              "column": {
+                "id": 10,
+                "ordering": 10,
+                "name": "richtext",
+                "kind": "richtext",
+                "multilanguage": false,
+                "identifier": false,
+                "displayName": {},
+                "description": {},
+                "separator": true,
+                "attributes": {},
+                "hidden": false,
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "editCellValue": false,
+                  "delete": false
+                },
+                "visible": true
+              },
+              "table": {
+                "id": 3,
+                "name": "kitchen-sink",
+                "hidden": false,
+                "displayName": {
+                  "en": "Everything and the kitchen sink"
+                },
+                "description": {},
+                "attributes": {},
+                "langtags": [
+                  "de-DE",
+                  "en-GB"
+                ],
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "delete": false,
+                  "createRow": false,
+                  "deleteRow": false,
+                  "editCellAnnotation": false,
+                  "editRowAnnotation": false
+                }
+              },
+              "row": {
+                "id": 1
+              },
+              "id": "richtext-3-10-1"
+            },
+            {
+              "kind": "shorttext",
+              "column": {
+                "id": 11,
+                "ordering": 11,
+                "name": "shorttext",
+                "kind": "shorttext",
+                "multilanguage": false,
+                "identifier": true,
+                "displayName": {},
+                "description": {},
+                "separator": true,
+                "attributes": {},
+                "hidden": false,
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "editCellValue": false,
+                  "delete": false
+                },
+                "visible": true
+              },
+              "table": {
+                "id": 3,
+                "name": "kitchen-sink",
+                "hidden": false,
+                "displayName": {
+                  "en": "Everything and the kitchen sink"
+                },
+                "description": {},
+                "attributes": {},
+                "langtags": [
+                  "de-DE",
+                  "en-GB"
+                ],
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "delete": false,
+                  "createRow": false,
+                  "deleteRow": false,
+                  "editCellAnnotation": false,
+                  "editRowAnnotation": false
+                }
+              },
+              "row": {
+                "id": 1
+              },
+              "id": "shorttext-3-11-1"
+            },
+            {
+              "kind": "text",
+              "column": {
+                "id": 12,
+                "ordering": 12,
+                "name": "text",
+                "kind": "text",
+                "multilanguage": false,
+                "identifier": false,
+                "displayName": {},
+                "description": {},
+                "separator": true,
+                "attributes": {},
+                "hidden": false,
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "editCellValue": false,
+                  "delete": false
+                },
+                "visible": true
+              },
+              "table": {
+                "id": 3,
+                "name": "kitchen-sink",
+                "hidden": false,
+                "displayName": {
+                  "en": "Everything and the kitchen sink"
+                },
+                "description": {},
+                "attributes": {},
+                "langtags": [
+                  "de-DE",
+                  "en-GB"
+                ],
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "delete": false,
+                  "createRow": false,
+                  "deleteRow": false,
+                  "editCellAnnotation": false,
+                  "editRowAnnotation": false
+                }
+              },
+              "row": {
+                "id": 1
+              },
+              "id": "text-3-12-1"
+            },
+            {
+              "kind": "attachment",
+              "column": {
+                "id": 13,
+                "ordering": 13,
+                "name": "attachment-multi",
+                "kind": "attachment",
+                "multilanguage": false,
+                "identifier": false,
+                "displayName": {},
+                "description": {},
+                "separator": false,
+                "attributes": {},
+                "hidden": false,
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "editCellValue": false,
+                  "delete": false
+                },
+                "visible": true
+              },
+              "table": {
+                "id": 3,
+                "name": "kitchen-sink",
+                "hidden": false,
+                "displayName": {
+                  "en": "Everything and the kitchen sink"
+                },
+                "description": {},
+                "attributes": {},
+                "langtags": [
+                  "de-DE",
+                  "en-GB"
+                ],
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "delete": false,
+                  "createRow": false,
+                  "deleteRow": false,
+                  "editCellAnnotation": false,
+                  "editRowAnnotation": false
+                }
+              },
+              "row": {
+                "id": 1
+              },
+              "id": "attachment-3-13-1"
+            },
+            {
+              "kind": "boolean",
+              "column": {
+                "id": 14,
+                "ordering": 14,
+                "name": "boolean-multi",
+                "kind": "boolean",
+                "multilanguage": true,
+                "identifier": false,
+                "displayName": {},
+                "description": {},
+                "separator": true,
+                "attributes": {},
+                "hidden": false,
+                "languageType": "language",
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "editCellValue": {
+                    "de-DE": false,
+                    "en-GB": false
+                  },
+                  "delete": false
+                },
+                "visible": true
+              },
+              "table": {
+                "id": 3,
+                "name": "kitchen-sink",
+                "hidden": false,
+                "displayName": {
+                  "en": "Everything and the kitchen sink"
+                },
+                "description": {},
+                "attributes": {},
+                "langtags": [
+                  "de-DE",
+                  "en-GB"
+                ],
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "delete": false,
+                  "createRow": false,
+                  "deleteRow": false,
+                  "editCellAnnotation": false,
+                  "editRowAnnotation": false
+                }
+              },
+              "row": {
+                "id": 1
+              },
+              "id": "boolean-3-14-1"
+            },
+            {
+              "kind": "currency",
+              "column": {
+                "id": 15,
+                "ordering": 15,
+                "name": "currency-multi",
+                "kind": "currency",
+                "multilanguage": true,
+                "identifier": false,
+                "displayName": {},
+                "description": {},
+                "separator": true,
+                "attributes": {},
+                "hidden": false,
+                "languageType": "country",
+                "countryCodes": [
+                  "DE",
+                  "GB",
+                  "US",
+                  "FR",
+                  "CH",
+                  "XY",
+                  "ZZ",
+                  "FOO",
+                  "BAR"
+                ],
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "editCellValue": {
+                    "DE": false,
+                    "GB": false,
+                    "US": false,
+                    "FR": false,
+                    "CH": false,
+                    "XY": false,
+                    "ZZ": false,
+                    "FOO": false,
+                    "BAR": false
+                  },
+                  "delete": false
+                },
+                "visible": true
+              },
+              "table": {
+                "id": 3,
+                "name": "kitchen-sink",
+                "hidden": false,
+                "displayName": {
+                  "en": "Everything and the kitchen sink"
+                },
+                "description": {},
+                "attributes": {},
+                "langtags": [
+                  "de-DE",
+                  "en-GB"
+                ],
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "delete": false,
+                  "createRow": false,
+                  "deleteRow": false,
+                  "editCellAnnotation": false,
+                  "editRowAnnotation": false
+                }
+              },
+              "row": {
+                "id": 1
+              },
+              "id": "currency-3-15-1"
+            },
+            {
+              "kind": "date",
+              "column": {
+                "id": 16,
+                "ordering": 16,
+                "name": "date-multi",
+                "kind": "date",
+                "multilanguage": true,
+                "identifier": false,
+                "displayName": {},
+                "description": {},
+                "separator": true,
+                "attributes": {},
+                "hidden": false,
+                "languageType": "language",
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "editCellValue": {
+                    "de-DE": false,
+                    "en-GB": false
+                  },
+                  "delete": false
+                },
+                "visible": true
+              },
+              "table": {
+                "id": 3,
+                "name": "kitchen-sink",
+                "hidden": false,
+                "displayName": {
+                  "en": "Everything and the kitchen sink"
+                },
+                "description": {},
+                "attributes": {},
+                "langtags": [
+                  "de-DE",
+                  "en-GB"
+                ],
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "delete": false,
+                  "createRow": false,
+                  "deleteRow": false,
+                  "editCellAnnotation": false,
+                  "editRowAnnotation": false
+                }
+              },
+              "row": {
+                "id": 1
+              },
+              "id": "date-3-16-1"
+            },
+            {
+              "kind": "datetime",
+              "column": {
+                "id": 17,
+                "ordering": 17,
+                "name": "datetime-multi",
+                "kind": "datetime",
+                "multilanguage": true,
+                "identifier": false,
+                "displayName": {},
+                "description": {},
+                "separator": true,
+                "attributes": {},
+                "hidden": false,
+                "languageType": "language",
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "editCellValue": {
+                    "de-DE": false,
+                    "en-GB": false
+                  },
+                  "delete": false
+                },
+                "visible": true
+              },
+              "table": {
+                "id": 3,
+                "name": "kitchen-sink",
+                "hidden": false,
+                "displayName": {
+                  "en": "Everything and the kitchen sink"
+                },
+                "description": {},
+                "attributes": {},
+                "langtags": [
+                  "de-DE",
+                  "en-GB"
+                ],
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "delete": false,
+                  "createRow": false,
+                  "deleteRow": false,
+                  "editCellAnnotation": false,
+                  "editRowAnnotation": false
+                }
+              },
+              "row": {
+                "id": 1
+              },
+              "id": "datetime-3-17-1"
+            },
+            {
+              "kind": "integer",
+              "column": {
+                "id": 18,
+                "ordering": 18,
+                "name": "integer-multi",
+                "kind": "integer",
+                "multilanguage": true,
+                "identifier": false,
+                "displayName": {},
+                "description": {},
+                "separator": true,
+                "attributes": {},
+                "hidden": false,
+                "languageType": "language",
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "editCellValue": {
+                    "de-DE": false,
+                    "en-GB": false
+                  },
+                  "delete": false
+                },
+                "visible": true
+              },
+              "table": {
+                "id": 3,
+                "name": "kitchen-sink",
+                "hidden": false,
+                "displayName": {
+                  "en": "Everything and the kitchen sink"
+                },
+                "description": {},
+                "attributes": {},
+                "langtags": [
+                  "de-DE",
+                  "en-GB"
+                ],
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "delete": false,
+                  "createRow": false,
+                  "deleteRow": false,
+                  "editCellAnnotation": false,
+                  "editRowAnnotation": false
+                }
+              },
+              "row": {
+                "id": 1
+              },
+              "id": "integer-3-18-1"
+            },
+            {
+              "kind": "link",
+              "column": {
+                "id": 19,
+                "ordering": 19,
+                "name": "link-multi",
+                "kind": "link",
+                "multilanguage": false,
+                "identifier": false,
+                "displayName": {},
+                "description": {},
+                "separator": false,
+                "attributes": {},
+                "hidden": false,
+                "toTable": 2,
+                "toColumn": {
+                  "id": 0,
+                  "ordering": 0,
+                  "name": "ID",
+                  "kind": "concat",
+                  "multilanguage": false,
+                  "identifier": true,
+                  "displayName": {},
+                  "description": {},
+                  "separator": false,
+                  "attributes": {},
+                  "hidden": false,
+                  "concats": [
+                    {
+                      "id": 1,
+                      "ordering": 1,
+                      "name": "region",
+                      "kind": "shorttext",
+                      "multilanguage": false,
+                      "identifier": true,
+                      "displayName": {
+                        "de-DE": "Regierungsbezirk",
+                        "en-GB": "administrative region"
+                      },
+                      "description": {
+                        "de-DE": "In Deutschland ist ein Regierungsbezirk der Bezirk einer allgemeinen Landesmittelbehörde, in der ressortverschiedene Aufgaben gebündelt werden.",
+                        "en-GB": "Regierungsbezirk (pronounced [ʁeˈɡiːʁʊŋsbəˈt͡sɪʁk], abbreviated Reg.-Bez.) is an administrative region on federal state level in Germany."
+                      },
+                      "separator": true,
+                      "attributes": {},
+                      "hidden": false
+                    },
+                    {
+                      "id": 2,
+                      "ordering": 2,
+                      "name": "centre",
+                      "kind": "shorttext",
+                      "multilanguage": false,
+                      "identifier": true,
+                      "displayName": {
+                        "de-DE": "Verwaltungssitz",
+                        "en-GB": "administrative centre"
+                      },
+                      "description": {
+                        "de-DE": "Der Verwaltungssitz beschreibt im Verwaltungsrecht den Ort, von dem aus das zu verwaltende Gebiet (der sog. Verwaltungsbezirk) verwaltet wird.",
+                        "en-GB": "An administrative centre is a seat of regional administration or local government, or a county town, or the place where the central administration of a commune is located."
+                      },
+                      "separator": true,
+                      "attributes": {},
+                      "hidden": false
+                    }
+                  ]
+                },
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "editCellValue": false,
+                  "delete": false
+                },
+                "visible": true
+              },
+              "table": {
+                "id": 3,
+                "name": "kitchen-sink",
+                "hidden": false,
+                "displayName": {
+                  "en": "Everything and the kitchen sink"
+                },
+                "description": {},
+                "attributes": {},
+                "langtags": [
+                  "de-DE",
+                  "en-GB"
+                ],
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "delete": false,
+                  "createRow": false,
+                  "deleteRow": false,
+                  "editCellAnnotation": false,
+                  "editRowAnnotation": false
+                }
+              },
+              "row": {
+                "id": 1
+              },
+              "id": "link-3-19-1"
+            },
+            {
+              "kind": "numeric",
+              "column": {
+                "id": 20,
+                "ordering": 20,
+                "name": "numeric-multi",
+                "kind": "numeric",
+                "multilanguage": true,
+                "identifier": false,
+                "displayName": {},
+                "description": {},
+                "separator": true,
+                "attributes": {},
+                "hidden": false,
+                "languageType": "language",
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "editCellValue": {
+                    "de-DE": false,
+                    "en-GB": false
+                  },
+                  "delete": false
+                },
+                "visible": true
+              },
+              "table": {
+                "id": 3,
+                "name": "kitchen-sink",
+                "hidden": false,
+                "displayName": {
+                  "en": "Everything and the kitchen sink"
+                },
+                "description": {},
+                "attributes": {},
+                "langtags": [
+                  "de-DE",
+                  "en-GB"
+                ],
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "delete": false,
+                  "createRow": false,
+                  "deleteRow": false,
+                  "editCellAnnotation": false,
+                  "editRowAnnotation": false
+                }
+              },
+              "row": {
+                "id": 1
+              },
+              "id": "numeric-3-20-1"
+            },
+            {
+              "kind": "richtext",
+              "column": {
+                "id": 21,
+                "ordering": 21,
+                "name": "richtext-multi",
+                "kind": "richtext",
+                "multilanguage": true,
+                "identifier": false,
+                "displayName": {},
+                "description": {},
+                "separator": true,
+                "attributes": {},
+                "hidden": false,
+                "languageType": "language",
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "editCellValue": {
+                    "de-DE": false,
+                    "en-GB": false
+                  },
+                  "delete": false
+                },
+                "visible": true
+              },
+              "table": {
+                "id": 3,
+                "name": "kitchen-sink",
+                "hidden": false,
+                "displayName": {
+                  "en": "Everything and the kitchen sink"
+                },
+                "description": {},
+                "attributes": {},
+                "langtags": [
+                  "de-DE",
+                  "en-GB"
+                ],
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "delete": false,
+                  "createRow": false,
+                  "deleteRow": false,
+                  "editCellAnnotation": false,
+                  "editRowAnnotation": false
+                }
+              },
+              "row": {
+                "id": 1
+              },
+              "id": "richtext-3-21-1"
+            },
+            {
+              "kind": "shorttext",
+              "column": {
+                "id": 22,
+                "ordering": 22,
+                "name": "shorttext-multi",
+                "kind": "shorttext",
+                "multilanguage": true,
+                "identifier": true,
+                "displayName": {},
+                "description": {},
+                "separator": true,
+                "attributes": {},
+                "hidden": false,
+                "languageType": "language",
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "editCellValue": {
+                    "de-DE": false,
+                    "en-GB": false
+                  },
+                  "delete": false
+                },
+                "visible": true
+              },
+              "table": {
+                "id": 3,
+                "name": "kitchen-sink",
+                "hidden": false,
+                "displayName": {
+                  "en": "Everything and the kitchen sink"
+                },
+                "description": {},
+                "attributes": {},
+                "langtags": [
+                  "de-DE",
+                  "en-GB"
+                ],
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "delete": false,
+                  "createRow": false,
+                  "deleteRow": false,
+                  "editCellAnnotation": false,
+                  "editRowAnnotation": false
+                }
+              },
+              "row": {
+                "id": 1
+              },
+              "id": "shorttext-3-22-1"
+            },
+            {
+              "kind": "text",
+              "column": {
+                "id": 23,
+                "ordering": 23,
+                "name": "text-multi",
+                "kind": "text",
+                "multilanguage": true,
+                "identifier": false,
+                "displayName": {},
+                "description": {},
+                "separator": true,
+                "attributes": {},
+                "hidden": false,
+                "languageType": "language",
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "editCellValue": {
+                    "de-DE": false,
+                    "en-GB": false
+                  },
+                  "delete": false
+                },
+                "visible": true
+              },
+              "table": {
+                "id": 3,
+                "name": "kitchen-sink",
+                "hidden": false,
+                "displayName": {
+                  "en": "Everything and the kitchen sink"
+                },
+                "description": {},
+                "attributes": {},
+                "langtags": [
+                  "de-DE",
+                  "en-GB"
+                ],
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "delete": false,
+                  "createRow": false,
+                  "deleteRow": false,
+                  "editCellAnnotation": false,
+                  "editRowAnnotation": false
+                }
+              },
+              "row": {
+                "id": 1
+              },
+              "id": "text-3-23-1"
+            }
+          ]
+        },
+        {
+          "id": 2,
+          "values": [
+            [
+              "ad libidum",
+              {}
+            ],
+            [
+              {
+                "ordering": 1,
+                "url": {
+                  "de-DE": "/files/0fa20c89-f039-400e-97d2-a312d73aeed5/de-DE/start-wifi"
+                },
+                "uuid": "0fa20c89-f039-400e-97d2-a312d73aeed5",
+                "folder": null,
+                "folders": [],
+                "title": {
+                  "de-DE": "start-wifi"
+                },
+                "description": {
+                  "de-DE": ""
+                },
+                "internalName": {
+                  "de-DE": "b515122a-c22c-459a-abaa-0be4bfc504d2."
+                },
+                "externalName": {
+                  "de-DE": "start-wifi"
+                },
+                "mimeType": {
+                  "de-DE": "application/octet-stream"
+                },
+                "createdAt": "2024-08-26T15:00:16.118+02:00",
+                "updatedAt": "2024-08-26T15:00:16.142+02:00"
+              },
+              {
+                "ordering": 2,
+                "url": {
+                  "de-DE": "/files/f93e38e2-c65e-4321-b296-a120459571d0/de-DE/b%C3%BCcher.txt"
+                },
+                "uuid": "f93e38e2-c65e-4321-b296-a120459571d0",
+                "folder": null,
+                "folders": [],
+                "title": {
+                  "de-DE": "bücher.txt"
+                },
+                "description": {
+                  "de-DE": ""
+                },
+                "internalName": {
+                  "de-DE": "f30937a5-a100-4ae0-8197-997e394e5ee6.txt"
+                },
+                "externalName": {
+                  "de-DE": "bücher.txt"
+                },
+                "mimeType": {
+                  "de-DE": "text/plain"
+                },
+                "createdAt": "2024-08-26T14:59:59.755+02:00",
+                "updatedAt": "2024-08-26T14:59:59.825+02:00"
+              }
+            ],
+            false,
+            "2024-08-23",
+            "2024-08-23T00:00:00.000Z",
+            456,
+            [
+              {
+                "id": 3,
+                "value": [
+                  "Berlin",
+                  {
+                    "de-DE": "Berlin",
+                    "en-GB": "Berlin"
+                  }
+                ]
+              },
+              {
+                "id": 6,
+                "value": [
+                  "Hamburg",
+                  {
+                    "de-DE": "Hamburg",
+                    "en-GB": "Hamburg"
+                  }
+                ]
+              }
+            ],
+            2.123,
+            1.123,
+            null,
+            "Lorem ipsum dolor sit amet",
+            "ad libidum",
+            "Lorem ipsum dolor sit amet",
+            [],
+            {},
+            {},
+            {},
+            {},
+            {},
+            [],
+            {},
+            {},
+            {},
+            {}
+          ],
+          "cells": [
+            {
+              "kind": "concat",
+              "column": {
+                "id": 0,
+                "ordering": 0,
+                "name": "ID",
+                "kind": "concat",
+                "multilanguage": true,
+                "identifier": true,
+                "displayName": {},
+                "description": {},
+                "separator": false,
+                "attributes": {},
+                "hidden": false,
+                "languageType": "language",
+                "concats": [
+                  {
+                    "id": 11,
+                    "ordering": 11,
+                    "name": "shorttext",
+                    "kind": "shorttext",
+                    "multilanguage": false,
+                    "identifier": true,
+                    "displayName": {},
+                    "description": {},
+                    "separator": true,
+                    "attributes": {},
+                    "hidden": false,
+                    "permission": {
+                      "editDisplayProperty": false,
+                      "editStructureProperty": false,
+                      "editCellValue": false,
+                      "delete": false
+                    }
+                  },
+                  {
+                    "id": 22,
+                    "ordering": 22,
+                    "name": "shorttext-multi",
+                    "kind": "shorttext",
+                    "multilanguage": true,
+                    "identifier": true,
+                    "displayName": {},
+                    "description": {},
+                    "separator": true,
+                    "attributes": {},
+                    "hidden": false,
+                    "languageType": "language",
+                    "permission": {
+                      "editDisplayProperty": false,
+                      "editStructureProperty": false,
+                      "editCellValue": {
+                        "de-DE": false,
+                        "en-GB": false
+                      },
+                      "delete": false
+                    }
+                  }
+                ],
+                "visible": true
+              },
+              "table": {
+                "id": 3,
+                "name": "kitchen-sink",
+                "hidden": false,
+                "displayName": {
+                  "en": "Everything and the kitchen sink"
+                },
+                "description": {},
+                "attributes": {},
+                "langtags": [
+                  "de-DE",
+                  "en-GB"
+                ],
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "delete": false,
+                  "createRow": false,
+                  "deleteRow": false,
+                  "editCellAnnotation": false,
+                  "editRowAnnotation": false
+                }
+              },
+              "row": {
+                "id": 2
+              },
+              "id": "concat-3-0-2"
+            },
+            {
+              "kind": "attachment",
+              "column": {
+                "id": 1,
+                "ordering": 1,
+                "name": "attachment",
+                "kind": "attachment",
+                "multilanguage": false,
+                "identifier": false,
+                "displayName": {},
+                "description": {},
+                "separator": false,
+                "attributes": {},
+                "hidden": false,
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "editCellValue": false,
+                  "delete": false
+                },
+                "visible": true
+              },
+              "table": {
+                "id": 3,
+                "name": "kitchen-sink",
+                "hidden": false,
+                "displayName": {
+                  "en": "Everything and the kitchen sink"
+                },
+                "description": {},
+                "attributes": {},
+                "langtags": [
+                  "de-DE",
+                  "en-GB"
+                ],
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "delete": false,
+                  "createRow": false,
+                  "deleteRow": false,
+                  "editCellAnnotation": false,
+                  "editRowAnnotation": false
+                }
+              },
+              "row": {
+                "id": 2
+              },
+              "id": "attachment-3-1-2"
+            },
+            {
+              "kind": "boolean",
+              "column": {
+                "id": 2,
+                "ordering": 2,
+                "name": "boolean",
+                "kind": "boolean",
+                "multilanguage": false,
+                "identifier": false,
+                "displayName": {},
+                "description": {},
+                "separator": true,
+                "attributes": {},
+                "hidden": false,
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "editCellValue": false,
+                  "delete": false
+                },
+                "visible": true
+              },
+              "table": {
+                "id": 3,
+                "name": "kitchen-sink",
+                "hidden": false,
+                "displayName": {
+                  "en": "Everything and the kitchen sink"
+                },
+                "description": {},
+                "attributes": {},
+                "langtags": [
+                  "de-DE",
+                  "en-GB"
+                ],
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "delete": false,
+                  "createRow": false,
+                  "deleteRow": false,
+                  "editCellAnnotation": false,
+                  "editRowAnnotation": false
+                }
+              },
+              "row": {
+                "id": 2
+              },
+              "id": "boolean-3-2-2"
+            },
+            {
+              "kind": "date",
+              "column": {
+                "id": 3,
+                "ordering": 3,
+                "name": "date",
+                "kind": "date",
+                "multilanguage": false,
+                "identifier": false,
+                "displayName": {},
+                "description": {},
+                "separator": true,
+                "attributes": {},
+                "hidden": false,
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "editCellValue": false,
+                  "delete": false
+                },
+                "visible": true
+              },
+              "table": {
+                "id": 3,
+                "name": "kitchen-sink",
+                "hidden": false,
+                "displayName": {
+                  "en": "Everything and the kitchen sink"
+                },
+                "description": {},
+                "attributes": {},
+                "langtags": [
+                  "de-DE",
+                  "en-GB"
+                ],
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "delete": false,
+                  "createRow": false,
+                  "deleteRow": false,
+                  "editCellAnnotation": false,
+                  "editRowAnnotation": false
+                }
+              },
+              "row": {
+                "id": 2
+              },
+              "id": "date-3-3-2"
+            },
+            {
+              "kind": "datetime",
+              "column": {
+                "id": 4,
+                "ordering": 4,
+                "name": "datetime",
+                "kind": "datetime",
+                "multilanguage": false,
+                "identifier": false,
+                "displayName": {},
+                "description": {},
+                "separator": true,
+                "attributes": {},
+                "hidden": false,
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "editCellValue": false,
+                  "delete": false
+                },
+                "visible": true
+              },
+              "table": {
+                "id": 3,
+                "name": "kitchen-sink",
+                "hidden": false,
+                "displayName": {
+                  "en": "Everything and the kitchen sink"
+                },
+                "description": {},
+                "attributes": {},
+                "langtags": [
+                  "de-DE",
+                  "en-GB"
+                ],
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "delete": false,
+                  "createRow": false,
+                  "deleteRow": false,
+                  "editCellAnnotation": false,
+                  "editRowAnnotation": false
+                }
+              },
+              "row": {
+                "id": 2
+              },
+              "id": "datetime-3-4-2"
+            },
+            {
+              "kind": "integer",
+              "column": {
+                "id": 5,
+                "ordering": 5,
+                "name": "integer",
+                "kind": "integer",
+                "multilanguage": false,
+                "identifier": false,
+                "displayName": {},
+                "description": {},
+                "separator": true,
+                "attributes": {},
+                "hidden": false,
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "editCellValue": false,
+                  "delete": false
+                },
+                "visible": true
+              },
+              "table": {
+                "id": 3,
+                "name": "kitchen-sink",
+                "hidden": false,
+                "displayName": {
+                  "en": "Everything and the kitchen sink"
+                },
+                "description": {},
+                "attributes": {},
+                "langtags": [
+                  "de-DE",
+                  "en-GB"
+                ],
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "delete": false,
+                  "createRow": false,
+                  "deleteRow": false,
+                  "editCellAnnotation": false,
+                  "editRowAnnotation": false
+                }
+              },
+              "row": {
+                "id": 2
+              },
+              "id": "integer-3-5-2"
+            },
+            {
+              "kind": "link",
+              "column": {
+                "id": 6,
+                "ordering": 6,
+                "name": "link",
+                "kind": "link",
+                "multilanguage": true,
+                "identifier": false,
+                "displayName": {},
+                "description": {},
+                "separator": false,
+                "attributes": {},
+                "hidden": false,
+                "languageType": "language",
+                "toTable": 1,
+                "toColumn": {
+                  "id": 0,
+                  "ordering": 0,
+                  "name": "ID",
+                  "kind": "concat",
+                  "multilanguage": true,
+                  "identifier": true,
+                  "displayName": {},
+                  "description": {},
+                  "separator": false,
+                  "attributes": {},
+                  "hidden": false,
+                  "languageType": "language",
+                  "concats": [
+                    {
+                      "id": 1,
+                      "ordering": 1,
+                      "name": "state",
+                      "kind": "shorttext",
+                      "multilanguage": false,
+                      "identifier": true,
+                      "displayName": {
+                        "de-DE": "Bundesland",
+                        "en-GB": "federal state"
+                      },
+                      "description": {
+                        "de-DE": "Ein Land ist nach der föderalen Verfassungsordnung der Bundesrepublik Deutschland einer ihrer teilsouveränen Gliedstaaten.",
+                        "en-GB": "Germany is a federal republic consisting of sixteen federal states (German: Bundesland, or Land)."
+                      },
+                      "separator": true,
+                      "attributes": {},
+                      "hidden": false
+                    },
+                    {
+                      "id": 2,
+                      "ordering": 2,
+                      "name": "capital",
+                      "kind": "shorttext",
+                      "multilanguage": true,
+                      "identifier": true,
+                      "displayName": {
+                        "de-DE": "Hauptstadt",
+                        "en-GB": "capital city"
+                      },
+                      "description": {
+                        "de-DE": "Eine Hauptstadt ist ein politisches Zentrum eines Staates und oft Sitz der obersten Staatsgewalten: Parlament, Monarch, Regierung, Oberstes Gericht.",
+                        "en-GB": "A capital city (or simply capital) is the municipality enjoying primary status in a country, state, province, or other region, usually as its seat of government."
+                      },
+                      "separator": true,
+                      "attributes": {},
+                      "hidden": false,
+                      "languageType": "language"
+                    }
+                  ]
+                },
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "editCellValue": {
+                    "de-DE": false,
+                    "en-GB": false
+                  },
+                  "delete": false
+                },
+                "visible": true
+              },
+              "table": {
+                "id": 3,
+                "name": "kitchen-sink",
+                "hidden": false,
+                "displayName": {
+                  "en": "Everything and the kitchen sink"
+                },
+                "description": {},
+                "attributes": {},
+                "langtags": [
+                  "de-DE",
+                  "en-GB"
+                ],
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "delete": false,
+                  "createRow": false,
+                  "deleteRow": false,
+                  "editCellAnnotation": false,
+                  "editRowAnnotation": false
+                }
+              },
+              "row": {
+                "id": 2
+              },
+              "id": "link-3-6-2"
+            },
+            {
+              "kind": "numeric",
+              "column": {
+                "id": 7,
+                "ordering": 7,
+                "name": "numeric",
+                "kind": "numeric",
+                "multilanguage": false,
+                "identifier": false,
+                "displayName": {},
+                "description": {},
+                "separator": true,
+                "attributes": {},
+                "hidden": false,
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "editCellValue": false,
+                  "delete": false
+                },
+                "visible": true
+              },
+              "table": {
+                "id": 3,
+                "name": "kitchen-sink",
+                "hidden": false,
+                "displayName": {
+                  "en": "Everything and the kitchen sink"
+                },
+                "description": {},
+                "attributes": {},
+                "langtags": [
+                  "de-DE",
+                  "en-GB"
+                ],
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "delete": false,
+                  "createRow": false,
+                  "deleteRow": false,
+                  "editCellAnnotation": false,
+                  "editRowAnnotation": false
+                }
+              },
+              "row": {
+                "id": 2
+              },
+              "id": "numeric-3-7-2"
+            },
+            {
+              "kind": "numeric",
+              "column": {
+                "id": 8,
+                "ordering": 8,
+                "name": "numeric-2",
+                "kind": "numeric",
+                "multilanguage": false,
+                "identifier": false,
+                "displayName": {},
+                "description": {},
+                "separator": true,
+                "attributes": {},
+                "hidden": false,
+                "decimalDigits": 2,
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "editCellValue": false,
+                  "delete": false
+                },
+                "visible": true
+              },
+              "table": {
+                "id": 3,
+                "name": "kitchen-sink",
+                "hidden": false,
+                "displayName": {
+                  "en": "Everything and the kitchen sink"
+                },
+                "description": {},
+                "attributes": {},
+                "langtags": [
+                  "de-DE",
+                  "en-GB"
+                ],
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "delete": false,
+                  "createRow": false,
+                  "deleteRow": false,
+                  "editCellAnnotation": false,
+                  "editRowAnnotation": false
+                }
+              },
+              "row": {
+                "id": 2
+              },
+              "id": "numeric-3-8-2"
+            },
+            {
+              "kind": "numeric",
+              "column": {
+                "id": 9,
+                "ordering": 9,
+                "name": "numeric-4",
+                "kind": "numeric",
+                "multilanguage": false,
+                "identifier": false,
+                "displayName": {},
+                "description": {},
+                "separator": true,
+                "attributes": {},
+                "hidden": false,
+                "decimalDigits": 4,
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "editCellValue": false,
+                  "delete": false
+                },
+                "visible": true
+              },
+              "table": {
+                "id": 3,
+                "name": "kitchen-sink",
+                "hidden": false,
+                "displayName": {
+                  "en": "Everything and the kitchen sink"
+                },
+                "description": {},
+                "attributes": {},
+                "langtags": [
+                  "de-DE",
+                  "en-GB"
+                ],
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "delete": false,
+                  "createRow": false,
+                  "deleteRow": false,
+                  "editCellAnnotation": false,
+                  "editRowAnnotation": false
+                }
+              },
+              "row": {
+                "id": 2
+              },
+              "id": "numeric-3-9-2"
+            },
+            {
+              "kind": "richtext",
+              "column": {
+                "id": 10,
+                "ordering": 10,
+                "name": "richtext",
+                "kind": "richtext",
+                "multilanguage": false,
+                "identifier": false,
+                "displayName": {},
+                "description": {},
+                "separator": true,
+                "attributes": {},
+                "hidden": false,
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "editCellValue": false,
+                  "delete": false
+                },
+                "visible": true
+              },
+              "table": {
+                "id": 3,
+                "name": "kitchen-sink",
+                "hidden": false,
+                "displayName": {
+                  "en": "Everything and the kitchen sink"
+                },
+                "description": {},
+                "attributes": {},
+                "langtags": [
+                  "de-DE",
+                  "en-GB"
+                ],
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "delete": false,
+                  "createRow": false,
+                  "deleteRow": false,
+                  "editCellAnnotation": false,
+                  "editRowAnnotation": false
+                }
+              },
+              "row": {
+                "id": 2
+              },
+              "id": "richtext-3-10-2"
+            },
+            {
+              "kind": "shorttext",
+              "column": {
+                "id": 11,
+                "ordering": 11,
+                "name": "shorttext",
+                "kind": "shorttext",
+                "multilanguage": false,
+                "identifier": true,
+                "displayName": {},
+                "description": {},
+                "separator": true,
+                "attributes": {},
+                "hidden": false,
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "editCellValue": false,
+                  "delete": false
+                },
+                "visible": true
+              },
+              "table": {
+                "id": 3,
+                "name": "kitchen-sink",
+                "hidden": false,
+                "displayName": {
+                  "en": "Everything and the kitchen sink"
+                },
+                "description": {},
+                "attributes": {},
+                "langtags": [
+                  "de-DE",
+                  "en-GB"
+                ],
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "delete": false,
+                  "createRow": false,
+                  "deleteRow": false,
+                  "editCellAnnotation": false,
+                  "editRowAnnotation": false
+                }
+              },
+              "row": {
+                "id": 2
+              },
+              "id": "shorttext-3-11-2"
+            },
+            {
+              "kind": "text",
+              "column": {
+                "id": 12,
+                "ordering": 12,
+                "name": "text",
+                "kind": "text",
+                "multilanguage": false,
+                "identifier": false,
+                "displayName": {},
+                "description": {},
+                "separator": true,
+                "attributes": {},
+                "hidden": false,
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "editCellValue": false,
+                  "delete": false
+                },
+                "visible": true
+              },
+              "table": {
+                "id": 3,
+                "name": "kitchen-sink",
+                "hidden": false,
+                "displayName": {
+                  "en": "Everything and the kitchen sink"
+                },
+                "description": {},
+                "attributes": {},
+                "langtags": [
+                  "de-DE",
+                  "en-GB"
+                ],
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "delete": false,
+                  "createRow": false,
+                  "deleteRow": false,
+                  "editCellAnnotation": false,
+                  "editRowAnnotation": false
+                }
+              },
+              "row": {
+                "id": 2
+              },
+              "id": "text-3-12-2"
+            },
+            {
+              "kind": "attachment",
+              "column": {
+                "id": 13,
+                "ordering": 13,
+                "name": "attachment-multi",
+                "kind": "attachment",
+                "multilanguage": false,
+                "identifier": false,
+                "displayName": {},
+                "description": {},
+                "separator": false,
+                "attributes": {},
+                "hidden": false,
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "editCellValue": false,
+                  "delete": false
+                },
+                "visible": true
+              },
+              "table": {
+                "id": 3,
+                "name": "kitchen-sink",
+                "hidden": false,
+                "displayName": {
+                  "en": "Everything and the kitchen sink"
+                },
+                "description": {},
+                "attributes": {},
+                "langtags": [
+                  "de-DE",
+                  "en-GB"
+                ],
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "delete": false,
+                  "createRow": false,
+                  "deleteRow": false,
+                  "editCellAnnotation": false,
+                  "editRowAnnotation": false
+                }
+              },
+              "row": {
+                "id": 2
+              },
+              "id": "attachment-3-13-2"
+            },
+            {
+              "kind": "boolean",
+              "column": {
+                "id": 14,
+                "ordering": 14,
+                "name": "boolean-multi",
+                "kind": "boolean",
+                "multilanguage": true,
+                "identifier": false,
+                "displayName": {},
+                "description": {},
+                "separator": true,
+                "attributes": {},
+                "hidden": false,
+                "languageType": "language",
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "editCellValue": {
+                    "de-DE": false,
+                    "en-GB": false
+                  },
+                  "delete": false
+                },
+                "visible": true
+              },
+              "table": {
+                "id": 3,
+                "name": "kitchen-sink",
+                "hidden": false,
+                "displayName": {
+                  "en": "Everything and the kitchen sink"
+                },
+                "description": {},
+                "attributes": {},
+                "langtags": [
+                  "de-DE",
+                  "en-GB"
+                ],
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "delete": false,
+                  "createRow": false,
+                  "deleteRow": false,
+                  "editCellAnnotation": false,
+                  "editRowAnnotation": false
+                }
+              },
+              "row": {
+                "id": 2
+              },
+              "id": "boolean-3-14-2"
+            },
+            {
+              "kind": "currency",
+              "column": {
+                "id": 15,
+                "ordering": 15,
+                "name": "currency-multi",
+                "kind": "currency",
+                "multilanguage": true,
+                "identifier": false,
+                "displayName": {},
+                "description": {},
+                "separator": true,
+                "attributes": {},
+                "hidden": false,
+                "languageType": "country",
+                "countryCodes": [
+                  "DE",
+                  "GB",
+                  "US",
+                  "FR",
+                  "CH",
+                  "XY",
+                  "ZZ",
+                  "FOO",
+                  "BAR"
+                ],
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "editCellValue": {
+                    "DE": false,
+                    "GB": false,
+                    "US": false,
+                    "FR": false,
+                    "CH": false,
+                    "XY": false,
+                    "ZZ": false,
+                    "FOO": false,
+                    "BAR": false
+                  },
+                  "delete": false
+                },
+                "visible": true
+              },
+              "table": {
+                "id": 3,
+                "name": "kitchen-sink",
+                "hidden": false,
+                "displayName": {
+                  "en": "Everything and the kitchen sink"
+                },
+                "description": {},
+                "attributes": {},
+                "langtags": [
+                  "de-DE",
+                  "en-GB"
+                ],
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "delete": false,
+                  "createRow": false,
+                  "deleteRow": false,
+                  "editCellAnnotation": false,
+                  "editRowAnnotation": false
+                }
+              },
+              "row": {
+                "id": 2
+              },
+              "id": "currency-3-15-2"
+            },
+            {
+              "kind": "date",
+              "column": {
+                "id": 16,
+                "ordering": 16,
+                "name": "date-multi",
+                "kind": "date",
+                "multilanguage": true,
+                "identifier": false,
+                "displayName": {},
+                "description": {},
+                "separator": true,
+                "attributes": {},
+                "hidden": false,
+                "languageType": "language",
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "editCellValue": {
+                    "de-DE": false,
+                    "en-GB": false
+                  },
+                  "delete": false
+                },
+                "visible": true
+              },
+              "table": {
+                "id": 3,
+                "name": "kitchen-sink",
+                "hidden": false,
+                "displayName": {
+                  "en": "Everything and the kitchen sink"
+                },
+                "description": {},
+                "attributes": {},
+                "langtags": [
+                  "de-DE",
+                  "en-GB"
+                ],
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "delete": false,
+                  "createRow": false,
+                  "deleteRow": false,
+                  "editCellAnnotation": false,
+                  "editRowAnnotation": false
+                }
+              },
+              "row": {
+                "id": 2
+              },
+              "id": "date-3-16-2"
+            },
+            {
+              "kind": "datetime",
+              "column": {
+                "id": 17,
+                "ordering": 17,
+                "name": "datetime-multi",
+                "kind": "datetime",
+                "multilanguage": true,
+                "identifier": false,
+                "displayName": {},
+                "description": {},
+                "separator": true,
+                "attributes": {},
+                "hidden": false,
+                "languageType": "language",
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "editCellValue": {
+                    "de-DE": false,
+                    "en-GB": false
+                  },
+                  "delete": false
+                },
+                "visible": true
+              },
+              "table": {
+                "id": 3,
+                "name": "kitchen-sink",
+                "hidden": false,
+                "displayName": {
+                  "en": "Everything and the kitchen sink"
+                },
+                "description": {},
+                "attributes": {},
+                "langtags": [
+                  "de-DE",
+                  "en-GB"
+                ],
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "delete": false,
+                  "createRow": false,
+                  "deleteRow": false,
+                  "editCellAnnotation": false,
+                  "editRowAnnotation": false
+                }
+              },
+              "row": {
+                "id": 2
+              },
+              "id": "datetime-3-17-2"
+            },
+            {
+              "kind": "integer",
+              "column": {
+                "id": 18,
+                "ordering": 18,
+                "name": "integer-multi",
+                "kind": "integer",
+                "multilanguage": true,
+                "identifier": false,
+                "displayName": {},
+                "description": {},
+                "separator": true,
+                "attributes": {},
+                "hidden": false,
+                "languageType": "language",
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "editCellValue": {
+                    "de-DE": false,
+                    "en-GB": false
+                  },
+                  "delete": false
+                },
+                "visible": true
+              },
+              "table": {
+                "id": 3,
+                "name": "kitchen-sink",
+                "hidden": false,
+                "displayName": {
+                  "en": "Everything and the kitchen sink"
+                },
+                "description": {},
+                "attributes": {},
+                "langtags": [
+                  "de-DE",
+                  "en-GB"
+                ],
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "delete": false,
+                  "createRow": false,
+                  "deleteRow": false,
+                  "editCellAnnotation": false,
+                  "editRowAnnotation": false
+                }
+              },
+              "row": {
+                "id": 2
+              },
+              "id": "integer-3-18-2"
+            },
+            {
+              "kind": "link",
+              "column": {
+                "id": 19,
+                "ordering": 19,
+                "name": "link-multi",
+                "kind": "link",
+                "multilanguage": false,
+                "identifier": false,
+                "displayName": {},
+                "description": {},
+                "separator": false,
+                "attributes": {},
+                "hidden": false,
+                "toTable": 2,
+                "toColumn": {
+                  "id": 0,
+                  "ordering": 0,
+                  "name": "ID",
+                  "kind": "concat",
+                  "multilanguage": false,
+                  "identifier": true,
+                  "displayName": {},
+                  "description": {},
+                  "separator": false,
+                  "attributes": {},
+                  "hidden": false,
+                  "concats": [
+                    {
+                      "id": 1,
+                      "ordering": 1,
+                      "name": "region",
+                      "kind": "shorttext",
+                      "multilanguage": false,
+                      "identifier": true,
+                      "displayName": {
+                        "de-DE": "Regierungsbezirk",
+                        "en-GB": "administrative region"
+                      },
+                      "description": {
+                        "de-DE": "In Deutschland ist ein Regierungsbezirk der Bezirk einer allgemeinen Landesmittelbehörde, in der ressortverschiedene Aufgaben gebündelt werden.",
+                        "en-GB": "Regierungsbezirk (pronounced [ʁeˈɡiːʁʊŋsbəˈt͡sɪʁk], abbreviated Reg.-Bez.) is an administrative region on federal state level in Germany."
+                      },
+                      "separator": true,
+                      "attributes": {},
+                      "hidden": false
+                    },
+                    {
+                      "id": 2,
+                      "ordering": 2,
+                      "name": "centre",
+                      "kind": "shorttext",
+                      "multilanguage": false,
+                      "identifier": true,
+                      "displayName": {
+                        "de-DE": "Verwaltungssitz",
+                        "en-GB": "administrative centre"
+                      },
+                      "description": {
+                        "de-DE": "Der Verwaltungssitz beschreibt im Verwaltungsrecht den Ort, von dem aus das zu verwaltende Gebiet (der sog. Verwaltungsbezirk) verwaltet wird.",
+                        "en-GB": "An administrative centre is a seat of regional administration or local government, or a county town, or the place where the central administration of a commune is located."
+                      },
+                      "separator": true,
+                      "attributes": {},
+                      "hidden": false
+                    }
+                  ]
+                },
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "editCellValue": false,
+                  "delete": false
+                },
+                "visible": true
+              },
+              "table": {
+                "id": 3,
+                "name": "kitchen-sink",
+                "hidden": false,
+                "displayName": {
+                  "en": "Everything and the kitchen sink"
+                },
+                "description": {},
+                "attributes": {},
+                "langtags": [
+                  "de-DE",
+                  "en-GB"
+                ],
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "delete": false,
+                  "createRow": false,
+                  "deleteRow": false,
+                  "editCellAnnotation": false,
+                  "editRowAnnotation": false
+                }
+              },
+              "row": {
+                "id": 2
+              },
+              "id": "link-3-19-2"
+            },
+            {
+              "kind": "numeric",
+              "column": {
+                "id": 20,
+                "ordering": 20,
+                "name": "numeric-multi",
+                "kind": "numeric",
+                "multilanguage": true,
+                "identifier": false,
+                "displayName": {},
+                "description": {},
+                "separator": true,
+                "attributes": {},
+                "hidden": false,
+                "languageType": "language",
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "editCellValue": {
+                    "de-DE": false,
+                    "en-GB": false
+                  },
+                  "delete": false
+                },
+                "visible": true
+              },
+              "table": {
+                "id": 3,
+                "name": "kitchen-sink",
+                "hidden": false,
+                "displayName": {
+                  "en": "Everything and the kitchen sink"
+                },
+                "description": {},
+                "attributes": {},
+                "langtags": [
+                  "de-DE",
+                  "en-GB"
+                ],
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "delete": false,
+                  "createRow": false,
+                  "deleteRow": false,
+                  "editCellAnnotation": false,
+                  "editRowAnnotation": false
+                }
+              },
+              "row": {
+                "id": 2
+              },
+              "id": "numeric-3-20-2"
+            },
+            {
+              "kind": "richtext",
+              "column": {
+                "id": 21,
+                "ordering": 21,
+                "name": "richtext-multi",
+                "kind": "richtext",
+                "multilanguage": true,
+                "identifier": false,
+                "displayName": {},
+                "description": {},
+                "separator": true,
+                "attributes": {},
+                "hidden": false,
+                "languageType": "language",
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "editCellValue": {
+                    "de-DE": false,
+                    "en-GB": false
+                  },
+                  "delete": false
+                },
+                "visible": true
+              },
+              "table": {
+                "id": 3,
+                "name": "kitchen-sink",
+                "hidden": false,
+                "displayName": {
+                  "en": "Everything and the kitchen sink"
+                },
+                "description": {},
+                "attributes": {},
+                "langtags": [
+                  "de-DE",
+                  "en-GB"
+                ],
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "delete": false,
+                  "createRow": false,
+                  "deleteRow": false,
+                  "editCellAnnotation": false,
+                  "editRowAnnotation": false
+                }
+              },
+              "row": {
+                "id": 2
+              },
+              "id": "richtext-3-21-2"
+            },
+            {
+              "kind": "shorttext",
+              "column": {
+                "id": 22,
+                "ordering": 22,
+                "name": "shorttext-multi",
+                "kind": "shorttext",
+                "multilanguage": true,
+                "identifier": true,
+                "displayName": {},
+                "description": {},
+                "separator": true,
+                "attributes": {},
+                "hidden": false,
+                "languageType": "language",
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "editCellValue": {
+                    "de-DE": false,
+                    "en-GB": false
+                  },
+                  "delete": false
+                },
+                "visible": true
+              },
+              "table": {
+                "id": 3,
+                "name": "kitchen-sink",
+                "hidden": false,
+                "displayName": {
+                  "en": "Everything and the kitchen sink"
+                },
+                "description": {},
+                "attributes": {},
+                "langtags": [
+                  "de-DE",
+                  "en-GB"
+                ],
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "delete": false,
+                  "createRow": false,
+                  "deleteRow": false,
+                  "editCellAnnotation": false,
+                  "editRowAnnotation": false
+                }
+              },
+              "row": {
+                "id": 2
+              },
+              "id": "shorttext-3-22-2"
+            },
+            {
+              "kind": "text",
+              "column": {
+                "id": 23,
+                "ordering": 23,
+                "name": "text-multi",
+                "kind": "text",
+                "multilanguage": true,
+                "identifier": false,
+                "displayName": {},
+                "description": {},
+                "separator": true,
+                "attributes": {},
+                "hidden": false,
+                "languageType": "language",
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "editCellValue": {
+                    "de-DE": false,
+                    "en-GB": false
+                  },
+                  "delete": false
+                },
+                "visible": true
+              },
+              "table": {
+                "id": 3,
+                "name": "kitchen-sink",
+                "hidden": false,
+                "displayName": {
+                  "en": "Everything and the kitchen sink"
+                },
+                "description": {},
+                "attributes": {},
+                "langtags": [
+                  "de-DE",
+                  "en-GB"
+                ],
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "delete": false,
+                  "createRow": false,
+                  "deleteRow": false,
+                  "editCellAnnotation": false,
+                  "editRowAnnotation": false
+                }
+              },
+              "row": {
+                "id": 2
+              },
+              "id": "text-3-23-2"
+            }
+          ]
+        },
+        {
+          "id": 3,
+          "values": [
+            [
+              null,
+              {}
+            ],
+            [],
+            false,
+            null,
+            null,
+            null,
+            [],
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            [],
+            {},
+            {},
+            {},
+            {},
+            {},
+            [],
+            {},
+            {},
+            {},
+            {}
+          ],
+          "cells": [
+            {
+              "kind": "concat",
+              "column": {
+                "id": 0,
+                "ordering": 0,
+                "name": "ID",
+                "kind": "concat",
+                "multilanguage": true,
+                "identifier": true,
+                "displayName": {},
+                "description": {},
+                "separator": false,
+                "attributes": {},
+                "hidden": false,
+                "languageType": "language",
+                "concats": [
+                  {
+                    "id": 11,
+                    "ordering": 11,
+                    "name": "shorttext",
+                    "kind": "shorttext",
+                    "multilanguage": false,
+                    "identifier": true,
+                    "displayName": {},
+                    "description": {},
+                    "separator": true,
+                    "attributes": {},
+                    "hidden": false,
+                    "permission": {
+                      "editDisplayProperty": false,
+                      "editStructureProperty": false,
+                      "editCellValue": false,
+                      "delete": false
+                    }
+                  },
+                  {
+                    "id": 22,
+                    "ordering": 22,
+                    "name": "shorttext-multi",
+                    "kind": "shorttext",
+                    "multilanguage": true,
+                    "identifier": true,
+                    "displayName": {},
+                    "description": {},
+                    "separator": true,
+                    "attributes": {},
+                    "hidden": false,
+                    "languageType": "language",
+                    "permission": {
+                      "editDisplayProperty": false,
+                      "editStructureProperty": false,
+                      "editCellValue": {
+                        "de-DE": false,
+                        "en-GB": false
+                      },
+                      "delete": false
+                    }
+                  }
+                ],
+                "visible": true
+              },
+              "table": {
+                "id": 3,
+                "name": "kitchen-sink",
+                "hidden": false,
+                "displayName": {
+                  "en": "Everything and the kitchen sink"
+                },
+                "description": {},
+                "attributes": {},
+                "langtags": [
+                  "de-DE",
+                  "en-GB"
+                ],
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "delete": false,
+                  "createRow": false,
+                  "deleteRow": false,
+                  "editCellAnnotation": false,
+                  "editRowAnnotation": false
+                }
+              },
+              "row": {
+                "id": 3
+              },
+              "id": "concat-3-0-3"
+            },
+            {
+              "kind": "attachment",
+              "column": {
+                "id": 1,
+                "ordering": 1,
+                "name": "attachment",
+                "kind": "attachment",
+                "multilanguage": false,
+                "identifier": false,
+                "displayName": {},
+                "description": {},
+                "separator": false,
+                "attributes": {},
+                "hidden": false,
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "editCellValue": false,
+                  "delete": false
+                },
+                "visible": true
+              },
+              "table": {
+                "id": 3,
+                "name": "kitchen-sink",
+                "hidden": false,
+                "displayName": {
+                  "en": "Everything and the kitchen sink"
+                },
+                "description": {},
+                "attributes": {},
+                "langtags": [
+                  "de-DE",
+                  "en-GB"
+                ],
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "delete": false,
+                  "createRow": false,
+                  "deleteRow": false,
+                  "editCellAnnotation": false,
+                  "editRowAnnotation": false
+                }
+              },
+              "row": {
+                "id": 3
+              },
+              "id": "attachment-3-1-3"
+            },
+            {
+              "kind": "boolean",
+              "column": {
+                "id": 2,
+                "ordering": 2,
+                "name": "boolean",
+                "kind": "boolean",
+                "multilanguage": false,
+                "identifier": false,
+                "displayName": {},
+                "description": {},
+                "separator": true,
+                "attributes": {},
+                "hidden": false,
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "editCellValue": false,
+                  "delete": false
+                },
+                "visible": true
+              },
+              "table": {
+                "id": 3,
+                "name": "kitchen-sink",
+                "hidden": false,
+                "displayName": {
+                  "en": "Everything and the kitchen sink"
+                },
+                "description": {},
+                "attributes": {},
+                "langtags": [
+                  "de-DE",
+                  "en-GB"
+                ],
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "delete": false,
+                  "createRow": false,
+                  "deleteRow": false,
+                  "editCellAnnotation": false,
+                  "editRowAnnotation": false
+                }
+              },
+              "row": {
+                "id": 3
+              },
+              "id": "boolean-3-2-3"
+            },
+            {
+              "kind": "date",
+              "column": {
+                "id": 3,
+                "ordering": 3,
+                "name": "date",
+                "kind": "date",
+                "multilanguage": false,
+                "identifier": false,
+                "displayName": {},
+                "description": {},
+                "separator": true,
+                "attributes": {},
+                "hidden": false,
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "editCellValue": false,
+                  "delete": false
+                },
+                "visible": true
+              },
+              "table": {
+                "id": 3,
+                "name": "kitchen-sink",
+                "hidden": false,
+                "displayName": {
+                  "en": "Everything and the kitchen sink"
+                },
+                "description": {},
+                "attributes": {},
+                "langtags": [
+                  "de-DE",
+                  "en-GB"
+                ],
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "delete": false,
+                  "createRow": false,
+                  "deleteRow": false,
+                  "editCellAnnotation": false,
+                  "editRowAnnotation": false
+                }
+              },
+              "row": {
+                "id": 3
+              },
+              "id": "date-3-3-3"
+            },
+            {
+              "kind": "datetime",
+              "column": {
+                "id": 4,
+                "ordering": 4,
+                "name": "datetime",
+                "kind": "datetime",
+                "multilanguage": false,
+                "identifier": false,
+                "displayName": {},
+                "description": {},
+                "separator": true,
+                "attributes": {},
+                "hidden": false,
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "editCellValue": false,
+                  "delete": false
+                },
+                "visible": true
+              },
+              "table": {
+                "id": 3,
+                "name": "kitchen-sink",
+                "hidden": false,
+                "displayName": {
+                  "en": "Everything and the kitchen sink"
+                },
+                "description": {},
+                "attributes": {},
+                "langtags": [
+                  "de-DE",
+                  "en-GB"
+                ],
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "delete": false,
+                  "createRow": false,
+                  "deleteRow": false,
+                  "editCellAnnotation": false,
+                  "editRowAnnotation": false
+                }
+              },
+              "row": {
+                "id": 3
+              },
+              "id": "datetime-3-4-3"
+            },
+            {
+              "kind": "integer",
+              "column": {
+                "id": 5,
+                "ordering": 5,
+                "name": "integer",
+                "kind": "integer",
+                "multilanguage": false,
+                "identifier": false,
+                "displayName": {},
+                "description": {},
+                "separator": true,
+                "attributes": {},
+                "hidden": false,
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "editCellValue": false,
+                  "delete": false
+                },
+                "visible": true
+              },
+              "table": {
+                "id": 3,
+                "name": "kitchen-sink",
+                "hidden": false,
+                "displayName": {
+                  "en": "Everything and the kitchen sink"
+                },
+                "description": {},
+                "attributes": {},
+                "langtags": [
+                  "de-DE",
+                  "en-GB"
+                ],
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "delete": false,
+                  "createRow": false,
+                  "deleteRow": false,
+                  "editCellAnnotation": false,
+                  "editRowAnnotation": false
+                }
+              },
+              "row": {
+                "id": 3
+              },
+              "id": "integer-3-5-3"
+            },
+            {
+              "kind": "link",
+              "column": {
+                "id": 6,
+                "ordering": 6,
+                "name": "link",
+                "kind": "link",
+                "multilanguage": true,
+                "identifier": false,
+                "displayName": {},
+                "description": {},
+                "separator": false,
+                "attributes": {},
+                "hidden": false,
+                "languageType": "language",
+                "toTable": 1,
+                "toColumn": {
+                  "id": 0,
+                  "ordering": 0,
+                  "name": "ID",
+                  "kind": "concat",
+                  "multilanguage": true,
+                  "identifier": true,
+                  "displayName": {},
+                  "description": {},
+                  "separator": false,
+                  "attributes": {},
+                  "hidden": false,
+                  "languageType": "language",
+                  "concats": [
+                    {
+                      "id": 1,
+                      "ordering": 1,
+                      "name": "state",
+                      "kind": "shorttext",
+                      "multilanguage": false,
+                      "identifier": true,
+                      "displayName": {
+                        "de-DE": "Bundesland",
+                        "en-GB": "federal state"
+                      },
+                      "description": {
+                        "de-DE": "Ein Land ist nach der föderalen Verfassungsordnung der Bundesrepublik Deutschland einer ihrer teilsouveränen Gliedstaaten.",
+                        "en-GB": "Germany is a federal republic consisting of sixteen federal states (German: Bundesland, or Land)."
+                      },
+                      "separator": true,
+                      "attributes": {},
+                      "hidden": false
+                    },
+                    {
+                      "id": 2,
+                      "ordering": 2,
+                      "name": "capital",
+                      "kind": "shorttext",
+                      "multilanguage": true,
+                      "identifier": true,
+                      "displayName": {
+                        "de-DE": "Hauptstadt",
+                        "en-GB": "capital city"
+                      },
+                      "description": {
+                        "de-DE": "Eine Hauptstadt ist ein politisches Zentrum eines Staates und oft Sitz der obersten Staatsgewalten: Parlament, Monarch, Regierung, Oberstes Gericht.",
+                        "en-GB": "A capital city (or simply capital) is the municipality enjoying primary status in a country, state, province, or other region, usually as its seat of government."
+                      },
+                      "separator": true,
+                      "attributes": {},
+                      "hidden": false,
+                      "languageType": "language"
+                    }
+                  ]
+                },
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "editCellValue": {
+                    "de-DE": false,
+                    "en-GB": false
+                  },
+                  "delete": false
+                },
+                "visible": true
+              },
+              "table": {
+                "id": 3,
+                "name": "kitchen-sink",
+                "hidden": false,
+                "displayName": {
+                  "en": "Everything and the kitchen sink"
+                },
+                "description": {},
+                "attributes": {},
+                "langtags": [
+                  "de-DE",
+                  "en-GB"
+                ],
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "delete": false,
+                  "createRow": false,
+                  "deleteRow": false,
+                  "editCellAnnotation": false,
+                  "editRowAnnotation": false
+                }
+              },
+              "row": {
+                "id": 3
+              },
+              "id": "link-3-6-3"
+            },
+            {
+              "kind": "numeric",
+              "column": {
+                "id": 7,
+                "ordering": 7,
+                "name": "numeric",
+                "kind": "numeric",
+                "multilanguage": false,
+                "identifier": false,
+                "displayName": {},
+                "description": {},
+                "separator": true,
+                "attributes": {},
+                "hidden": false,
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "editCellValue": false,
+                  "delete": false
+                },
+                "visible": true
+              },
+              "table": {
+                "id": 3,
+                "name": "kitchen-sink",
+                "hidden": false,
+                "displayName": {
+                  "en": "Everything and the kitchen sink"
+                },
+                "description": {},
+                "attributes": {},
+                "langtags": [
+                  "de-DE",
+                  "en-GB"
+                ],
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "delete": false,
+                  "createRow": false,
+                  "deleteRow": false,
+                  "editCellAnnotation": false,
+                  "editRowAnnotation": false
+                }
+              },
+              "row": {
+                "id": 3
+              },
+              "id": "numeric-3-7-3"
+            },
+            {
+              "kind": "numeric",
+              "column": {
+                "id": 8,
+                "ordering": 8,
+                "name": "numeric-2",
+                "kind": "numeric",
+                "multilanguage": false,
+                "identifier": false,
+                "displayName": {},
+                "description": {},
+                "separator": true,
+                "attributes": {},
+                "hidden": false,
+                "decimalDigits": 2,
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "editCellValue": false,
+                  "delete": false
+                },
+                "visible": true
+              },
+              "table": {
+                "id": 3,
+                "name": "kitchen-sink",
+                "hidden": false,
+                "displayName": {
+                  "en": "Everything and the kitchen sink"
+                },
+                "description": {},
+                "attributes": {},
+                "langtags": [
+                  "de-DE",
+                  "en-GB"
+                ],
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "delete": false,
+                  "createRow": false,
+                  "deleteRow": false,
+                  "editCellAnnotation": false,
+                  "editRowAnnotation": false
+                }
+              },
+              "row": {
+                "id": 3
+              },
+              "id": "numeric-3-8-3"
+            },
+            {
+              "kind": "numeric",
+              "column": {
+                "id": 9,
+                "ordering": 9,
+                "name": "numeric-4",
+                "kind": "numeric",
+                "multilanguage": false,
+                "identifier": false,
+                "displayName": {},
+                "description": {},
+                "separator": true,
+                "attributes": {},
+                "hidden": false,
+                "decimalDigits": 4,
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "editCellValue": false,
+                  "delete": false
+                },
+                "visible": true
+              },
+              "table": {
+                "id": 3,
+                "name": "kitchen-sink",
+                "hidden": false,
+                "displayName": {
+                  "en": "Everything and the kitchen sink"
+                },
+                "description": {},
+                "attributes": {},
+                "langtags": [
+                  "de-DE",
+                  "en-GB"
+                ],
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "delete": false,
+                  "createRow": false,
+                  "deleteRow": false,
+                  "editCellAnnotation": false,
+                  "editRowAnnotation": false
+                }
+              },
+              "row": {
+                "id": 3
+              },
+              "id": "numeric-3-9-3"
+            },
+            {
+              "kind": "richtext",
+              "column": {
+                "id": 10,
+                "ordering": 10,
+                "name": "richtext",
+                "kind": "richtext",
+                "multilanguage": false,
+                "identifier": false,
+                "displayName": {},
+                "description": {},
+                "separator": true,
+                "attributes": {},
+                "hidden": false,
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "editCellValue": false,
+                  "delete": false
+                },
+                "visible": true
+              },
+              "table": {
+                "id": 3,
+                "name": "kitchen-sink",
+                "hidden": false,
+                "displayName": {
+                  "en": "Everything and the kitchen sink"
+                },
+                "description": {},
+                "attributes": {},
+                "langtags": [
+                  "de-DE",
+                  "en-GB"
+                ],
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "delete": false,
+                  "createRow": false,
+                  "deleteRow": false,
+                  "editCellAnnotation": false,
+                  "editRowAnnotation": false
+                }
+              },
+              "row": {
+                "id": 3
+              },
+              "id": "richtext-3-10-3"
+            },
+            {
+              "kind": "shorttext",
+              "column": {
+                "id": 11,
+                "ordering": 11,
+                "name": "shorttext",
+                "kind": "shorttext",
+                "multilanguage": false,
+                "identifier": true,
+                "displayName": {},
+                "description": {},
+                "separator": true,
+                "attributes": {},
+                "hidden": false,
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "editCellValue": false,
+                  "delete": false
+                },
+                "visible": true
+              },
+              "table": {
+                "id": 3,
+                "name": "kitchen-sink",
+                "hidden": false,
+                "displayName": {
+                  "en": "Everything and the kitchen sink"
+                },
+                "description": {},
+                "attributes": {},
+                "langtags": [
+                  "de-DE",
+                  "en-GB"
+                ],
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "delete": false,
+                  "createRow": false,
+                  "deleteRow": false,
+                  "editCellAnnotation": false,
+                  "editRowAnnotation": false
+                }
+              },
+              "row": {
+                "id": 3
+              },
+              "id": "shorttext-3-11-3"
+            },
+            {
+              "kind": "text",
+              "column": {
+                "id": 12,
+                "ordering": 12,
+                "name": "text",
+                "kind": "text",
+                "multilanguage": false,
+                "identifier": false,
+                "displayName": {},
+                "description": {},
+                "separator": true,
+                "attributes": {},
+                "hidden": false,
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "editCellValue": false,
+                  "delete": false
+                },
+                "visible": true
+              },
+              "table": {
+                "id": 3,
+                "name": "kitchen-sink",
+                "hidden": false,
+                "displayName": {
+                  "en": "Everything and the kitchen sink"
+                },
+                "description": {},
+                "attributes": {},
+                "langtags": [
+                  "de-DE",
+                  "en-GB"
+                ],
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "delete": false,
+                  "createRow": false,
+                  "deleteRow": false,
+                  "editCellAnnotation": false,
+                  "editRowAnnotation": false
+                }
+              },
+              "row": {
+                "id": 3
+              },
+              "id": "text-3-12-3"
+            },
+            {
+              "kind": "attachment",
+              "column": {
+                "id": 13,
+                "ordering": 13,
+                "name": "attachment-multi",
+                "kind": "attachment",
+                "multilanguage": false,
+                "identifier": false,
+                "displayName": {},
+                "description": {},
+                "separator": false,
+                "attributes": {},
+                "hidden": false,
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "editCellValue": false,
+                  "delete": false
+                },
+                "visible": true
+              },
+              "table": {
+                "id": 3,
+                "name": "kitchen-sink",
+                "hidden": false,
+                "displayName": {
+                  "en": "Everything and the kitchen sink"
+                },
+                "description": {},
+                "attributes": {},
+                "langtags": [
+                  "de-DE",
+                  "en-GB"
+                ],
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "delete": false,
+                  "createRow": false,
+                  "deleteRow": false,
+                  "editCellAnnotation": false,
+                  "editRowAnnotation": false
+                }
+              },
+              "row": {
+                "id": 3
+              },
+              "id": "attachment-3-13-3"
+            },
+            {
+              "kind": "boolean",
+              "column": {
+                "id": 14,
+                "ordering": 14,
+                "name": "boolean-multi",
+                "kind": "boolean",
+                "multilanguage": true,
+                "identifier": false,
+                "displayName": {},
+                "description": {},
+                "separator": true,
+                "attributes": {},
+                "hidden": false,
+                "languageType": "language",
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "editCellValue": {
+                    "de-DE": false,
+                    "en-GB": false
+                  },
+                  "delete": false
+                },
+                "visible": true
+              },
+              "table": {
+                "id": 3,
+                "name": "kitchen-sink",
+                "hidden": false,
+                "displayName": {
+                  "en": "Everything and the kitchen sink"
+                },
+                "description": {},
+                "attributes": {},
+                "langtags": [
+                  "de-DE",
+                  "en-GB"
+                ],
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "delete": false,
+                  "createRow": false,
+                  "deleteRow": false,
+                  "editCellAnnotation": false,
+                  "editRowAnnotation": false
+                }
+              },
+              "row": {
+                "id": 3
+              },
+              "id": "boolean-3-14-3"
+            },
+            {
+              "kind": "currency",
+              "column": {
+                "id": 15,
+                "ordering": 15,
+                "name": "currency-multi",
+                "kind": "currency",
+                "multilanguage": true,
+                "identifier": false,
+                "displayName": {},
+                "description": {},
+                "separator": true,
+                "attributes": {},
+                "hidden": false,
+                "languageType": "country",
+                "countryCodes": [
+                  "DE",
+                  "GB",
+                  "US",
+                  "FR",
+                  "CH",
+                  "XY",
+                  "ZZ",
+                  "FOO",
+                  "BAR"
+                ],
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "editCellValue": {
+                    "DE": false,
+                    "GB": false,
+                    "US": false,
+                    "FR": false,
+                    "CH": false,
+                    "XY": false,
+                    "ZZ": false,
+                    "FOO": false,
+                    "BAR": false
+                  },
+                  "delete": false
+                },
+                "visible": true
+              },
+              "table": {
+                "id": 3,
+                "name": "kitchen-sink",
+                "hidden": false,
+                "displayName": {
+                  "en": "Everything and the kitchen sink"
+                },
+                "description": {},
+                "attributes": {},
+                "langtags": [
+                  "de-DE",
+                  "en-GB"
+                ],
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "delete": false,
+                  "createRow": false,
+                  "deleteRow": false,
+                  "editCellAnnotation": false,
+                  "editRowAnnotation": false
+                }
+              },
+              "row": {
+                "id": 3
+              },
+              "id": "currency-3-15-3"
+            },
+            {
+              "kind": "date",
+              "column": {
+                "id": 16,
+                "ordering": 16,
+                "name": "date-multi",
+                "kind": "date",
+                "multilanguage": true,
+                "identifier": false,
+                "displayName": {},
+                "description": {},
+                "separator": true,
+                "attributes": {},
+                "hidden": false,
+                "languageType": "language",
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "editCellValue": {
+                    "de-DE": false,
+                    "en-GB": false
+                  },
+                  "delete": false
+                },
+                "visible": true
+              },
+              "table": {
+                "id": 3,
+                "name": "kitchen-sink",
+                "hidden": false,
+                "displayName": {
+                  "en": "Everything and the kitchen sink"
+                },
+                "description": {},
+                "attributes": {},
+                "langtags": [
+                  "de-DE",
+                  "en-GB"
+                ],
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "delete": false,
+                  "createRow": false,
+                  "deleteRow": false,
+                  "editCellAnnotation": false,
+                  "editRowAnnotation": false
+                }
+              },
+              "row": {
+                "id": 3
+              },
+              "id": "date-3-16-3"
+            },
+            {
+              "kind": "datetime",
+              "column": {
+                "id": 17,
+                "ordering": 17,
+                "name": "datetime-multi",
+                "kind": "datetime",
+                "multilanguage": true,
+                "identifier": false,
+                "displayName": {},
+                "description": {},
+                "separator": true,
+                "attributes": {},
+                "hidden": false,
+                "languageType": "language",
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "editCellValue": {
+                    "de-DE": false,
+                    "en-GB": false
+                  },
+                  "delete": false
+                },
+                "visible": true
+              },
+              "table": {
+                "id": 3,
+                "name": "kitchen-sink",
+                "hidden": false,
+                "displayName": {
+                  "en": "Everything and the kitchen sink"
+                },
+                "description": {},
+                "attributes": {},
+                "langtags": [
+                  "de-DE",
+                  "en-GB"
+                ],
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "delete": false,
+                  "createRow": false,
+                  "deleteRow": false,
+                  "editCellAnnotation": false,
+                  "editRowAnnotation": false
+                }
+              },
+              "row": {
+                "id": 3
+              },
+              "id": "datetime-3-17-3"
+            },
+            {
+              "kind": "integer",
+              "column": {
+                "id": 18,
+                "ordering": 18,
+                "name": "integer-multi",
+                "kind": "integer",
+                "multilanguage": true,
+                "identifier": false,
+                "displayName": {},
+                "description": {},
+                "separator": true,
+                "attributes": {},
+                "hidden": false,
+                "languageType": "language",
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "editCellValue": {
+                    "de-DE": false,
+                    "en-GB": false
+                  },
+                  "delete": false
+                },
+                "visible": true
+              },
+              "table": {
+                "id": 3,
+                "name": "kitchen-sink",
+                "hidden": false,
+                "displayName": {
+                  "en": "Everything and the kitchen sink"
+                },
+                "description": {},
+                "attributes": {},
+                "langtags": [
+                  "de-DE",
+                  "en-GB"
+                ],
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "delete": false,
+                  "createRow": false,
+                  "deleteRow": false,
+                  "editCellAnnotation": false,
+                  "editRowAnnotation": false
+                }
+              },
+              "row": {
+                "id": 3
+              },
+              "id": "integer-3-18-3"
+            },
+            {
+              "kind": "link",
+              "column": {
+                "id": 19,
+                "ordering": 19,
+                "name": "link-multi",
+                "kind": "link",
+                "multilanguage": false,
+                "identifier": false,
+                "displayName": {},
+                "description": {},
+                "separator": false,
+                "attributes": {},
+                "hidden": false,
+                "toTable": 2,
+                "toColumn": {
+                  "id": 0,
+                  "ordering": 0,
+                  "name": "ID",
+                  "kind": "concat",
+                  "multilanguage": false,
+                  "identifier": true,
+                  "displayName": {},
+                  "description": {},
+                  "separator": false,
+                  "attributes": {},
+                  "hidden": false,
+                  "concats": [
+                    {
+                      "id": 1,
+                      "ordering": 1,
+                      "name": "region",
+                      "kind": "shorttext",
+                      "multilanguage": false,
+                      "identifier": true,
+                      "displayName": {
+                        "de-DE": "Regierungsbezirk",
+                        "en-GB": "administrative region"
+                      },
+                      "description": {
+                        "de-DE": "In Deutschland ist ein Regierungsbezirk der Bezirk einer allgemeinen Landesmittelbehörde, in der ressortverschiedene Aufgaben gebündelt werden.",
+                        "en-GB": "Regierungsbezirk (pronounced [ʁeˈɡiːʁʊŋsbəˈt͡sɪʁk], abbreviated Reg.-Bez.) is an administrative region on federal state level in Germany."
+                      },
+                      "separator": true,
+                      "attributes": {},
+                      "hidden": false
+                    },
+                    {
+                      "id": 2,
+                      "ordering": 2,
+                      "name": "centre",
+                      "kind": "shorttext",
+                      "multilanguage": false,
+                      "identifier": true,
+                      "displayName": {
+                        "de-DE": "Verwaltungssitz",
+                        "en-GB": "administrative centre"
+                      },
+                      "description": {
+                        "de-DE": "Der Verwaltungssitz beschreibt im Verwaltungsrecht den Ort, von dem aus das zu verwaltende Gebiet (der sog. Verwaltungsbezirk) verwaltet wird.",
+                        "en-GB": "An administrative centre is a seat of regional administration or local government, or a county town, or the place where the central administration of a commune is located."
+                      },
+                      "separator": true,
+                      "attributes": {},
+                      "hidden": false
+                    }
+                  ]
+                },
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "editCellValue": false,
+                  "delete": false
+                },
+                "visible": true
+              },
+              "table": {
+                "id": 3,
+                "name": "kitchen-sink",
+                "hidden": false,
+                "displayName": {
+                  "en": "Everything and the kitchen sink"
+                },
+                "description": {},
+                "attributes": {},
+                "langtags": [
+                  "de-DE",
+                  "en-GB"
+                ],
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "delete": false,
+                  "createRow": false,
+                  "deleteRow": false,
+                  "editCellAnnotation": false,
+                  "editRowAnnotation": false
+                }
+              },
+              "row": {
+                "id": 3
+              },
+              "id": "link-3-19-3"
+            },
+            {
+              "kind": "numeric",
+              "column": {
+                "id": 20,
+                "ordering": 20,
+                "name": "numeric-multi",
+                "kind": "numeric",
+                "multilanguage": true,
+                "identifier": false,
+                "displayName": {},
+                "description": {},
+                "separator": true,
+                "attributes": {},
+                "hidden": false,
+                "languageType": "language",
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "editCellValue": {
+                    "de-DE": false,
+                    "en-GB": false
+                  },
+                  "delete": false
+                },
+                "visible": true
+              },
+              "table": {
+                "id": 3,
+                "name": "kitchen-sink",
+                "hidden": false,
+                "displayName": {
+                  "en": "Everything and the kitchen sink"
+                },
+                "description": {},
+                "attributes": {},
+                "langtags": [
+                  "de-DE",
+                  "en-GB"
+                ],
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "delete": false,
+                  "createRow": false,
+                  "deleteRow": false,
+                  "editCellAnnotation": false,
+                  "editRowAnnotation": false
+                }
+              },
+              "row": {
+                "id": 3
+              },
+              "id": "numeric-3-20-3"
+            },
+            {
+              "kind": "richtext",
+              "column": {
+                "id": 21,
+                "ordering": 21,
+                "name": "richtext-multi",
+                "kind": "richtext",
+                "multilanguage": true,
+                "identifier": false,
+                "displayName": {},
+                "description": {},
+                "separator": true,
+                "attributes": {},
+                "hidden": false,
+                "languageType": "language",
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "editCellValue": {
+                    "de-DE": false,
+                    "en-GB": false
+                  },
+                  "delete": false
+                },
+                "visible": true
+              },
+              "table": {
+                "id": 3,
+                "name": "kitchen-sink",
+                "hidden": false,
+                "displayName": {
+                  "en": "Everything and the kitchen sink"
+                },
+                "description": {},
+                "attributes": {},
+                "langtags": [
+                  "de-DE",
+                  "en-GB"
+                ],
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "delete": false,
+                  "createRow": false,
+                  "deleteRow": false,
+                  "editCellAnnotation": false,
+                  "editRowAnnotation": false
+                }
+              },
+              "row": {
+                "id": 3
+              },
+              "id": "richtext-3-21-3"
+            },
+            {
+              "kind": "shorttext",
+              "column": {
+                "id": 22,
+                "ordering": 22,
+                "name": "shorttext-multi",
+                "kind": "shorttext",
+                "multilanguage": true,
+                "identifier": true,
+                "displayName": {},
+                "description": {},
+                "separator": true,
+                "attributes": {},
+                "hidden": false,
+                "languageType": "language",
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "editCellValue": {
+                    "de-DE": false,
+                    "en-GB": false
+                  },
+                  "delete": false
+                },
+                "visible": true
+              },
+              "table": {
+                "id": 3,
+                "name": "kitchen-sink",
+                "hidden": false,
+                "displayName": {
+                  "en": "Everything and the kitchen sink"
+                },
+                "description": {},
+                "attributes": {},
+                "langtags": [
+                  "de-DE",
+                  "en-GB"
+                ],
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "delete": false,
+                  "createRow": false,
+                  "deleteRow": false,
+                  "editCellAnnotation": false,
+                  "editRowAnnotation": false
+                }
+              },
+              "row": {
+                "id": 3
+              },
+              "id": "shorttext-3-22-3"
+            },
+            {
+              "kind": "text",
+              "column": {
+                "id": 23,
+                "ordering": 23,
+                "name": "text-multi",
+                "kind": "text",
+                "multilanguage": true,
+                "identifier": false,
+                "displayName": {},
+                "description": {},
+                "separator": true,
+                "attributes": {},
+                "hidden": false,
+                "languageType": "language",
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "editCellValue": {
+                    "de-DE": false,
+                    "en-GB": false
+                  },
+                  "delete": false
+                },
+                "visible": true
+              },
+              "table": {
+                "id": 3,
+                "name": "kitchen-sink",
+                "hidden": false,
+                "displayName": {
+                  "en": "Everything and the kitchen sink"
+                },
+                "description": {},
+                "attributes": {},
+                "langtags": [
+                  "de-DE",
+                  "en-GB"
+                ],
+                "permission": {
+                  "editDisplayProperty": false,
+                  "editStructureProperty": false,
+                  "delete": false,
+                  "createRow": false,
+                  "deleteRow": false,
+                  "editCellAnnotation": false,
+                  "editRowAnnotation": false
+                }
+              },
+              "row": {
+                "id": 3
+              },
+              "id": "text-3-23-3"
+            }
+          ]
+        }
+      ],
+      "finishedLoading": true
+    }
+  },
+  "tableView": {
+    "copySource": {},
+    "editing": false,
+    "visibleColumns": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23
+    ],
+    "columnOrdering": [
+      {
+        "id": 0,
+        "idx": 0
+      },
+      {
+        "id": 1,
+        "idx": 1
+      },
+      {
+        "id": 2,
+        "idx": 2
+      },
+      {
+        "id": 3,
+        "idx": 3
+      },
+      {
+        "id": 4,
+        "idx": 4
+      },
+      {
+        "id": 5,
+        "idx": 5
+      },
+      {
+        "id": 6,
+        "idx": 6
+      },
+      {
+        "id": 7,
+        "idx": 7
+      },
+      {
+        "id": 8,
+        "idx": 8
+      },
+      {
+        "id": 9,
+        "idx": 9
+      },
+      {
+        "id": 10,
+        "idx": 10
+      },
+      {
+        "id": 11,
+        "idx": 11
+      },
+      {
+        "id": 12,
+        "idx": 12
+      },
+      {
+        "id": 13,
+        "idx": 13
+      },
+      {
+        "id": 14,
+        "idx": 14
+      },
+      {
+        "id": 15,
+        "idx": 15
+      },
+      {
+        "id": 16,
+        "idx": 16
+      },
+      {
+        "id": 17,
+        "idx": 17
+      },
+      {
+        "id": 18,
+        "idx": 18
+      },
+      {
+        "id": 19,
+        "idx": 19
+      },
+      {
+        "id": 20,
+        "idx": 20
+      },
+      {
+        "id": 21,
+        "idx": 21
+      },
+      {
+        "id": 22,
+        "idx": 22
+      },
+      {
+        "id": 23,
+        "idx": 23
+      }
+    ],
+    "currentTable": 3,
+    "displayValues": {
+      "1": [
+        {
+          "id": 2,
+          "values": [
+            {
+              "de-DE": "Bayern München",
+              "en-GB": "Bayern Munich"
+            }
+          ]
+        },
+        {
+          "id": 3,
+          "values": [
+            {
+              "de-DE": "Berlin Berlin",
+              "en-GB": "Berlin Berlin"
+            }
+          ]
+        },
+        {
+          "id": 6,
+          "values": [
+            {
+              "de-DE": "Hamburg Hamburg",
+              "en-GB": "Hamburg Hamburg"
+            }
+          ]
+        }
+      ],
+      "2": [],
+      "3": [
+        {
+          "id": 1,
+          "values": [
+            {
+              "de-DE": "Schnappt Shortie",
+              "en-GB": "Schnappt Shortie"
+            },
+            [
+              {
+                "de-DE": "bücher.txt",
+                "en-GB": "bücher.txt"
+              }
+            ],
+            {
+              "de-DE": "boolean",
+              "en-GB": "boolean"
+            },
+            {
+              "de-DE": "05.08.2024",
+              "en-GB": "05.08.2024"
+            },
+            {
+              "de-DE": "04.08.2024 - 02:00",
+              "en-GB": "04.08.2024 - 02:00"
+            },
+            {
+              "de-DE": "123",
+              "en-GB": "123"
+            },
+            {
+              "tableId": 1,
+              "rowIds": [
+                2
+              ]
+            },
+            {
+              "de-DE": "1.123",
+              "en-GB": "1.123"
+            },
+            {
+              "de-DE": "1.123",
+              "en-GB": "1.123"
+            },
+            {
+              "de-DE": "",
+              "en-GB": ""
+            },
+            {
+              "de-DE": "Ritchie der Textie",
+              "en-GB": "Ritchie der Textie"
+            },
+            {
+              "de-DE": "Schnappt Shortie",
+              "en-GB": "Schnappt Shortie"
+            },
+            {
+              "de-DE": "Laber den Rhabarber",
+              "en-GB": "Laber den Rhabarber"
+            },
+            [],
+            {
+              "de-DE": "",
+              "en-GB": ""
+            },
+            {
+              "de-DE": "",
+              "en-GB": ""
+            },
+            {
+              "de-DE": "",
+              "en-GB": ""
+            },
+            {
+              "de-DE": "",
+              "en-GB": ""
+            },
+            {
+              "de-DE": "",
+              "en-GB": ""
+            },
+            {
+              "tableId": 2,
+              "rowIds": []
+            },
+            {
+              "de-DE": "",
+              "en-GB": ""
+            },
+            {
+              "de-DE": "",
+              "en-GB": ""
+            },
+            {
+              "de-DE": "",
+              "en-GB": ""
+            },
+            {
+              "de-DE": "",
+              "en-GB": ""
+            }
+          ]
+        },
+        {
+          "id": 2,
+          "values": [
+            {
+              "de-DE": "ad libidum",
+              "en-GB": "ad libidum"
+            },
+            [
+              {
+                "de-DE": "start-wifi",
+                "en-GB": "start-wifi"
+              },
+              {
+                "de-DE": "bücher.txt",
+                "en-GB": "bücher.txt"
+              }
+            ],
+            {
+              "de-DE": "",
+              "en-GB": ""
+            },
+            {
+              "de-DE": "23.08.2024",
+              "en-GB": "23.08.2024"
+            },
+            {
+              "de-DE": "23.08.2024 - 02:00",
+              "en-GB": "23.08.2024 - 02:00"
+            },
+            {
+              "de-DE": "456",
+              "en-GB": "456"
+            },
+            {
+              "tableId": 1,
+              "rowIds": [
+                3,
+                6
+              ]
+            },
+            {
+              "de-DE": "2.123",
+              "en-GB": "2.123"
+            },
+            {
+              "de-DE": "1.123",
+              "en-GB": "1.123"
+            },
+            {
+              "de-DE": "",
+              "en-GB": ""
+            },
+            {
+              "de-DE": "Lorem ipsum dolor sit amet",
+              "en-GB": "Lorem ipsum dolor sit amet"
+            },
+            {
+              "de-DE": "ad libidum",
+              "en-GB": "ad libidum"
+            },
+            {
+              "de-DE": "Lorem ipsum dolor sit amet",
+              "en-GB": "Lorem ipsum dolor sit amet"
+            },
+            [],
+            {
+              "de-DE": "",
+              "en-GB": ""
+            },
+            {
+              "de-DE": "",
+              "en-GB": ""
+            },
+            {
+              "de-DE": "",
+              "en-GB": ""
+            },
+            {
+              "de-DE": "",
+              "en-GB": ""
+            },
+            {
+              "de-DE": "",
+              "en-GB": ""
+            },
+            {
+              "tableId": 2,
+              "rowIds": []
+            },
+            {
+              "de-DE": "",
+              "en-GB": ""
+            },
+            {
+              "de-DE": "",
+              "en-GB": ""
+            },
+            {
+              "de-DE": "",
+              "en-GB": ""
+            },
+            {
+              "de-DE": "",
+              "en-GB": ""
+            }
+          ]
+        },
+        {
+          "id": 3,
+          "values": [
+            {
+              "de-DE": "",
+              "en-GB": ""
+            },
+            [],
+            {
+              "de-DE": "",
+              "en-GB": ""
+            },
+            {
+              "de-DE": "",
+              "en-GB": ""
+            },
+            {
+              "de-DE": "",
+              "en-GB": ""
+            },
+            {
+              "de-DE": "",
+              "en-GB": ""
+            },
+            [],
+            {
+              "de-DE": "",
+              "en-GB": ""
+            },
+            {
+              "de-DE": "",
+              "en-GB": ""
+            },
+            {
+              "de-DE": "",
+              "en-GB": ""
+            },
+            {
+              "de-DE": "",
+              "en-GB": ""
+            },
+            {
+              "de-DE": "",
+              "en-GB": ""
+            },
+            {
+              "de-DE": "",
+              "en-GB": ""
+            },
+            [],
+            {
+              "de-DE": "",
+              "en-GB": ""
+            },
+            {
+              "de-DE": "",
+              "en-GB": ""
+            },
+            {
+              "de-DE": "",
+              "en-GB": ""
+            },
+            {
+              "de-DE": "",
+              "en-GB": ""
+            },
+            {
+              "de-DE": "",
+              "en-GB": ""
+            },
+            [],
+            {
+              "de-DE": "",
+              "en-GB": ""
+            },
+            {
+              "de-DE": "",
+              "en-GB": ""
+            },
+            {
+              "de-DE": "",
+              "en-GB": ""
+            },
+            {
+              "de-DE": "",
+              "en-GB": ""
+            }
+          ]
+        }
+      ]
+    },
+    "expandedRowIds": [],
+    "startedGeneratingDisplayValues": false,
+    "currentLanguage": "de-DE",
+    "visibleRows": [],
+    "filters": [],
+    "sorting": [],
+    "showArchived": "hide",
+    "history": [],
+    "rerenderTable": "",
+    "worker": {}
+  },
+  "overlays": {
+    "toast": null,
+    "overlays": [],
+    "exitingOverlays": []
+  },
+  "media": {
+    "finishedLoading": false,
+    "error": false,
+    "data": {}
+  },
+  "grudStatus": {
+    "connectedToBackend": true
+  },
+  "frontendServices": [],
+  "selectedCell": {
+    "selectedCell": {
+      "rowId": 3,
+      "langtag": "de-DE",
+      "cell": {}
+    },
+    "preventCellSelection": false,
+    "editing": false
+  },
+  "globalSettings": {
+    "filterReset": false,
+    "columnsReset": false,
+    "sortingReset": false,
+    "sortingDesc": false
+  },
+  "multiSelect": []
+}
