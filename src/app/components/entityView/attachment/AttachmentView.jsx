@@ -1,10 +1,10 @@
-import React from "react";
-import PropTypes from "prop-types";
-import LinkList from "../../helperComponents/LinkList";
-import { retrieveTranslation } from "../../../helpers/multiLanguage";
 import i18n from "i18next";
-import apiUrl from "../../../helpers/apiUrl";
 import * as f from "lodash/fp";
+import PropTypes from "prop-types";
+import React from "react";
+import apiUrl from "../../../helpers/apiUrl";
+import { retrieveTranslation } from "../../../helpers/multiLanguage";
+import LinkList from "../../helperComponents/LinkList";
 
 const AttachmentView = ({ actions, cell, children, langtag, value }) => {
   const attachments =
