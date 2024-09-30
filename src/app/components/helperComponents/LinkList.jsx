@@ -9,6 +9,7 @@ import f from "lodash/fp";
 import React, { useCallback, useMemo, useState } from "react";
 import { List } from "react-virtualized";
 import { isLinkArchived } from "../../archivedRows";
+import { ColumnKinds } from "../../constants/TableauxConstants";
 import { canUserChangeCell } from "../../helpers/accessManagementHelper.js";
 import apiUrl from "../../helpers/apiUrl";
 import { retrieveTranslation } from "../../helpers/multiLanguage";
@@ -66,6 +67,8 @@ const LinkList = props => {
       if (!changeCellAuthorized) {
         return;
       }
+      const httpMethodForChange =
+        cell.kind === ColumnKinds.attachment ? "PUT" : "POST";
       actions.changeCellValue({
         cell,
         tableId,
@@ -74,7 +77,8 @@ const LinkList = props => {
         oldValue: cell.value,
         newValue: f.remove(
           f.matchesProperty(isAttachment ? "uuid" : "id", f.get("id", link))
-        )(cell.value)
+        )(cell.value),
+        method: httpMethodForChange
       });
     };
     const isArchived = isLinkArchived(link);
