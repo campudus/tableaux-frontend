@@ -36,7 +36,7 @@
     "@codemirror/language-data": "6.3.1",
     "@codemirror/state": "6.3.3",
     "@codemirror/view": "6.22.1",
-    "@sentry/browser": "^4.6.4",
+    "@sentry/browser": "^8.33.0",
     "@uiw/react-codemirror": "4.21.21",
     "autoprefixer": "^9.6.0",
     "babel-loader": "^8.2.2",
