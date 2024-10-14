@@ -297,6 +297,10 @@ class SwitcherPopup extends React.PureComponent {
       ]);
       const onKeyDownFn = f.always({ enter: this.onClickTable(table) });
       const newUrl = `/${this.props.langtag}/tables/${table.id}`;
+      const onClickFn = isActive
+        ? this.handleClickOutside
+        : this.onClickTable(table);
+
       return (
         <li
           key={`table${index}`}
@@ -305,7 +309,7 @@ class SwitcherPopup extends React.PureComponent {
           tabIndex={0}
           ref={this.storeTableRef(tableId)}
         >
-          <div onClick={this.onClickTable(table)}>{displayName}</div>
+          <div onClick={onClickFn}>{displayName}</div>
           <a target="_blank" rel="noopener noreferrer" href={newUrl}>
             <i className="fa fa-external-link" />
           </a>
