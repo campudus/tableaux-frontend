@@ -311,7 +311,13 @@ export default class VirtualTable extends PureComponent {
   };
 
   renderExpandedRowCell = ({ columnIndex, rowIndex, key, style }) => {
-    const { actions, columns, tableView, langtag: userLangtag } = this.props;
+    const {
+      actions,
+      columns,
+      tableView,
+      langtag: userLangtag,
+      setSelectedCellExpandedRow
+    } = this.props;
     const { openAnnotations } = this.state;
     const column = this.getVisibleElement(columns, columnIndex);
     const cell = this.getCell(rowIndex, columnIndex);
@@ -352,6 +358,7 @@ export default class VirtualTable extends PureComponent {
               openCellContextMenu={this.openCellContextMenu}
               rows={this.props.rows}
               selectedCell={this.getSelectedCell()}
+              setSelectedCellExpandedRow={setSelectedCellExpandedRow}
               toggleAnnotationPopup={this.setOpenAnnotations}
               value={cell.value}
               visibleColumns={this.props.visibleColumnOrdering}
