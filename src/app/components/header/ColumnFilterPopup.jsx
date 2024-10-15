@@ -38,7 +38,7 @@ const ColumnFilterPopup = ({
   const getFilteredColumns = f.compose(
     f.filter(columnNameMatchesQuery(search, langtag)),
     f.reject(f.where({ id: id => groupMemberIds.has(id) })),
-    f.reject(column => column.name === "ID" && column.kind === "concat")
+    f.tail
   );
 
   const containerRef = useRef();
