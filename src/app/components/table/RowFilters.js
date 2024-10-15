@@ -76,13 +76,16 @@ const getFilteredRows = (
     : t.transduceList(...allFilters)(rowsWithIndex);
 
   const { sortColumnId, sortValue } = filterSettings;
+  const colsWithMatches = f.isEmpty(closures.colsWithMatches)
+    ? []
+    : f.toArray(new Set([f.first(columns).id, ...closures.colsWithMatches]));
 
   // sort by ID
   if (sortColumnId === RowIdColumn.id) {
     const ordered = f.orderBy(["id"], [f.toLower(sortValue)], filteredRows);
     return {
       visibleRows: f.map("rowIndex", ordered),
-      colsWithMatches: f.toArray(closures.colsWithMatches)
+      colsWithMatches
     };
   }
 
@@ -156,7 +159,7 @@ const getFilteredRows = (
     : filteredRows;
   return {
     visibleRows: f.map("rowIndex", ordered),
-    colsWithMatches: f.toArray(closures.colsWithMatches)
+    colsWithMatches
   };
 };
 
