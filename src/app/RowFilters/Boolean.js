@@ -5,6 +5,7 @@ const Mode = {
 
 export default {
   Mode,
+  readValue: () => null,
   [Mode.isSet]: () => x => Boolean(x),
   [Mode.isUnset]: () => x => !x
 };

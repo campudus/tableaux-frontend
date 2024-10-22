@@ -1,18 +1,21 @@
-import i18n from "i18next";
+import i18n, { t } from "i18next";
 import f from "lodash/fp";
 import PropTypes from "prop-types";
 import React, { useCallback, useEffect, useRef } from "react";
 import { translate } from "react-i18next";
 import Select from "react-select";
+import { ColumnKinds, FilterModes } from "../../../constants/TableauxConstants";
+import { maybe } from "../../../helpers/functools";
 import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
+import { getColumnDisplayName } from "../../../helpers/multiLanguage";
 import {
   getFiltersForColumn,
   getSearchFunction
 } from "../../../helpers/searchFunctions";
+import RowFilters from "../../../RowFilters";
 import SvgIcon from "../../helperComponents/SvgIcon";
 import { BoolInput } from "./FilterFragments";
-import { FilterModes } from "../../../constants/TableauxConstants";
-import { maybe } from "../../../helpers/functools";
+import { match, otherwise, when } from "match-iz";
 
 export const BOOL = "boolean";
 export const TEXT = "text";
@@ -176,6 +179,114 @@ FilterRow.propTypes = {
   onRemoveFilter: PropTypes.func,
   searchableColumns: PropTypes.array.isRequired,
   valueRenderer: PropTypes.func.isRequired
+};
+
+export const FilterRow2 = ({
+  columns,
+  langtag,
+  onAdd,
+  onChange,
+  onRemove,
+  settings
+}) => {
+  const columnsByName = f.indexBy("name", columns);
+  const { column, mode, value } = settings;
+  const searchableColumns = columns.filter(col =>
+    Boolean(RowFilters.ModesForKind[col.kind])
+  );
+  const modes = column ? RowFilters.ModesForKind[column.kind] : {};
+  const clearFilter = () => onChange({});
+  const setColumn = ({ value: name }) =>
+    void onChange({
+      ...settings,
+      column: columnsByName[name],
+      value: undefined,
+      mode: undefined
+    });
+  const setMode = md => void onChange({ ...settings, mode: md.value });
+  const setValue = val => void onChange({ ...settings, value: val });
+  const clearOrRemoveFilter = () => {
+    if (!column && (value === undefined || value === "")) onRemove();
+    else clearFilter();
+  };
+  const handleKeys = evt => {
+    if (evt.key === "Escape") {
+      evt.stopPropagation();
+      clearOrRemoveFilter();
+    }
+  };
+  const columnOptions = searchableColumns.map(col => ({
+    label: getColumnDisplayName(col, langtag),
+    value: col.name
+  }));
+  const modeOptions = Object.values(modes?.Mode ?? {}).map(md => ({
+    label: md,
+    value: md
+  }));
+  const selectedMode = mode || f.first(modeOptions)?.label;
+
+  return (
+    <div className="filter-row" onKeyDown={handleKeys}>
+      <button
+        className="filter-array-button col-one"
+        onClick={clearOrRemoveFilter}
+      >
+        <i className="fa fa-trash" />
+      </button>
+      <Select
+        className="filter-select col-two"
+        options={columnOptions}
+        searchable={true}
+        clearable={false}
+        openOnFocus
+        value={column && { label: getColumnDisplayName(column, langtag) }}
+        onChange={setColumn ?? f.noop}
+        placeholder={t("filter:input.filter")}
+        noResultsText={t("input.noResult")}
+      />
+
+      <Select
+        className="filter-select col-three"
+        options={modeOptions}
+        searchable={false}
+        clearable={false}
+        value={selectedMode}
+        onChange={setMode}
+      />
+
+      <ValueInput
+        column={column}
+        mode={selectedMode}
+        value={value}
+        onChange={column?.kind === ColumnKinds.boolean ? setMode : setValue}
+      />
+
+      <button className="filter-array-button" onClick={onAdd}>
+        <i className="fa fa-plus" />
+      </button>
+    </div>
+  );
+};
+
+const ValueInput = ({ column, mode, value, onChange }) => {
+  const inputType = match(column?.kind)(
+    when(ColumnKinds.date, "date"),
+    when(ColumnKinds.datetime, "datetime-local"),
+    otherwise("text")
+  );
+  const disabled = !column || !mode;
+  const filterMode = RowFilters.ModesForKind[(column?.kind)];
+  const handleSetEventValue = evt =>
+    void onChange(filterMode?.readValue(evt.target.value));
+  return column?.kind === ColumnKinds.boolean ? null : (
+    <input
+      className="filter-input"
+      type={inputType}
+      value={value || ""}
+      onChange={handleSetEventValue}
+      disabled={disabled}
+    />
+  );
 };
 
 export default translate(["table", "filter"])(FilterRow);

@@ -6,6 +6,7 @@ import PropTypes from "prop-types";
 import classNames from "classnames";
 
 import FilterPopup from "./FilterPopup.jsx";
+import { useSelector } from "react-redux";
 
 const FilterButton = ({
   langtag,

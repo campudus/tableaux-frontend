@@ -1,3 +1,3 @@
 import Date from "./Date";
 
-export default Date;
+export default { ...Date, readValue: x => x };

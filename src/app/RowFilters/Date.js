@@ -7,6 +7,7 @@ import Text from "./Text";
 
 export default {
   ...Number,
+  readValue: x => x,
   [Number.Mode.isEmpty]: Text[Text.Mode.isEmpty],
   [Number.Mode.isNotEmpty]: Text[Text.Mode.isNotEmpty]
 };

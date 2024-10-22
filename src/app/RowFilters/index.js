@@ -12,7 +12,7 @@ export const DateTime = FilterDateTime.Mode;
 export const Number = FilterNumber.Mode;
 export const Text = FilterText.Mode;
 
-const FilterModeMap = {
+const ModesForKind = {
   [ColumnKinds.attachment]: null,
   [ColumnKinds.boolean]: FilterBoolean,
   [ColumnKinds.concat]: null,
@@ -30,10 +30,19 @@ const FilterModeMap = {
 };
 
 const filterableColumnKinds = new Set(
-  Object.keys(FilterModeMap).filter(key => FilterModeMap[key])
+  Object.keys(ModesForKind).filter(key => ModesForKind[key])
 );
 
 const canFilterByColumnKind = filterableColumnKinds.has;
+
+const canSortByColumnKind = kind => {
+  const filterModes = ModesForKind[kind];
+  return (
+    filterModes &&
+    typeof filterModes.lt === "function" &&
+    typeof filterModes.empty === "function"
+  );
+};
 
 /*
  * Parses filter expressions according to the following BNF from Arrays
@@ -106,6 +115,7 @@ const buildContext = (tableId, langtag, store) => {
     const dvDefinition = getDisplayValueEntry(name, row);
     const toTableId = dvDefinition.tableId;
     const rowIds = new Set(dvDefinition.rowIds);
+    // TODO: use lookup instead
     const linkedDisplayValues = f.compose(
       f.map(langtag),
       f.flatMap("values"),
@@ -142,7 +152,7 @@ const buildContext = (tableId, langtag, store) => {
     getValue: name => lookupFn[columnKindLookup[name]](name),
     getValueFilter: (name, op, query) => {
       const kind = columnKindLookup[name];
-      const modes = FilterModeMap[kind];
+      const modes = ModesForKind[kind];
       const pred = modes && modes[op];
       if (typeof pred !== "function") {
         throw new Error(
@@ -158,6 +168,7 @@ const buildContext = (tableId, langtag, store) => {
 };
 
 export default {
+  ModesForKind,
   buildContext,
   canFilterByColumnKind,
   parse

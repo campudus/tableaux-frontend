@@ -1,7 +1,10 @@
 import i18n from "i18next";
-import * as f from "lodash/fp";
+import f from "lodash/fp";
+import { match, otherwise, when } from "match-iz";
 import PropTypes from "prop-types";
 import React from "react";
+import { useEffect } from "react";
+import { useRef } from "react";
 import { translate } from "react-i18next";
 import listensToClickOutside from "react-onclickoutside";
 import Select from "react-select";
@@ -15,11 +18,13 @@ import TableauxConstants, {
 import { either } from "../../../helpers/functools";
 import { getColumnDisplayName } from "../../../helpers/multiLanguage";
 import { canColumnBeSearched } from "../../../helpers/searchFunctions";
+import { outsideClickEffect } from "../../../helpers/useOutsideClick";
 import store from "../../../redux/store";
+import RowFilters from "../../../RowFilters/index";
 import { SortableCellKinds } from "../../table/RowFilters";
 import FilterPopupFooter from "./FilterPopupFooter";
 import FilterPresetList from "./FilterPresetList";
-import FilterRow, { BOOL, TEXT } from "./FilterRow";
+import { BOOL, FilterRow2 as FilterRow, TEXT } from "./FilterRow";
 import FilterSavingPopup from "./FilterSavingPopup";
 
 const SPECIAL_SEARCHES = [
@@ -241,7 +246,7 @@ class FilterPopup extends React.Component {
 
   changeFilterValue = idx => event => {
     const hasNodeType = tag => f.matchesProperty(["target", "tagName"], tag);
-    f.cond([
+    void f.cond([
       [hasNodeType("INPUT"), this.changeTextFilterValue(idx)],
       [f.stubTrue, this.toggleBoolFilter(idx)]
     ])(event);
@@ -481,6 +486,9 @@ class FilterPopup extends React.Component {
               </div>
             ) : (
               <FilterRow
+                columns={this.props.columns}
+                settings={{}}
+                langtag={this.props.langtag}
                 searchableColumns={availableColumns(idx)}
                 valueRenderer={this.selectFilterValueRenderer}
                 onChangeColumn={this.onChangeFilterColumn(idx)}
@@ -560,12 +568,96 @@ class FilterPopup extends React.Component {
   }
 }
 
-export default FilterPopup;
-
 FilterPopup.propTypes = {
   langtag: PropTypes.string.isRequired,
   onClickedOutside: PropTypes.func.isRequired,
   columns: PropTypes.array.isRequired,
   setRowFilter: PropTypes.func.isRequired,
   currentFilter: PropTypes.object
+};
+
+const TheFilterPopup = ({ columns, langtag, onClickedOutside }) => {
+  const containerRef = useRef();
+  useEffect(
+    outsideClickEffect({
+      containerRef,
+      onOutsideClick: onClickedOutside,
+      shouldListen: true
+    }),
+    [containerRef.current]
+  );
+
+  return (
+    <div className="filter-popup" ref={containerRef}>
+      <section className="filter-popup__content-section">
+        <header className="filter-popup__header">
+          <div className="filter-popup__heading">
+            {i18n.t("table:filter.filters")}
+          </div>
+        </header>
+        <div>
+          <FilterArea
+            langtag={langtag}
+            columns={columns}
+            onChange={f.noop}
+            onSave={f.noop}
+          />
+        </div>
+      </section>
+    </div>
+  );
+};
+
+export default TheFilterPopup;
+
+const settingToFilter = ({ column, mode, value }) => {
+  const modes = RowFilters.ModesForKind[(column?.kind)];
+  const needsValueArg = (modes && modes[mode])?.length > 0;
+  const hasValue = !f.isNil(value) && value !== "";
+  const filter =
+    !column || !mode || (needsValueArg && !hasValue)
+      ? null
+      : ["value", column.name, mode, value];
+
+  return filter;
+};
+
+const toCombinedFilter = settings => {
+  const validSettings = f.compact(settings.map(settingToFilter));
+  return match(validSettings.length)(
+    when(0, []),
+    when(1, f.first(validSettings)),
+    otherwise(["and", ...validSettings])
+  );
+};
+
+const FilterArea = ({ columns, currentFilter, langtag, onChange, onSave }) => {
+  const [filterRows, setFilterRows] = React.useState(currentFilter ?? [{}]);
+  const addFilterRow = () => setFilterRows([...filterRows, {}]);
+  const removeFilterRow = idxToRemove => () =>
+    setFilterRows(filterRows.filter((row, idx) => idx !== idxToRemove));
+  const updateFilterRow = idxToChange => settings =>
+    void setFilterRows(
+      filterRows.map((row, idx) => (idx === idxToChange ? settings : row))
+    );
+  console.log(filterRows, toCombinedFilter(filterRows));
+  return (
+    <>
+      {filterRows.map((filterRow, idx) => (
+        <FilterRow
+          key={idx}
+          columns={columns}
+          langtag={langtag}
+          settings={filterRow}
+          onAdd={addFilterRow}
+          onChange={updateFilterRow(idx)}
+          onRemove={
+            filterRows.length < 2
+              ? () => updateFilterRow(0)({})
+              : removeFilterRow(idx)
+          }
+        />
+      ))}
+    </>
+  );
 };

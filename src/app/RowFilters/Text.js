@@ -12,6 +12,7 @@ const clean = str => str?.trim().toLowerCase() ?? "";
 
 export default {
   Mode,
+  readValue: x => x,
   [Mode.contains]: query => {
     const cleanQuery = clean(query);
     return str => clean(str).includes(cleanQuery);
