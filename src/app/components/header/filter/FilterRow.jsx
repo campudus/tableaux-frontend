@@ -196,13 +196,16 @@ export const FilterRow2 = ({
   );
   const modes = column ? RowFilters.ModesForKind[column.kind] : {};
   const clearFilter = () => onChange({});
-  const setColumn = ({ value: name }) =>
-    void onChange({
+  const setColumn = ({ value: name }) => {
+    const column = columnsByName[name];
+    const mode = Object.values(RowFilters.ModesForKind[column.kind].Mode)[0];
+    onChange({
       ...settings,
-      column: columnsByName[name],
-      value: undefined,
-      mode: undefined
+      column,
+      mode,
+      value: undefined
     });
+  };
   const setMode = md => void onChange({ ...settings, mode: md.value });
   const setValue = val => void onChange({ ...settings, value: val });
   const clearOrRemoveFilter = () => {

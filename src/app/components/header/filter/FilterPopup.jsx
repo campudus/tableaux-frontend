@@ -2,9 +2,8 @@ import i18n from "i18next";
 import f from "lodash/fp";
 import { match, otherwise, when } from "match-iz";
 import PropTypes from "prop-types";
-import React from "react";
-import { useEffect } from "react";
-import { useRef } from "react";
+import React, { useEffect, useRef } from "react";
+import { useState } from "react";
 import { translate } from "react-i18next";
 import listensToClickOutside from "react-onclickoutside";
 import Select from "react-select";
@@ -587,6 +586,8 @@ const TheFilterPopup = ({ columns, langtag, onClickedOutside }) => {
     [containerRef.current]
   );
 
+  const [rowFilters, setRowFilters] = useState([{}]);
+
   return (
     <div className="filter-popup" ref={containerRef}>
       <section className="filter-popup__content-section">
@@ -599,11 +600,12 @@ const TheFilterPopup = ({ columns, langtag, onClickedOutside }) => {
           <FilterArea
             langtag={langtag}
             columns={columns}
-            onChange={f.noop}
-            onSave={f.noop}
+            onChange={setRowFilters}
+            filters={rowFilters}
           />
         </div>
       </section>
+      <FilterPopupFooter />
     </div>
   );
 };
@@ -631,19 +633,16 @@ const toCombinedFilter = settings => {
   );
 };
 
-const FilterArea = ({ columns, currentFilter, langtag, onChange, onSave }) => {
-  const [filterRows, setFilterRows] = React.useState(currentFilter ?? [{}]);
-  const addFilterRow = () => setFilterRows([...filterRows, {}]);
+const FilterArea = ({ columns, filters, langtag, onChange }) => {
+  const addFilterRow = () => onChange([...filters, {}]);
   const removeFilterRow = idxToRemove => () =>
-    setFilterRows(filterRows.filter((row, idx) => idx !== idxToRemove));
+    void onChange(filters.filter((_, idx) => idx !== idxToRemove));
   const updateFilterRow = idxToChange => settings =>
-    void setFilterRows(
-      filterRows.map((row, idx) => (idx === idxToChange ? settings : row))
-    );
-  console.log(filterRows, toCombinedFilter(filterRows));
+    onChange(filters.map((row, idx) => (idx === idxToChange ? settings : row)));
+  console.log(filters, toCombinedFilter(filters));
   return (
     <>
-      {filterRows.map((filterRow, idx) => (
+      {filters.map((filterRow, idx) => (
         <FilterRow
           key={idx}
           columns={columns}
@@ -652,7 +651,7 @@ const FilterArea = ({ columns, currentFilter, langtag, onChange, onSave }) => {
           onAdd={addFilterRow}
           onChange={updateFilterRow(idx)}
           onRemove={
-            filterRows.length < 2
+            filters.length < 2
               ? () => updateFilterRow(0)({})
               : removeFilterRow(idx)
           }
