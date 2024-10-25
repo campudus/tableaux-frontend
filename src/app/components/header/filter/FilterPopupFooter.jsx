@@ -64,7 +64,5 @@ export default FilterPopupFooter;
 FilterPopupFooter.propTypes = {
   applyFilters: PropTypes.func.isRequired,
   clearFilters: PropTypes.func.isRequired,
-  canApplyFilters: PropTypes.bool.isRequired,
-  filters: PropTypes.arrayOf(PropTypes.object).isRequired,
-  sorting: PropTypes.object.isRequired
+  canApplyFilters: PropTypes.bool.isRequired
 };

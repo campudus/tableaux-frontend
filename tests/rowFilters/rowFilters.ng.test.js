@@ -268,6 +268,76 @@ describe("buildContext()", () => {
       });
     });
   });
+  describe("RowProp", () => {
+    it("row-prop is-set", () => {
+      const filter = RowFilters.parse(ctx)(["row-prop", "archived", "is-set"]);
+      const result = rows.filter(filter);
+      expect(result).toEqual([expect.objectContaining({ id: 1 })]);
+    });
+    it("row-prop is-unset", () => {
+      const filter = RowFilters.parse(ctx)([
+        "row-prop",
+        "archived",
+        "is-unset"
+      ]);
+      const result = rows.filter(filter);
+      expect(result).toEqual([
+        expect.objectContaining({ id: 2 }),
+        expect.objectContaining({ id: 3 })
+      ]);
+    });
+    it("row-prop equals", () => {
+      const filter = RowFilters.parse(ctx)([
+        "row-prop",
+        "archived",
+        "equals",
+        false
+      ]);
+      const result = rows.filter(filter);
+      expect(result).toEqual([expect.objectContaining({ id: 2 })]);
+    });
+
+    it("row-prop is-set (nested)", () => {
+      const filter = RowFilters.parse(ctx)([
+        "row-prop",
+        "something.nested",
+        "is-set"
+      ]);
+      const result = rows.filter(filter);
+      expect(result).toEqual([expect.objectContaining({ id: 2 })]);
+    });
+    it("row-prop is-unset (nested)", () => {
+      const filter = RowFilters.parse(ctx)([
+        "row-prop",
+        "something.nested",
+        "is-unset"
+      ]);
+      const result = rows.filter(filter);
+      expect(result).toEqual([
+        expect.objectContaining({ id: 1 }),
+        expect.objectContaining({ id: 3 })
+      ]);
+    });
+    it("row-prop equals (nested)", () => {
+      const filter1 = RowFilters.parse(ctx)([
+        "row-prop",
+        "something.nested",
+        "equals",
+        42
+      ]);
+      const result1 = rows.filter(filter1);
+      expect(result1).toEqual([expect.objectContaining({ id: 2 })]);
+
+      const filter2 = RowFilters.parse(ctx)([
+        "row-prop",
+        "something.nested",
+        "equals",
+        41
+      ]);
+      const result2 = rows.filter(filter2);
+      expect(result2).toEqual([]);
+    });
+  });
   describe("parse and compose", () => {
     const parse = RowFilters.parse(ctx);
     it("rejects bad operation names", () => {

@@ -5,12 +5,14 @@ import FilterDate from "./Date";
 import FilterDateTime from "./DateTime";
 import FilterNumber from "./Number";
 import FilterText from "./Text";
+import FilterRowProp from "./RowProp";
 
 export const Boolean = FilterBoolean.Mode;
 export const Date = FilterDate.Mode;
 export const DateTime = FilterDateTime.Mode;
 export const Number = FilterNumber.Mode;
 export const Text = FilterText.Mode;
+export const RowProp = FilterRowProp.Mode;
 
 const ModesForKind = {
   [ColumnKinds.attachment]: null,
@@ -71,6 +73,8 @@ const parse = ctx => {
           args.reduce((match, arg) => match || parseImpl(arg)(row), false);
       case "value":
         return parseValueFilter(ctx, list);
+      case "row-prop":
+        return parseRowPropFilter(list);
       default:
         throw new Error(`Could not parse filter instruction of kind ${kind}`);
     }
@@ -82,6 +86,14 @@ const parseValueFilter = (ctx, [_, colName, op, query]) => {
   const getValue = ctx.getValue(colName);
   const filter = ctx.getValueFilter(colName, op, query);
   return row => filter(getValue(row));
+};
+
+const parseRowPropFilter = ([_, path, op, query]) => {
+  if (!FilterRowProp[op]) {
+    throw new Error(`Unknown comparison ${op} for row properties`);
+  } else {
+    return FilterRowProp[op](path, query);
+  }
 };
 
 const buildIdxLookup = (propName, elements) =>
@@ -148,22 +160,24 @@ const buildContext = (tableId, langtag, store) => {
     [ColumnKinds.text]: retrieveDisplayValue
   };
 
+  const buildValueFilter = (name, op, query) => {
+    const kind = columnKindLookup[name];
+    const modes = ModesForKind[kind];
+    const pred = modes && modes[op];
+    if (typeof pred !== "function") {
+      throw new Error(
+        `Filter operation <${op}${
+          query === undefined ? "" : " " + query
+        }> is unknown for column <${name}> of kind <${kind}>`
+      );
+    } else {
+      return pred(query);
+    }
+  };
+
   return {
     getValue: name => lookupFn[columnKindLookup[name]](name),
-    getValueFilter: (name, op, query) => {
-      const kind = columnKindLookup[name];
-      const modes = ModesForKind[kind];
-      const pred = modes && modes[op];
-      if (typeof pred !== "function") {
-        throw new Error(
-          `Filter operation <${op}${
-            query === undefined ? "" : " " + query
-          }> is unknown for column <${name}> of kind <${kind}>`
-        );
-      } else {
-        return pred(query);
-      }
-    }
+    getValueFilter: buildValueFilter
   };
 };
 

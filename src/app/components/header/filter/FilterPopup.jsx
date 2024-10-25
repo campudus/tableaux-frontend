@@ -6,6 +6,7 @@ import React, { useEffect, useRef } from "react";
 import { useState } from "react";
 import { translate } from "react-i18next";
 import listensToClickOutside from "react-onclickoutside";
+import { useSelector } from "react-redux";
 import Select from "react-select";
 import TableauxConstants, {
   ColumnKinds,
@@ -575,7 +576,8 @@ FilterPopup.propTypes = {
   currentFilter: PropTypes.object
 };
 
-const TheFilterPopup = ({ columns, langtag, onClickedOutside }) => {
+const TheFilterPopup = ({ actions, columns, langtag, onClickedOutside }) => {
+  const tableId = useSelector(f.prop("tableView.currentTable"));
   const containerRef = useRef();
   useEffect(
     outsideClickEffect({
@@ -587,7 +589,19 @@ const TheFilterPopup = ({ columns, langtag, onClickedOutside }) => {
   );
 
   const [rowFilters, setRowFilters] = useState([{}]);
+  console.log(rowFilters, toCombinedFilter(rowFilters));
+  const filterList = toCombinedFilter(rowFilters);
 
+  const settingsAreValid = filterList.length > 0;
+
+  const handleSubmit = () => {
+    actions.toggleCellSelection({ select: false, langtag, tableId });
+    actions.setFiltersAndSorting(filterList, [], true);
+  };
+  const handleClearFilters = () => {
+    setRowFilters([{}]);
+    actions.setFiltersAndSorting([], [], true);
+  };
   return (
     <div className="filter-popup" ref={containerRef}>
       <section className="filter-popup__content-section">
@@ -605,7 +619,11 @@ const TheFilterPopup = ({ columns, langtag, onClickedOutside }) => {
           />
         </div>
       </section>
-      <FilterPopupFooter />
+      <FilterPopupFooter
+        applyFilters={handleSubmit}
+        clearFilters={handleClearFilters}
+        canApplyFilters={settingsAreValid}
+      />
     </div>
   );
 };
@@ -639,7 +657,6 @@ const FilterArea = ({ columns, filters, langtag, onChange }) => {
     void onChange(filters.filter((_, idx) => idx !== idxToRemove));
   const updateFilterRow = idxToChange => settings =>
     onChange(filters.map((row, idx) => (idx === idxToChange ? settings : row)));
-  console.log(filters, toCombinedFilter(filters));
   return (
     <>
       {filters.map((filterRow, idx) => (

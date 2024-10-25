@@ -10,10 +10,7 @@
         "displayName": {},
         "description": {},
         "attributes": {},
-        "langtags": [
-          "de-DE",
-          "en-GB"
-        ],
+        "langtags": ["de-DE", "en-GB"],
         "permission": {
           "editDisplayProperty": false,
           "editStructureProperty": false,
@@ -31,10 +28,7 @@
         "displayName": {},
         "description": {},
         "attributes": {},
-        "langtags": [
-          "de-DE",
-          "en-GB"
-        ],
+        "langtags": ["de-DE", "en-GB"],
         "permission": {
           "editDisplayProperty": false,
           "editStructureProperty": false,
@@ -54,10 +48,7 @@
         },
         "description": {},
         "attributes": {},
-        "langtags": [
-          "de-DE",
-          "en-GB"
-        ],
+        "langtags": ["de-DE", "en-GB"],
         "permission": {
           "editDisplayProperty": false,
           "editStructureProperty": false,
@@ -77,10 +68,7 @@
         },
         "description": {},
         "attributes": {},
-        "langtags": [
-          "de-DE",
-          "en-GB"
-        ],
+        "langtags": ["de-DE", "en-GB"],
         "permission": {
           "editDisplayProperty": false,
           "editStructureProperty": false,
@@ -100,10 +88,7 @@
         },
         "description": {},
         "attributes": {},
-        "langtags": [
-          "de-DE",
-          "en-GB"
-        ],
+        "langtags": ["de-DE", "en-GB"],
         "permission": {
           "editDisplayProperty": false,
           "editStructureProperty": false,
@@ -123,10 +108,7 @@
         },
         "description": {},
         "attributes": {},
-        "langtags": [
-          "de-DE",
-          "en-GB"
-        ],
+        "langtags": ["de-DE", "en-GB"],
         "permission": {
           "editDisplayProperty": false,
           "editStructureProperty": false,
@@ -1219,11 +1201,9 @@
       "data": [
         {
           "id": 1,
+          "archived": true,
           "values": [
-            [
-              "Schnappt Shortie",
-              {}
-            ],
+            ["Schnappt Shortie", {}],
             [
               {
                 "ordering": 1,
@@ -1357,10 +1337,7 @@
                 },
                 "description": {},
                 "attributes": {},
-                "langtags": [
-                  "de-DE",
-                  "en-GB"
-                ],
+                "langtags": ["de-DE", "en-GB"],
                 "permission": {
                   "editDisplayProperty": false,
                   "editStructureProperty": false,
@@ -1407,10 +1384,7 @@
                 },
                 "description": {},
                 "attributes": {},
-                "langtags": [
-                  "de-DE",
-                  "en-GB"
-                ],
+                "langtags": ["de-DE", "en-GB"],
                 "permission": {
                   "editDisplayProperty": false,
                   "editStructureProperty": false,
@@ -1457,10 +1431,7 @@
                 },
                 "description": {},
                 "attributes": {},
-                "langtags": [
-                  "de-DE",
-                  "en-GB"
-                ],
+                "langtags": ["de-DE", "en-GB"],
                 "permission": {
                   "editDisplayProperty": false,
                   "editStructureProperty": false,
@@ -1507,10 +1478,7 @@
                 },
                 "description": {},
                 "attributes": {},
-                "langtags": [
-                  "de-DE",
-                  "en-GB"
-                ],
+                "langtags": ["de-DE", "en-GB"],
                 "permission": {
                   "editDisplayProperty": false,
                   "editStructureProperty": false,
@@ -1557,10 +1525,7 @@
                 },
                 "description": {},
                 "attributes": {},
-                "langtags": [
-                  "de-DE",
-                  "en-GB"
-                ],
+                "langtags": ["de-DE", "en-GB"],
                 "permission": {
                   "editDisplayProperty": false,
                   "editStructureProperty": false,
@@ -1607,10 +1572,7 @@
                 },
                 "description": {},
                 "attributes": {},
-                "langtags": [
-                  "de-DE",
-                  "en-GB"
-                ],
+                "langtags": ["de-DE", "en-GB"],
                 "permission": {
                   "editDisplayProperty": false,
                   "editStructureProperty": false,
@@ -1717,10 +1679,7 @@
                 },
                 "description": {},
                 "attributes": {},
-                "langtags": [
-                  "de-DE",
-                  "en-GB"
-                ],
+                "langtags": ["de-DE", "en-GB"],
                 "permission": {
                   "editDisplayProperty": false,
                   "editStructureProperty": false,
@@ -1767,10 +1726,7 @@
                 },
                 "description": {},
                 "attributes": {},
-                "langtags": [
-                  "de-DE",
-                  "en-GB"
-                ],
+                "langtags": ["de-DE", "en-GB"],
                 "permission": {
                   "editDisplayProperty": false,
                   "editStructureProperty": false,
@@ -1818,10 +1774,7 @@
                 },
                 "description": {},
                 "attributes": {},
-                "langtags": [
-                  "de-DE",
-                  "en-GB"
-                ],
+                "langtags": ["de-DE", "en-GB"],
                 "permission": {
                   "editDisplayProperty": false,
                   "editStructureProperty": false,
@@ -1869,10 +1822,7 @@
                 },
                 "description": {},
                 "attributes": {},
-                "langtags": [
-                  "de-DE",
-                  "en-GB"
-                ],
+                "langtags": ["de-DE", "en-GB"],
                 "permission": {
                   "editDisplayProperty": false,
                   "editStructureProperty": false,
@@ -1919,10 +1869,7 @@
                 },
                 "description": {},
                 "attributes": {},
-                "langtags": [
-                  "de-DE",
-                  "en-GB"
-                ],
+                "langtags": ["de-DE", "en-GB"],
                 "permission": {
                   "editDisplayProperty": false,
                   "editStructureProperty": false,
@@ -1969,10 +1916,7 @@
                 },
                 "description": {},
                 "attributes": {},
-                "langtags": [
-                  "de-DE",
-                  "en-GB"
-                ],
+                "langtags": ["de-DE", "en-GB"],
                 "permission": {
                   "editDisplayProperty": false,
                   "editStructureProperty": false,
@@ -2019,10 +1963,7 @@
                 },
                 "description": {},
                 "attributes": {},
-                "langtags": [
-                  "de-DE",
-                  "en-GB"
-                ],
+                "langtags": ["de-DE", "en-GB"],
                 "permission": {
                   "editDisplayProperty": false,
                   "editStructureProperty": false,
@@ -2069,10 +2010,7 @@
                 },
                 "description": {},
                 "attributes": {},
-                "langtags": [
-                  "de-DE",
-                  "en-GB"
-                ],
+                "langtags": ["de-DE", "en-GB"],
                 "permission": {
                   "editDisplayProperty": false,
                   "editStructureProperty": false,
@@ -2123,10 +2061,7 @@
                 },
                 "description": {},
                 "attributes": {},
-                "langtags": [
-                  "de-DE",
-                  "en-GB"
-                ],
+                "langtags": ["de-DE", "en-GB"],
                 "permission": {
                   "editDisplayProperty": false,
                   "editStructureProperty": false,
@@ -2195,10 +2130,7 @@
                 },
                 "description": {},
                 "attributes": {},
-                "langtags": [
-                  "de-DE",
-                  "en-GB"
-                ],
+                "langtags": ["de-DE", "en-GB"],
                 "permission": {
                   "editDisplayProperty": false,
                   "editStructureProperty": false,
@@ -2249,10 +2181,7 @@
                 },
                 "description": {},
                 "attributes": {},
-                "langtags": [
-                  "de-DE",
-                  "en-GB"
-                ],
+                "langtags": ["de-DE", "en-GB"],
                 "permission": {
                   "editDisplayProperty": false,
                   "editStructureProperty": false,
@@ -2303,10 +2232,7 @@
                 },
                 "description": {},
                 "attributes": {},
-                "langtags": [
-                  "de-DE",
-                  "en-GB"
-                ],
+                "langtags": ["de-DE", "en-GB"],
                 "permission": {
                   "editDisplayProperty": false,
                   "editStructureProperty": false,
@@ -2357,10 +2283,7 @@
                 },
                 "description": {},
                 "attributes": {},
-                "langtags": [
-                  "de-DE",
-                  "en-GB"
-                ],
+                "langtags": ["de-DE", "en-GB"],
                 "permission": {
                   "editDisplayProperty": false,
                   "editStructureProperty": false,
@@ -2461,10 +2384,7 @@
                 },
                 "description": {},
                 "attributes": {},
-                "langtags": [
-                  "de-DE",
-                  "en-GB"
-                ],
+                "langtags": ["de-DE", "en-GB"],
                 "permission": {
                   "editDisplayProperty": false,
                   "editStructureProperty": false,
@@ -2515,10 +2435,7 @@
                 },
                 "description": {},
                 "attributes": {},
-                "langtags": [
-                  "de-DE",
-                  "en-GB"
-                ],
+                "langtags": ["de-DE", "en-GB"],
                 "permission": {
                   "editDisplayProperty": false,
                   "editStructureProperty": false,
@@ -2569,10 +2486,7 @@
                 },
                 "description": {},
                 "attributes": {},
-                "langtags": [
-                  "de-DE",
-                  "en-GB"
-                ],
+                "langtags": ["de-DE", "en-GB"],
                 "permission": {
                   "editDisplayProperty": false,
                   "editStructureProperty": false,
@@ -2623,10 +2537,7 @@
                 },
                 "description": {},
                 "attributes": {},
-                "langtags": [
-                  "de-DE",
-                  "en-GB"
-                ],
+                "langtags": ["de-DE", "en-GB"],
                 "permission": {
                   "editDisplayProperty": false,
                   "editStructureProperty": false,
@@ -2677,10 +2588,7 @@
                 },
                 "description": {},
                 "attributes": {},
-                "langtags": [
-                  "de-DE",
-                  "en-GB"
-                ],
+                "langtags": ["de-DE", "en-GB"],
                 "permission": {
                   "editDisplayProperty": false,
                   "editStructureProperty": false,
@@ -2700,11 +2608,10 @@
         },
         {
           "id": 2,
+          "archived": false,
+          "something": { "nested": 42 },
           "values": [
-            [
-              "ad libidum",
-              {}
-            ],
+            ["ad libidum", {}],
             [
               {
                 "ordering": 1,
@@ -2874,10 +2781,7 @@
                 },
                 "description": {},
                 "attributes": {},
-                "langtags": [
-                  "de-DE",
-                  "en-GB"
-                ],
+                "langtags": ["de-DE", "en-GB"],
                 "permission": {
                   "editDisplayProperty": false,
                   "editStructureProperty": false,
@@ -2924,10 +2828,7 @@
                 },
                 "description": {},
                 "attributes": {},
-                "langtags": [
-                  "de-DE",
-                  "en-GB"
-                ],
+                "langtags": ["de-DE", "en-GB"],
                 "permission": {
                   "editDisplayProperty": false,
                   "editStructureProperty": false,
@@ -2974,10 +2875,7 @@
                 },
                 "description": {},
                 "attributes": {},
-                "langtags": [
-                  "de-DE",
-                  "en-GB"
-                ],
+                "langtags": ["de-DE", "en-GB"],
                 "permission": {
                   "editDisplayProperty": false,
                   "editStructureProperty": false,
@@ -3024,10 +2922,7 @@
                 },
                 "description": {},
                 "attributes": {},
-                "langtags": [
-                  "de-DE",
-                  "en-GB"
-                ],
+                "langtags": ["de-DE", "en-GB"],
                 "permission": {
                   "editDisplayProperty": false,
                   "editStructureProperty": false,
@@ -3074,10 +2969,7 @@
                 },
                 "description": {},
                 "attributes": {},
-                "langtags": [
-                  "de-DE",
-                  "en-GB"
-                ],
+                "langtags": ["de-DE", "en-GB"],
                 "permission": {
                   "editDisplayProperty": false,
                   "editStructureProperty": false,
@@ -3124,10 +3016,7 @@
                 },
                 "description": {},
                 "attributes": {},
-                "langtags": [
-                  "de-DE",
-                  "en-GB"
-                ],
+                "langtags": ["de-DE", "en-GB"],
                 "permission": {
                   "editDisplayProperty": false,
                   "editStructureProperty": false,
@@ -3234,10 +3123,7 @@
                 },
                 "description": {},
                 "attributes": {},
-                "langtags": [
-                  "de-DE",
-                  "en-GB"
-                ],
+                "langtags": ["de-DE", "en-GB"],
                 "permission": {
                   "editDisplayProperty": false,
                   "editStructureProperty": false,
@@ -3284,10 +3170,7 @@
                 },
                 "description": {},
                 "attributes": {},
-                "langtags": [
-                  "de-DE",
-                  "en-GB"
-                ],
+                "langtags": ["de-DE", "en-GB"],
                 "permission": {
                   "editDisplayProperty": false,
                   "editStructureProperty": false,
@@ -3335,10 +3218,7 @@
                 },
                 "description": {},
                 "attributes": {},
-                "langtags": [
-                  "de-DE",
-                  "en-GB"
-                ],
+                "langtags": ["de-DE", "en-GB"],
                 "permission": {
                   "editDisplayProperty": false,
                   "editStructureProperty": false,
@@ -3386,10 +3266,7 @@
                 },
                 "description": {},
                 "attributes": {},
-                "langtags": [
-                  "de-DE",
-                  "en-GB"
-                ],
+                "langtags": ["de-DE", "en-GB"],
                 "permission": {
                   "editDisplayProperty": false,
                   "editStructureProperty": false,
@@ -3436,10 +3313,7 @@
                 },
                 "description": {},
                 "attributes": {},
-                "langtags": [
-                  "de-DE",
-                  "en-GB"
-                ],
+                "langtags": ["de-DE", "en-GB"],
                 "permission": {
                   "editDisplayProperty": false,
                   "editStructureProperty": false,
@@ -3486,10 +3360,7 @@
                 },
                 "description": {},
                 "attributes": {},
-                "langtags": [
-                  "de-DE",
-                  "en-GB"
-                ],
+                "langtags": ["de-DE", "en-GB"],
                 "permission": {
                   "editDisplayProperty": false,
                   "editStructureProperty": false,
@@ -3536,10 +3407,7 @@
                 },
                 "description": {},
                 "attributes": {},
-                "langtags": [
-                  "de-DE",
-                  "en-GB"
-                ],
+                "langtags": ["de-DE", "en-GB"],
                 "permission": {
                   "editDisplayProperty": false,
                   "editStructureProperty": false,
@@ -3586,10 +3454,7 @@
                 },
                 "description": {},
                 "attributes": {},
-                "langtags": [
-                  "de-DE",
-                  "en-GB"
-                ],
+                "langtags": ["de-DE", "en-GB"],
                 "permission": {
                   "editDisplayProperty": false,
                   "editStructureProperty": false,
@@ -3640,10 +3505,7 @@
                 },
                 "description": {},
                 "attributes": {},
-                "langtags": [
-                  "de-DE",
-                  "en-GB"
-                ],
+                "langtags": ["de-DE", "en-GB"],
                 "permission": {
                   "editDisplayProperty": false,
                   "editStructureProperty": false,
@@ -3712,10 +3574,7 @@
                 },
                 "description": {},
                 "attributes": {},
-                "langtags": [
-                  "de-DE",
-                  "en-GB"
-                ],
+                "langtags": ["de-DE", "en-GB"],
                 "permission": {
                   "editDisplayProperty": false,
                   "editStructureProperty": false,
@@ -3766,10 +3625,7 @@
                 },
                 "description": {},
                 "attributes": {},
-                "langtags": [
-                  "de-DE",
-                  "en-GB"
-                ],
+                "langtags": ["de-DE", "en-GB"],
                 "permission": {
                   "editDisplayProperty": false,
                   "editStructureProperty": false,
@@ -3820,10 +3676,7 @@
                 },
                 "description": {},
                 "attributes": {},
-                "langtags": [
-                  "de-DE",
-                  "en-GB"
-                ],
+                "langtags": ["de-DE", "en-GB"],
                 "permission": {
                   "editDisplayProperty": false,
                   "editStructureProperty": false,
@@ -3874,10 +3727,7 @@
                 },
                 "description": {},
                 "attributes": {},
-                "langtags": [
-                  "de-DE",
-                  "en-GB"
-                ],
+                "langtags": ["de-DE", "en-GB"],
                 "permission": {
                   "editDisplayProperty": false,
                   "editStructureProperty": false,
@@ -3978,10 +3828,7 @@
                 },
                 "description": {},
                 "attributes": {},
-                "langtags": [
-                  "de-DE",
-                  "en-GB"
-                ],
+                "langtags": ["de-DE", "en-GB"],
                 "permission": {
                   "editDisplayProperty": false,
                   "editStructureProperty": false,
@@ -4032,10 +3879,7 @@
                 },
                 "description": {},
                 "attributes": {},
-                "langtags": [
-                  "de-DE",
-                  "en-GB"
-                ],
+                "langtags": ["de-DE", "en-GB"],
                 "permission": {
                   "editDisplayProperty": false,
                   "editStructureProperty": false,
@@ -4086,10 +3930,7 @@
                 },
                 "description": {},
                 "attributes": {},
-                "langtags": [
-                  "de-DE",
-                  "en-GB"
-                ],
+                "langtags": ["de-DE", "en-GB"],
                 "permission": {
                   "editDisplayProperty": false,
                   "editStructureProperty": false,
@@ -4140,10 +3981,7 @@
                 },
                 "description": {},
                 "attributes": {},
-                "langtags": [
-                  "de-DE",
-                  "en-GB"
-                ],
+                "langtags": ["de-DE", "en-GB"],
                 "permission": {
                   "editDisplayProperty": false,
                   "editStructureProperty": false,
@@ -4194,10 +4032,7 @@
                 },
                 "description": {},
                 "attributes": {},
-                "langtags": [
-                  "de-DE",
-                  "en-GB"
-                ],
+                "langtags": ["de-DE", "en-GB"],
                 "permission": {
                   "editDisplayProperty": false,
                   "editStructureProperty": false,
@@ -4218,10 +4053,7 @@
         {
           "id": 3,
           "values": [
-            [
-              null,
-              {}
-            ],
+            [null, {}],
             [],
             false,
             null,
@@ -4317,10 +4149,7 @@
                 },
                 "description": {},
                 "attributes": {},
-                "langtags": [
-                  "de-DE",
-                  "en-GB"
-                ],
+                "langtags": ["de-DE", "en-GB"],
                 "permission": {
                   "editDisplayProperty": false,
                   "editStructureProperty": false,
@@ -4367,10 +4196,7 @@
                 },
                 "description": {},
                 "attributes": {},
-                "langtags": [
-                  "de-DE",
-                  "en-GB"
-                ],
+                "langtags": ["de-DE", "en-GB"],
                 "permission": {
                   "editDisplayProperty": false,
                   "editStructureProperty": false,
@@ -4417,10 +4243,7 @@
                 },
                 "description": {},
                 "attributes": {},
-                "langtags": [
-                  "de-DE",
-                  "en-GB"
-                ],
+                "langtags": ["de-DE", "en-GB"],
                 "permission": {
                   "editDisplayProperty": false,
                   "editStructureProperty": false,
@@ -4467,10 +4290,7 @@
                 },
                 "description": {},
                 "attributes": {},
-                "langtags": [
-                  "de-DE",
-                  "en-GB"
-                ],
+                "langtags": ["de-DE", "en-GB"],
                 "permission": {
                   "editDisplayProperty": false,
                   "editStructureProperty": false,
@@ -4517,10 +4337,7 @@
                 },
                 "description": {},
                 "attributes": {},
-                "langtags": [
-                  "de-DE",
-                  "en-GB"
-                ],
+                "langtags": ["de-DE", "en-GB"],
                 "permission": {
                   "editDisplayProperty": false,
                   "editStructureProperty": false,
@@ -4567,10 +4384,7 @@
                 },
                 "description": {},
                 "attributes": {},
-                "langtags": [
-                  "de-DE",
-                  "en-GB"
-                ],
+                "langtags": ["de-DE", "en-GB"],
                 "permission": {
                   "editDisplayProperty": false,
                   "editStructureProperty": false,
@@ -4677,10 +4491,7 @@
                 },
                 "description": {},
                 "attributes": {},
-                "langtags": [
-                  "de-DE",
-                  "en-GB"
-                ],
+                "langtags": ["de-DE", "en-GB"],
                 "permission": {
                   "editDisplayProperty": false,
                   "editStructureProperty": false,
@@ -4727,10 +4538,7 @@
                 },
                 "description": {},
                 "attributes": {},
-                "langtags": [
-                  "de-DE",
-                  "en-GB"
-                ],
+                "langtags": ["de-DE", "en-GB"],
                 "permission": {
                   "editDisplayProperty": false,
                   "editStructureProperty": false,
@@ -4778,10 +4586,7 @@
                 },
                 "description": {},
                 "attributes": {},
-                "langtags": [
-                  "de-DE",
-                  "en-GB"
-                ],
+                "langtags": ["de-DE", "en-GB"],
                 "permission": {
                   "editDisplayProperty": false,
                   "editStructureProperty": false,
@@ -4829,10 +4634,7 @@
                 },
                 "description": {},
                 "attributes": {},
-                "langtags": [
-                  "de-DE",
-                  "en-GB"
-                ],
+                "langtags": ["de-DE", "en-GB"],
                 "permission": {
                   "editDisplayProperty": false,
                   "editStructureProperty": false,
@@ -4879,10 +4681,7 @@
                 },
                 "description": {},
                 "attributes": {},
-                "langtags": [
-                  "de-DE",
-                  "en-GB"
-                ],
+                "langtags": ["de-DE", "en-GB"],
                 "permission": {
                   "editDisplayProperty": false,
                   "editStructureProperty": false,
@@ -4929,10 +4728,7 @@
                 },
                 "description": {},
                 "attributes": {},
-                "langtags": [
-                  "de-DE",
-                  "en-GB"
-                ],
+                "langtags": ["de-DE", "en-GB"],
                 "permission": {
                   "editDisplayProperty": false,
                   "editStructureProperty": false,
@@ -4979,10 +4775,7 @@
                 },
                 "description": {},
                 "attributes": {},
-                "langtags": [
-                  "de-DE",
-                  "en-GB"
-                ],
+                "langtags": ["de-DE", "en-GB"],
                 "permission": {
                   "editDisplayProperty": false,
                   "editStructureProperty": false,
@@ -5029,10 +4822,7 @@
                 },
                 "description": {},
                 "attributes": {},
-                "langtags": [
-                  "de-DE",
-                  "en-GB"
-                ],
+                "langtags": ["de-DE", "en-GB"],
                 "permission": {
                   "editDisplayProperty": false,
                   "editStructureProperty": false,
@@ -5083,10 +4873,7 @@
                 },
                 "description": {},
                 "attributes": {},
-                "langtags": [
-                  "de-DE",
-                  "en-GB"
-                ],
+                "langtags": ["de-DE", "en-GB"],
                 "permission": {
                   "editDisplayProperty": false,
                   "editStructureProperty": false,
@@ -5155,10 +4942,7 @@
                 },
                 "description": {},
                 "attributes": {},
-                "langtags": [
-                  "de-DE",
-                  "en-GB"
-                ],
+                "langtags": ["de-DE", "en-GB"],
                 "permission": {
                   "editDisplayProperty": false,
                   "editStructureProperty": false,
@@ -5209,10 +4993,7 @@
                 },
                 "description": {},
                 "attributes": {},
-                "langtags": [
-                  "de-DE",
-                  "en-GB"
-                ],
+                "langtags": ["de-DE", "en-GB"],
                 "permission": {
                   "editDisplayProperty": false,
                   "editStructureProperty": false,
@@ -5263,10 +5044,7 @@
                 },
                 "description": {},
                 "attributes": {},
-                "langtags": [
-                  "de-DE",
-                  "en-GB"
-                ],
+                "langtags": ["de-DE", "en-GB"],
                 "permission": {
                   "editDisplayProperty": false,
                   "editStructureProperty": false,
@@ -5317,10 +5095,7 @@
                 },
                 "description": {},
                 "attributes": {},
-                "langtags": [
-                  "de-DE",
-                  "en-GB"
-                ],
+                "langtags": ["de-DE", "en-GB"],
                 "permission": {
                   "editDisplayProperty": false,
                   "editStructureProperty": false,
@@ -5421,10 +5196,7 @@
                 },
                 "description": {},
                 "attributes": {},
-                "langtags": [
-                  "de-DE",
-                  "en-GB"
-                ],
+                "langtags": ["de-DE", "en-GB"],
                 "permission": {
                   "editDisplayProperty": false,
                   "editStructureProperty": false,
@@ -5475,10 +5247,7 @@
                 },
                 "description": {},
                 "attributes": {},
-                "langtags": [
-                  "de-DE",
-                  "en-GB"
-                ],
+                "langtags": ["de-DE", "en-GB"],
                 "permission": {
                   "editDisplayProperty": false,
                   "editStructureProperty": false,
@@ -5529,10 +5298,7 @@
                 },
                 "description": {},
                 "attributes": {},
-                "langtags": [
-                  "de-DE",
-                  "en-GB"
-                ],
+                "langtags": ["de-DE", "en-GB"],
                 "permission": {
                   "editDisplayProperty": false,
                   "editStructureProperty": false,
@@ -5583,10 +5349,7 @@
                 },
                 "description": {},
                 "attributes": {},
-                "langtags": [
-                  "de-DE",
-                  "en-GB"
-                ],
+                "langtags": ["de-DE", "en-GB"],
                 "permission": {
                   "editDisplayProperty": false,
                   "editStructureProperty": false,
@@ -5637,10 +5400,7 @@
                 },
                 "description": {},
                 "attributes": {},
-                "langtags": [
-                  "de-DE",
-                  "en-GB"
-                ],
+                "langtags": ["de-DE", "en-GB"],
                 "permission": {
                   "editDisplayProperty": false,
                   "editStructureProperty": false,
@@ -5853,9 +5613,7 @@
             },
             {
               "tableId": 1,
-              "rowIds": [
-                2
-              ]
+              "rowIds": [2]
             },
             {
               "de-DE": "1.123",
@@ -5959,10 +5717,7 @@
             },
             {
               "tableId": 1,
-              "rowIds": [
-                3,
-                6
-              ]
+              "rowIds": [3, 6]
             },
             {
               "de-DE": "2.123",
