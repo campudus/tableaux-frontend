@@ -200,7 +200,8 @@ class Cell extends React.Component {
     const {
       actions,
       cell: { column, row, table },
-      langtag
+      langtag,
+      setSelectedCellExpandedRow
     } = this.props;
     actions.toggleCellSelection({
       columnId: column.id,
@@ -208,6 +209,7 @@ class Cell extends React.Component {
       tableId: table.id,
       langtag
     });
+    setSelectedCellExpandedRow(langtag);
   };
 
   rightClicked = event => {
