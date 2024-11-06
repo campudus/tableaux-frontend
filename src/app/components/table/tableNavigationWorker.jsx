@@ -36,6 +36,7 @@ const getCellKind = ({ currentTable, selectedCell }) =>
 
 export function getKeyboardShortcuts() {
   const { actions, tableView } = this.props;
+  const { currentTable } = tableView;
   const {
     selectedCell: { selectedCell }
   } = store.getState();
@@ -124,7 +125,7 @@ export function getKeyboardShortcuts() {
         return;
       }
       const modifiers = getModifiers(event);
-      const cellKind = getCellKind(tableView);
+      const cellKind = getCellKind({ currentTable, selectedCell });
       const hasActionKey = modifiers.mod;
       const isKeyPressed = k =>
         k >= "A" && k <= "Z"

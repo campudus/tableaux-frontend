@@ -319,7 +319,7 @@ class Cell extends React.Component {
         onContextMenu={this.rightClicked}
         tabIndex="1"
         onKeyDown={
-          editing
+          editing && kind !== "boolean"
             ? this.stopBubblingUp
             : selected
             ? KeyboardShortcutsHelper.onKeyboardShortcut(
