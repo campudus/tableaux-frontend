@@ -209,7 +209,7 @@ class Cell extends React.Component {
       tableId: table.id,
       langtag
     });
-    setSelectedCellExpandedRow(langtag);
+    setSelectedCellExpandedRow?.(langtag);
   };
 
   rightClicked = event => {
