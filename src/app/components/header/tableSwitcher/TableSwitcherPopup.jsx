@@ -278,9 +278,10 @@ class SwitcherPopup extends React.PureComponent {
   };
 
   renderTables = (groups, tables) => {
-    const { t, langtag } = this.props;
+    const { t, langtag, currentTable } = this.props;
     const groupId = this.state.filterGroupId;
     const { focusTableId } = this.state;
+    const currentTableId = f.get("id", currentTable);
     const queryStr = this.state.filterTableName;
     const isGroupSelected = f.isNumber(groupId);
     const isSearchEntered = !f.isEmpty(queryStr);
@@ -295,9 +296,13 @@ class SwitcherPopup extends React.PureComponent {
         f.matchesProperty("id", focusTableId)(table),
         f.isInteger(focusTableId)
       ]);
+      const isCurrentTable = f.every(f.identity, [
+        f.matchesProperty("id", currentTableId)(table),
+        f.isInteger(currentTableId)
+      ]);
       const onKeyDownFn = f.always({ enter: this.onClickTable(table) });
       const newUrl = `/${this.props.langtag}/tables/${table.id}`;
-      const onClickFn = isActive
+      const onClickFn = isCurrentTable
         ? this.handleClickOutside
         : this.onClickTable(table);
 
