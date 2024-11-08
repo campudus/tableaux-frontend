@@ -1,6 +1,7 @@
 import Moment from "moment";
 import React, { useCallback, useState } from "react";
-import Datetime from "react-datetime";
+import ReactDatetime from "react-datetime";
+import listensToClickOutside from "react-onclickoutside";
 import {
   ColumnKinds,
   DateFormats,
@@ -8,15 +9,20 @@ import {
 } from "../../../constants/TableauxConstants";
 import { formatDate, formatDateTime } from "../../../helpers/multiLanguage";
 
+const Datetime = listensToClickOutside(ReactDatetime);
+
 const DATE_PICKER_HEIGHT = 265;
 
 const DateCell = props => {
   const { editing, actions, cell, langtag } = props;
-  const showTime = cell.column.kind === ColumnKinds.datetime;
+  const { kind, multilanguage } = cell.column;
+  const showTime = kind === ColumnKinds.datetime;
   const Formats = showTime ? DateTimeFormats : DateFormats;
   const format = showTime ? formatDateTime : formatDate;
+  const cellValue = multilanguage ? cell.value[langtag] : cell.value;
 
   const [needsShiftUp, setShift] = useState(false);
+  const [innerValue, setInnerValue] = useState(Moment(cellValue));
 
   const checkPosition = useCallback(node => {
     if (!node) return;
@@ -26,32 +32,31 @@ const DateCell = props => {
     setShift(needsShiftUp);
   }, []);
 
-  const getValue = cell =>
-    cell.column.multilanguage ? cell.value[langtag] : cell.value;
-
-  const toValue = value => {
-    const saveable = value && Moment(value).format(Formats.formatForServer);
-    return cell.column.multilanguage ? { [langtag]: saveable } : saveable;
+  const getServerDateString = moment => {
+    return moment?.isValid() ? moment.format(Formats.formatForServer) : null;
   };
 
-  const saveValue = moment => {
+  const handleChange = value => {
+    setInnerValue(value);
+  };
+
+  const handleSave = value => {
+    const oldValue = cell.value;
+    const dateString = getServerDateString(value);
+    const newValue = multilanguage ? { [langtag]: dateString } : dateString;
     actions.toggleCellEditing({ cell, editing: false });
-    actions.changeCellValue({
-      cell,
-      oldValue: cell.value,
-      newValue: toValue(moment)
-    });
+    actions.changeCellValue({ cell, oldValue, newValue });
   };
-
-  const cellValue = getValue(cell);
 
   return (
-    <div className="cell-content" ref={checkPosition}>
-      {cellValue ? format(cellValue) : ""}
+    <>
+      <div ref={checkPosition} className="cell-content">
+        {innerValue?.isValid() ? format(innerValue) : null}
 
-      {editing && cellValue ? (
-        <i className="fa fa-ban" onMouseDown={() => saveValue(null)} />
-      ) : null}
+        {editing && innerValue ? (
+          <i className="fa fa-ban" onMouseDown={() => handleSave(null)} />
+        ) : null}
+      </div>
 
       {editing && (
         <div
@@ -66,16 +71,17 @@ const DateCell = props => {
           }}
         >
           <Datetime
-            onChange={saveValue}
+            onChange={handleChange}
+            handleClickOutside={() => handleSave(innerValue)}
             input={false}
-            value={Moment(cellValue)}
+            value={innerValue}
             initialViewMode={"days"}
             timeFormat={showTime}
-            open
+            open={editing}
           />
         </div>
       )}
-    </div>
+    </>
   );
 };
 
