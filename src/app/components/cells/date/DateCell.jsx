@@ -1,52 +1,87 @@
 import Moment from "moment";
-import React from "react";
+import React, { useCallback, useState } from "react";
+import ReactDatetime from "react-datetime";
+import listensToClickOutside from "react-onclickoutside";
 import {
   ColumnKinds,
   DateFormats,
   DateTimeFormats
 } from "../../../constants/TableauxConstants";
 import { formatDate, formatDateTime } from "../../../helpers/multiLanguage";
-import DateEditCell from "./DateEditCell";
-import f from "lodash/fp";
+
+const Datetime = listensToClickOutside(ReactDatetime);
+
+const DATE_PICKER_HEIGHT = 265;
 
 const DateCell = props => {
   const { editing, actions, cell, langtag } = props;
-  const showTime = cell.column.kind === ColumnKinds.datetime;
+  const { kind, multilanguage } = cell.column;
+  const showTime = kind === ColumnKinds.datetime;
   const Formats = showTime ? DateTimeFormats : DateFormats;
+  const format = showTime ? formatDateTime : formatDate;
+  const cellValue = multilanguage ? cell.value[langtag] : cell.value;
 
-  const format = f.compose(
-    showTime ? formatDateTime : formatDate,
-    Moment
-  );
+  const [needsShiftUp, setShift] = useState(false);
+  const [innerValue, setInnerValue] = useState(Moment(cellValue));
 
-  const getValue = cell =>
-    cell.column.multilanguage ? cell.value[langtag] : cell.value;
-  const toValue = value => {
-    const saveable = value && Moment(value).format(Formats.formatForServer);
-    return cell.column.multilanguage ? { [langtag]: saveable } : saveable;
+  const checkPosition = useCallback(node => {
+    if (!node) return;
+    const nodeBottom = node.getBoundingClientRect().bottom;
+    const needsShiftUp = nodeBottom + DATE_PICKER_HEIGHT >= window.innerHeight;
+
+    setShift(needsShiftUp);
+  }, []);
+
+  const getServerDateString = moment => {
+    return moment?.isValid() ? moment.format(Formats.formatForServer) : null;
   };
 
-  const saveValue = moment => {
+  const handleChange = value => {
+    setInnerValue(value);
+  };
+
+  const handleSave = value => {
+    const oldValue = cell.value;
+    const dateString = getServerDateString(value);
+    const newValue = multilanguage ? { [langtag]: dateString } : dateString;
     actions.toggleCellEditing({ cell, editing: false });
-    actions.changeCellValue({
-      cell,
-      oldValue: cell.value,
-      newValue: toValue(moment)
-    });
+    actions.changeCellValue({ cell, oldValue, newValue });
   };
 
-  const cellValue = getValue(cell);
+  return (
+    <>
+      <div ref={checkPosition} className="cell-content">
+        {innerValue?.isValid() ? format(innerValue) : null}
 
-  return editing ? (
-    <DateEditCell
-      Formats={Formats}
-      langtag={langtag}
-      onChange={saveValue}
-      showTime={showTime}
-      value={cellValue}
-    />
-  ) : (
-    <div className="cell-content">{cellValue ? format(cellValue) : ""}</div>
+        {editing && innerValue ? (
+          <i className="fa fa-ban" onMouseDown={() => handleSave(null)} />
+        ) : null}
+      </div>
+
+      {editing && (
+        <div
+          className="time-picker-wrapper"
+          style={{
+            position: "absolute",
+            top: needsShiftUp ? -DATE_PICKER_HEIGHT : "100%"
+          }}
+          onClick={evt => {
+            evt.stopPropagation();
+            evt.preventDefault();
+          }}
+        >
+          <Datetime
+            onChange={handleChange}
+            handleClickOutside={() => handleSave(innerValue)}
+            input={false}
+            value={innerValue}
+            initialViewMode={"days"}
+            timeFormat={showTime}
+            open={editing}
+          />
+        </div>
+      )}
+    </>
   );
 };
 

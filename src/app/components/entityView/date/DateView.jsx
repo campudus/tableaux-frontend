@@ -1,4 +1,4 @@
-import Datetime from "react-datetime";
+import ReactDatetime from "react-datetime";
 import Moment from "moment";
 import React, { Component } from "react";
 import i18n from "i18next";
@@ -14,7 +14,8 @@ import {
 import { formatDate, formatTimeShort } from "../../../helpers/multiLanguage";
 import { stopPropagation } from "../../../helpers/functools";
 
-@listensToClickOutside
+const Datetime = listensToClickOutside(ReactDatetime);
+
 class DateView extends Component {
   constructor(props) {
     super(props);
@@ -141,18 +142,26 @@ class DateView extends Component {
         {editing && !thisUserCantEdit ? (
           <div className="datetime-popup" onClick={stopPropagation}>
             <Datetime
-              onBlur={this.saveEditsAndClose}
+              handleClickOutside={this.handleClickOutside}
               onChange={this.handleChange}
               input={false}
               value={this.state.moment}
+              renderView={(viewMode, renderDefault) => (
+                <>
+                  {renderDefault()}
+                  <div
+                    className="clear-datetime"
+                    onClick={() => {
+                      this.handleChange(null);
+                      this.saveEditsAndClose(null);
+                    }}
+                  >
+                    <i className="fa fa-ban" />
+                    <span>{i18n.t("table:clear-date")}</span>
+                  </div>
+                </>
+              )}
             />
-            <div
-              className="clear-datetime"
-              onClick={() => this.handleChange(null)}
-            >
-              <i className="fa fa-ban" />
-              <span>{i18n.t("table:clear-date")}</span>
-            </div>
           </div>
         ) : null}
         {this.props.children}
