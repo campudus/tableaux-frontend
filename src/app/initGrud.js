@@ -4,9 +4,6 @@
  * langtags
  */
 
-import * as Sentry from "@sentry/browser";
-
-import { getUserName } from "./helpers/userNameHelper";
 import { makeRequest } from "./helpers/apiHelper";
 import { promisifyAction } from "./redux/redux-helpers";
 import TableauxConstants from "./constants/TableauxConstants";
@@ -21,17 +18,11 @@ export const initGrud = async setSuccess => {
       apiRoute: route.toSetting("langtags")
     }).then(response => TableauxConstants.initLangtags(response.value));
     const loadTables = promisifyAction(actions.loadTables)();
-    const maybeInitSentry = initSentry(process.env.NODE_ENV === "production");
 
     store.dispatch(actions.loadGlobalSettings());
     store.dispatch(actions.createDisplayValueWorker());
 
-    await Promise.all([
-      loadServices,
-      initLangtags,
-      loadTables,
-      maybeInitSentry
-    ]);
+    await Promise.all([loadServices, initLangtags, loadTables]);
     setSuccess(true);
     return true;
   } catch (err) {
@@ -39,19 +30,3 @@ export const initGrud = async setSuccess => {
     return setSuccess(false);
   }
 };
-
-async function initSentry(isProduction = true) {
-  const username = getUserName();
-  const dsn = (await makeRequest({ apiRoute: route.toSetting("sentryUrl") }))
-    .value;
-  if (isProduction) {
-    Sentry.init({
-      dsn,
-      release: process.env.BUILD_ID
-    });
-    Sentry.configureScope(scope => scope.setUser({ username }));
-    Sentry.captureMessage("Sentry initialised");
-  } else {
-    console.log("Project Sentry url:", dsn);
-  }
-}
