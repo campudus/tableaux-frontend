@@ -91,7 +91,6 @@ pipeline {
           --label "GIT_COMMIT=${GIT_COMMIT}" \
           --label "GIT_COMMIT_DATE=${GIT_COMMIT_DATE}" \
           --label "BUILD_DATE=${BUILD_DATE}" \
-          -t ${IMAGE_NAME}:${DOCKER_BASE_IMAGE_TAG}-${GIT_HASH} \
           -t ${IMAGE_NAME}:${IMAGE_TAG} \
           -f Dockerfile --rm .
         """
