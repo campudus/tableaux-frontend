@@ -24,7 +24,7 @@ import RowFilters from "../../../RowFilters/index";
 import { SortableCellKinds } from "../../table/RowFilters";
 import FilterPopupFooter from "./FilterPopupFooter";
 import FilterPresetList from "./FilterPresetList";
-import { BOOL, FilterRow2 as FilterRow, TEXT } from "./FilterRow";
+import FilterRow, { BOOL, TEXT } from "./FilterRow";
 import FilterSavingPopup from "./FilterSavingPopup";
 
 const SPECIAL_SEARCHES = [
@@ -589,7 +589,6 @@ const TheFilterPopup = ({ actions, columns, langtag, onClickedOutside }) => {
   );
 
   const [rowFilters, setRowFilters] = useState([{}]);
-  console.log(rowFilters, toCombinedFilter(rowFilters));
   const filterList = toCombinedFilter(rowFilters);
 
   const settingsAreValid = filterList.length > 0;
@@ -632,23 +631,23 @@ export default TheFilterPopup;
 
 const settingToFilter = ({ column, mode, value }) => {
   const modes = RowFilters.ModesForKind[(column?.kind)];
-  const needsValueArg = (modes && modes[mode])?.length > 0;
+  const needsValueArg = (modes && modes[mode])?.length > 0; // The `length` of a function is its arity
   const hasValue = !f.isNil(value) && value !== "";
-  const filter =
-    !column || !mode || (needsValueArg && !hasValue)
-      ? null
-      : ["value", column.name, mode, value];
-
-  return filter;
+  return !column || !mode || (needsValueArg && !hasValue)
+    ? null
+    : ["value", column.name, mode, value];
 };
 
 const toCombinedFilter = settings => {
-  const validSettings = f.compact(settings.map(settingToFilter));
-  return match(validSettings.length)(
+  const validSettings = settings
+    .map(settingToFilter)
+    .filter(f.complement(f.isEmpty));
+  const combined = match(validSettings.length)(
     when(0, []),
     when(1, f.first(validSettings)),
     otherwise(["and", ...validSettings])
   );
+  return combined;
 };
 
 const FilterArea = ({ columns, filters, langtag, onChange }) => {
