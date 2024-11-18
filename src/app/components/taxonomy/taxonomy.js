@@ -23,16 +23,24 @@ import { retrieveTranslation } from "../../helpers/multiLanguage";
 
 // tableToTreeNodes : { rows : List Row } -> List BuildTreeNode
 export const tableToTreeNodes = ({ rows }) =>
-  (rows || []).map(({ id, cells, values }) => {
-    const displayValue = getDisplayValue(cells[0].column, values[0]);
-    const parentId = f.prop([3, 0, "id"], values); // id of first (and only) link value in column 4
+  f.sortBy(
+    "ordering",
+    (rows || []).map(({ id, cells, values }) => {
+      const displayValue = getDisplayValue(cells[0].column, values[0]);
+      const parentId = f.prop([3, 0, "id"], values); // id of first (and only) link value in column 4
+      const ordering = f.get(
+        f.findIndex(f.propEq(["column", "name"], "ordering"), cells),
+        values
+      );
 
-    return {
-      id,
-      displayValue,
-      parent: parentId
-    };
-  });
+      return {
+        id,
+        displayValue,
+        parent: parentId,
+        ordering
+      };
+    })
+  );
 
 // buildTree : TreeState -> List TreeNode -> TreeNode
 export const buildTree = ({ expandedNodeId }) => nodes => {
