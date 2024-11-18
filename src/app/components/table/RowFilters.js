@@ -1,4 +1,5 @@
 import f from "lodash/fp";
+import { useSelector } from "react-redux";
 import { isRowArchived, ShowArchived } from "../../archivedRows";
 import {
   ColumnKinds,
@@ -339,6 +340,8 @@ const mkColumnValueFilter = closures => ({
   colId,
   compareValue
 }) => {
+  const reduxStore = useSelector(store => store);
+  const visibleColumnIDs = new Set(reduxStore.tableView?.visibleColumns ?? []);
   const id = f.isNumber(columnId) && !isNaN(columnId) ? columnId : colId;
   const filterColumnIndex = closures.getColumnIndex(id);
   const toFilterValue = closures.cleanString(

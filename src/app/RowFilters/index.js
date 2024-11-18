@@ -181,6 +181,20 @@ const buildContext = (tableId, langtag, store) => {
   };
 };
 
+export const filterStateful = (ternaryFn, initialState) => coll => {
+  const result = [];
+  let state = initialState;
+  const getState = () => state;
+  const updateState = fn => void (state = fn(state));
+  const setState = newState => void (state = newState);
+  const ctx = { get: getState, set: setState, update: updateState };
+  console.log("filterStateful", ternaryFn, initialState, coll);
+  coll.forEach((el, idx) => {
+    if (ternaryFn(el, idx, ctx)) result.push(el);
+  });
+  return [result, state];
+};
+
 export default {
   ModesForKind,
   buildContext,
