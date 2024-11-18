@@ -1,9 +1,7 @@
 import i18n from "i18next";
 import f from "lodash/fp";
-import { match, otherwise, when } from "match-iz";
 import PropTypes from "prop-types";
-import React, { useEffect, useRef } from "react";
-import { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { translate } from "react-i18next";
 import listensToClickOutside from "react-onclickoutside";
 import { useSelector } from "react-redux";
@@ -26,6 +24,7 @@ import FilterPopupFooter from "./FilterPopupFooter";
 import FilterPresetList from "./FilterPresetList";
 import FilterRow, { BOOL, TEXT } from "./FilterRow";
 import FilterSavingPopup from "./FilterSavingPopup";
+import { fromCombinedFilter, toCombinedFilter } from "./helpers";
 
 const SPECIAL_SEARCHES = [
   FilterModes.ANY_UNTRANSLATED,
@@ -576,7 +575,15 @@ FilterPopup.propTypes = {
   currentFilter: PropTypes.object
 };
 
-const TheFilterPopup = ({ actions, columns, langtag, onClickedOutside }) => {
+const of = el => (Array.isArray(el) ? el : [el]);
+
+const TheFilterPopup = ({
+  actions,
+  columns,
+  langtag,
+  onClickedOutside,
+  currentFilter
+}) => {
   const tableId = useSelector(f.prop("tableView.currentTable"));
   const containerRef = useRef();
   useEffect(
@@ -588,8 +595,15 @@ const TheFilterPopup = ({ actions, columns, langtag, onClickedOutside }) => {
     [containerRef.current]
   );
 
-  const [rowFilters, setRowFilters] = useState([{}]);
-  const filterList = toCombinedFilter(rowFilters);
+  console.log("CURRENT FILTER", JSON.stringify(currentFilter));
+  const [rowFilters, setRowFilters] = useState(
+    f.isEmpty(currentFilter.filters)
+      ? [{}]
+      : of(fromCombinedFilter(columns)(currentFilter.filters))
+  );
+  const filterList = toCombinedFilter(
+    rowFilters.map(settingToFilter).filter(f.complement(f.isEmpty))
+  );
 
   const settingsAreValid = filterList.length > 0;
 
@@ -636,18 +650,6 @@ const settingToFilter = ({ column, mode, value }) => {
   return !column || !mode || (needsValueArg && !hasValue)
     ? null
     : ["value", column.name, mode, value];
-};
-
-const toCombinedFilter = settings => {
-  const validSettings = settings
-    .map(settingToFilter)
-    .filter(f.complement(f.isEmpty));
-  const combined = match(validSettings.length)(
-    when(0, []),
-    when(1, f.first(validSettings)),
-    otherwise(["and", ...validSettings])
-  );
-  return combined;
 };
 
 const FilterArea = ({ columns, filters, langtag, onChange }) => {
