@@ -14,7 +14,6 @@ final String TEST_COVERAGE_FILE = 'output/coverage/junit.xml'
 final String IMAGE_NAME = "campudus/grud-frontend"
 final String IMAGE_TAG = CLEAN_BRANCH_NAME && isBranch ? CLEAN_BRANCH_NAME : "latest"
 final String ARCHIVE_FILENAME_DIST = "grud-frontend-dist.tar.gz"
-final GString DOCKER_BASE_IMAGE_TAG = "build-${BUILD_NUMBER}"
 
 final String SLACK_CHANNEL = "#grud"
 
@@ -106,7 +105,6 @@ pipeline {
     stage('Push to docker registry') {
       steps {
         withDockerRegistry([credentialsId: "dockerhub", url: ""]) {
-          sh "docker push ${IMAGE_NAME}:${DOCKER_BASE_IMAGE_TAG}-${GIT_HASH}"
           sh "docker push ${IMAGE_NAME}:${IMAGE_TAG}"
         }
       }
