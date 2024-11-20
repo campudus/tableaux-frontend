@@ -1,4 +1,5 @@
 import RowFilters, {
+  filterStateful,
   Boolean,
   Date,
   DateTime,
@@ -336,6 +337,60 @@ describe("buildContext()", () => {
       ]);
       const result2 = rows.filter(filter2);
       expect(result2).toEqual([]);
+    });
+  });
+  describe("Annotation", () => {
+    const parse = RowFilters.parse(ctx);
+    it("should find simple flag annotations", () => {
+      const isImportant = parse([
+        "annotation",
+        "flag-type",
+        "important",
+        "is-set"
+      ]);
+      const [foundRows, foundColumns] = filterStateful(isImportant, new Set())(
+        rows
+      );
+      expect(foundRows).toEqual([expect.objectContaining({ id: 1 })]);
+      expect(foundColumns.size).toBe(1);
+      expect(foundColumns.has(2)).toBe(true);
+    });
+    it("should find comments", () => {
+      const hasComments = parse(["annotation", "type", "info", "is-set"]);
+      const [foundRows, foundColumns] = filterStateful(hasComments, new Set())(
+        rows
+      );
+      expect(foundRows).toEqual([expect.objectContaining({ id: 2 })]);
+      expect(Array.from(foundColumns)).toEqual([10]);
+    });
+    it("should find required translations", () => {
+      const needsAnyTranslation = parse([
+        "annotation",
+        "flag-type",
+        "needs_translation",
+        "is-set"
+      ]);
+      const [foundRows, foundColumns] = filterStateful(
+        needsAnyTranslation,
+        new Set()
+      )(rows);
+      expect(foundRows).toEqual([expect.objectContaining({ id: 3 })]);
+      expect(Array.from(foundColumns).sort()).toEqual([13, 21]);
+    });
+    it("should find rows/columns needing specific translations", () => {
+      const needsMyTranslation = parse([
+        "annotation",
+        "flag-type",
+        "needs_translation",
+        "has-language",
+        "cn-US"
+      ]);
+      const [foundRows, foundColumns] = filterStateful(
+        needsMyTranslation,
+        new Set()
+      )(rows);
+      expect(foundRows).toEqual([expect.objectContaining({ id: 3 })]);
+      expect(Array.from(foundColumns)).toEqual([13]);
     });
   });
   describe("parse and compose", () => {

@@ -40,6 +40,7 @@ const withFiltersAndVisibility = Component => props => {
       f.isEmpty(props.allDisplayValues[props.table.id])
     ]
   );
+  console.log(rows);
   const columnsWithVisibility = columns.map((col, idx) => ({
     ...col,
     visible:

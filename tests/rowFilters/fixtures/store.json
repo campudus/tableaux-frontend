@@ -1200,6 +1200,32 @@
     "3": {
       "data": [
         {
+          "annotations": [
+            null,
+            null,
+            [{ "type": "flag", "value": "important" }],
+            null,
+            null,
+            null,
+            null,
+            [{ "type": "flag", "value": "translation_needed", "langtags": [] }],
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+          ],
           "id": 1,
           "archived": true,
           "values": [
@@ -2608,6 +2634,32 @@
         },
         {
           "id": 2,
+          "annotations": [
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            [{ "type": "info", "value": "I have a comment!" }],
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+          ],
           "archived": false,
           "something": { "nested": 42 },
           "values": [
@@ -4052,6 +4104,44 @@
         },
         {
           "id": 3,
+          "annotations": [
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            [
+              {
+                "type": "flag",
+                "value": "needs_translation",
+                "langtags": ["cn-US"]
+              }
+            ],
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            [
+              {
+                "type": "flag",
+                "value": "needs_translation",
+                "langtags": ["es-ES"]
+              }
+            ],
+            null,
+            null
+          ],
           "values": [
             [null, {}],
             [],

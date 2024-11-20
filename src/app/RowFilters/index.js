@@ -1,5 +1,6 @@
 import f from "lodash/fp";
 import { ColumnKinds } from "../constants/TableauxConstants";
+import FilterAnnotation from "./Annotation";
 import FilterBoolean from "./Boolean";
 import FilterDate from "./Date";
 import FilterDateTime from "./DateTime";
@@ -7,6 +8,7 @@ import FilterNumber from "./Number";
 import FilterText from "./Text";
 import FilterRowProp from "./RowProp";
 
+export const Annotation = FilterAnnotation.Mode;
 export const Boolean = FilterBoolean.Mode;
 export const Date = FilterDate.Mode;
 export const DateTime = FilterDateTime.Mode;
@@ -50,14 +52,24 @@ const canSortByColumnKind = kind => {
  * Parses filter expressions according to the following BNF from Arrays
  * (commas omitted for legibility):
  *
- * Filter         := [ValuePredicate | And | Or]
- * ValuePredicate := ["value" ColumnName Operator] | ["value" ColumnName Operator OperatorValue]
+ * Filter         := [Predicate | And | Or]
+ * Predicate      := ["value" ColumnName Operator ?OperatorValue]
+ *                   | ["row-prop" PropPath Operator ?OperatorValue]
+ *                   | ["annotation" AnnotationProp Operator ?OperatorValue]
+ * PropPath       := \w+(\.\w+)*
+ * AnnotationProp := ("flag-type" String) | ("type" String)
  * And            := ["and" Filter+]
  * Or             := ["or" Filter+]
  *
  * With `ColumnName`s being obvious and `Operator`s from filters matching the column type.
  * Some operators may require an additional operator value `["value", "year", "equals", 2024]`,
  * while other operators don't `["value", "year", "is-not-empty"]`
+ *
+ * More examples:
+ * ["row-prop" "final" "is-set"]
+ * ["annotation" "flag-type" "important" "is-set"]
+ * ["annotation" "flag-type" "needs_translation" "has-language" "en-DB"]
+ * ["annotation" "type" "info" "is-unset"]
  *
  * Produces Row -> Boolean
  */
@@ -75,11 +87,24 @@ const parse = ctx => {
         return parseValueFilter(ctx, list);
       case "row-prop":
         return parseRowPropFilter(list);
+      case "annotation":
+        return parseAnnotationFilter(ctx, list);
       default:
         throw new Error(`Could not parse filter instruction of kind ${kind}`);
     }
   };
   return parseImpl;
+};
+
+const parseAnnotationFilter = (ctx, [_, findBy, kind, op, opValue]) => {
+  const find = FilterAnnotation.get[findBy];
+  const pred = FilterAnnotation[op];
+  if (typeof find !== "function")
+    throw new Error(`Can not find annotation by "${find}", unknown operation`);
+  if (typeof pred !== "function")
+    throw new Error(`Can not compare annotation by "${op}", unknown operation`);
+
+  return pred(find(kind), ctx.columns, opValue);
 };
 
 const parseValueFilter = (ctx, [_, colName, op, query]) => {
@@ -176,6 +201,7 @@ const buildContext = (tableId, langtag, store) => {
   };
 
   return {
+    columns,
     getValue: name => lookupFn[columnKindLookup[name]](name),
     getValueFilter: buildValueFilter
   };
