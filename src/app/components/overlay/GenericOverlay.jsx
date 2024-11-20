@@ -8,7 +8,6 @@ import Footer from "./Footer";
 import InfoBox from "./InfoBox";
 import * as f from "lodash/fp";
 import { maybe, merge } from "../../helpers/functools";
-import * as Sentry from "@sentry/browser";
 import { when } from "../../helpers/functools";
 import { isCell } from "../../specs/cell-spec";
 import store from "../../redux/store";
@@ -231,9 +230,6 @@ const showDialog = ({
     openOverlay: (...args) => store.dispatch(actions.openOverlay(...args))
   };
   const wrapActionFn = fn => event => {
-    Sentry.addBreadcrumb({
-      message: "Keyboard dialog close: " + f.get("key", event)
-    });
     if (f.isFunction(fn)) {
       fn(event);
     }

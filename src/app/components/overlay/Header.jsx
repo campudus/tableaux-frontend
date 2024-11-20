@@ -1,5 +1,4 @@
 import React, { PureComponent } from "react";
-import * as Sentry from "@sentry/browser";
 import f from "lodash/fp";
 
 import PropTypes from "prop-types";
@@ -14,7 +13,6 @@ import store from "../../redux/store";
 
 class Header extends PureComponent {
   wrapButtonFn = (value, fn) => (...args) => {
-    Sentry.addBreadcrumb({ message: "Header button: " + value });
     if (f.isFunction(fn)) {
       fn(...args);
     }

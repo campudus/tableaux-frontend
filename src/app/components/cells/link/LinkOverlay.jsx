@@ -1,7 +1,6 @@
 /* eslint react/no-this-in-sfc: 0 */
 
 import React, { PureComponent } from "react";
-import * as Sentry from "@sentry/browser";
 import * as f from "lodash/fp";
 import i18n from "i18next";
 import TaxonomyLinkOverlay from "../../taxonomy/TaxonomyLinkOverlay";
@@ -193,9 +192,6 @@ class LinkOverlay extends PureComponent {
           {i18n.t("table:cardinality-reached", { maxLinks })}
         </div>
       );
-      Sentry.captureMessage("Tried to add link with wrong cardinality", {
-        level: "warning"
-      });
       return;
     }
 

@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import * as f from "lodash/fp";
-import * as Sentry from "@sentry/browser";
 
 class Footer extends Component {
   static propTypes = {
@@ -11,7 +10,6 @@ class Footer extends Component {
   };
 
   wrapButtonFn = (value, fn) => (...args) => {
-    Sentry.addBreadcrumb({ message: "Footer button: " + value });
     if (f.isFunction(fn)) {
       fn(...args);
     }
