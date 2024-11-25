@@ -78,11 +78,14 @@ const parse = ctx => {
     const [kind, ...args] = list;
     switch (kind) {
       case "and":
-        return row =>
-          args.reduce((match, arg) => match && parseImpl(arg)(row), true);
+        return (...params) =>
+          args.reduce((match, arg) => match && parseImpl(arg)(...params), true);
       case "or":
-        return row =>
-          args.reduce((match, arg) => match || parseImpl(arg)(row), false);
+        return (...params) =>
+          args.reduce(
+            (match, arg) => match || parseImpl(arg)(...params),
+            false
+          );
       case "value":
         return parseValueFilter(ctx, list);
       case "row-prop":
@@ -129,6 +132,7 @@ const buildIdxLookup = (propName, elements) =>
   }, {});
 
 const buildContext = (tableId, langtag, store) => {
+  console.log("store:", store);
   const columns = store.columns[tableId].data ?? [];
   const columnIdxLookup = buildIdxLookup("name", columns);
   const columnKindLookup = columns.reduce((acc, { name, kind }) => {
@@ -142,11 +146,11 @@ const buildContext = (tableId, langtag, store) => {
   const getDisplayValueEntry = (name, row) => {
     const rowIdx = rowIdxLookup[row.id];
     const colIdx = columnIdxLookup[name];
-    return displayValues[rowIdx].values[colIdx];
+    return f.get(`${rowIdx}.values.${colIdx}`, displayValues);
   };
 
   const retrieveDisplayValue = name => row =>
-    getDisplayValueEntry(name, row)[langtag];
+    f.get(langtag, getDisplayValueEntry(name, row));
 
   const retrieveLinkDisplayValue = name => row => {
     const dvDefinition = getDisplayValueEntry(name, row);

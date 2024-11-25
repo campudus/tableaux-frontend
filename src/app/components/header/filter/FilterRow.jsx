@@ -1,33 +1,17 @@
-import i18n, { t } from "i18next";
+import { t } from "i18next";
 import f from "lodash/fp";
-import PropTypes from "prop-types";
-import React, { useCallback, useEffect, useRef } from "react";
+import { match, otherwise, when } from "match-iz";
+import React from "react";
 import { translate } from "react-i18next";
 import Select from "react-select";
-import { ColumnKinds, FilterModes } from "../../../constants/TableauxConstants";
-import { maybe } from "../../../helpers/functools";
-import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
+import { ColumnKinds } from "../../../constants/TableauxConstants";
 import { getColumnDisplayName } from "../../../helpers/multiLanguage";
-import {
-  getFiltersForColumn,
-  getSearchFunction
-} from "../../../helpers/searchFunctions";
 import RowFilters from "../../../RowFilters";
-import SvgIcon from "../../helperComponents/SvgIcon";
-import { BoolInput } from "./FilterFragments";
-import { match, otherwise, when } from "match-iz";
 
 export const BOOL = "boolean";
 export const TEXT = "text";
 
-const FilterRow = ({
-  columns,
-  langtag,
-  onAdd,
-  onChange,
-  onRemove,
-  settings
-}) => {
+const FilterRow = ({ columns, langtag, onChange, onRemove, settings }) => {
   const columnsByName = f.indexBy("name", columns);
   const { column, mode, value } = settings;
   const searchableColumns = columns.filter(col =>
@@ -69,14 +53,8 @@ const FilterRow = ({
 
   return (
     <div className="filter-row" onKeyDown={handleKeys}>
-      <button
-        className="filter-array-button col-one"
-        onClick={clearOrRemoveFilter}
-      >
-        <i className="fa fa-trash" />
-      </button>
       <Select
-        className="filter-select col-two"
+        className="filter-select"
         options={columnOptions}
         searchable={true}
         clearable={false}
@@ -88,7 +66,7 @@ const FilterRow = ({
       />
 
       <Select
-        className="filter-select col-three"
+        className="filter-select"
         options={modeOptions}
         searchable={false}
         clearable={false}
@@ -103,8 +81,11 @@ const FilterRow = ({
         onChange={column?.kind === ColumnKinds.boolean ? setMode : setValue}
       />
 
-      <button className="filter-array-button" onClick={onAdd}>
-        <i className="fa fa-plus" />
+      <button
+        className="button button--remove-filter"
+        onClick={clearOrRemoveFilter}
+      >
+        <i className="fa fa-trash" />
       </button>
     </div>
   );

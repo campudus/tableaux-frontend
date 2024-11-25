@@ -28,7 +28,67 @@
     box-sizing: border-box;
     overflow: visible;
     padding: 15px;
-    max-height: 70vh;
+    max-height: calc(100vh - 80px);
+
+    .column-filters,
+    .annotation-filters {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .column-filters {
+      margin-bottom: 16px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid $color-border-grey;
+    }
+
+    .annotation-filter {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 3px 6px;
+      padding-right: 16px;
+      cursor: pointer;
+      &:hover {
+        background: $color-hover-background;
+      }
+    }
+
+    .button {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 3px;
+      white-space: nowrap;
+      &:hover {
+        background: $color-hover-background;
+      }
+    }
+
+    .button--add-filter {
+      width: min-content;
+      white-space: nowrap;
+      padding: 6px 12px;
+    }
+
+    .button--remove-filter {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 1.5em;
+      border-radius: 3px;
+      color: $color-text-medium-grey;
+      &:hover {
+        background: $color-hover-background;
+      }
+    }
+
+    .filter-row {
+      display: grid;
+      gap: 8px;
+      grid-template-columns: 1fr 1fr 1fr 50px;
+    }
 
     .filter-options {
       position: relative;
@@ -40,27 +100,6 @@
 
       input {
         height: 28px;
-      }
-    }
-
-    .bool-input {
-      a {
-        @include button-look();
-        background-color: $color-button-grey;
-        padding: 8px 30px;
-
-        &.yes {
-          margin-right: 30px;
-        }
-
-        &.active {
-          &.yes {
-            background-color: $color-green;
-          }
-          &.no {
-            background-color: $color-red;
-          }
-        }
       }
     }
 
@@ -89,99 +128,6 @@
         &:hover {
           color: $color-hover-foreground;
           background-color: $color-hover-background;
-        }
-      }
-    }
-  }
-
-  .filter-row,
-  .sort-row {
-    $button-radius: 30px;
-    overflow: visible;
-    width: 100%;
-    justify-content: space-between;
-    margin-bottom: 20px;
-    display: grid;
-    grid-template-columns: $button-radius 3fr 2fr 5fr $button-radius;
-    grid-column-gap: 8px;
-
-    .filter-array-button {
-      border-radius: 50%;
-      background-color: transparent;
-      border: 1px solid $color-text-light-grey;
-      color: $color-text-light-grey;
-      width: $button-radius;
-      height: $button-radius;
-      padding: 0;
-
-      position: relative;
-
-      &:hover {
-        color: $color-primary;
-        border-color: $color-primary;
-      }
-
-      i {
-        position: absolute;
-        left: 50%;
-        top: 50%;
-        transform: translate(-50%, -50%);
-      }
-    }
-
-    .filter-input {
-      height: 30px;
-      padding: 0 10px;
-      line-height: 30px;
-      border: 1px solid $color-grey-dark;
-      @include border-radius(3px);
-      width: 200px;
-
-      &:focus,
-      &:active {
-        border-color: $color-primary-lighter;
-      }
-
-      &:disabled {
-        background-color: $color-background-disabled;
-
-        &:active {
-          border-color: $color-grey-dark;
-        }
-      }
-    }
-
-    .filter-select {
-      width: 220px;
-      display: inline-block;
-      vertical-align: middle;
-    }
-
-    .bool-input {
-      display: inline-flex;
-      flex-direction: row;
-      align-items: center;
-      width: 222px;
-
-      .selection-text {
-        font-style: italic;
-        color: $color-text-medium-grey;
-      }
-
-      .checkbox {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        width: 26px;
-        height: 26px;
-        border: 1px solid $color-text-light-grey;
-        border-radius: 3px;
-        margin-right: 10px;
-
-        &.checked:before {
-          font-family: FontAwesome;
-          content: "\f00c";
-          color: $color-primary-text;
         }
       }
     }

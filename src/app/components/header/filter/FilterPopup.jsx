@@ -601,10 +601,40 @@ const TheFilterPopup = ({
       ? [{}]
       : of(fromCombinedFilter(columns)(currentFilter.filters))
   );
-  const filterList = toCombinedFilter(
-    rowFilters.map(settingToFilter).filter(f.complement(f.isEmpty))
-  );
+  const [annotationFilters, setAnnotationFilters] = useState({});
 
+  const toggleAnnotationFilter = key => () =>
+    void setAnnotationFilters({
+      ...annotationFilters,
+      [key]: !annotationFilters[key]
+    });
+  const annotationFilterTemplates = {
+    final: ["row-prop", "final", "is-set"],
+    important: ["annotation", "flag-type", "important", "is-set"],
+    postpone: ["annotation", "flag-type", "postpone", "is-set"],
+    doubleCheck: ["annotation", "flag-type", "double-check", "is-set"],
+    hasComments: ["annotation", "type", "info", "is-set"],
+    needsAnyTranslation: [
+      "annotation",
+      "flag-type",
+      "needs_translation",
+      "is-set"
+    ],
+    needsMyTranslation: [
+      "annotation",
+      "flag-type",
+      "needs_translation",
+      "has-language",
+      langtag
+    ]
+  };
+
+  const filterList = toCombinedFilter([
+    ...rowFilters.map(settingToFilter).filter(f.complement(f.isEmpty)),
+    ...Object.entries(annotationFilters)
+      .filter(([_, isSet]) => isSet)
+      .map(([key]) => annotationFilterTemplates[key])
+  ]);
   const settingsAreValid = filterList.length > 0;
 
   const handleSubmit = () => {
@@ -624,11 +654,17 @@ const TheFilterPopup = ({
           </div>
         </header>
         <div>
-          <FilterArea
+          <ColumnFilterArea
             langtag={langtag}
             columns={columns}
             onChange={setRowFilters}
             filters={rowFilters}
+          />
+          <AnnotationFilterArea
+            langtag={langtag}
+            options={Object.keys(annotationFilterTemplates)}
+            filters={annotationFilters}
+            onToggle={toggleAnnotationFilter}
           />
         </div>
       </section>
@@ -652,21 +688,44 @@ const settingToFilter = ({ column, mode, value }) => {
     : ["value", column.name, mode, value];
 };
 
-const FilterArea = ({ columns, filters, langtag, onChange }) => {
+const AnnotationFilterArea = ({ onToggle, filters, options, langtag }) => {
+  const isPrimaryLang = langtag === TableauxConstants.DefaultLangtag;
+  const shouldDropFilter = isPrimaryLang
+    ? f.eq("needsMyTranslation")
+    : f.eq("needsAnyTranslation");
+  const shouldKeepFilter = f.complement(shouldDropFilter);
+
+  return (
+    <div className="annotation-filters">
+      {options.filter(shouldKeepFilter).map(kind => (
+        <div className="annotation-filter" key={kind} onClick={onToggle(kind)}>
+          <div className="annotation-filter__label">{i18n.t(kind)}</div>
+          <div className="annotation-filter__checkbox">
+            <input
+              type="checkbox"
+              checked={Boolean(filters[kind])}
+              onChange={f.noop}
+            />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+};
+const ColumnFilterArea = ({ columns, filters, langtag, onChange }) => {
   const addFilterRow = () => onChange([...filters, {}]);
   const removeFilterRow = idxToRemove => () =>
     void onChange(filters.filter((_, idx) => idx !== idxToRemove));
   const updateFilterRow = idxToChange => settings =>
     onChange(filters.map((row, idx) => (idx === idxToChange ? settings : row)));
   return (
-    <>
+    <div className="column-filters">
       {filters.map((filterRow, idx) => (
         <FilterRow
           key={idx}
           columns={columns}
           langtag={langtag}
           settings={filterRow}
-          onAdd={addFilterRow}
           onChange={updateFilterRow(idx)}
           onRemove={
             filters.length < 2
@@ -675,6 +734,10 @@ const FilterArea = ({ columns, filters, langtag, onChange }) => {
           }
         />
       ))}
-    </>
+      <button className="button button--add-filter" onClick={addFilterRow}>
+        <i className="fa fa-plus" />
+        {"add filter"}
+      </button>
+    </div>
   );
 };

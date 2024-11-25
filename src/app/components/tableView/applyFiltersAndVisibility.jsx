@@ -40,7 +40,6 @@ const withFiltersAndVisibility = Component => props => {
       f.isEmpty(props.allDisplayValues[props.table.id])
     ]
   );
-  console.log(rows);
   const columnsWithVisibility = columns.map((col, idx) => ({
     ...col,
     visible:
@@ -60,8 +59,6 @@ const withFiltersAndVisibility = Component => props => {
     !props.finishedLoading &&
     hasRowJumpTarget &&
     !f.find(row => row.id === selectedCell.rowId);
-
-  console.log({ filters });
 
   if (canRenderTable) {
     return (
