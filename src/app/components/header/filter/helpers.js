@@ -1,6 +1,37 @@
 import { match, otherwise, when } from "match-iz";
 import f from "lodash/fp";
 
+export const AnnotationFilter = {
+  final: "final",
+  important: "important",
+  postpone: "postpone",
+  doubleCheck: "doubleCheck",
+  hasComments: "hasComments",
+  needsAnyTranslation: "needsAnyTranslation",
+  needsMyTranslation: "needsMyTranslation"
+};
+
+export const mkAnnotationFilterTemplates = langtag => ({
+  final: ["row-prop", "final", "is-set"],
+  important: ["annotation", "flag-type", "important", "is-set"],
+  postpone: ["annotation", "flag-type", "postpone", "is-set"],
+  doubleCheck: ["annotation", "flag-type", "double-check", "is-set"],
+  hasComments: ["annotation", "type", "info", "is-set"],
+  needsAnyTranslation: [
+    "annotation",
+    "flag-type",
+    "needs_translation",
+    "is-set"
+  ],
+  needsMyTranslation: [
+    "annotation",
+    "flag-type",
+    "needs_translation",
+    "has-language",
+    langtag
+  ]
+});
+
 export const toCombinedFilter = settings => {
   const validSettings = settings;
 
@@ -12,22 +43,34 @@ export const toCombinedFilter = settings => {
   return combined;
 };
 
-export const fromCombinedFilter = columns => {
+export const fromCombinedFilter = (columns, langtag) => {
+  const templates = mkAnnotationFilterTemplates(langtag);
   const columnLookup = f.indexBy("name", columns);
-  const filterToSetting = filter => {
+
+  const filterToSettingM = (
+    filter = [],
+    rowFilters = [],
+    annotationFilters = {}
+  ) => {
     const [kind, ...rest] = filter;
-    return match(kind)(
-      when("value", () => {
-        const [colName, mode, value] = rest;
-        return { column: columnLookup[colName], mode, value };
-      }),
-      when("and", () =>
-        f.compact(
-          rest.reduce((acc, next) => [...acc, filterToSetting(next)], [])
-        )
-      ),
-      otherwise(() => undefined)
-    );
+
+    if (kind === "value") {
+      const [colName, mode, value] = rest;
+      const column = columnLookup[colName];
+      rowFilters.push({ column, mode, value });
+      console.log("adding value filter", colName, mode, value, rowFilters);
+    } else if (kind === "and") {
+      rest.forEach(next =>
+        filterToSettingM(next, rowFilters, annotationFilters)
+      );
+    } else {
+      const [templateName] =
+        Object.entries(templates).find(([_, setting]) =>
+          f.equals(setting, filter)
+        ) || [];
+      if (templateName) annotationFilters[templateName] = true;
+    }
+    return { rowFilters, annotationFilters };
   };
-  return filterToSetting;
+  return filter => filterToSettingM(filter, [], {});
 };

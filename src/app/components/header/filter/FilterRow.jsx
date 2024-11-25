@@ -101,7 +101,7 @@ const ValueInput = ({ column, mode, value, onChange }) => {
   const filterMode = RowFilters.ModesForKind[(column?.kind)];
   const handleSetEventValue = evt =>
     void onChange(filterMode?.readValue(evt.target.value));
-  return column?.kind === ColumnKinds.boolean ? null : (
+  return RowFilters.needsFilterValue(column?.kind, mode) ? (
     <input
       className="filter-input"
       type={inputType}
@@ -109,6 +109,8 @@ const ValueInput = ({ column, mode, value, onChange }) => {
       onChange={handleSetEventValue}
       disabled={disabled}
     />
+  ) : (
+    <div className="placeholder" />
   );
 };
 

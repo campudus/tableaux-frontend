@@ -132,7 +132,6 @@ const buildIdxLookup = (propName, elements) =>
   }, {});
 
 const buildContext = (tableId, langtag, store) => {
-  console.log("store:", store);
   const columns = store.columns[tableId].data ?? [];
   const columnIdxLookup = buildIdxLookup("name", columns);
   const columnKindLookup = columns.reduce((acc, { name, kind }) => {
@@ -224,9 +223,14 @@ export const filterStateful = (ternaryFn, initialState) => coll => {
   return [result, state];
 };
 
+const needsFilterValue = (columnKind, operation) =>
+  // A JS functions `length` is its arity.
+  f.prop(`${columnKind}.${operation}`, ModesForKind)?.length > 0;
+
 export default {
   ModesForKind,
   buildContext,
   canFilterByColumnKind,
+  needsFilterValue,
   parse
 };

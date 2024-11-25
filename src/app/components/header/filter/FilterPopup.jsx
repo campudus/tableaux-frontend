@@ -1,7 +1,7 @@
 import i18n from "i18next";
 import f from "lodash/fp";
 import PropTypes from "prop-types";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { translate } from "react-i18next";
 import listensToClickOutside from "react-onclickoutside";
 import { useSelector } from "react-redux";
@@ -18,13 +18,17 @@ import { getColumnDisplayName } from "../../../helpers/multiLanguage";
 import { canColumnBeSearched } from "../../../helpers/searchFunctions";
 import { outsideClickEffect } from "../../../helpers/useOutsideClick";
 import store from "../../../redux/store";
-import RowFilters from "../../../RowFilters/index";
+import RowFilters from "../../../RowFilters";
 import { SortableCellKinds } from "../../table/RowFilters";
 import FilterPopupFooter from "./FilterPopupFooter";
 import FilterPresetList from "./FilterPresetList";
 import FilterRow, { BOOL, TEXT } from "./FilterRow";
 import FilterSavingPopup from "./FilterSavingPopup";
-import { fromCombinedFilter, toCombinedFilter } from "./helpers";
+import {
+  fromCombinedFilter,
+  mkAnnotationFilterTemplates,
+  toCombinedFilter
+} from "./helpers";
 
 const SPECIAL_SEARCHES = [
   FilterModes.ANY_UNTRANSLATED,
@@ -596,38 +600,27 @@ const TheFilterPopup = ({
   );
 
   console.log("CURRENT FILTER", JSON.stringify(currentFilter));
+  const parseFilterSettings = fromCombinedFilter(columns, langtag);
+  const parsedFilterSettings = parseFilterSettings(currentFilter.filters || []);
   const [rowFilters, setRowFilters] = useState(
-    f.isEmpty(currentFilter.filters)
+    f.isEmpty(parsedFilterSettings.rowFilters)
       ? [{}]
-      : of(fromCombinedFilter(columns)(currentFilter.filters))
+      : of(parsedFilterSettings.rowFilters)
   );
-  const [annotationFilters, setAnnotationFilters] = useState({});
+  const [annotationFilters, setAnnotationFilters] = useState(
+    parsedFilterSettings.annotationFilters
+  );
 
   const toggleAnnotationFilter = key => () =>
     void setAnnotationFilters({
       ...annotationFilters,
       [key]: !annotationFilters[key]
     });
-  const annotationFilterTemplates = {
-    final: ["row-prop", "final", "is-set"],
-    important: ["annotation", "flag-type", "important", "is-set"],
-    postpone: ["annotation", "flag-type", "postpone", "is-set"],
-    doubleCheck: ["annotation", "flag-type", "double-check", "is-set"],
-    hasComments: ["annotation", "type", "info", "is-set"],
-    needsAnyTranslation: [
-      "annotation",
-      "flag-type",
-      "needs_translation",
-      "is-set"
-    ],
-    needsMyTranslation: [
-      "annotation",
-      "flag-type",
-      "needs_translation",
-      "has-language",
-      langtag
-    ]
-  };
+
+  const annotationFilterTemplates = useMemo(
+    () => mkAnnotationFilterTemplates(langtag),
+    [langtag]
+  );
 
   const filterList = toCombinedFilter([
     ...rowFilters.map(settingToFilter).filter(f.complement(f.isEmpty)),
@@ -680,8 +673,7 @@ const TheFilterPopup = ({
 export default TheFilterPopup;
 
 const settingToFilter = ({ column, mode, value }) => {
-  const modes = RowFilters.ModesForKind[(column?.kind)];
-  const needsValueArg = (modes && modes[mode])?.length > 0; // The `length` of a function is its arity
+  const needsValueArg = RowFilters.needsFilterValue(column?.kind, mode);
   const hasValue = !f.isNil(value) && value !== "";
   return !column || !mode || (needsValueArg && !hasValue)
     ? null
