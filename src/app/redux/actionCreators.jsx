@@ -593,12 +593,10 @@ const setFiltersAndSorting = (filters, sorting, shouldSave) => (
     filters,
     sorting
   });
-  const isFilterEmpty = filter =>
-    f.isEmpty(filter.value) && !f.isString(filter.mode);
   const rowsFilter = {
     sortColumnId: f.get("columnId", sorting),
     sortValue: f.get("value", sorting),
-    filters: f.reject(isFilterEmpty, filters)
+    filters
   };
   if (shouldSave) {
     const currentTable = f.get(["tableView", "currentTable"], getState());
