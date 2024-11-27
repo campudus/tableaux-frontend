@@ -3,26 +3,13 @@ import f from "lodash/fp";
 import PropTypes from "prop-types";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { translate } from "react-i18next";
-import listensToClickOutside from "react-onclickoutside";
 import { useSelector } from "react-redux";
 import Select from "react-select";
-import TableauxConstants, {
-  ColumnKinds,
-  FilterModes,
-  Langtags,
-  RowIdColumn,
-  SortValues
-} from "../../../constants/TableauxConstants";
-import { either } from "../../../helpers/functools";
-import { getColumnDisplayName } from "../../../helpers/multiLanguage";
-import { canColumnBeSearched } from "../../../helpers/searchFunctions";
+import TableauxConstants from "../../../constants/TableauxConstants";
 import { outsideClickEffect } from "../../../helpers/useOutsideClick";
-import store from "../../../redux/store";
 import RowFilters from "../../../RowFilters";
-import { SortableCellKinds } from "../../table/RowFilters";
 import FilterPopupFooter from "./FilterPopupFooter";
-import FilterPresetList from "./FilterPresetList";
-import FilterRow, { BOOL, TEXT } from "./FilterRow";
+import FilterRow from "./FilterRow";
 import FilterSavingPopup from "./FilterSavingPopup";
 import {
   fromCombinedFilter,
@@ -30,555 +17,8 @@ import {
   toCombinedFilter
 } from "./helpers";
 import { match, when, otherwise } from "match-iz";
-
-const SPECIAL_SEARCHES = [
-  FilterModes.ANY_UNTRANSLATED,
-  FilterModes.UNTRANSLATED,
-  FilterModes.FINAL,
-  FilterModes.IMPORTANT,
-  FilterModes.CHECK_ME,
-  FilterModes.POSTPONE,
-  FilterModes.ROW_CONTAINS,
-  FilterModes.WITH_COMMENT
-];
-
-const SPECIAL_TEXT_SEARCHES = [FilterModes.ROW_CONTAINS];
-
-@translate(["filter", "table"])
-@listensToClickOutside
-class FilterPopup extends React.Component {
-  static isSortableColumn = column =>
-    f.contains(column.kind, SortableCellKinds);
-  static isSearchableColumn = column =>
-    column.id !== RowIdColumn.id && canColumnBeSearched(column);
-
-  sortableColumns = null;
-  searchableColumns = null;
-  statusFilters = null;
-
-  constructor(props) {
-    super(props);
-
-    const cleanFilter = filter => {
-      return {
-        columnId: either(filter)
-          .map(cf => {
-            const mode = f.get(["mode"], cf);
-            return f.contains(mode, SPECIAL_SEARCHES)
-              ? mode
-              : cf.mode === FilterModes.STATUS
-              ? cf.compareValue
-              : null;
-          })
-          .orElse(
-            f.flow(
-              f.get("columnId"),
-              f.toString
-            )
-          )
-          .getOrElse(null),
-        mode: f.get("mode", filter),
-        value: f.get("value", filter),
-        compareValue: f.get("compareValue", filter),
-        colId: f.get("colId", filter),
-        columnKind: f.get("columnKind", filter)
-      };
-    };
-
-    const sorting = {
-      columnId: f.get(["currentFilter", "sorting", "columnId"], props),
-      value: f.getOr(
-        TableauxConstants.SortValues.ASC,
-        ["currentFilter", "sorting", "value"],
-        props
-      )
-    };
-    this.state = {
-      savePopupOpen: false,
-      sorting,
-      filterModesOpen: false,
-      filters: f
-        .propOr([{}], ["currentFilter", "filters"], props)
-        .map(cleanFilter)
-    };
-
-    this.sortableColumns = this.buildColumnOptions(
-      FilterPopup.isSortableColumn
-    );
-    this.searchableColumns = this.buildColumnOptions(
-      FilterPopup.isSearchableColumn
-    );
-  }
-
-  addFilter = () => {
-    this.setState({ filters: [...this.state.filters, {}] });
-  };
-
-  removeFilter = (idx = this.state.filters.length - 1) => () => {
-    this.setState({ filters: f.pullAt(idx, this.state.filters) });
-  };
-
-  getSortableColumns() {
-    return (
-      this.sortableColumns ||
-      (this.sortableColumns = this.buildColumnOptions(
-        FilterPopup.isSortableColumn()
-      ))
-    );
-  }
-
-  calcStatusFilters = statusColumn => {
-    const { rules, id } = statusColumn;
-    const { langtag } = this.props;
-    return f.map(rule => {
-      const value = f.get(["displayName", langtag], rule);
-      return {
-        value,
-        label: value,
-        kind: FilterModes.STATUS,
-        columnId: value,
-        colId: id
-      };
-    }, rules);
-  };
-
-  getSearchableColumns() {
-    const searchableColumns =
-      this.searchableColumns ||
-      (this.searchableColumns = this.buildColumnOptions(
-        FilterPopup.isSearchableColumn()
-      ));
-    const { langtag, columns } = this.props;
-    const maybeStatusColumn = f.find({ kind: ColumnKinds.status }, columns);
-    const statusFilters =
-      this.statusFilters || maybeStatusColumn
-        ? this.calcStatusFilters(maybeStatusColumn)
-        : [];
-    return [
-      {
-        label: f.toUpper(this.props.t("table:filter.generic")),
-        disabled: true
-      },
-      langtag !== f.first(Langtags)
-        ? {
-            label: this.props.t("table:translations.this_translation_needed", {
-              langtag
-            }),
-            value: FilterModes.UNTRANSLATED,
-            kind: BOOL
-          }
-        : {
-            label: this.props.t("table:filter.needs_translation"),
-            value: FilterModes.ANY_UNTRANSLATED,
-            kind: BOOL
-          },
-      {
-        label: this.props.t("table:filter.is_final"),
-        value: FilterModes.FINAL,
-        kind: BOOL
-      },
-      {
-        label: this.props.t("table:important"),
-        value: FilterModes.IMPORTANT,
-        kind: BOOL
-      },
-      {
-        label: this.props.t("table:check-me"),
-        value: FilterModes.CHECK_ME,
-        kind: BOOL
-      },
-      {
-        label: this.props.t("table:postpone"),
-        value: FilterModes.POSTPONE,
-        kind: BOOL
-      },
-      {
-        label: this.props.t("filter:has-comments"),
-        value: FilterModes.WITH_COMMENT,
-        kind: BOOL
-      },
-      {
-        label: f.toUpper(this.props.t("filter:status")),
-        disabled: true
-      },
-      ...statusFilters,
-      {
-        label: f.toUpper(this.props.t("table:filter.specific")),
-        disabled: true
-      },
-      {
-        label: this.props.t("table:filter.row-contains"),
-        value: FilterModes.ROW_CONTAINS,
-        kind: TEXT
-      },
-      ...searchableColumns
-    ];
-  }
-
-  buildColumnOptions(filterFn) {
-    const { columns, langtag } = this.props;
-
-    return columns
-      .filter(column => column.kind !== ColumnKinds.status)
-      .map(column => {
-        const columnDisplayName = getColumnDisplayName(column, langtag);
-
-        return {
-          // ...column, // TODO: may be required if we need more specific predicates, but could break persisted filter state
-          label: columnDisplayName,
-          value: f.toString(column.id),
-          kind: column.kind,
-          disabled: !filterFn(column)
-        };
-      });
-  }
-
-  getSortOptions() {
-    const { t } = this.props;
-
-    return [
-      {
-        label: t("help.sortasc"),
-        value: TableauxConstants.SortValues.ASC
-      },
-      {
-        label: t("help.sortdesc"),
-        value: TableauxConstants.SortValues.DESC
-      }
-    ];
-  }
-
-  changeFilterValue = idx => event => {
-    const hasNodeType = tag => f.matchesProperty(["target", "tagName"], tag);
-    void f.cond([
-      [hasNodeType("INPUT"), this.changeTextFilterValue(idx)],
-      [f.stubTrue, this.toggleBoolFilter(idx)]
-    ])(event);
-  };
-  changeTextFilterValue = idx => event => {
-    this.setState({
-      filters: f.assoc([idx, "value"], event.target.value, this.state.filters)
-    });
-  };
-  toggleBoolFilter = idx => () => {
-    const { filters } = this.state;
-    this.setState({
-      filters: f.assoc([idx, "value"], !f.get([idx, "value"], filters), filters)
-    });
-  };
-
-  changeFilterMode = idx => mode => {
-    this.setState({
-      filters: f.assoc([idx, "mode"], mode, this.state.filters)
-    });
-  };
-
-  applyFilters = event => {
-    const { filters, sorting } = this.state;
-    const { setRowFilter, actions, langtag } = this.props;
-    const tableId = f.prop("tableView.currentTable", store.getState());
-    actions.toggleCellSelection({ select: false, langtag, tableId });
-    const colIdToNumber = obj =>
-      f.assoc("columnId", parseInt(obj.columnId), obj);
-    setRowFilter(
-      f.map(colIdToNumber, filters),
-      colIdToNumber(sorting),
-      "shouldSave"
-    );
-    this.handleClickOutside(event);
-  };
-
-  clearFilter = event => {
-    const { setRowFilter } = this.props;
-    setRowFilter([], {}, "shouldSave");
-    this.handleClickOutside(event);
-  };
-
-  handleClickOutside = event => {
-    this.props.onClickedOutside(event);
-  };
-
-  selectFilterValueRenderer = option => {
-    return (
-      <div>
-        <span>{option.label}</span>
-      </div>
-    );
-  };
-
-  selectSortValueRenderer = option => {
-    if (option.value === TableauxConstants.SortValues.ASC) {
-      return (
-        <div>
-          <i className="fa fa-sort-alpha-asc" /> {option.label}
-        </div>
-      );
-    } else {
-      return (
-        <div>
-          <i className="fa fa-sort-alpha-desc" /> {option.label}
-        </div>
-      );
-    }
-  };
-
-  filtersForKind = kind => {
-    return f.cond([
-      [f.eq(ColumnKinds.boolean), f.always("boolean")],
-      [f.eq(ColumnKinds.number), f.always("text")],
-      [f.eq(ColumnKinds.status), f.always("status")],
-      [f.stubTrue, f.always("text")]
-    ])(kind);
-  };
-
-  onChangeFilterColumn = idx => option => {
-    const { value, kind } = option;
-    const oldFilter = f.defaultTo({})(f.get(["filters", idx]));
-    let filter;
-    if (f.contains(value, SPECIAL_SEARCHES)) {
-      filter = {
-        columnId: value,
-        mode: value,
-        columnKind: f.contains(value, SPECIAL_TEXT_SEARCHES) ? TEXT : BOOL,
-        value: true
-      };
-    } else if (kind === "STATUS") {
-      const { columnId, label, colId } = option;
-      filter = {
-        mode: "STATUS",
-        columnKind: "status",
-        value: true,
-        compareValue: value,
-        columnId,
-        label,
-        colId
-      };
-    } else {
-      const defaultMode = FilterModes.CONTAINS;
-      const oldValue = oldFilter.value;
-      const filterMode =
-        oldFilter.columnKind === BOOL
-          ? defaultMode
-          : oldFilter.mode || defaultMode;
-      const columnKind = this.filtersForKind(kind);
-      filter = {
-        mode: columnKind === ColumnKinds.boolean ? BOOL : filterMode,
-        columnId: value,
-        value:
-          columnKind === ColumnKinds.boolean
-            ? true
-            : f.isString(oldValue)
-            ? oldValue
-            : "",
-        columnKind
-      };
-    }
-    this.setState({ filters: f.assoc([idx], filter, this.state.filters) });
-  };
-
-  onChangeSelectSortColumn = selection => {
-    const { value } = selection;
-    const sortValue = f.defaultTo(SortValues.ASC)(
-      f.prop(["sorting", "sortvalue"], this.state)
-    );
-    this.setState({
-      sorting: {
-        columnId: value,
-        value: sortValue
-      }
-    });
-  };
-
-  onChangeSelectSortValue = selection => {
-    if (f.isObject(selection) && !f.isNil(selection.value)) {
-      this.setState({
-        sorting: f.assoc("value", selection.value, this.state.sorting)
-      });
-    }
-  };
-
-  clearSorting = () => {
-    this.onChangeSelectSortColumn({});
-  };
-
-  toggleFilterSavingPopup = () => {
-    this.setState(f.update("savePopupOpen", open => !open));
-  };
-  closeFilterSavingPopup = () => this.setState(f.assoc("savePopupOpen", false));
-
-  render() {
-    const { t } = this.props;
-    const { sorting } = this.state;
-
-    const filters = f.isEmpty(this.state.filters)
-      ? [
-          {
-            mode: FilterModes.CONTAINS,
-            value: null,
-            columnId: null
-          }
-        ]
-      : this.state.filters;
-
-    const sortColumnSelected = f.isInteger(parseInt(sorting.columnId));
-    const hasFilterValue = filter =>
-      (filter.columnKind === TEXT &&
-        f.isString(filter.value) &&
-        !f.isEmpty(filter.value)) ||
-      ((filter.columnKind === BOOL || filter.mode === FilterModes.STATUS) &&
-        f.isBoolean(filter.value)) ||
-      filter.mode === FilterModes.IS_EMPTY;
-    const anyFilterHasValue = f.flow(
-      f.map(hasFilterValue),
-      f.any(f.identity)
-    )(filters);
-    const canApplyFilter = sortColumnSelected || anyFilterHasValue;
-    const sortOptions = this.getSortOptions();
-
-    const allColumns = this.getSearchableColumns();
-    const selectedByOtherFilters = idx =>
-      f.flow(
-        f.map("columnId"),
-        f.pull(filters[idx].columnId) //  remove element selected by this filter
-      )(filters);
-    const isSelectedByOtherFilter = idx =>
-      f.flow(
-        f.get("value"),
-        v => f.contains(v, selectedByOtherFilters(idx))
-      );
-    const availableColumns = idx =>
-      f.reject(isSelectedByOtherFilter(idx), allColumns);
-
-    return (
-      <div className="filter-popup">
-        {this.state.savePopupOpen && (
-          <FilterSavingPopup
-            filters={filters}
-            templates={[]}
-            saveTemplate={() => null}
-            columns={allColumns}
-            handleClickOutside={this.closeFilterSavingPopup}
-          />
-        )}
-        <section className="filter-popup__content-section">
-          <header className="filter-popup__header">
-            <div className="filter-popup__heading">
-              {i18n.t("table:filter.filters")}
-            </div>
-            <button
-              className={
-                "filter-popup__save-link-button" +
-                (this.state.savePopupOpen ? " ignore-react-onclickoutside" : "")
-              }
-              onClick={this.toggleFilterSavingPopup}
-              disabled={!canApplyFilter}
-            >
-              <i className="fa fa-save" />
-              {i18n.t("table:filter.save-filter")}
-            </button>
-          </header>
-
-          {filters.map((filter, idx) => {
-            const isIDFilter = either(filter)
-              .map(f.matchesProperty("mode", FilterModes.ID_ONLY))
-              .getOrElse(false);
-            return isIDFilter ? (
-              <div className="wip-filter-message" key={idx}>
-                {i18n.t("table:filter.rows_hidden", {
-                  rowId: this.props.currentFilter.filterValue
-                })}
-              </div>
-            ) : (
-              <FilterRow
-                columns={this.props.columns}
-                settings={{}}
-                langtag={this.props.langtag}
-                searchableColumns={availableColumns(idx)}
-                valueRenderer={this.selectFilterValueRenderer}
-                onChangeColumn={this.onChangeFilterColumn(idx)}
-                onChangeValue={this.changeFilterValue(idx)}
-                onChangeMode={this.changeFilterMode(idx)}
-                onAddFilter={
-                  idx === filters.length - 1 && filters.length < 6
-                    ? this.addFilter
-                    : null
-                }
-                onRemoveFilter={
-                  filters.length > 1 ? this.removeFilter(idx) : null
-                }
-                filter={filter}
-                applyFilters={this.applyFilters}
-                key={idx}
-                t={t}
-              />
-            );
-          })}
-        </section>
-
-        <section className="filter-popup__content-section filter-popup-sorting-section">
-          <header className="filter-popup__header">
-            <div className="filter-popup__heading">
-              {i18n.t("table:filter.sorting")}
-            </div>
-          </header>
-          <div className="sort-row">
-            <button className="filter-array-button" onClick={this.clearSorting}>
-              <i className="fa fa-trash" />
-            </button>
-            <Select
-              className="filter-select"
-              options={this.getSortableColumns()}
-              searchable={true}
-              openOnFocus
-              clearable={false}
-              value={sorting.columnId}
-              onChange={this.onChangeSelectSortColumn}
-              valueRenderer={this.selectFilterValueRenderer}
-              noResultsText={t("filter:input.noResult")}
-              placeholder={t("filter:input.sort")}
-            />
-            <div className="separator"></div>
-            <Select
-              disabled={!sortColumnSelected}
-              className="filter-select"
-              options={sortOptions}
-              searchable={false}
-              clearable={false}
-              value={sortColumnSelected ? sorting.value : ""}
-              onChange={this.onChangeSelectSortValue}
-              valueRenderer={this.selectSortValueRenderer}
-              optionRenderer={this.selectSortValueRenderer}
-              noResultsText={t("filter:input.noResult")}
-              placeholder=""
-            />
-          </div>
-        </section>
-
-        <FilterPopupFooter
-          canApplyFilters={!!canApplyFilter}
-          applyFilters={this.applyFilters}
-          clearFilters={this.clearFilter}
-          filters={filters}
-          sorting={sorting}
-          langtag={this.props.langtag}
-        />
-
-        <FilterPresetList
-          langtag={this.props.langtag}
-          closeFilterPopup={this.handleClickOutside}
-        />
-      </div>
-    );
-  }
-}
-
-FilterPopup.propTypes = {
-  langtag: PropTypes.string.isRequired,
-  onClickedOutside: PropTypes.func.isRequired,
-  columns: PropTypes.array.isRequired,
-  setRowFilter: PropTypes.func.isRequired,
-  currentFilter: PropTypes.object
-};
+import { RestoreSavedFiltersArea } from "./FilterSavingPopup";
+import * as Storage from "../../../helpers/localStorage";
 
 const of = el => (Array.isArray(el) ? el : [el]);
 
@@ -599,18 +39,43 @@ const TheFilterPopup = ({
     }),
     [containerRef.current]
   );
+  const [showFilterSavePopup, setShowFilterSavePopup] = useState(false);
 
-  console.log("CURRENT FILTER", JSON.stringify(currentFilter));
   const parseFilterSettings = fromCombinedFilter(columns, langtag);
   const parsedFilterSettings = parseFilterSettings(currentFilter.filters || []);
+  const toRowFilterArray = rowFilters =>
+    f.isEmpty(rowFilters) ? [{}] : of(rowFilters);
   const [rowFilters, setRowFilters] = useState(
-    f.isEmpty(parsedFilterSettings.rowFilters)
-      ? [{}]
-      : of(parsedFilterSettings.rowFilters)
+    toRowFilterArray(parsedFilterSettings.rowFilters)
   );
   const [annotationFilters, setAnnotationFilters] = useState(
     parsedFilterSettings.annotationFilters
   );
+
+  const [userFilters, setUserFilters] = useState(
+    f.propOr({}, "*", Storage.getStoredViewObject())
+  );
+  const handleSetFromUserFilter = template => {
+    const parsedTemplate = parseFilterSettings(template);
+    setRowFilters(toRowFilterArray(parsedTemplate.rowFilters));
+    setAnnotationFilters(parsedTemplate.annotationFilters);
+    actions.setFiltersAndSorting(template, [], true);
+  };
+  const handleStoreUserFilter = (title, template) => {
+    Storage.saveFilterSettings("*", { filters: template }, title);
+    setUserFilters(f.propOr({}, "*", Storage.getStoredViewObject()));
+  };
+  const handleClearUserFilter = title => {
+    const cleared = f.dissoc(title, userFilters);
+    const tableViews = JSON.stringify(
+      localStorage.getItem("tableViews") ?? "{}"
+    );
+    localStorage.setItem(
+      "tableViews",
+      JSON.stringify({ ...tableViews, ["*"]: cleared })
+    );
+    setUserFilters(cleared);
+  };
 
   const toggleAnnotationFilter = key => () =>
     void setAnnotationFilters({
@@ -637,6 +102,7 @@ const TheFilterPopup = ({
   };
   const handleClearFilters = () => {
     setRowFilters([{}]);
+    setAnnotationFilters({});
     actions.setFiltersAndSorting([], [], true);
   };
   return (
@@ -646,6 +112,13 @@ const TheFilterPopup = ({
           <div className="filter-popup__heading">
             {i18n.t("table:filter.filters")}
           </div>
+          <button
+            className="button button--open-save-overlay"
+            onClick={() => setShowFilterSavePopup(true)}
+            disabled={!settingsAreValid}
+          >
+            Save
+          </button>
         </header>
         <div>
           <ColumnFilterArea
@@ -667,6 +140,21 @@ const TheFilterPopup = ({
         clearFilters={handleClearFilters}
         canApplyFilters={settingsAreValid}
       />
+      {
+        <RestoreSavedFiltersArea
+          columns={columns}
+          onClear={handleClearUserFilter}
+          onSubmit={handleSetFromUserFilter}
+          storedFilters={userFilters}
+        />
+      }
+      {showFilterSavePopup ? (
+        <FilterSavingPopup
+          filters={filterList}
+          onClose={() => setShowFilterSavePopup(false)}
+          onSubmit={handleStoreUserFilter}
+        />
+      ) : null}
     </div>
   );
 };

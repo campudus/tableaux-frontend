@@ -1,34 +1,17 @@
-import { useSelector } from "react-redux";
-import React, { useCallback, useState } from "react";
-import f from "lodash/fp";
 import i18n from "i18next";
-import listensToClickOutside from "react-onclickoutside";
-
+import f from "lodash/fp";
 import PropTypes from "prop-types";
-
-import { FILTER_TEMPLATES_KEY, filterListToTemplate } from "./FilterPresets";
+import React, { useCallback, useState } from "react";
+import listensToClickOutside from "react-onclickoutside";
 import { useLocalStorage } from "../../../helpers/useLocalStorage";
 
-const tableColumnsSelector = state => {
-  const tableId = state.tableView.currentTable;
-  return state.columns[tableId].data;
-};
-
-const FilterSavingPopup = ({ filters, handleClickOutside }) => {
-  const columns = useSelector(tableColumnsSelector);
+const FilterSavingPopup = ({ filters, onClose, onSubmit }) => {
   const [title, setTitle] = useState("");
-  const [userTemplates, setUserTemplates] = useLocalStorage(
-    FILTER_TEMPLATES_KEY,
-    []
-  );
-
   const handleTitleChange = useCallback(event => setTitle(event.target.value));
+
   const handleSaveTemplate = useCallback(() => {
-    const template = filterListToTemplate(title, filters, columns);
-    const templatesToStore =
-      userTemplates |> f.reject(f.propEq("title", title)) |> f.concat(template);
-    setUserTemplates(templatesToStore);
-    handleClickOutside();
+    onSubmit(title, filters);
+    onClose();
   });
 
   const handleKeyDown = useCallback(({ key }) => {
@@ -36,7 +19,7 @@ const FilterSavingPopup = ({ filters, handleClickOutside }) => {
       handleSaveTemplate();
     } else if (key === "Escape") {
       if (f.isEmpty(title)) {
-        handleClickOutside();
+        onClose();
       } else {
         setTitle("");
       }
@@ -44,7 +27,10 @@ const FilterSavingPopup = ({ filters, handleClickOutside }) => {
   });
 
   return (
-    <div className="save-template-popup">
+    <div
+      className="save-template-popup"
+      onClick={event => void event.stopPropagation()}
+    >
       <header className="save-template-popup__header">
         {i18n.t("table:filter.save-filter")}
       </header>
@@ -58,10 +44,7 @@ const FilterSavingPopup = ({ filters, handleClickOutside }) => {
         onKeyDown={handleKeyDown}
       />
       <footer className="save-template-popup__footer">
-        <button
-          className="button neutral button-cancel"
-          onClick={handleClickOutside}
-        >
+        <button className="button neutral button-cancel" onClick={onClose}>
           {i18n.t("common:cancel")}
         </button>
         <button
@@ -76,10 +59,63 @@ const FilterSavingPopup = ({ filters, handleClickOutside }) => {
   );
 };
 
+const isApplicable = columns => {
+  const hasProperColumns = filters => {
+    return filters?.reduce((hasAll, next) => {
+      const [kind, ...args] = next;
+      switch (kind) {
+        case "value":
+          return columns.has(args[0]);
+        case "and":
+        case "or":
+          return hasProperColumns(args);
+        default:
+          return hasAll;
+      }
+    }, true);
+  };
+  return hasProperColumns;
+};
+
+export const RestoreSavedFiltersArea = ({
+  columns,
+  onSubmit,
+  storedFilters,
+  onClear
+}) => {
+  const columnNames = new Set(columns.map(col => col.name));
+  const isValidTemplate = isApplicable(columnNames);
+  const isGoodTemplate = t => !f.isEmpty(t) && isValidTemplate(t);
+  const getGoodTemplates = f.compose(
+    Object.fromEntries,
+    f.filter(([_, template]) => isGoodTemplate(template)),
+    f.map(([name, view]) => [name, view?.rowsFilter?.filters ?? []]),
+    Object.entries
+  );
+  console.log({ storedFilters });
+  const templates = getGoodTemplates(storedFilters);
+  const clearTemplate = name => void onClear(name);
+
+  return (
+    <section>
+      <header></header>
+      <ul>
+        {Object.entries(templates).map(([name, template]) => (
+          <li key={name}>
+            <span>{name}</span>
+            <button onClick={() => onSubmit(template)}>Anwenden</button>
+            <button onClick={() => void clearTemplate(name)}>
+              <i className="fa fa-trash" />
+            </button>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+};
+
 export default listensToClickOutside(FilterSavingPopup);
 FilterSavingPopup.propTypes = {
   filters: PropTypes.array.isRequired,
-  templates: PropTypes.array.isRequired,
-  saveTemplate: PropTypes.func.isRequired,
-  columns: PropTypes.array.isRequired
+  onClose: PropTypes.func.isRequired
 };
