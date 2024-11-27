@@ -7,6 +7,7 @@ import FilterDateTime from "./DateTime";
 import FilterNumber from "./Number";
 import FilterText from "./Text";
 import FilterRowProp from "./RowProp";
+import getDisplayValue from "../helpers/getDisplayValue";
 
 export const Annotation = FilterAnnotation.Mode;
 export const Boolean = FilterBoolean.Mode;
@@ -19,7 +20,7 @@ export const RowProp = FilterRowProp.Mode;
 const ModesForKind = {
   [ColumnKinds.attachment]: null,
   [ColumnKinds.boolean]: FilterBoolean,
-  [ColumnKinds.concat]: null,
+  [ColumnKinds.concat]: FilterText,
   [ColumnKinds.currency]: null,
   [ColumnKinds.date]: FilterDate,
   [ColumnKinds.datetime]: FilterDateTime,
@@ -151,6 +152,16 @@ const buildContext = (tableId, langtag, store) => {
   const retrieveDisplayValue = name => row =>
     f.get(langtag, getDisplayValueEntry(name, row));
 
+  const retrieveConcatValue = name => {
+    // There will be only one, and that one is one of the first
+    const concatColumn = columns.find(col => col.name === name);
+    const idx = columnIdxLookup[concatColumn.name];
+    return row => {
+      const value = f.get(`values.${idx}`, row);
+      return getDisplayValue(concatColumn, value)[langtag];
+    };
+  };
+
   const retrieveLinkDisplayValue = name => row => {
     const dvDefinition = getDisplayValueEntry(name, row);
     const toTableId = dvDefinition.tableId;
@@ -178,6 +189,7 @@ const buildContext = (tableId, langtag, store) => {
 
   const lookupFn = {
     [ColumnKinds.boolean]: retrieveRawValue,
+    [ColumnKinds.concat]: retrieveConcatValue,
     [ColumnKinds.date]: retrieveRawValue,
     [ColumnKinds.datetime]: retrieveRawValue,
     [ColumnKinds.integer]: retrieveRawValue,
