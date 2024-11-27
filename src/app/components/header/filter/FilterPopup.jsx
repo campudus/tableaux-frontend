@@ -29,6 +29,7 @@ import {
   mkAnnotationFilterTemplates,
   toCombinedFilter
 } from "./helpers";
+import { match, when, otherwise } from "match-iz";
 
 const SPECIAL_SEARCHES = [
   FilterModes.ANY_UNTRANSLATED,
@@ -675,9 +676,13 @@ export default TheFilterPopup;
 const settingToFilter = ({ column, mode, value }) => {
   const needsValueArg = RowFilters.needsFilterValue(column?.kind, mode);
   const hasValue = !f.isNil(value) && value !== "";
-  return !column || !mode || (needsValueArg && !hasValue)
-    ? null
-    : ["value", column.name, mode, value];
+  const isIncomplete = !column || !mode || (needsValueArg && !hasValue);
+  const isIdFilter = column?.name === "rowId";
+  return match({ isIncomplete, isIdFilter })(
+    when({ isIncomplete: true }, () => null),
+    when({ isIdFilter: true }, () => ["row-prop", "id", mode, value]),
+    otherwise(() => ["value", column.name, mode, value])
+  );
 };
 
 const AnnotationFilterArea = ({ onToggle, filters, options, langtag }) => {

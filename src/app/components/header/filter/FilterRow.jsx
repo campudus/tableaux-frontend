@@ -14,6 +14,7 @@ export const TEXT = "text";
 const FilterRow = ({ columns, langtag, onChange, onRemove, settings }) => {
   const columnsByName = f.indexBy("name", columns);
   const { column, mode, value } = settings;
+  console.log(columns.map(f.pick(["id", "name", "kind"])));
   const searchableColumns = columns.filter(col =>
     Boolean(RowFilters.ModesForKind[col.kind])
   );
