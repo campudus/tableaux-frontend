@@ -39,15 +39,7 @@ const filterableColumnKinds = new Set(
 );
 
 const canFilterByColumnKind = filterableColumnKinds.has;
-
-const canSortByColumnKind = kind => {
-  const filterModes = ModesForKind[kind];
-  return (
-    filterModes &&
-    typeof filterModes.lt === "function" &&
-    typeof filterModes.empty === "function"
-  );
-};
+const canSortByColumnKind = canFilterByColumnKind;
 
 /*
  * Parses filter expressions according to the following BNF from Arrays
@@ -74,6 +66,7 @@ const canSortByColumnKind = kind => {
  *
  * Produces Row -> Boolean
  */
+
 const parse = ctx => {
   const parseImpl = list => {
     const [kind, ...args] = list;
@@ -139,7 +132,7 @@ const buildContext = (tableId, langtag, store) => {
     acc[name] = kind;
     return acc;
   }, {});
-  const rows = store.rows[tableId].data ?? [];
+  const rows = f.propOr([], ["rows", tableId, "data"], store);
   const displayValues = store.tableView.displayValues[tableId];
   const rowIdxLookup = buildIdxLookup("id", rows);
 
@@ -187,8 +180,13 @@ const buildContext = (tableId, langtag, store) => {
       : rawValue;
   };
 
+  const retrieveBooleanValue = name => {
+    const getValue = retrieveRawValue(name);
+    return row => !!getValue(row);
+  };
+
   const lookupFn = {
-    [ColumnKinds.boolean]: retrieveRawValue,
+    [ColumnKinds.boolean]: retrieveBooleanValue,
     [ColumnKinds.concat]: retrieveConcatValue,
     [ColumnKinds.date]: retrieveRawValue,
     [ColumnKinds.datetime]: retrieveRawValue,
@@ -217,7 +215,8 @@ const buildContext = (tableId, langtag, store) => {
 
   return {
     columns,
-    getValue: name => lookupFn[columnKindLookup[name]](name),
+    getValue: name =>
+      name === "rowId" ? row => row.id : lookupFn[columnKindLookup[name]](name),
     getValueFilter: buildValueFilter
   };
 };
@@ -239,10 +238,46 @@ const needsFilterValue = (columnKind, operation) =>
   // A JS functions `length` is its arity.
   f.prop(`${columnKind}.${operation}`, ModesForKind)?.length > 0;
 
+export const sortRows = (ctx, { colName, direction = "asc" }) => rows => {
+  try {
+    const getValue = ctx.getValue(colName);
+    const lt = direction === "asc" ? -1 : 1;
+    const gt = direction === "asc" ? 1 : -1;
+    const eq = 0;
+    const isEmpty = x => typeof x !== "number" && f.isEmpty(x);
+    const comparator = (a, b) => {
+      const [valA, valB] = [a, b].map(
+        f.compose(
+          v => (typeof v === "string" ? v.toLowerCase() : v),
+          getValue
+        )
+      );
+
+      switch (true) {
+        case isEmpty(valA) && !isEmpty(valB):
+          return gt;
+        case !isEmpty(valA) && isEmpty(valB):
+          return lt;
+        case valA < valB:
+          return lt;
+        case valB < valA:
+          return gt;
+        default:
+          return eq;
+      }
+    };
+    return rows.toSorted(comparator);
+  } catch (err) {
+    console.error(`Could not sort by column with name "${colName}"`, err);
+    return rows;
+  }
+};
+
 export default {
   ModesForKind,
   buildContext,
   canFilterByColumnKind,
+  canSortByColumnKind,
   needsFilterValue,
   parse
 };

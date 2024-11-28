@@ -5,7 +5,7 @@ import { ShowArchived } from "../../archivedRows";
 import DVWorkerCtl from "../../helpers/DisplayValueWorkerControls";
 import { selectShowArchivedState } from "../../redux/reducers/tableView";
 import { match, otherwise, when } from "match-iz";
-import RowFilters, { filterStateful } from "../../RowFilters";
+import RowFilters, { filterStateful, sortRows } from "../../RowFilters";
 
 const withFiltersAndVisibility = Component => props => {
   const store = useSelector(x => x);
@@ -16,7 +16,7 @@ const withFiltersAndVisibility = Component => props => {
     columns = [],
     columnOrdering = [],
     filters = [],
-    sorting = [],
+    sorting = {},
     langtag,
     table
   } = props;
@@ -27,19 +27,28 @@ const withFiltersAndVisibility = Component => props => {
     }
   }, [shouldLaunchDisplayValueWorker]);
 
-  const selectedCell = useSelector(state => state.selectedCell?.selectedCell);
+  const ctx = RowFilters.buildContext(table.id, langtag, store);
 
-  const [visibleRows, visibleColumnIDs] = useMemo(
-    () => filterRows({ filters, sorting, table, langtag, store }),
-    [
-      arrayToKey(props.visibleRows),
-      rows,
-      showArchived,
-      props.filters,
-      props.sorting,
-      f.isEmpty(props.allDisplayValues[props.table.id])
-    ]
-  );
+  const selectedCell = useSelector(state => state.selectedCell?.selectedCell);
+  const canRenderTable = f.every(f.negate(f.isNil), [tables, rows, columns]);
+  const canRenderContent = canRenderTable && !f.isNil(columns[table.id]);
+
+  const [visibleRows, visibleColumnIDs] = useMemo(() => {
+    const applyRowOrdering = canRenderContent
+      ? orderRows(ctx, sorting)
+      : f.identity;
+    return f.compose(
+      ([rs, ids]) => [applyRowOrdering(rs), ids],
+      filterRows
+    )(ctx, { filters, sorting, table, store });
+  }, [
+    arrayToKey(props.visibleRows),
+    rows,
+    showArchived,
+    props.filters,
+    props.sorting,
+    f.isEmpty(props.allDisplayValues[props.table.id])
+  ]);
   const columnsWithVisibility = columns.map((col, idx) => ({
     ...col,
     visible:
@@ -54,11 +63,11 @@ const withFiltersAndVisibility = Component => props => {
   const visibleRowIDs = useMemo(() => f.map("id", visibleRows), [visibleRows]);
 
   const hasRowJumpTarget = isNotNil(selectedCell.rowId);
-  const canRenderTable = f.every(f.negate(f.isNil), [tables, rows, columns]);
+
   const showCellJumpOverlay =
     !props.finishedLoading &&
     hasRowJumpTarget &&
-    !f.find(row => row.id === selectedCell.rowId);
+    !f.find(row => row.id === selectedCell.rowId, rows);
 
   if (canRenderTable) {
     return (
@@ -87,7 +96,10 @@ const arrayToKey = coll =>
     .join(",");
 const isNotNil = f.negate(f.isNil);
 
-const filterRows = ({ filters, sorting, table, langtag, store }) => {
+const orderRows = (ctx, sorting) =>
+  sorting?.colName ? sortRows(ctx, sorting) : f.identity;
+
+const filterRows = (filterContext, { filters, sorting, table, store }) => {
   const showArchived = selectShowArchivedState(store);
   const nothingToFilter =
     f.isEmpty(sorting) &&
@@ -114,9 +126,6 @@ const filterRows = ({ filters, sorting, table, langtag, store }) => {
       : ["and", archivedFilter, filters]
     : filters;
 
-  console.log("FILTER SETTING:", JSON.stringify(filterSetting, null, 2));
-
-  const filterContext = RowFilters.buildContext(tableId, langtag, store);
   const filterRows = filterStateful(
     RowFilters.parse(filterContext)(filterSetting),
     new Set(visibleColumnIds)

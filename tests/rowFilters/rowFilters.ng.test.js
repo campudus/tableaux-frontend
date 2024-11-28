@@ -4,7 +4,8 @@ import RowFilters, {
   Date,
   DateTime,
   Number,
-  Text
+  Text,
+  sortRows
 } from "../../src/app/RowFilters";
 import store from "./fixtures/store.json";
 
@@ -458,6 +459,44 @@ describe("buildContext()", () => {
       expect(filter(rows[0])).toBe(true);
       expect(filter(rows[1])).toBe(true);
       expect(filter(rows[2])).toBe(true);
+    });
+  });
+  describe("sorting", () => {
+    const rowIds = rows => rows.map(row => row.id);
+    const doSort = sorting => sortRows(ctx, sorting)(rows);
+    it("text", () => {
+      expect(
+        rowIds(doSort({ colName: "shorttext", direction: "asc" }))
+      ).toEqual([2, 1, 3]);
+      expect(
+        rowIds(doSort({ colName: "shorttext", direction: "desc" }))
+      ).toEqual([3, 1, 2]);
+    });
+    it("numbers", () => {
+      expect(rowIds(doSort({ colName: "numeric", direction: "asc" }))).toEqual([
+        1,
+        2,
+        3
+      ]);
+      expect(rowIds(doSort({ colName: "numeric", direction: "desc" }))).toEqual(
+        [3, 2, 1]
+      );
+    });
+    it("date", () => {
+      expect(
+        rowIds(sortRows(ctx, { colName: "date", direction: "asc" })(rows))
+      ).toEqual([1, 2, 3]);
+      expect(
+        rowIds(sortRows(ctx, { colName: "date", direction: "desc" })(rows))
+      ).toEqual([3, 2, 1]);
+    });
+    it("boolean", () => {
+      expect(
+        rowIds(sortRows(ctx, { colName: "boolean", direction: "asc" })(rows))
+      ).toEqual([2, 3, 1]);
+      expect(
+        rowIds(sortRows(ctx, { colName: "boolean", direction: "desc" })(rows))
+      ).toEqual([1, 2, 3]);
     });
   });
 });

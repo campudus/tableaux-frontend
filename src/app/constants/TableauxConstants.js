@@ -1,4 +1,4 @@
-var keyMirror = require("keymirror");
+import keyMirror from "keymirror";
 
 /*
  * Order is important.

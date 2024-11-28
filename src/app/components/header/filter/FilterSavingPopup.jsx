@@ -3,7 +3,6 @@ import f from "lodash/fp";
 import PropTypes from "prop-types";
 import React, { useCallback, useState } from "react";
 import listensToClickOutside from "react-onclickoutside";
-import { useLocalStorage } from "../../../helpers/useLocalStorage";
 
 const FilterSavingPopup = ({ filters, onClose, onSubmit }) => {
   const [title, setTitle] = useState("");
@@ -92,7 +91,6 @@ export const RestoreSavedFiltersArea = ({
     f.map(([name, view]) => [name, view?.rowsFilter?.filters ?? []]),
     Object.entries
   );
-  console.log({ storedFilters });
   const templates = getGoodTemplates(storedFilters);
   const clearTemplate = name => void onClear(name);
 
