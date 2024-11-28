@@ -38,7 +38,7 @@ const filterableColumnKinds = new Set(
   Object.keys(ModesForKind).filter(key => ModesForKind[key])
 );
 
-const canFilterByColumnKind = filterableColumnKinds.has;
+const canFilterByColumnKind = kind => filterableColumnKinds.has(kind);
 const canSortByColumnKind = canFilterByColumnKind;
 
 /*

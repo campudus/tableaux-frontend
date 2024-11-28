@@ -19,10 +19,11 @@ import {
 import { match, when, otherwise } from "match-iz";
 import { RestoreSavedFiltersArea } from "./FilterSavingPopup";
 import * as Storage from "../../../helpers/localStorage";
+import { getColumnDisplayName } from "../../../helpers/multiLanguage";
 
 const of = el => (Array.isArray(el) ? el : [el]);
 
-const TheFilterPopup = ({
+const FilterPopup = ({
   actions,
   columns,
   langtag,
@@ -51,6 +52,10 @@ const TheFilterPopup = ({
   const [annotationFilters, setAnnotationFilters] = useState(
     parsedFilterSettings.annotationFilters
   );
+  const [ordering, setOrdering] = useState({
+    ...(currentFilter.sorting ?? {}),
+    direction: currentFilter.sorting?.direction ?? "asc"
+  });
 
   const [userFilters, setUserFilters] = useState(
     f.propOr({}, "*", Storage.getStoredViewObject())
@@ -94,15 +99,16 @@ const TheFilterPopup = ({
       .filter(([_, isSet]) => isSet)
       .map(([key]) => annotationFilterTemplates[key])
   ]);
-  const settingsAreValid = filterList.length > 0;
+  const settingsAreValid = filterList.length > 0 || ordering.colName;
 
   const handleSubmit = () => {
     actions.toggleCellSelection({ select: false, langtag, tableId });
-    actions.setFiltersAndSorting(filterList, [], true);
+    actions.setFiltersAndSorting(filterList, ordering, true);
   };
   const handleClearFilters = () => {
     setRowFilters([{}]);
     setAnnotationFilters({});
+    setOrdering({ direction: "asc" });
     actions.setFiltersAndSorting([], [], true);
   };
   return (
@@ -135,6 +141,12 @@ const TheFilterPopup = ({
           />
         </div>
       </section>
+      <SortingArea
+        columns={columns}
+        onChange={setOrdering}
+        ordering={ordering}
+        langtag={langtag}
+      />
       <FilterPopupFooter
         applyFilters={handleSubmit}
         clearFilters={handleClearFilters}
@@ -159,7 +171,46 @@ const TheFilterPopup = ({
   );
 };
 
-export default TheFilterPopup;
+export default FilterPopup;
+
+const SortingArea = ({ columns, onChange, ordering, langtag }) => {
+  const options = columns
+    .filter(column => RowFilters.canSortByColumnKind(column.kind))
+    .map(column => ({
+      label: getColumnDisplayName(column, langtag),
+      value: column.name
+    }));
+
+  const handleChangeColumn = option =>
+    void onChange({ ...ordering, colName: option.value });
+  const handleChangeDirection = option =>
+    void onChange({ ...ordering, direction: option.value });
+  const handleClear = () => void onChange({ direction: "asc" });
+
+  return (
+    <div className="sorting-area">
+      <header className="header sorting-area__header"></header>
+      <div className="content sorting-area__content">
+        <Select
+          options={options}
+          value={ordering?.colName}
+          onChange={handleChangeColumn}
+        />
+        <Select
+          options={[
+            { value: "asc", label: "asc" },
+            { value: "desc", label: "desc" }
+          ]}
+          value={ordering?.direction}
+          onChange={handleChangeDirection}
+        />
+        <button disabled={f.isEmpty(ordering)} onClick={handleClear}>
+          <i className="fa fa-trash" />
+        </button>
+      </div>
+    </div>
+  );
+};
 
 const settingToFilter = ({ column, mode, value }) => {
   const needsValueArg = RowFilters.needsFilterValue(column?.kind, mode);
