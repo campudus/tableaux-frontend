@@ -1,25 +1,25 @@
 import i18n from "i18next";
 import f from "lodash/fp";
-import PropTypes from "prop-types";
+import { match, otherwise, when } from "match-iz";
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { translate } from "react-i18next";
 import { useSelector } from "react-redux";
 import Select from "react-select";
 import TableauxConstants from "../../../constants/TableauxConstants";
+import { buildClassName } from "../../../helpers/buildClassName";
+import * as Storage from "../../../helpers/localStorage";
+import { getColumnDisplayName } from "../../../helpers/multiLanguage";
 import { outsideClickEffect } from "../../../helpers/useOutsideClick";
 import RowFilters from "../../../RowFilters";
 import FilterPopupFooter from "./FilterPopupFooter";
 import FilterRow from "./FilterRow";
-import FilterSavingPopup from "./FilterSavingPopup";
+import FilterSavingPopup, {
+  RestoreSavedFiltersArea
+} from "./FilterSavingPopup";
 import {
   fromCombinedFilter,
   mkAnnotationFilterTemplates,
   toCombinedFilter
 } from "./helpers";
-import { match, when, otherwise } from "match-iz";
-import { RestoreSavedFiltersArea } from "./FilterSavingPopup";
-import * as Storage from "../../../helpers/localStorage";
-import { getColumnDisplayName } from "../../../helpers/multiLanguage";
 
 const of = el => (Array.isArray(el) ? el : [el]);
 
@@ -99,9 +99,10 @@ const FilterPopup = ({
       .filter(([_, isSet]) => isSet)
       .map(([key]) => annotationFilterTemplates[key])
   ]);
-  const settingsAreValid = filterList.length > 0 || ordering.colName;
+  const settingsAreValid = filterList.length > 0 || Boolean(ordering.colName);
 
   const handleSubmit = () => {
+    console.log({ filterList });
     actions.toggleCellSelection({ select: false, langtag, tableId });
     actions.setFiltersAndSorting(filterList, ordering, true);
   };
@@ -225,6 +226,7 @@ const settingToFilter = ({ column, mode, value }) => {
 };
 
 const AnnotationFilterArea = ({ onToggle, filters, options, langtag }) => {
+  const annotationSettings = f.indexBy("name", TableauxConstants.Annotation);
   const isPrimaryLang = langtag === TableauxConstants.DefaultLangtag;
   const shouldDropFilter = isPrimaryLang
     ? f.eq("needsMyTranslation")
@@ -233,18 +235,43 @@ const AnnotationFilterArea = ({ onToggle, filters, options, langtag }) => {
 
   return (
     <div className="annotation-filters">
-      {options.filter(shouldKeepFilter).map(kind => (
-        <div className="annotation-filter" key={kind} onClick={onToggle(kind)}>
-          <div className="annotation-filter__label">{i18n.t(kind)}</div>
-          <div className="annotation-filter__checkbox">
-            <input
-              type="checkbox"
-              checked={Boolean(filters[kind])}
-              onChange={f.noop}
-            />
-          </div>
-        </div>
-      ))}
+      <div className="annotation-filter__list">
+        {options
+          .filter(shouldKeepFilter)
+          .filter(name => !annotationSettings[name]?.color)
+          .map(kind => (
+            <div
+              className="annotation-filter"
+              key={kind}
+              onClick={onToggle(kind)}
+            >
+              <div className="annotation-filter__label">{i18n.t(kind)}</div>
+              <div className="annotation-filter__checkbox">
+                <input
+                  type="checkbox"
+                  checked={Boolean(filters[kind])}
+                  onChange={f.noop}
+                />
+              </div>
+            </div>
+          ))}
+      </div>
+      <div className="annotation-filter__badges">
+        {options
+          .filter(shouldKeepFilter)
+          .filter(name => annotationSettings[name]?.color)
+          .map(kind => (
+            <button
+              key={kind}
+              onClick={onToggle(kind)}
+              className={buildClassName("annotation-badge", {
+                active: Boolean(filters[kind])
+              })}
+            >
+              {kind}
+            </button>
+          ))}
+      </div>
     </div>
   );
 };

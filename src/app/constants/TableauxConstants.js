@@ -1,4 +1,5 @@
 import keyMirror from "keymirror";
+import { getCssVar } from "../helpers/getCssVar";
 
 /*
  * Order is important.
@@ -7,6 +8,12 @@ import keyMirror from "keymirror";
  */
 let languagetags;
 let _config = {};
+
+const AnnotationKind = {
+  flag: "flag",
+  rowProp: "row-prop",
+  data: "data"
+};
 
 const grudConstants = {
   Directions: keyMirror({
@@ -126,7 +133,28 @@ const grudConstants = {
     return _config;
   },
 
-  initConfig: config => (_config = config)
+  initConfig: config => (_config = config),
+
+  AnnotationKind,
+  Annotation: [
+    { name: "info", kind: AnnotationKind.data },
+    { name: "final", kind: AnnotationKind.rowProp },
+    {
+      name: "important",
+      kind: AnnotationKind.flag,
+      color: getCssVar("--color-important")
+    },
+    {
+      name: "postpone",
+      kind: AnnotationKind.flag,
+      color: getCssVar("--color-postpone")
+    },
+    {
+      name: "doubleCheck",
+      kind: AnnotationKind.flag,
+      color: getCssVar("--color-doublecheck")
+    }
+  ]
 };
 
 module.exports = grudConstants;

@@ -216,3 +216,9 @@ $space-height-link-delete-button: 23px;
 // stolen from MUI elevation-6
 $box-shadow-light: 0px 3px 5px -1px rgba(0, 0, 0, 0.2),
   0px 6px 10px 0px rgba(0, 0, 0, 0.14), 0px 1px 18px 0px rgba(0, 0, 0, 0.12);
+
+:root {
+  --color-important: #ed475e;
+  --color-postpone: #999999;
+  --color-doublecheck: #66d6b0;
+}

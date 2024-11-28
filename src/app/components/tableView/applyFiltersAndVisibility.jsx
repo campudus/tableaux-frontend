@@ -40,7 +40,7 @@ const withFiltersAndVisibility = Component => props => {
     return f.compose(
       ([rs, ids]) => [applyRowOrdering(rs), ids],
       filterRows
-    )(ctx, { filters, sorting, table, store });
+    )(ctx, { filters, table, store });
   }, [
     arrayToKey(props.visibleRows),
     rows,
@@ -99,12 +99,10 @@ const isNotNil = f.negate(f.isNil);
 const orderRows = (ctx, sorting) =>
   sorting?.colName ? sortRows(ctx, sorting) : f.identity;
 
-const filterRows = (filterContext, { filters, sorting, table, store }) => {
+const filterRows = (filterContext, { filters, table, store }) => {
   const showArchived = selectShowArchivedState(store);
   const nothingToFilter =
-    f.isEmpty(sorting) &&
-    f.isEmpty(filters) &&
-    showArchived === ShowArchived.show;
+    f.isEmpty(filters) && showArchived === ShowArchived.show;
   const tableId = table.id;
   const rows = store.rows[tableId]?.data || [];
   const visibleColumnIds = store.tableView.visibleColumns || [];

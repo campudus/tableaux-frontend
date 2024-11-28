@@ -1,22 +1,11 @@
 import { match, otherwise, when } from "match-iz";
 import f from "lodash/fp";
-
-export const AnnotationFilter = {
-  final: "final",
-  important: "important",
-  postpone: "postpone",
-  doubleCheck: "doubleCheck",
-  hasComments: "hasComments",
-  needsAnyTranslation: "needsAnyTranslation",
-  needsMyTranslation: "needsMyTranslation"
-};
+import {
+  Annotation,
+  AnnotationKind
+} from "../../../constants/TableauxConstants";
 
 export const mkAnnotationFilterTemplates = langtag => ({
-  final: ["row-prop", "final", "is-set"],
-  important: ["annotation", "flag-type", "important", "is-set"],
-  postpone: ["annotation", "flag-type", "postpone", "is-set"],
-  doubleCheck: ["annotation", "flag-type", "double-check", "is-set"],
-  hasComments: ["annotation", "type", "info", "is-set"],
   needsAnyTranslation: [
     "annotation",
     "flag-type",
@@ -29,7 +18,22 @@ export const mkAnnotationFilterTemplates = langtag => ({
     "needs_translation",
     "has-language",
     langtag
-  ]
+  ],
+  ...Object.fromEntries(
+    Annotation.map(({ name, kind }) =>
+      match(kind)(
+        when(AnnotationKind.flag, [
+          name,
+          ["annotation", "flag-type", name, "is-set"]
+        ]),
+        when(AnnotationKind.data, [
+          name,
+          ["annotation", "type", name, "is-set"]
+        ]),
+        when(AnnotationKind.rowProp, [name, ["row-prop", name, "is-set"]])
+      )
+    )
+  )
 });
 
 export const toCombinedFilter = settings => {
