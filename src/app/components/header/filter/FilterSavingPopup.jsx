@@ -95,14 +95,24 @@ export const RestoreSavedFiltersArea = ({
   const clearTemplate = name => void onClear(name);
 
   return (
-    <section>
-      <header></header>
-      <ul>
+    <section className="stored-filters-area">
+      <header className="filter-popup__header">
+        <span className="filter-popup__heading">Gespeicherte Filter</span>
+      </header>
+      <ul className="stored-filters">
         {Object.entries(templates).map(([name, template]) => (
-          <li key={name}>
-            <span>{name}</span>
-            <button onClick={() => onSubmit(template)}>Anwenden</button>
-            <button onClick={() => void clearTemplate(name)}>
+          <li className="stored-filter" key={name}>
+            <span className="stored-filter__name">{name}</span>
+            <button
+              className="button button--set-stored-filter"
+              onClick={() => onSubmit(template)}
+            >
+              Anwenden
+            </button>
+            <button
+              className="button button--delete-stored-filter"
+              onClick={() => void clearTemplate(name)}
+            >
               <i className="fa fa-trash" />
             </button>
           </li>

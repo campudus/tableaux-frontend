@@ -37,21 +37,38 @@
       gap: 8px;
     }
 
-    .column-filters {
-      margin-bottom: 16px;
-      padding-bottom: 16px;
-      border-bottom: 1px solid $color-border-grey;
-    }
-
     .annotation-filter {
       display: flex;
       justify-content: space-between;
       align-items: center;
       padding: 3px 6px;
-      padding-right: 16px;
       cursor: pointer;
       &:hover {
         background: $color-hover-background;
+      }
+    }
+
+    .filter-settings {
+      margin-bottom: 16px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid $color-border-grey;
+    }
+
+    .annotation-filter__badges {
+      display: flex;
+      justify-content: end;
+      gap: 9px;
+      margin-top: 12px;
+    }
+    .annotation-badge {
+      padding: 3px 9px;
+      border-radius: 200px; // just big enough!
+      border: 2px solid;
+      font-size: 0.9em;
+      font-weight: bold;
+      opacity: 0.8;
+      &:hover {
+        opacity: 1;
       }
     }
 
@@ -76,18 +93,37 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      font-size: 1.5em;
+      font-size: 1.2em;
       border-radius: 3px;
       color: $color-text-medium-grey;
-      &:hover {
-        background: $color-hover-background;
+      padding: 3px 9px;
+    }
+
+    .button--open-save-overlay {
+      color: $color-primary;
+      font-weight: bold;
+      padding: 3px 6px;
+    }
+
+    .button--reset-sorting {
+      padding: 3px 9px;
+      color: $color-text-medium-grey;
+      font-size: 1.2em;
+    }
+
+    .sorting-area {
+      padding: 12px;
+      &__content {
+        display: grid;
+        grid-template-columns: 1fr 1fr auto 1fr;
+        gap: 12px;
       }
     }
 
     .filter-row {
       display: grid;
       gap: 8px;
-      grid-template-columns: 1fr 1fr 1fr 50px;
+      grid-template-columns: 1fr 1fr 1fr auto;
     }
 
     .filter-options {
@@ -100,6 +136,24 @@
 
       input {
         height: 28px;
+      }
+    }
+
+    .stored-filters-area {
+      background: $color-border-grey;
+      padding: 18px;
+      .stored-filter {
+        display: grid;
+        grid-template-columns: 1fr auto auto;
+        gap: 9px;
+        align-items: center;
+      }
+
+      .button--set-stored-filter {
+        color: $color-primary;
+      }
+      .button--delete-stored-filter {
+        color: $color-text-medium-grey;
       }
     }
 
@@ -156,7 +210,7 @@
       color: $color-text-light-grey;
       padding: 20px 0;
       margin-top: 20px;
-      border-top: 2px solid $color-border-grey;
+      margin-bottom: 20px;
       line-height: 1.5em;
       display: flex;
       justify-content: flex-end;
@@ -299,19 +353,21 @@
   top: 50%;
   transform: translate(-50%, -50%);
 
+  &__header {
+    color: $color-primary-text;
+    font-weight: bold;
+
+    margin-bottom: 20px;
+  }
+
+  &__footer {
+    display: flex;
+    gap: 20px;
+  }
+
   .button {
     @include button-look();
-
-    &:not(:first-of-type) {
-      margin-left: 20px;
-    }
   }
-}
-
-.save-template-popup__header {
-  font-weight: bold;
-  color: $color-text-medium-grey;
-  margin-bottom: 20px;
 }
 
 .save-template__name-input {
@@ -323,6 +379,15 @@
   border-radius: 3px;
 }
 
+.filter-input {
+  border-radius: 3px;
+  border-width: 1px;
+  outline: none;
+  &:focus {
+    outline: none;
+  }
+  box-shadow: none;
+}
 .filter-input__clear-button {
   background: transparentize(white, 0.3);
   position: absolute;

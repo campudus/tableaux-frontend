@@ -129,7 +129,7 @@ const FilterPopup = ({
             Save
           </button>
         </header>
-        <div>
+        <div className="filter-settings">
           <ColumnFilterArea
             langtag={langtag}
             columns={columns}
@@ -143,26 +143,27 @@ const FilterPopup = ({
             onToggle={toggleAnnotationFilter}
           />
         </div>
-      </section>
-      <SortingArea
-        columns={columns}
-        onChange={setOrdering}
-        ordering={ordering}
-        langtag={langtag}
-      />
-      <FilterPopupFooter
-        applyFilters={handleSubmit}
-        clearFilters={handleClearFilters}
-        canApplyFilters={settingsAreValid}
-      />
-      {
-        <RestoreSavedFiltersArea
+        <SortingArea
           columns={columns}
-          onClear={handleClearUserFilter}
-          onSubmit={handleSetFromUserFilter}
-          storedFilters={userFilters}
+          onChange={setOrdering}
+          ordering={ordering}
+          langtag={langtag}
         />
-      }
+        <FilterPopupFooter
+          applyFilters={handleSubmit}
+          clearFilters={handleClearFilters}
+          canApplyFilters={settingsAreValid}
+        />
+        {f.isEmpty(userFilters) ? null : (
+          <RestoreSavedFiltersArea
+            columns={columns}
+            onClear={handleClearUserFilter}
+            onSubmit={handleSetFromUserFilter}
+            storedFilters={userFilters}
+          />
+        )}
+      </section>
+
       {showFilterSavePopup ? (
         <FilterSavingPopup
           filters={filterList}
@@ -192,7 +193,9 @@ const SortingArea = ({ columns, onChange, ordering, langtag }) => {
 
   return (
     <div className="sorting-area">
-      <header className="header sorting-area__header"></header>
+      <header className="filter-popup__header">
+        <span className="filter-popup__heading">Sortieren</span>
+      </header>
       <div className="content sorting-area__content">
         <Select
           options={options}
@@ -207,7 +210,11 @@ const SortingArea = ({ columns, onChange, ordering, langtag }) => {
           value={ordering?.direction}
           onChange={handleChangeDirection}
         />
-        <button disabled={f.isEmpty(ordering)} onClick={handleClear}>
+        <button
+          className="button button--reset-sorting"
+          disabled={!ordering.colName}
+          onClick={handleClear}
+        >
           <i className="fa fa-trash" />
         </button>
       </div>
@@ -263,18 +270,28 @@ const AnnotationFilterArea = ({ onToggle, filters, options, langtag }) => {
           .filter(shouldKeepFilter)
           .filter(name => annotationSettings[name]?.color)
           .map(kind => (
-            <button
+            <AnnotationBadge
               key={kind}
               onClick={onToggle(kind)}
-              className={buildClassName("annotation-badge", {
-                active: Boolean(filters[kind])
-              })}
-            >
-              {kind}
-            </button>
+              active={Boolean(filters[kind])}
+              color={annotationSettings[kind]?.color}
+              title={kind}
+            />
           ))}
       </div>
     </div>
+  );
+};
+const AnnotationBadge = ({ title, onClick, active, color }) => {
+  const cssClass = buildClassName("annotation-badge", { active });
+  const style = active
+    ? { color: "white", borderColor: color, background: color }
+    : { color, borderColor: color, background: "white" };
+
+  return (
+    <button onClick={onClick} className={cssClass} style={style}>
+      {title}
+    </button>
   );
 };
 const ColumnFilterArea = ({ columns, filters, langtag, onChange }) => {
