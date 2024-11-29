@@ -4,6 +4,7 @@ import {
   Annotation,
   AnnotationKind
 } from "../../../constants/TableauxConstants";
+import { getCssVar } from "../../../helpers/getCssVar";
 
 export const mkAnnotationFilterTemplates = langtag => ({
   needsAnyTranslation: [
@@ -45,6 +46,21 @@ export const toCombinedFilter = settings => {
     otherwise(["and", ...validSettings])
   );
   return combined;
+};
+
+export const getAnnotationColor = kind => {
+  const annotationSettings = f.indexBy("name", Annotation);
+  return f.cond([
+    [
+      key => /needs.*?translation/i.test(key),
+      () => getCssVar("--color-needs-translation")
+    ],
+    [
+      key => annotationSettings[key]?.color,
+      key => annotationSettings[key].color
+    ],
+    [() => true, () => "#ddd"]
+  ])(kind);
 };
 
 export const fromCombinedFilter = (columns, langtag) => {

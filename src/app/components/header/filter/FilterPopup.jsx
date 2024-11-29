@@ -19,6 +19,7 @@ import FilterSavingPopup, {
 } from "./FilterSavingPopup";
 import {
   fromCombinedFilter,
+  getAnnotationColor,
   mkAnnotationFilterTemplates,
   toCombinedFilter
 } from "./helpers";
@@ -235,19 +236,19 @@ const settingToFilter = ({ column, mode, value }) => {
 };
 
 const AnnotationFilterArea = ({ onToggle, filters, options, langtag }) => {
-  const annotationSettings = f.indexBy("name", TableauxConstants.Annotation);
   const isPrimaryLang = langtag === TableauxConstants.DefaultLangtag;
   const shouldDropFilter = isPrimaryLang
     ? f.eq("needsMyTranslation")
     : f.eq("needsAnyTranslation");
   const shouldKeepFilter = f.complement(shouldDropFilter);
+  const hasNoBadge = kind => ["final", "info"].includes(kind);
 
   return (
     <div className="annotation-filters">
       <div className="annotation-filter__list">
         {options
           .filter(shouldKeepFilter)
-          .filter(name => !annotationSettings[name]?.color)
+          .filter(hasNoBadge)
           .map(kind => (
             <div
               className="annotation-filter"
@@ -268,13 +269,13 @@ const AnnotationFilterArea = ({ onToggle, filters, options, langtag }) => {
       <div className="annotation-filter__badges">
         {options
           .filter(shouldKeepFilter)
-          .filter(name => annotationSettings[name]?.color)
+          .filter(f.complement(hasNoBadge))
           .map(kind => (
             <AnnotationBadge
               key={kind}
               onClick={onToggle(kind)}
               active={Boolean(filters[kind])}
-              color={annotationSettings[kind]?.color}
+              color={getAnnotationColor(kind)}
               title={kind}
             />
           ))}
