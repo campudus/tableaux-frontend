@@ -150,7 +150,7 @@ const grudConstants = {
       color: getCssVar("--color-postpone")
     },
     {
-      name: "doubleCheck",
+      name: "check-me",
       kind: AnnotationKind.flag,
       color: getCssVar("--color-doublecheck")
     }

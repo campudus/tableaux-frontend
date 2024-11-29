@@ -45,9 +45,9 @@ const withFiltersAndVisibility = Component => props => {
     arrayToKey(props.visibleRows),
     rows,
     showArchived,
-    props.filters,
-    props.sorting,
-    f.isEmpty(props.allDisplayValues[props.table.id])
+    filters,
+    sorting,
+    canRenderContent
   ]);
   const columnsWithVisibility = columns.map((col, idx) => ({
     ...col,
