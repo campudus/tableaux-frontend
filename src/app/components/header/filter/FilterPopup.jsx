@@ -4,7 +4,9 @@ import { match, otherwise, when } from "match-iz";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import Select from "react-select";
-import TableauxConstants from "../../../constants/TableauxConstants";
+import TableauxConstants, {
+  SortValue
+} from "../../../constants/TableauxConstants";
 import { buildClassName } from "../../../helpers/buildClassName";
 import * as Storage from "../../../helpers/localStorage";
 import { getColumnDisplayName } from "../../../helpers/multiLanguage";
@@ -54,7 +56,7 @@ const FilterPopup = ({
   );
   const [ordering, setOrdering] = useState({
     ...(currentFilter.sorting ?? {}),
-    direction: currentFilter.sorting?.direction ?? "asc"
+    direction: currentFilter.sorting?.direction ?? SortValue.asc
   });
 
   const [userFilters, setUserFilters] = useState(
@@ -109,7 +111,7 @@ const FilterPopup = ({
   const handleClearFilters = () => {
     setRowFilters([{}]);
     setAnnotationFilters({});
-    setOrdering({ direction: "asc" });
+    setOrdering({ direction: SortValue.asc });
     actions.setFiltersAndSorting([], [], true);
   };
   return (
@@ -186,7 +188,7 @@ const SortingArea = ({ columns, onChange, ordering, langtag }) => {
     void onChange({ ...ordering, colName: option.value });
   const handleChangeDirection = option =>
     void onChange({ ...ordering, direction: option.value });
-  const handleClear = () => void onChange({ direction: "asc" });
+  const handleClear = () => void onChange({ direction: SortValue.asc });
 
   return (
     <div className="sorting-area">
@@ -199,8 +201,8 @@ const SortingArea = ({ columns, onChange, ordering, langtag }) => {
         />
         <Select
           options={[
-            { value: "asc", label: "asc" },
-            { value: "desc", label: "desc" }
+            { value: SortValue.asd, label: "asc" },
+            { value: SortValue.desc, label: "desc" }
           ]}
           value={ordering?.direction}
           onChange={handleChangeDirection}

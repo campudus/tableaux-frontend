@@ -107,9 +107,9 @@ const grudConstants = {
     languagetags = langtags;
   },
 
-  SortValues: keyMirror({
-    ASC: null,
-    DESC: null
+  SortValue: keyMirror({
+    asc: null,
+    desc: null
   }),
 
   FilterModes: keyMirror({

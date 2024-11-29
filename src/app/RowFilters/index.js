@@ -1,5 +1,5 @@
 import f from "lodash/fp";
-import { ColumnKinds } from "../constants/TableauxConstants";
+import { ColumnKinds, SortValue } from "../constants/TableauxConstants";
 import FilterAnnotation from "./Annotation";
 import FilterBoolean from "./Boolean";
 import FilterDate from "./Date";
@@ -238,11 +238,14 @@ const needsFilterValue = (columnKind, operation) =>
   // A JS functions `length` is its arity.
   f.prop(`${columnKind}.${operation}`, ModesForKind)?.length > 0;
 
-export const sortRows = (ctx, { colName, direction = "asc" }) => rows => {
+export const sortRows = (
+  ctx,
+  { colName, direction = SortValue.asc }
+) => rows => {
   try {
     const getValue = ctx.getValue(colName);
-    const lt = direction === "asc" ? -1 : 1;
-    const gt = direction === "asc" ? 1 : -1;
+    const lt = direction.toLowerCase() === SortValue.asc ? -1 : 1;
+    const gt = direction.toLowerCase() === SortValue.asc ? 1 : -1;
     const eq = 0;
     const isEmpty = x => typeof x !== "number" && f.isEmpty(x);
     const comparator = (a, b) => {
