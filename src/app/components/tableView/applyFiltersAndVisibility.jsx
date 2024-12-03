@@ -56,9 +56,13 @@ const withFiltersAndVisibility = Component => props => {
       col.id === selectedCell?.columnId ||
       visibleColumnIDs.has(col.id)
   }));
+  const columnIdxLookup = (columns || []).reduce((acc, col, idx) => {
+    acc[col.id] = idx;
+    return acc;
+  }, {});
   const visibleColumnOrdering = columnOrdering
     .filter(({ idx }) => columnsWithVisibility[idx]?.visible)
-    .map(({ id }) => id);
+    .map(({ id }) => columnIdxLookup[id]);
 
   const visibleRowIDs = useMemo(() => f.map("id", visibleRows), [visibleRows]);
 
