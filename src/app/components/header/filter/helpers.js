@@ -78,7 +78,6 @@ export const fromCombinedFilter = (columns, langtag) => {
       const [colName, mode, value] = rest;
       const column = columnLookup[colName];
       rowFilters.push({ column, mode, value });
-      console.log("adding value filter", colName, mode, value, rowFilters);
     } else if (kind === "and") {
       rest.forEach(next =>
         filterToSettingM(next, rowFilters, annotationFilters)

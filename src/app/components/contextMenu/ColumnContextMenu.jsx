@@ -15,6 +15,7 @@ import {
 } from "../../helpers/accessManagementHelper";
 import actions from "../../redux/actionCreators";
 import store from "../../redux/store";
+import RowFilters from "../../RowFilters/index";
 
 const PROTECTED_CELL_KINDS = ["concat"]; // cell kinds that should not be editable
 
@@ -110,7 +111,7 @@ class ColumnContextMenu extends React.Component {
       );
     };
 
-    const sortingItems = (
+    const sortingItems = RowFilters.canSortByColumnKind(column.kind) ? (
       <>
         <ContextMenuItem
           closeMenu={closeHandler}
@@ -125,7 +126,7 @@ class ColumnContextMenu extends React.Component {
           title="filter:help.sortdesc"
         />
       </>
-    );
+    ) : null;
 
     return (
       <div

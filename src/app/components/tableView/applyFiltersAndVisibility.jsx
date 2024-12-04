@@ -31,7 +31,7 @@ const withFiltersAndVisibility = Component => props => {
 
   const selectedCell = useSelector(state => state.selectedCell?.selectedCell);
   const canRenderTable = f.every(f.negate(f.isNil), [tables, rows, columns]);
-  const canRenderContent = canRenderTable && !f.isNil(columns[table.id]);
+  const canRenderContent = canRenderTable && !f.isEmpty(columns);
 
   const [visibleRows, visibleColumnIDs] = useMemo(() => {
     const applyRowOrdering = canRenderContent
@@ -100,8 +100,10 @@ const arrayToKey = coll =>
     .join(",");
 const isNotNil = f.negate(f.isNil);
 
-const orderRows = (ctx, sorting) =>
-  sorting?.colName ? sortRows(ctx, sorting) : f.identity;
+const orderRows = (ctx, sorting) => {
+  console.log({ sorting });
+  return sorting?.colName ? sortRows(ctx, sorting) : f.identity;
+};
 
 const filterRows = (filterContext, { filters, table, store }) => {
   const showArchived = selectShowArchivedState(store);
