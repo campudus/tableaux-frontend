@@ -1,4 +1,4 @@
-import { t } from "i18next";
+import i18n, { t } from "i18next";
 import f from "lodash/fp";
 import { match, otherwise, when } from "match-iz";
 import React from "react";
@@ -43,7 +43,7 @@ const FilterRow = ({ columns, langtag, onChange, onRemove, settings }) => {
     value: col.name
   }));
   const modeOptions = Object.values(modes?.Mode ?? {}).map(md => ({
-    label: md,
+    label: i18n.t(`table:filter.mode.${md}`),
     value: md
   }));
   const selectedMode = mode || f.first(modeOptions)?.label;
@@ -70,6 +70,7 @@ const FilterRow = ({ columns, langtag, onChange, onRemove, settings }) => {
         clearable={false}
         value={selectedMode}
         onChange={setMode}
+        placeholder={t("table:filter.choose-filter-mode")}
       />
 
       <ValueInput

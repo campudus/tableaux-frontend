@@ -341,7 +341,7 @@ const mkColumnValueFilter = closures => ({
   compareValue
 }) => {
   const reduxStore = useSelector(store => store);
-  const visibleColumnIDs = new Set(reduxStore.tableView?.visibleColumns ?? []);
+  const _visibleColumnIDs = new Set(reduxStore.tableView?.visibleColumns ?? []);
   const id = f.isNumber(columnId) && !isNaN(columnId) ? columnId : colId;
   const filterColumnIndex = closures.getColumnIndex(id);
   const toFilterValue = closures.cleanString(

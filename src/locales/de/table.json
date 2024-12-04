@@ -119,8 +119,26 @@
     "save-filter": "Filter speichern",
     "filters": "Filter",
     "sorting": "Sortierung",
+    "choose-sort-column": "Spalte wählen",
+    "choose-sort-direction": "Auf-/absteigend?",
+    "choose-filter-mode": "Filtermethode wählen",
     "enter-name": "Filternamen eingeben",
-    "is_empty": "Ist leer"
+    "is_empty": "Ist leer",
+    "mode": {
+      "contains": "Enthält",
+      "equals": "Ist gleich",
+      "ends-with": "Endet auf",
+      "starts-with": "Beginnt mit",
+      "is-empty": "Ist leer",
+      "is-not-empty": "Ist nicht leer",
+      "gt": "Größer als",
+      "gte": "Mindestens",
+      "lt": "Kleiner als",
+      "lte": "Höchstens"
+    },
+    "annotation-mode": {
+
+    }
   },
   "jumpspinner": {
     "title": "Gleich am Ziel!",

@@ -1,4 +1,4 @@
-import i18n from "i18next";
+import i18n, { t } from "i18next";
 import f from "lodash/fp";
 import { match, otherwise, when } from "match-iz";
 import React, { useEffect, useMemo, useRef, useState } from "react";
@@ -105,7 +105,6 @@ const FilterPopup = ({
   const settingsAreValid = filterList.length > 0 || Boolean(ordering.colName);
 
   const handleSubmit = () => {
-    console.log({ filterList });
     actions.toggleCellSelection({ select: false, langtag, tableId });
     actions.setFiltersAndSorting(filterList, ordering, true);
   };
@@ -120,7 +119,7 @@ const FilterPopup = ({
       <section className="filter-popup__content-section">
         <header className="filter-popup__header">
           <div className="filter-popup__heading">
-            {i18n.t("table:filter.filters")}
+            {t("table:filter.filters")}
           </div>
           <button
             className="button button--open-save-overlay"
@@ -195,13 +194,16 @@ const SortingArea = ({ columns, onChange, ordering, langtag }) => {
   return (
     <div className="sorting-area">
       <header className="filter-popup__header">
-        <span className="filter-popup__heading">Sortieren</span>
+        <span className="filter-popup__heading">
+          {t("table:filter.sorting")}
+        </span>
       </header>
       <div className="content sorting-area__content">
         <Select
           options={options}
           value={ordering?.colName}
           onChange={handleChangeColumn}
+          placehoder={t("table:filter.choose-sort-column")}
         />
         <Select
           options={[
@@ -210,6 +212,7 @@ const SortingArea = ({ columns, onChange, ordering, langtag }) => {
           ]}
           value={ordering?.direction}
           onChange={handleChangeDirection}
+          placeholder={t("table:filter.choose-sort-direction")}
         />
         <button
           className="button button--reset-sorting"

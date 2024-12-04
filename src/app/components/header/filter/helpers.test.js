@@ -1,4 +1,4 @@
-import { toCombinedFilter, fromCombinedFilter } from "./helpers";
+import { fromCombinedFilter } from "./helpers";
 
 describe("toCombinedFilter", () => {});
 
