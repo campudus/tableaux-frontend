@@ -31,8 +31,8 @@ const _lookUpPermissions = params => {
   const lookupStructureCached = memoizeWith(lookupKey, (tblId, colId) => {
     const state = store.getState();
     const tables = state.tables;
-    const columns = state.columns[tblId];
-    const rows = (tblId && state.rows[tblId].data) || {};
+    const columns = f.propOr(["columns", tblId], state);
+    const rows = f.propOr({}, ["rows", tblId, "data", state]);
 
     const lookUpTable = id => f.find(f.propEq(["data", "id"], id), tables);
     const missingColumnIds = id => f.isNil(id) || f.isNil(tblId);
