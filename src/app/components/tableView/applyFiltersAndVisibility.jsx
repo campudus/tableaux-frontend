@@ -101,7 +101,6 @@ const arrayToKey = coll =>
 const isNotNil = f.negate(f.isNil);
 
 const orderRows = (ctx, sorting) => {
-  console.log({ sorting });
   return sorting?.colName ? sortRows(ctx, sorting) : f.identity;
 };
 
