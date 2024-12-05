@@ -48,9 +48,11 @@ const canSortByColumnKind = canFilterByColumnKind;
  * Filter         := [Predicate | And | Or]
  * Predicate      := ["value" ColumnName Operator ?OperatorValue]
  *                   | ["row-prop" PropPath Operator ?OperatorValue]
- *                   | ["annotation" AnnotationProp Operator ?OperatorValue]
+ *                   | ["annotation" AnnotationProp FlagName Operator ?OperatorValue]
  * PropPath       := \w+(\.\w+)*
  * AnnotationProp := ("flag-type" String) | ("type" String)
+ * AnnotationName := \w+
+ * ColumnName     := \+
  * And            := ["and" Filter+]
  * Or             := ["or" Filter+]
  *
@@ -61,7 +63,7 @@ const canSortByColumnKind = canFilterByColumnKind;
  * More examples:
  * ["row-prop" "final" "is-set"]
  * ["annotation" "flag-type" "important" "is-set"]
- * ["annotation" "flag-type" "needs_translation" "has-language" "en-DB"]
+ * ["annotation" "flag-type" "needs_translation" "has-language" "en-GB"]
  * ["annotation" "type" "info" "is-unset"]
  *
  * Produces Row -> Boolean
