@@ -124,6 +124,7 @@
     "choose-filter-mode": "Filtermethode wählen",
     "enter-name": "Filternamen eingeben",
     "is_empty": "Ist leer",
+    "add-filter": "Filter hinzufügen",
     "mode": {
       "contains": "Enthält",
       "equals": "Ist gleich",
@@ -135,9 +136,6 @@
       "gte": "Mindestens",
       "lt": "Kleiner als",
       "lte": "Höchstens"
-    },
-    "annotation-mode": {
-
     }
   },
   "jumpspinner": {

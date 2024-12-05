@@ -20,6 +20,7 @@ import FilterSavingPopup, {
 import {
   fromCombinedFilter,
   getAnnotationColor,
+  getAnnotationTitle,
   mkAnnotationFilterTemplates,
   toCombinedFilter
 } from "./helpers";
@@ -203,12 +204,12 @@ const SortingArea = ({ columns, onChange, ordering, langtag }) => {
           options={options}
           value={ordering?.colName}
           onChange={handleChangeColumn}
-          placehoder={t("table:filter.choose-sort-column")}
+          placehoder={t("filter:input.sort")}
         />
         <Select
           options={[
-            { value: SortValue.asc, label: "asc" },
-            { value: SortValue.desc, label: "desc" }
+            { value: SortValue.asc, label: t("filter:help.sortasc") },
+            { value: SortValue.desc, label: t("filter:help.sortdesc") }
           ]}
           value={ordering?.direction ?? SortValue.asc}
           onChange={handleChangeDirection}
@@ -258,7 +259,9 @@ const AnnotationFilterArea = ({ onToggle, filters, options, langtag }) => {
               key={kind}
               onClick={onToggle(kind)}
             >
-              <div className="annotation-filter__label">{i18n.t(kind)}</div>
+              <div className="annotation-filter__label">
+                {getAnnotationTitle(kind)}
+              </div>
               <div className="annotation-filter__checkbox">
                 <input
                   type="checkbox"
@@ -279,7 +282,7 @@ const AnnotationFilterArea = ({ onToggle, filters, options, langtag }) => {
               onClick={onToggle(kind)}
               active={Boolean(filters[kind])}
               color={getAnnotationColor(kind)}
-              title={kind}
+              title={getAnnotationTitle(kind, langtag)}
             />
           ))}
       </div>
@@ -322,7 +325,7 @@ const ColumnFilterArea = ({ columns, filters, langtag, onChange }) => {
       ))}
       <button className="button button--add-filter" onClick={addFilterRow}>
         <i className="fa fa-plus" />
-        {"add filter"}
+        {t("table:filter.add-filter")}
       </button>
     </div>
   );

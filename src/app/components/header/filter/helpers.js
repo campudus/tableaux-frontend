@@ -5,6 +5,7 @@ import {
   AnnotationKind
 } from "../../../constants/TableauxConstants";
 import { getCssVar } from "../../../helpers/getCssVar";
+import { t } from "i18next";
 
 export const mkAnnotationFilterTemplates = langtag => ({
   needsAnyTranslation: [
@@ -61,6 +62,21 @@ export const getAnnotationColor = kind => {
     ],
     [() => true, () => "#ddd"]
   ])(kind);
+};
+
+export const getAnnotationTitle = (kind, langtag) => {
+  const title = t(
+    match(kind)(
+      when("info", "filter:has-comments"),
+      when("needsAnyTranslation", "table:translation_needed"),
+      when("needsMyTranslation", "table:this_translation_needed"),
+      when("final", "table:filter.is_final"),
+      otherwise(`table:${kind}`)
+    ),
+    { langtag }
+  );
+  console.log(kind, "->", title);
+  return title;
 };
 
 export const fromCombinedFilter = (columns, langtag) => {
