@@ -64,8 +64,8 @@ export const getAnnotationColor = kind => {
   ])(kind);
 };
 
-export const getAnnotationTitle = (kind, langtag) => {
-  const title = t(
+export const getAnnotationTitle = (kind, langtag) =>
+  t(
     match(kind)(
       when("info", "filter:has-comments"),
       when("needsAnyTranslation", "table:translation_needed"),
@@ -75,9 +75,6 @@ export const getAnnotationTitle = (kind, langtag) => {
     ),
     { langtag }
   );
-  console.log(kind, "->", title);
-  return title;
-};
 
 export const fromCombinedFilter = (columns, langtag) => {
   const templates = mkAnnotationFilterTemplates(langtag);
