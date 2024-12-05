@@ -24,7 +24,7 @@
 
   .filter-popup {
     @include header-panel-look();
-    width: 700px;
+    width: 630px;
     box-sizing: border-box;
     overflow: visible;
     padding: 15px;
@@ -35,6 +35,7 @@
       display: flex;
       flex-direction: column;
       gap: 8px;
+      margin-bottom: 30px;
     }
 
     .annotation-filter {
@@ -63,9 +64,9 @@
     .annotation-badge {
       padding: 3px 9px;
       border-radius: 200px; // just big enough!
-      border: 2px solid;
+      border: 1.5px solid;
       font-size: 0.9em;
-      font-weight: bold;
+      font-weight: 500;
       opacity: 0.8;
       &:hover {
         opacity: 1;
@@ -101,7 +102,6 @@
 
     .button--open-save-overlay {
       color: $color-primary;
-      font-weight: bold;
       padding: 3px 6px;
     }
 
@@ -115,8 +115,14 @@
       padding: 12px;
       &__content {
         display: grid;
-        grid-template-columns: 1fr 1fr auto 1fr;
+        grid-template-columns: 1fr 1fr auto;
         gap: 12px;
+        .Select:first-of-type {
+          margin-right: 18px;
+        }
+        .Select:last-of-type {
+          margin-left: 18px;
+        }
       }
     }
 
@@ -147,6 +153,7 @@
         grid-template-columns: 1fr auto auto;
         gap: 9px;
         align-items: center;
+        height: 2em;
       }
 
       .button--set-stored-filter {
@@ -154,6 +161,10 @@
       }
       .button--delete-stored-filter {
         color: $color-text-medium-grey;
+      }
+      .stored-filters {
+        max-height: 13em;
+        overflow-y: auto;
       }
     }
 
@@ -380,9 +391,10 @@
 }
 
 .filter-input {
-  border-radius: 3px;
-  border-width: 1px;
+  border-radius: 4px;
+  border: 1px solid transparentize($color-text-light-grey, 0.4);
   outline: none;
+  padding: 0 8px;
   &:focus {
     outline: none;
   }

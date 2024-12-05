@@ -127,7 +127,7 @@ const FilterPopup = ({
             onClick={() => setShowFilterSavePopup(true)}
             disabled={!settingsAreValid}
           >
-            Save
+            {t("table:filter.save-filter")}
           </button>
         </header>
         <div className="filter-settings">
