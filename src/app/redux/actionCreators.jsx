@@ -1,6 +1,7 @@
 import i18n from "i18next";
 import f from "lodash/fp";
 import React from "react";
+import { SortDirection } from "react-virtualized";
 import { ShowArchived } from "../archivedRows/helpers";
 import askForSessionUnlock from "../components/helperComponents/SessionUnlockDialog";
 import { loadAndOpenEntityView } from "../components/overlay/EntityViewOverlay";
@@ -354,8 +355,8 @@ const loadTableView = (tableId, customFilters) => (dispatch, getState) => {
     const permanentSortValue = sortingReset ? null : storedSortValue;
     const tempFilters = hasCustomFilters ? customFilters : permanentFilters;
     const tempSorting = {
-      columnId: sortingDesc ? -1 : permanentSortColumnId,
-      value: sortingDesc ? "DESC" : permanentSortValue
+      colName: sortingDesc ? "rowId" : permanentSortColumnId,
+      direction: sortingDesc ? SortDirection.DESC : permanentSortValue
     };
 
     // apply temporary filters
