@@ -21,9 +21,9 @@ export default {
   },
   [Mode.equals]: f.propEq,
   [Mode.gt]: (propPath, x) => row => f.prop(propPath, row) > x,
-  [Mode.gte]: (propPath, x) => row => f.prop(propPath, row) > x,
-  [Mode.lt]: (propPath, x) => row => f.prop(propPath, row) > x,
-  [Mode.lte]: (propPath, x) => row => f.prop(propPath, row) > x,
+  [Mode.gte]: (propPath, x) => row => f.prop(propPath, row) >= x,
+  [Mode.lt]: (propPath, x) => row => f.prop(propPath, row) < x,
+  [Mode.lte]: (propPath, x) => row => f.prop(propPath, row) <= x,
   [Mode.isEmpty]: (propPath, _) => row => f.isEmpty(f.prop(propPath, row)),
   [Mode.isNotEmpty]: (propPath, _) => row => !f.isEmpty(f.prop(propPath, row))
 };
