@@ -1,6 +1,5 @@
 import f from "lodash/fp";
 import { ColumnKinds, FilterModes } from "../constants/TableauxConstants";
-import { FilterableCellKinds } from "../components/table/RowFilters";
 
 const TaggedFunction = (mode, displayName, fn, isValidColumn = () => true) => {
   const taggedFn = function(...args) {
@@ -28,16 +27,14 @@ const SearchFunctions = {
         f.contains(f, clean(str)),
         f.words(clean(stringOfFilters))
       );
-    }),
-    column => FilterableCellKinds.includes(column.kind)
+    })
   ),
   [FilterModes.STARTS_WITH]: TaggedFunction(
     FilterModes.STARTS_WITH,
     "table:filter.starts_with",
     f.curry((searchVal, str) => {
       return f.startsWith(clean(searchVal), clean(str));
-    }),
-    column => FilterableCellKinds.includes(column.kind)
+    })
   ),
   [FilterModes.IS_EMPTY]: TaggedFunction(
     FilterModes.IS_EMPTY,
@@ -52,14 +49,7 @@ const SearchFunctions = {
         [f.stubTrue, f.isNil]
       ]);
       return isEmptyValue(value);
-    }),
-    column =>
-      ![
-        ColumnKinds.group,
-        ColumnKinds.status,
-        ColumnKinds.currency,
-        ColumnKinds.boolean
-      ].includes(column.kind)
+    })
   )
 };
 

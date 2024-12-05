@@ -1,4 +1,4 @@
-import i18n, { t } from "i18next";
+import { t } from "i18next";
 import f from "lodash/fp";
 import { match, otherwise, when } from "match-iz";
 import React, { useEffect, useMemo, useRef, useState } from "react";
