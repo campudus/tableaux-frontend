@@ -207,10 +207,10 @@ const SortingArea = ({ columns, onChange, ordering, langtag }) => {
         />
         <Select
           options={[
-            { value: SortValue.asd, label: "asc" },
+            { value: SortValue.asc, label: "asc" },
             { value: SortValue.desc, label: "desc" }
           ]}
-          value={ordering?.direction}
+          value={ordering?.direction ?? SortValue.asc}
           onChange={handleChangeDirection}
           placeholder={t("table:filter.choose-sort-direction")}
         />

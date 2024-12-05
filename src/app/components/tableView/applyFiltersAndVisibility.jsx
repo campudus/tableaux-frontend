@@ -6,6 +6,7 @@ import DVWorkerCtl from "../../helpers/DisplayValueWorkerControls";
 import { selectShowArchivedState } from "../../redux/reducers/tableView";
 import { match, otherwise, when } from "match-iz";
 import RowFilters, { filterStateful, sortRows } from "../../RowFilters";
+import { SortDirection } from "react-virtualized";
 
 const withFiltersAndVisibility = Component => props => {
   const store = useSelector(x => x);
@@ -16,7 +17,6 @@ const withFiltersAndVisibility = Component => props => {
     columns = [],
     columnOrdering = [],
     filters = [],
-    sorting = {},
     langtag,
     table
   } = props;
@@ -28,8 +28,10 @@ const withFiltersAndVisibility = Component => props => {
   }, [shouldLaunchDisplayValueWorker]);
 
   const ctx = RowFilters.buildContext(table.id, langtag, store);
+  const sorting = getSorting(props.sorting, store.globalSettings?.sortingDesc);
+  const workerStillRunning = store.tableView?.startedGeneratingDisplayValues;
 
-  const selectedCell = useSelector(state => state.selectedCell?.selectedCell);
+  const selectedCell = store.selectedCell?.selectedCell;
   const canRenderTable = f.every(f.negate(f.isNil), [tables, rows, columns]);
   const canRenderContent = canRenderTable && !f.isEmpty(columns);
 
@@ -47,7 +49,8 @@ const withFiltersAndVisibility = Component => props => {
     showArchived,
     filters,
     sorting,
-    canRenderContent
+    canRenderContent,
+    workerStillRunning
   ]);
   const columnsWithVisibility = columns.map((col, idx) => ({
     ...col,
@@ -93,6 +96,13 @@ const withFiltersAndVisibility = Component => props => {
     return <Component {...{ ...props, canRenderTable, showCellJumpOverlay }} />;
   }
 };
+
+const getSorting = (sorting = {}, defaultIsDesc = false) =>
+  !f.isEmpty(sorting)
+    ? sorting
+    : defaultIsDesc
+    ? { colName: "rowId", direction: SortDirection.DESC }
+    : {};
 
 const arrayToKey = coll =>
   Array.from(coll ?? [])
