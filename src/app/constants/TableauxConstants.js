@@ -1,4 +1,5 @@
-var keyMirror = require("keymirror");
+import keyMirror from "keymirror";
+import { getCssVar } from "../helpers/getCssVar";
 
 /*
  * Order is important.
@@ -7,6 +8,12 @@ var keyMirror = require("keymirror");
  */
 let languagetags;
 let _config = {};
+
+const AnnotationKind = {
+  flag: "flag",
+  rowProp: "row-prop",
+  data: "data"
+};
 
 const grudConstants = {
   Directions: keyMirror({
@@ -18,20 +25,20 @@ const grudConstants = {
 
   // Lowercase on purpose. Reflects exact API naming
   ColumnKinds: keyMirror({
-    shorttext: null,
-    richtext: null,
-    text: null,
-    link: null,
-    numeric: null,
+    attachment: null,
     boolean: null,
     concat: null,
-    attachment: null,
-    datetime: null,
     currency: null,
     date: null,
+    datetime: null,
     group: null,
     integer: null,
-    status: null
+    link: null,
+    numeric: null,
+    richtext: null,
+    shorttext: null,
+    status: null,
+    text: null
   }),
 
   ImmutableColumnKinds: ["status", "concat"],
@@ -100,9 +107,9 @@ const grudConstants = {
     languagetags = langtags;
   },
 
-  SortValues: keyMirror({
-    ASC: null,
-    DESC: null
+  SortValue: keyMirror({
+    asc: null,
+    desc: null
   }),
 
   FilterModes: keyMirror({
@@ -126,7 +133,28 @@ const grudConstants = {
     return _config;
   },
 
-  initConfig: config => (_config = config)
+  initConfig: config => (_config = config),
+
+  AnnotationKind,
+  Annotation: [
+    { name: "info", kind: AnnotationKind.data },
+    { name: "final", kind: AnnotationKind.rowProp },
+    {
+      name: "important",
+      kind: AnnotationKind.flag,
+      color: getCssVar("--color-important")
+    },
+    {
+      name: "postpone",
+      kind: AnnotationKind.flag,
+      color: getCssVar("--color-postpone")
+    },
+    {
+      name: "check-me",
+      kind: AnnotationKind.flag,
+      color: getCssVar("--color-doublecheck")
+    }
+  ]
 };
 
 module.exports = grudConstants;

@@ -121,7 +121,21 @@
     "filters": "Filters",
     "sorting": "Sorting",
     "enter-name": "Enter filter title...",
-    "is_empty": "Is empty"
+    "is_empty": "Is empty",
+    "choose-filter-mode": "Choose filter mode",
+    "add-filter": "Add filter",
+    "mode": {
+      "contains": "Contains",
+      "equals": "Equals",
+      "ends-with": "Ends with",
+      "starts-with": "Starts with",
+      "is-empty": "Is empty",
+      "is-not-empty": "Is not empty",
+      "gt": "Greater than",
+      "gte": "At least",
+      "lt": "Less than",
+      "lte": "At most"
+    }
   },
   "jumpspinner": {
     "title": "Hold on, we bring you there!",

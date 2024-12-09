@@ -1,10 +1,8 @@
-import { translate } from "react-i18next";
-import React from "react";
-import f from "lodash/fp";
-
-import PropTypes from "prop-types";
 import classNames from "classnames";
-
+import f from "lodash/fp";
+import PropTypes from "prop-types";
+import React from "react";
+import { translate } from "react-i18next";
 import FilterPopup from "./FilterPopup.jsx";
 
 const FilterButton = ({
@@ -25,8 +23,7 @@ const FilterButton = ({
 
   const hasFilter =
     !f.isEmpty(currentFilter) &&
-    (!f.isEmpty(currentFilter.filters) ||
-      f.isInteger(f.prop(["sorting", "columnId"], currentFilter))) &&
+    (!f.isEmpty(currentFilter.filters) || currentFilter.sorting?.colName) &&
     !open;
 
   const cssClass = classNames("filter-wrapper", {
