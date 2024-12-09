@@ -192,12 +192,14 @@ class TableView extends PureComponent {
   }
 
   changeFilter = (settings = {}, store = true) => {
+    // TODO: Adapt when there are still proplems
     const currentTable = this.props.table;
-    const hasSlowFilters = f.flow(
-      f.get("filters"),
-      f.map(f.get("mode")),
-      f.any(f.contains(f, [FilterModes.ROW_CONTAINS]))
-    );
+    const hasSlowFilters = false;
+    // f.flow(
+    //   f.get("filters"),
+    //   f.map(f.get("mode")),
+    //   f.any(f.contains(f, [FilterModes.ROW_CONTAINS]))
+    // );
 
     if (
       hasSlowFilters(settings) &&
