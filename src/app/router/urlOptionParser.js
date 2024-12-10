@@ -33,7 +33,7 @@ const parseOptions = optString => {
     if (!f.isNil(modeStr)) {
       if (modeStr === "id") {
         return toFilter([
-          "and",
+          "or",
           ...(params || [])
             .map(f.toNumber)
             .map(id => ["row-prop", "id", "equals", id])
