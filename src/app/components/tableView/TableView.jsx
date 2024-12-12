@@ -7,7 +7,6 @@ import { branch, renderComponent } from "recompose";
 import ToggleArchivedRowsButton from "../../archivedRows/ToggleArchivedRowsButton";
 import TableauxConstants, {
   ColumnKinds,
-  FilterModes,
   RowIdColumn
 } from "../../constants/TableauxConstants";
 import { mapIndexed } from "../../helpers/functools";
