@@ -7,6 +7,8 @@ import Header from "./HeaderFragments";
 import ElementCount from "./ElementCountFragments";
 import { Langtags } from "../../../constants/TableauxConstants";
 import { doto } from "../../../helpers/functools";
+import { mkAnnotationFilterTemplates } from "../../header/filter/helpers";
+import { match, otherwise, when } from "match-iz";
 
 const TableEntry = compose(
   pure,
@@ -43,9 +45,21 @@ const TableEntry = compose(
           )
         : f.getOr(0, ["translationStatus", selectedLang], table);
 
+    const templates = mkAnnotationFilterTemplates(langtag);
+    const template = match(flag)(
+      when("comments", templates.info),
+      when(
+        "needs-translation",
+        langtag === Langtags[0]
+          ? templates.needsAnyTranslation
+          : templates.needsMyTranslation
+      ),
+      otherwise(templates[flag])
+    );
+    const filterQuery = template?.join(":");
     const href = `/${
       flag === "needs-translation" ? selectedLang : langtag
-    }/tables/${table.id}${cellUrl}?filter:flag:${flag}`;
+    }/tables/${table.id}${cellUrl}?filter:${filterQuery}`;
 
     return (
       <a
