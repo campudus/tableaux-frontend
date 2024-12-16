@@ -309,20 +309,22 @@ const ColumnFilterArea = ({ columns, filters, langtag, onChange }) => {
     onChange(filters.map((row, idx) => (idx === idxToChange ? settings : row)));
   return (
     <div className="column-filters">
-      {filters.map((filterRow, idx) => (
-        <FilterRow
-          key={idx}
-          columns={columns}
-          langtag={langtag}
-          settings={filterRow}
-          onChange={updateFilterRow(idx)}
-          onRemove={
-            filters.length < 2
-              ? () => updateFilterRow(0)({})
-              : removeFilterRow(idx)
-          }
-        />
-      ))}
+      <div className="column-filters__list">
+        {filters.map((filterRow, idx) => (
+          <FilterRow
+            key={idx}
+            columns={columns}
+            langtag={langtag}
+            settings={filterRow}
+            onChange={updateFilterRow(idx)}
+            onRemove={
+              filters.length < 2
+                ? () => updateFilterRow(0)({})
+                : removeFilterRow(idx)
+            }
+          />
+        ))}
+      </div>
       <button className="button button--add-filter" onClick={addFilterRow}>
         <i className="fa fa-plus" />
         {t("table:filter.add-filter")}

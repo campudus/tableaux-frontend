@@ -38,6 +38,14 @@
       margin-bottom: 30px;
     }
 
+    .column-filters__list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 12.5em;
+      overflow-y: auto;
+    }
+
     .annotation-filter {
       display: flex;
       justify-content: space-between;
