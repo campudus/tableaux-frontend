@@ -42,7 +42,7 @@ const withFiltersAndVisibility = Component => props => {
     return f.compose(
       ([rs, ids]) => [applyRowOrdering(rs), ids],
       filterRows
-    )(ctx, { filters, table, store });
+    )(ctx, { filters, table, store, selectedRowId: selectedCell?.rowId });
   }, [
     arrayToKey(props.visibleRows),
     rows,
@@ -114,7 +114,10 @@ const orderRows = (ctx, sorting) => {
   return sorting?.colName ? sortRows(ctx, sorting) : f.identity;
 };
 
-const filterRows = (filterContext, { filters, table, store }) => {
+const filterRows = (
+  filterContext,
+  { filters, table, store, selectedRowId }
+) => {
   const showArchived = selectShowArchivedState(store);
   const nothingToFilter =
     f.isEmpty(filters) && showArchived === ShowArchived.show;
@@ -133,11 +136,27 @@ const filterRows = (filterContext, { filters, table, store }) => {
     otherwise(() => null)
   );
 
-  const filterSetting = archivedFilter
-    ? f.isEmpty(filters)
-      ? archivedFilter
-      : ["and", archivedFilter, filters]
-    : filters;
+  const keepSelectedRowFilter = f.isNumber(selectedRowId)
+    ? ["row-prop", "id", "equals", selectedRowId]
+    : null;
+
+  const filterSetting = match([
+    !f.isEmpty(filters), // Filters set
+    Boolean(archivedFilter), // Archived filter set
+    f.isNumber(selectedRowId) // RowId must be included
+  ])(
+    when(
+      [true, true, true],
+      ["or", keepSelectedRowFilter, ["and", archivedFilter, filters]]
+    ),
+    when([true, true, false], ["and", archivedFilter, filters]),
+    when([true, false, true], ["or", keepSelectedRowFilter, filters]),
+    when([true, false, false], filters),
+    when([false, true, true], ["or", archivedFilter, filters]),
+    when([false, true, false], archivedFilter),
+    when([false, false, true], []), // Only keep selected row? No filter needed
+    when([false, false, false], [])
+  );
 
   const filterRows = filterStateful(
     RowFilters.parse(filterContext)(filterSetting),
