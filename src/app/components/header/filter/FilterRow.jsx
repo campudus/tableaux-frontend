@@ -64,7 +64,7 @@ const FilterRow = ({ columns, langtag, onChange, onRemove, settings }) => {
 
       <Select
         disabled={!column}
-        className="filter-select"
+        className="filter-mode-select"
         options={modeOptions}
         searchable={false}
         clearable={false}
