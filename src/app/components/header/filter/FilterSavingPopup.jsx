@@ -60,11 +60,14 @@ const FilterSavingPopup = ({ filters, onClose, onSubmit }) => {
 
 const isApplicable = columns => {
   const hasProperColumns = filters => {
-    return filters?.reduce((hasAll, next) => {
+    const filterList = ["and", "or"].includes(filters && filters[0])
+      ? filters
+      : [filters];
+    return filterList?.reduce((hasAll, next) => {
       const [kind, ...args] = next;
       switch (kind) {
         case "value":
-          return columns.has(args[0]);
+          return hasAll && columns.has(args[0]);
         case "and":
         case "or":
           return hasProperColumns(args);
