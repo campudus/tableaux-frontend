@@ -3,7 +3,7 @@ import f from "lodash/fp";
 import { match, otherwise, when } from "match-iz";
 import React from "react";
 import { translate } from "react-i18next";
-import Select from "react-select";
+import Select from "../../GrudSelect";
 import { ColumnKinds } from "../../../constants/TableauxConstants";
 import { getColumnDisplayName } from "../../../helpers/multiLanguage";
 import RowFilters from "../../../RowFilters";

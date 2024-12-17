@@ -2,7 +2,6 @@
 import "core-js/stable";
 import "regenerator-runtime/runtime";
 
-import "../node_modules/react-select/dist/react-select.css";
 import "react-virtualized/styles.css";
 import fetch from "cross-fetch";
 

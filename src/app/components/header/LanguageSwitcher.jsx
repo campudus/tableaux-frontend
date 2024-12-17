@@ -1,7 +1,7 @@
 import f from "lodash/fp";
 import PropTypes from "prop-types";
 import React, { useCallback } from "react";
-import Select from "react-select";
+import Select from "../GrudSelect";
 import { getLanguageOrCountryIcon } from "../../helpers/multiLanguage";
 import { Langtags } from "./../../constants/TableauxConstants";
 

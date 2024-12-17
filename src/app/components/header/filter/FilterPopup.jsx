@@ -1,17 +1,16 @@
 import { t } from "i18next";
 import f from "lodash/fp";
 import { match, otherwise, when } from "match-iz";
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { useSelector } from "react-redux";
-import Select from "react-select";
 import TableauxConstants, {
   SortValue
 } from "../../../constants/TableauxConstants";
 import { buildClassName } from "../../../helpers/buildClassName";
 import * as Storage from "../../../helpers/localStorage";
 import { getColumnDisplayName } from "../../../helpers/multiLanguage";
-import { outsideClickEffect } from "../../../helpers/useOutsideClick";
 import RowFilters from "../../../RowFilters";
+import Select from "../../GrudSelect";
 import FilterPopupFooter from "./FilterPopupFooter";
 import FilterRow from "./FilterRow";
 import FilterSavingPopup, {
@@ -35,15 +34,7 @@ const FilterPopup = ({
   currentFilter
 }) => {
   const tableId = useSelector(f.prop("tableView.currentTable"));
-  const containerRef = useRef();
-  useEffect(
-    outsideClickEffect({
-      containerRef,
-      onOutsideClick: onClickedOutside,
-      shouldListen: true
-    }),
-    [containerRef.current]
-  );
+
   const [showFilterSavePopup, setShowFilterSavePopup] = useState(false);
 
   const parseFilterSettings = fromCombinedFilter(columns, langtag);
@@ -116,63 +107,69 @@ const FilterPopup = ({
     actions.setFiltersAndSorting([], [], true);
   };
   return (
-    <div className="filter-popup" ref={containerRef}>
-      <section className="filter-popup__content-section">
-        <header className="filter-popup__header">
-          <div className="filter-popup__heading">
-            {t("table:filter.filters")}
+    <>
+      <div
+        className="full-screen capture-outside-click"
+        onClick={onClickedOutside}
+      />
+      <div className="filter-popup" onClick={evt => void evt.stopPropagation()}>
+        <section className="filter-popup__content-section">
+          <header className="filter-popup__header">
+            <div className="filter-popup__heading">
+              {t("table:filter.filters")}
+            </div>
+            <button
+              className="button button--open-save-overlay"
+              onClick={() => setShowFilterSavePopup(true)}
+              disabled={!settingsAreValid}
+            >
+              {t("table:filter.save-filter")}
+            </button>
+          </header>
+          <div className="filter-settings">
+            <ColumnFilterArea
+              langtag={langtag}
+              columns={columns}
+              onChange={setRowFilters}
+              filters={rowFilters}
+            />
+            <AnnotationFilterArea
+              langtag={langtag}
+              options={Object.keys(annotationFilterTemplates)}
+              filters={annotationFilters}
+              onToggle={toggleAnnotationFilter}
+            />
           </div>
-          <button
-            className="button button--open-save-overlay"
-            onClick={() => setShowFilterSavePopup(true)}
-            disabled={!settingsAreValid}
-          >
-            {t("table:filter.save-filter")}
-          </button>
-        </header>
-        <div className="filter-settings">
-          <ColumnFilterArea
-            langtag={langtag}
+          <SortingArea
             columns={columns}
-            onChange={setRowFilters}
-            filters={rowFilters}
-          />
-          <AnnotationFilterArea
+            onChange={setOrdering}
+            ordering={ordering}
             langtag={langtag}
-            options={Object.keys(annotationFilterTemplates)}
-            filters={annotationFilters}
-            onToggle={toggleAnnotationFilter}
           />
-        </div>
-        <SortingArea
-          columns={columns}
-          onChange={setOrdering}
-          ordering={ordering}
-          langtag={langtag}
-        />
-        <FilterPopupFooter
-          applyFilters={handleSubmit}
-          clearFilters={handleClearFilters}
-          canApplyFilters={settingsAreValid}
-        />
-        {f.isEmpty(userFilters) ? null : (
-          <RestoreSavedFiltersArea
-            columns={columns}
-            onClear={handleClearUserFilter}
-            onSubmit={handleSetFromUserFilter}
-            storedFilters={userFilters}
+          <FilterPopupFooter
+            applyFilters={handleSubmit}
+            clearFilters={handleClearFilters}
+            canApplyFilters={settingsAreValid}
           />
-        )}
-      </section>
+          {f.isEmpty(userFilters) ? null : (
+            <RestoreSavedFiltersArea
+              columns={columns}
+              onClear={handleClearUserFilter}
+              onSubmit={handleSetFromUserFilter}
+              storedFilters={userFilters}
+            />
+          )}
+        </section>
 
-      {showFilterSavePopup ? (
-        <FilterSavingPopup
-          filters={filterList}
-          onClose={() => setShowFilterSavePopup(false)}
-          onSubmit={handleStoreUserFilter}
-        />
-      ) : null}
-    </div>
+        {showFilterSavePopup ? (
+          <FilterSavingPopup
+            filters={filterList}
+            onClose={() => setShowFilterSavePopup(false)}
+            onSubmit={handleStoreUserFilter}
+          />
+        ) : null}
+      </div>
+    </>
   );
 };
 
