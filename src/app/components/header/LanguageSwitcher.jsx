@@ -29,11 +29,6 @@ const LanguageSwitcher = props => {
     [onChange]
   );
 
-  const renderOption = useCallback(
-    option => getLanguageOrCountryIcon(option.value, "language"),
-    []
-  );
-
   return (
     <div className="language-switcher">
       <Select
@@ -43,13 +38,25 @@ const LanguageSwitcher = props => {
         clearable={false}
         value={langtag}
         onChange={handleChange}
-        optionRenderer={renderOption}
-        valueRenderer={renderOption}
-        disabled={disabled}
+        components={{ Option, SingleValue }}
+        Disabled={disabled}
       />
     </div>
   );
 };
+
+const renderFlagAndText = key => props => {
+  return (
+    <span
+      onClick={() => props.selectOption(props.data)}
+      style={props.getStyles(key, props)}
+    >
+      {getLanguageOrCountryIcon(props.data.value, "language")}
+    </span>
+  );
+};
+const Option = renderFlagAndText("option");
+const SingleValue = renderFlagAndText("singleValue");
 
 LanguageSwitcher.propTypes = {
   langtag: PropTypes.string.isRequired,

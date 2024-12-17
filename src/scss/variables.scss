@@ -36,7 +36,7 @@ $color-grey-dark: #dedede;
 $color-light-link-color: #e7f1f8;
 $color-darker-link-color: #c5d9e8;
 $color-text-link-color: #7c94a6;
-$color-selected-row: #f3faff;
+$color-selected-row: var(--color-selected-row);
 $color-selected-multi: #e0f2ff;
 $color-select-list-focus: #e8e8e8;
 $color-select-list-selected: #e8f6ff;
@@ -226,4 +226,5 @@ $box-shadow-light: 0px 3px 5px -1px rgba(0, 0, 0, 0.2),
   --color-postpone: #999999;
   --color-doublecheck: #66d6b0;
   --color-needs-translation: #fb9429;
+  --color-selected-row: #f3faff;
 }

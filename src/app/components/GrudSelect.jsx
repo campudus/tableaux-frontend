@@ -3,20 +3,8 @@ import Select from "react-select";
 import f from "lodash/fp";
 import { unless } from "../helpers/functools";
 
-/**
- * @param disabled boolean optional
- * @param className string optional
- * @param options Array<Option>
- * @param searchable boolean optional
- * @param clearable boolean optional
- * @param value Option | Option['value']
- * @param onChange Option -> ()
- * @param placeholder string optional
- */
-
 export default props => {
   const handleChange = value => {
-    console.log("change value:", value);
     props.onChange(value);
   };
 
@@ -25,15 +13,48 @@ export default props => {
     v => props.options.find(vv => vv.value === v) ?? { value: v, label: v }
   )(props.value);
 
-  console.log("value", props.value, "->", value);
   return (
     <Select
       {...props}
+      isDisabled={props.isDisabled || props.disabled}
+      classNamePrefix={"react-select"}
       menuPortalTarget={document.body}
       menuPosition="fixed"
-      styles={{ menuPortal: base => ({ ...base, zIndex: 9999 }) }}
+      styles={styling}
       onChange={handleChange}
       value={value}
+      components={{
+        IndicatorSeparator: null,
+        DropdownIndicator,
+        ...props.components
+      }}
     />
+  );
+};
+
+const styling = {
+  menuPortal: base => ({ ...base, zIndex: 9999 }),
+  control: base => {
+    return {
+      ...base,
+      height: "30px",
+      minHeight: "30px",
+      borderColor: "#dedede",
+      boxShadow: "none"
+    };
+  },
+  valueContainer: base => ({ ...base, padding: "0 0 2px 4px" }),
+  menu: base => ({ ...base, margin: 0 }),
+  dropdownIndicator: base => ({ ...base, padding: "3px 6px 6px 3px" }),
+  menuList: base => ({ ...base, padding: 0 })
+};
+
+const DropdownIndicator = props => {
+  const isOpen = props.selectProps.menuIsOpen;
+  const className = `fa fa-${isOpen ? "caret-up" : "caret-down"}`;
+  return (
+    <div style={props.getStyles("dropdownIndicator", props)}>
+      <i style={{ fontSize: "1.3em" }} className={className} />
+    </div>
   );
 };

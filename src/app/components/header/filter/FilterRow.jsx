@@ -11,6 +11,7 @@ import RowFilters from "../../../RowFilters";
 const FilterRow = ({ columns, langtag, onChange, onRemove, settings }) => {
   const columnsByName = f.indexBy("name", columns);
   const { column, mode, value } = settings;
+  console.log("column:", { column });
   const searchableColumns = columns.filter(col =>
     Boolean(RowFilters.ModesForKind[col.kind])
   );
@@ -56,7 +57,12 @@ const FilterRow = ({ columns, langtag, onChange, onRemove, settings }) => {
         searchable={true}
         clearable={false}
         openOnFocus
-        value={column && { label: getColumnDisplayName(column, langtag) }}
+        value={
+          column && {
+            label: getColumnDisplayName(column, langtag),
+            value: column.name
+          }
+        }
         onChange={setColumn ?? f.noop}
         placeholder={t("filter:input.filter")}
         noResultsText={t("input.noResult")}

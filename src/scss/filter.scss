@@ -38,41 +38,6 @@
       margin-bottom: 30px;
     }
 
-    // BEGIN: Hack to allow the select popup to overflow the scrolling div
-    // We need:
-    // - Gransparent-Element with position: relative
-    // - Parent-Element with NO position: relative
-    // - The element with position: absolute
-    .column-filters {
-      position: relative;
-    }
-    .column-filters__list {
-      $input-width: 172px;
-      $input-height: 30px;
-      $gap: 8px;
-      display: flex;
-      flex-direction: column;
-      gap: $gap;
-      max-height: 12.5em;
-      overflow-y: auto;
-      .Select {
-        overflow: visible;
-        position: inherit;
-      }
-      .Select-menu-outer {
-        position: absolute;
-        z-index: 9999;
-        // Now the popup is visible but needs manual positioning
-        top: $input-height;
-        width: $input-width;
-      }
-      .filter-mode-select .Select-menu-outer {
-        // We're relative to the grandparent, so we need to find our x-position manually, too
-        left: calc($input-width + $gap);
-      }
-    }
-    // END
-
     .annotation-filter {
       display: flex;
       justify-content: space-between;
