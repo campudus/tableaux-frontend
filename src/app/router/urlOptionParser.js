@@ -36,7 +36,7 @@ const parseOptions = optString => {
           "or",
           ...(params || [])
             .map(f.toNumber)
-            .map(id => ["row-prop", "id", "equals", id])
+            .map(id => ["value", "rowId", "equals", id])
         ]);
       } else if (modeStr === "flag")
         return toFilter(["annotation", "flag", params[0], "is-set"]);

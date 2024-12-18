@@ -107,7 +107,6 @@ const parseAnnotationFilter = (ctx, [_, findBy, kind, op, opValue]) => {
 };
 
 const parseValueFilter = (ctx, [_, colName, op, query]) => {
-  console.log({ colName, op, query });
   const getValue = ctx.getValue(colName);
   const filter = ctx.getValueFilter(colName, op, query);
   return row => filter(getValue(row));
