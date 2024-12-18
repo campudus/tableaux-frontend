@@ -30,24 +30,23 @@ const LanguageSwitcher = props => {
   );
 
   return (
-    <div className="language-switcher">
-      <Select
-        className={openOnTop ? "open-on-top" : ""}
-        options={options}
-        searchable={false}
-        clearable={false}
-        value={langtag}
-        onChange={handleChange}
-        components={{ Option, SingleValue }}
-        Disabled={disabled}
-      />
-    </div>
+    <Select
+      className="language-switcher"
+      options={options}
+      searchable={false}
+      clearable={false}
+      value={langtag}
+      onChange={handleChange}
+      components={{ Option, SingleValue }}
+      Disabled={disabled}
+    />
   );
 };
 
 const renderFlagAndText = key => props => {
   return (
     <span
+      className="language-switcher__option"
       onClick={() => props.selectOption(props.data)}
       style={props.getStyles(key, props)}
     >
