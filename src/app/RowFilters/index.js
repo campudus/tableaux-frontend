@@ -53,7 +53,7 @@ const canSortByColumnKind = canFilterByColumnKind;
  * PropPath       := \w+(\.\w+)*
  * AnnotationProp := ("flag-type" String) | ("type" String)
  * AnnotationName := \w+
- * ColumnName     := \+
+ * ColumnName     := \w+
  * And            := ["and" Filter+]
  * Or             := ["or" Filter+]
  *
