@@ -70,7 +70,7 @@ const getPermission = pathToPermission =>
 
 // (cell | {tableId: number, columnId: number}) -> (langtag | nil) -> boolean
 export const canUserChangeCell = f.curry((cell, langtag) => {
-  const { kind, row } = cell;
+  const { kind, row } = cell ?? {};
   const editCellValue = getPermission(["column", "editCellValue"])(cell);
   const language = f.propEq("column.languageType", LanguageType.country)(cell)
     ? getCountryOfLangtag(langtag)

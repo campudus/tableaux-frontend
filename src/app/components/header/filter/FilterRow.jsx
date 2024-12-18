@@ -57,12 +57,14 @@ const FilterRow = ({ columns, langtag, onChange, onRemove, settings }) => {
         clearable={false}
         openOnFocus
         value={
-          column && {
-            label: getColumnDisplayName(column, langtag),
-            value: column.name
-          }
+          column
+            ? {
+                label: getColumnDisplayName(column, langtag),
+                value: column.name
+              }
+            : null
         }
-        onChange={setColumn ?? f.noop}
+        onChange={setColumn}
         placeholder={t("filter:input.filter")}
         noResultsText={t("input.noResult")}
       />
