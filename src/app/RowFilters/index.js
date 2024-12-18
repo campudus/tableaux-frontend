@@ -4,6 +4,7 @@ import FilterAnnotation from "./Annotation";
 import FilterBoolean from "./Boolean";
 import FilterDate from "./Date";
 import FilterDateTime from "./DateTime";
+import FilterLinks from "./Link";
 import FilterNumber from "./Number";
 import FilterText from "./Text";
 import FilterRowProp from "./RowProp";
@@ -26,7 +27,7 @@ const ModesForKind = {
   [ColumnKinds.datetime]: FilterDateTime,
   [ColumnKinds.group]: null,
   [ColumnKinds.integer]: FilterNumber,
-  [ColumnKinds.link]: FilterText,
+  [ColumnKinds.link]: FilterLinks,
   [ColumnKinds.numeric]: FilterNumber,
   [ColumnKinds.richtext]: FilterText,
   [ColumnKinds.shorttext]: FilterText,
@@ -171,7 +172,7 @@ const buildContext = (tableId, langtag, store) => {
       f.filter(({ id }) => rowIds.has(id)),
       f.get(`tableView.displayValues.${toTableId}`)
     )(store);
-    return linkedDisplayValues.join(" ");
+    return linkedDisplayValues;
   };
 
   const retrieveRawValue = name => row => {

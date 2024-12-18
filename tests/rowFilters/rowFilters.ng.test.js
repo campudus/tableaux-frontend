@@ -37,10 +37,11 @@ describe("buildContext()", () => {
       expect(ctx.getValue("integer")(rows[1])).toEqual(456);
     });
     it("link", () => {
-      expect(ctx.getValue("link")(rows[0])).toEqual("Bayern München");
-      expect(ctx.getValue("link")(rows[1])).toEqual(
-        "Berlin Berlin Hamburg Hamburg"
-      );
+      expect(ctx.getValue("link")(rows[0])).toEqual(["Bayern München"]);
+      expect(ctx.getValue("link")(rows[1])).toEqual([
+        "Berlin Berlin",
+        "Hamburg Hamburg"
+      ]);
     });
     it("numeric", () => {
       expect(ctx.getValue("numeric")(rows[0])).toEqual(1.123);
