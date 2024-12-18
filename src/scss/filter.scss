@@ -37,6 +37,13 @@
       gap: 8px;
       margin-bottom: 30px;
     }
+    .column-filters__list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      overflow-y: auto;
+      max-height: 13em;
+    }
 
     .annotation-filter {
       display: flex;
