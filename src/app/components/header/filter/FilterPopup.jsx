@@ -60,6 +60,7 @@ const FilterPopup = ({
     setRowFilters(toRowFilterArray(parsedTemplate.rowFilters));
     setAnnotationFilters(parsedTemplate.annotationFilters);
     actions.setFiltersAndSorting(template, [], true);
+    onClickedOutside();
   };
   const handleStoreUserFilter = (title, template) => {
     Storage.saveFilterSettings("*", { filters: template }, title);
@@ -99,6 +100,7 @@ const FilterPopup = ({
   const handleSubmit = () => {
     actions.toggleCellSelection({ select: false, langtag, tableId });
     actions.setFiltersAndSorting(filterList, ordering, true);
+    onClickedOutside();
   };
   const handleClearFilters = () => {
     setRowFilters([{}]);
