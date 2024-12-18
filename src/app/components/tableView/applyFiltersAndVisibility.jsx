@@ -50,7 +50,8 @@ const withFiltersAndVisibility = Component => props => {
     filters,
     sorting,
     canRenderContent,
-    workerStillRunning
+    workerStillRunning,
+    langtag
   ]);
   const columnsWithVisibility = columns.map((col, idx) => ({
     ...col,
