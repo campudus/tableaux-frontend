@@ -107,6 +107,7 @@ const parseAnnotationFilter = (ctx, [_, findBy, kind, op, opValue]) => {
 };
 
 const parseValueFilter = (ctx, [_, colName, op, query]) => {
+  console.log({ colName, op, query });
   const getValue = ctx.getValue(colName);
   const filter = ctx.getValueFilter(colName, op, query);
   return row => filter(getValue(row));
@@ -130,10 +131,13 @@ const buildIdxLookup = (propName, elements) =>
 const buildContext = (tableId, langtag, store) => {
   const columns = store.columns[tableId].data ?? [];
   const columnIdxLookup = buildIdxLookup("name", columns);
-  const columnKindLookup = columns.reduce((acc, { name, kind }) => {
-    acc[name] = kind;
-    return acc;
-  }, {});
+  const columnKindLookup = columns.reduce(
+    (acc, { name, kind }) => {
+      acc[name] = kind;
+      return acc;
+    },
+    { rowId: "integer" }
+  );
   const rows = f.propOr([], ["rows", tableId, "data"], store);
   const displayValues = store.tableView.displayValues[tableId];
   const rowIdxLookup = buildIdxLookup("id", rows);
@@ -202,7 +206,7 @@ const buildContext = (tableId, langtag, store) => {
 
   const buildValueFilter = (name, op, query) => {
     const kind = columnKindLookup[name];
-    const modes = ModesForKind[kind];
+    const modes = name === "rowId" ? ModesForKind.numeric : ModesForKind[kind];
     const pred = modes && modes[op];
     if (typeof pred !== "function") {
       throw new Error(

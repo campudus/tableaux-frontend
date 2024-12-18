@@ -228,10 +228,9 @@ const settingToFilter = ({ column, mode, value }) => {
   const needsValueArg = RowFilters.needsFilterValue(column?.kind, mode);
   const hasValue = !f.isNil(value) && value !== "";
   const isIncomplete = !column || !mode || (needsValueArg && !hasValue);
-  const isIdFilter = column?.name === "rowId";
-  return match({ isIncomplete, isIdFilter })(
+
+  return match({ isIncomplete })(
     when({ isIncomplete: true }, () => null),
-    when({ isIdFilter: true }, () => ["row-prop", "id", mode, value]),
     otherwise(() => ["value", column.name, mode, value])
   );
 };
