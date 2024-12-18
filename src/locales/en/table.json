@@ -134,7 +134,9 @@
       "gt": "Greater than",
       "gte": "At least",
       "lt": "Less than",
-      "lte": "At most"
+      "lte": "At most",
+      "is-set": "Yes",
+      "is-unset": "No"
     }
   },
   "jumpspinner": {

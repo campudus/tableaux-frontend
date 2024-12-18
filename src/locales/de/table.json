@@ -135,7 +135,9 @@
       "gt": "Größer als",
       "gte": "Mindestens",
       "lt": "Kleiner als",
-      "lte": "Höchstens"
+      "lte": "Höchstens",
+      "is-set": "Ja",
+      "is-unset": "Nein"
     }
   },
   "jumpspinner": {
