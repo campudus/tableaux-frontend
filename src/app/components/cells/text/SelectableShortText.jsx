@@ -175,6 +175,11 @@ const SelectableShortText = props => {
   const maxLengthText = columnHasMaxLength(column)
     ? `${getTextLength(value)}/${maxLength}`
     : "";
+  const editorRef = useRef();
+  useEffect(
+    () => void requestAnimationFrame(() => void editorRef.current?.focus()),
+    [editorRef.current]
+  );
 
   return (
     <div
@@ -189,6 +194,7 @@ const SelectableShortText = props => {
         onMouseDown={stopPropagation}
         onClick={stopPropagation}
         autoFocus
+        ref={editorRef}
       />
       <div className="selectable-shorttext_text-limits">
         <div className={textTooShortErrorCssClass}>{minLengthText}</div>
