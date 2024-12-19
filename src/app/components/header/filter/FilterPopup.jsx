@@ -151,7 +151,7 @@ const FilterPopup = ({
           <FilterPopupFooter
             applyFilters={handleSubmit}
             clearFilters={handleClearFilters}
-            canApplyFilters={settingsAreValid}
+            canApplyFilters={true}
           />
           {f.isEmpty(userFilters) ? null : (
             <RestoreSavedFiltersArea
@@ -276,16 +276,17 @@ const AnnotationFilterArea = ({ onToggle, filters, options, langtag }) => {
         </span>
         <div className="annotation-filter__badges">
           {options
-    .filter(shouldKeepFilter)
-    .filter(f.complement(hasNoBadge)).map(kind => (
-            <AnnotationBadge
-              key={kind}
-              onClick={onToggle(kind)}
-              active={Boolean(filters[kind])}
-              color={getAnnotationColor(kind)}
-              title={getAnnotationTitle(kind, langtag)}
-            />
-          ))}
+            .filter(shouldKeepFilter)
+            .filter(f.complement(hasNoBadge))
+            .map(kind => (
+              <AnnotationBadge
+                key={kind}
+                onClick={onToggle(kind)}
+                active={Boolean(filters[kind])}
+                color={getAnnotationColor(kind)}
+                title={getAnnotationTitle(kind, langtag)}
+              />
+            ))}
         </div>
       </div>
     </div>
