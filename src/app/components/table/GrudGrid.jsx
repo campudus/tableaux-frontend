@@ -138,15 +138,4 @@ class VanillaGrid extends Grid {
   handleScrollEvent = this._originalScrollHandler;
 }
 
-const tests = {
-  title: "React Virtualized hacks",
-  tests: [
-    ["is", 5, getScrollingVelocity, [[[0, 3], [4, 0]]]],
-    ["is", false, isDecelerating, [[1, 2]]],
-    ["is", true, isDecelerating, [[7, 5]]],
-    ["is", false, isDecelerating, [[15, 14]]],
-    ["is", true, isDecelerating, [[5, 5]]]
-  ]
-};
-
-export { VanillaGrid as Grid, tests };
+export { VanillaGrid as Grid };

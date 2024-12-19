@@ -2,17 +2,24 @@ import f from "lodash/fp";
 import React, { useEffect, useMemo } from "react";
 import { useSelector } from "react-redux";
 import { ShowArchived } from "../../archivedRows";
-import { ColumnKinds } from "../../constants/TableauxConstants";
-import { findGroupMemberIds } from "../../helpers/columnHelper";
 import DVWorkerCtl from "../../helpers/DisplayValueWorkerControls";
-import { maybe } from "../../helpers/functools";
-import * as t from "../../helpers/transduce";
 import { selectShowArchivedState } from "../../redux/reducers/tableView";
-import getFilteredRows, { completeRowInformation } from "../table/RowFilters";
+import { match, otherwise, when } from "match-iz";
+import RowFilters, { filterStateful, sortRows } from "../../RowFilters";
+import { SortDirection } from "react-virtualized";
 
 const withFiltersAndVisibility = Component => props => {
-  const showArchived = useSelector(selectShowArchivedState);
-  const { tables, rows, columns, colsWithMatches } = props;
+  const store = useSelector(x => x);
+  const showArchived = selectShowArchivedState(store);
+  const {
+    tables,
+    rows = [],
+    columns = [],
+    columnOrdering = [],
+    filters = [],
+    langtag,
+    table
+  } = props;
   const shouldLaunchDisplayValueWorker = DVWorkerCtl.shouldStartForTable(props);
   useEffect(() => {
     if (shouldLaunchDisplayValueWorker) {
@@ -20,66 +27,69 @@ const withFiltersAndVisibility = Component => props => {
     }
   }, [shouldLaunchDisplayValueWorker]);
 
-  const selectedCell = useSelector(state => state.selectedCell?.selectedCell);
-  const groupMemberIds = findGroupMemberIds(columns);
-  const visibleColumnIds = maybeAddNullable(
-    selectedCell?.columnId,
-    f.isEmpty(colsWithMatches) ? props.visibleColumns : colsWithMatches
-  ).filter(id => !groupMemberIds.has(id));
+  const ctx = RowFilters.buildContext(table.id, langtag, store);
+  const sorting = getSorting(props.sorting, store.globalSettings?.sortingDesc);
+  const workerStillRunning = store.tableView?.startedGeneratingDisplayValues;
 
-  const sortedVisibleColumns = useMemo(
-    () =>
-      getSortedVisibleColumns(props.columnOrdering, visibleColumnIds, columns),
-    [
-      arrayToKey(f.map("id", columns)),
-      arrayToKey(visibleColumnIds),
-      props.columnOrdering
-    ]
-  );
+  const selectedCell = store.selectedCell?.selectedCell;
+  const canRenderTable = f.every(f.negate(f.isNil), [tables, rows, columns]);
+  const canRenderContent = canRenderTable && !f.isEmpty(columns);
 
-  const visibleColumns = useMemo(
-    () => addColumnVisibility(columns, visibleColumnIds),
-    [sortedVisibleColumns]
-  );
-
-  const visibleRows = useMemo(() => {
-    const filteredRowIdces = maybeAddNullable(
-      selectedCell.rowId
-        ? rows?.findIndex(row => row.id === selectedCell.rowId)
-        : undefined,
-      filterRows(props, showArchived).visibleRows ?? []
-    ).filter(idx => idx >= 0);
-    return filteredRowIdces.map(idx => rows[idx]);
+  const [visibleRows, visibleColumnIDs] = useMemo(() => {
+    const applyRowOrdering = canRenderContent
+      ? orderRows(ctx, sorting)
+      : f.identity;
+    return f.compose(
+      ([rs, ids]) => [applyRowOrdering(rs), ids],
+      filterRows
+    )(ctx, { filters, table, store, selectedRowId: selectedCell?.rowId });
   }, [
     arrayToKey(props.visibleRows),
     rows,
     showArchived,
-    props.filters,
-    props.sorting,
-    f.isEmpty(props.allDisplayValues[props.table.id])
+    filters,
+    sorting,
+    canRenderContent,
+    workerStillRunning,
+    langtag
   ]);
+  const columnsWithVisibility = columns.map((col, idx) => ({
+    ...col,
+    visible:
+      idx === 0 ||
+      col.id === selectedCell?.columnId ||
+      visibleColumnIDs.has(col.id)
+  }));
+  const columnIdxLookup = (columns || []).reduce((acc, col, idx) => {
+    acc[col.id] = idx;
+    return acc;
+  }, {});
+  const visibleColumnOrdering = columnOrdering
+    .filter(({ idx }) => columnsWithVisibility[idx]?.visible)
+    .map(({ id }) => columnIdxLookup[id]);
+
   const visibleRowIDs = useMemo(() => f.map("id", visibleRows), [visibleRows]);
 
   const hasRowJumpTarget = isNotNil(selectedCell.rowId);
-  const canRenderTable = f.every(f.negate(f.isNil), [tables, rows, columns]);
+
   const showCellJumpOverlay =
     !props.finishedLoading &&
     hasRowJumpTarget &&
-    !f.find(row => row.id === selectedCell.rowId);
+    !f.find(row => row.id === selectedCell.rowId, rows);
 
   if (canRenderTable) {
     return (
       <Component
         {...{
           ...props,
-          columns: visibleColumns,
+          columns: columnsWithVisibility,
           rows: visibleRows,
           visibleRows: visibleRowIDs,
           canRenderTable,
           showCellJumpOverlay,
-          visibleColumnOrdering: sortedVisibleColumns,
+          visibleColumnOrdering,
           columnOrdering: props.columnOrdering,
-          visibleColumns: arrayToKey(visibleColumnIds)
+          visibleColumns: arrayToKey(visibleColumnIDs)
         }}
       />
     );
@@ -88,109 +98,73 @@ const withFiltersAndVisibility = Component => props => {
   }
 };
 
-const shouldColumnBeVisible = (column, visibleColumnIds) =>
-  f.includes(column.id, visibleColumnIds) || column.id === 0;
-const addColumnVisibility = (columns = [], visibleColumnIds) =>
-  columns.map(column => ({
-    ...column,
-    visible: shouldColumnBeVisible(column, visibleColumnIds)
-  }));
-const maybeAddNullable = (element, coll) =>
-  maybe(element)
-    .map(el => (coll.includes(el) ? coll : [el, ...coll]))
-    .getOrElse(coll);
+const getSorting = (sorting = {}, defaultIsDesc = false) =>
+  !f.isEmpty(sorting)
+    ? sorting
+    : defaultIsDesc
+    ? { colName: "rowId", direction: SortDirection.DESC }
+    : {};
+
 const arrayToKey = coll =>
   Array.from(coll ?? [])
     .sort()
     .join(",");
 const isNotNil = f.negate(f.isNil);
 
-const listToSet = (...fs) => list => {
-  const into = (set, item) => set.add(item);
-  const xform = f.compose(...fs);
-
-  return f.reduce(xform(into), new Set(), list);
-};
-
-const getSortedVisibleColumns = (columnOrdering, visibleColumns, columns) => {
-  const statusColumnIndex = f.findIndex({ kind: ColumnKinds.status }, columns);
-  const visibleColumnIDs = new Set(visibleColumns);
-  const hiddenColumnIDs = listToSet(
-    t.filter(f.prop("hidden")),
-    t.map(f.prop("id"))
-  )(columns);
-
-  const isVisibleColumnId = id =>
-    visibleColumnIDs.has(id) && !hiddenColumnIDs.has(id);
-
-  const orderVisible = t.transduceList(
-    t.filter(val => isVisibleColumnId(val.id)),
-    t.map(f.prop("idx"))
-  );
-
-  const rejectDuplicateStatusColumn = f.compose(
-    f.concat([statusColumnIndex]),
-    f.reject(val => val === statusColumnIndex)
-  );
-
-  return f.compose(
-    orderedVisible =>
-      statusColumnIndex !== -1
-        ? rejectDuplicateStatusColumn(orderedVisible)
-        : orderedVisible,
-    orderVisible
-  )(columnOrdering);
+const orderRows = (ctx, sorting) => {
+  return sorting?.colName ? sortRows(ctx, sorting) : f.identity;
 };
 
 const filterRows = (
-  {
-    filters,
-    sorting,
-    rows,
-    table,
-    langtag,
-    columns,
-    allDisplayValues,
-    actions: { setColumnsVisible }
-  },
-  showArchived
+  filterContext,
+  { filters, table, store, selectedRowId }
 ) => {
+  const showArchived = selectShowArchivedState(store);
   const nothingToFilter =
-    f.isEmpty(sorting) &&
-    f.isEmpty(filters) &&
-    showArchived === ShowArchived.show;
-  if (f.isNil(rows) || f.isEmpty(allDisplayValues) || nothingToFilter) {
-    return {
-      visibleRows: f.range(0, f.size(rows)),
-      filtering: false
-    };
-  }
-  const isFilterEmpty = filter =>
-    f.isEmpty(filter.value) && !f.isString(filter.mode);
+    f.isEmpty(filters) && showArchived === ShowArchived.show;
+  const tableId = table.id;
+  const rows = store.rows[tableId]?.data || [];
+  const visibleColumnIds = store.tableView.visibleColumns || [];
+  const allDisplayValues = store.tableView?.displayValues || {};
 
-  const rowsFilter = {
-    sortColumnId: sorting.columnId,
-    sortValue: sorting.value,
-    filters: f.reject(isFilterEmpty, filters),
-    showArchived
-  };
-  const rowsWithIndex = completeRowInformation(
-    columns,
-    table,
-    rows,
-    allDisplayValues
-  );
-  const { visibleRows, colsWithMatches } = getFilteredRows(
-    table,
-    rowsWithIndex,
-    columns,
-    langtag,
-    rowsFilter
-  );
-  if (!f.isEmpty(colsWithMatches)) {
-    setColumnsVisible(colsWithMatches);
+  if (f.isEmpty(allDisplayValues) || nothingToFilter) {
+    return [rows, new Set(visibleColumnIds)];
   }
-  return { visibleRows, filtering: false };
+
+  const archivedFilter = match(showArchived)(
+    when(ShowArchived.exclusive, ["row-prop", "archived", "is-set"]),
+    when(ShowArchived.hide, ["row-prop", "archived", "is-unset"]),
+    otherwise(() => null)
+  );
+
+  const keepSelectedRowFilter = f.isNumber(selectedRowId)
+    ? ["row-prop", "id", "equals", selectedRowId]
+    : null;
+
+  const filterSetting = match([
+    !f.isEmpty(filters), // Filters set
+    Boolean(archivedFilter), // Archived filter set
+    f.isNumber(selectedRowId) // RowId must be included
+  ])(
+    when(
+      [true, true, true],
+      ["or", keepSelectedRowFilter, ["and", archivedFilter, filters]]
+    ),
+    when([true, true, false], ["and", archivedFilter, filters]),
+    when([true, false, true], ["or", keepSelectedRowFilter, filters]),
+    when([true, false, false], filters),
+    when([false, true, true], ["or", archivedFilter, filters]),
+    when([false, true, false], archivedFilter),
+    when([false, false, true], []), // Only keep selected row? No filter needed
+    when([false, false, false], [])
+  );
+
+  const filterRows = filterStateful(
+    RowFilters.parse(filterContext)(filterSetting),
+    new Set(visibleColumnIds)
+  );
+
+  return filterRows(rows);
 };
 
 export default withFiltersAndVisibility;

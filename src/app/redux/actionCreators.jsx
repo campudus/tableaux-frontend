@@ -4,7 +4,7 @@ import React from "react";
 import { ShowArchived } from "../archivedRows/helpers";
 import askForSessionUnlock from "../components/helperComponents/SessionUnlockDialog";
 import { loadAndOpenEntityView } from "../components/overlay/EntityViewOverlay";
-import { Langtags } from "../constants/TableauxConstants";
+import { Langtags, SortValue } from "../constants/TableauxConstants";
 import { isLocked } from "../helpers/annotationHelper";
 import { makeRequest } from "../helpers/apiHelper";
 import API_ROUTES from "../helpers/apiRoutes";
@@ -334,11 +334,11 @@ const loadTableView = (tableId, customFilters) => (dispatch, getState) => {
   const storedView = getStoredViewObject(tableId);
   const { visibleColumns, rowsFilter, columnOrdering } = storedView;
   const storedFilters = f.get(["filters"], rowsFilter) ?? [];
-  const storedSortColumnId = f.get(["sortColumnId"], rowsFilter);
-  const storedSortValue = f.get(["sortValue"], rowsFilter);
+  const storedSortColumnName = f.get(["sortColumnName"], rowsFilter);
+  const storedSortDirection = f.get(["sortDirection"], rowsFilter);
   const hasCustomFilters = !f.isEmpty(customFilters);
-  const hasStoredSorting =
-    !f.isNil(storedSortColumnId) && !f.isNil(storedSortValue);
+  const hasStoredSorting = Boolean(storedSortColumnName);
+
   const hasStoredFilters = !f.isEmpty(storedFilters);
 
   if (
@@ -350,21 +350,23 @@ const loadTableView = (tableId, customFilters) => (dispatch, getState) => {
     sortingDesc
   ) {
     const permanentFilters = filterReset ? [] : storedFilters;
-    const permanentSortColumnId = sortingReset ? null : storedSortColumnId;
-    const permanentSortValue = sortingReset ? null : storedSortValue;
+    const permanentSortColumnName = sortingReset ? null : storedSortColumnName;
+    const permanentSortDirection = sortingReset ? null : storedSortDirection;
     const tempFilters = hasCustomFilters ? customFilters : permanentFilters;
-    const tempSorting = {
-      columnId: sortingDesc ? -1 : permanentSortColumnId,
-      value: sortingDesc ? "DESC" : permanentSortValue
-    };
+    const tempSorting = permanentSortColumnName
+      ? {
+          colName: permanentSortColumnName,
+          direction: permanentSortDirection || SortValue.asc
+        }
+      : {};
 
     // apply temporary filters
     dispatch(setFiltersAndSorting(tempFilters, tempSorting, false));
 
     // persist permanent filters
     saveFilterSettings(tableId, {
-      sortColumnId: permanentSortColumnId,
-      sortValue: permanentSortValue,
+      sortColumnId: permanentSortColumnName,
+      sortValue: permanentSortDirection,
       filters: permanentFilters
     });
   }
@@ -593,12 +595,10 @@ const setFiltersAndSorting = (filters, sorting, shouldSave) => (
     filters,
     sorting
   });
-  const isFilterEmpty = filter =>
-    f.isEmpty(filter.value) && !f.isString(filter.mode);
   const rowsFilter = {
-    sortColumnId: f.get("columnId", sorting),
-    sortValue: f.get("value", sorting),
-    filters: f.reject(isFilterEmpty, filters)
+    sortColumnName: f.get("colName", sorting),
+    sortDirection: f.get("direction", sorting),
+    filters
   };
   if (shouldSave) {
     const currentTable = f.get(["tableView", "currentTable"], getState());

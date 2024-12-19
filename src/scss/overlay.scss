@@ -668,3 +668,11 @@ $dist-from-top: 20px;
 .cm-editor {
   background: transparent;
 }
+
+.full-screen {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+}

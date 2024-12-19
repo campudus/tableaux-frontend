@@ -5,10 +5,12 @@ const shouldStartForTable = ({
   columns,
   finishedLoading,
   startedGeneratingDisplayValues,
-  table
+  table,
+  rows
 }) =>
   !f.isEmpty(columns) &&
-  f.isNil(allDisplayValues[table.id]) &&
+  (f.isNil(allDisplayValues[table.id]) ||
+    allDisplayValues[table.id].length !== rows.length) &&
   !startedGeneratingDisplayValues &&
   finishedLoading;
 
