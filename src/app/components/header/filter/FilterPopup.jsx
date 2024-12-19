@@ -270,11 +270,14 @@ const AnnotationFilterArea = ({ onToggle, filters, options, langtag }) => {
             </div>
           ))}
       </div>
-      <div className="annotation-filter__badges">
-        {options
-          .filter(shouldKeepFilter)
-          .filter(f.complement(hasNoBadge))
-          .map(kind => (
+      <div className="annotation-badge__area">
+        <span className="annotation-badge__area-header">
+          {t("table:filter.annotations")}
+        </span>
+        <div className="annotation-filter__badges">
+          {options
+    .filter(shouldKeepFilter)
+    .filter(f.complement(hasNoBadge)).map(kind => (
             <AnnotationBadge
               key={kind}
               onClick={onToggle(kind)}
@@ -283,6 +286,7 @@ const AnnotationFilterArea = ({ onToggle, filters, options, langtag }) => {
               title={getAnnotationTitle(kind, langtag)}
             />
           ))}
+        </div>
       </div>
     </div>
   );

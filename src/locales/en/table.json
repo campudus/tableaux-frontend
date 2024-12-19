@@ -108,6 +108,7 @@
     "rename_table": "Rename table"
   },
   "filter": {
+    "annotations": "Annotations",
     "contains": "contains",
     "starts_with": "starts with",
     "rows_hidden": "Only displaying specific rows",

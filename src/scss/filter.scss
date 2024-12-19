@@ -62,11 +62,26 @@
       border-bottom: 1px solid $color-border-grey;
     }
 
+    .annotation-badge__area {
+      display: flex;
+      gap: 18px;
+      &-header {
+        padding-left: 6px;
+        padding-top: 9px;
+      }
+    }
+    .annotation-filter__list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
     .annotation-filter__badges {
+      flex: 1;
       display: flex;
       justify-content: end;
       gap: 9px;
-      margin-top: 12px;
+      padding-top: 6px;
+      flex-wrap: wrap;
     }
     .annotation-badge {
       padding: 3px 9px;

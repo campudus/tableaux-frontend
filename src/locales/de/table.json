@@ -107,6 +107,7 @@
     "rename_table": "Tabelle umbenennen"
   },
   "filter": {
+    "annotations": "Anmerkungen",
     "contains": "enthält",
     "starts_with": "beginnt mit",
     "rows_hidden": "Es werden nur bestimmte Datensätze angezeigt",
