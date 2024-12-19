@@ -201,7 +201,7 @@ const SortingArea = ({ columns, onChange, ordering, langtag }) => {
       <div className="content sorting-area__content">
         <Select
           options={options}
-          value={ordering?.colName}
+          value={ordering?.colName || "rowId"}
           onChange={handleChangeColumn}
           placehoder={t("filter:input.sort")}
         />
