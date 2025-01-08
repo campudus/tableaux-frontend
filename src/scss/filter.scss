@@ -24,11 +24,135 @@
 
   .filter-popup {
     @include header-panel-look();
-    width: 700px;
+    width: 630px;
     box-sizing: border-box;
-    overflow: visible;
+    overflow-y: auto;
     padding: 15px;
-    max-height: 70vh;
+    max-height: calc(100vh - 80px);
+
+    .column-filters,
+    .annotation-filters {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 30px;
+    }
+    .column-filters__list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      overflow-y: auto;
+      max-height: 13em;
+    }
+
+    .annotation-filter {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 3px 6px;
+      cursor: pointer;
+      &:hover {
+        background: $color-hover-background;
+      }
+    }
+
+    .filter-settings {
+      margin-bottom: 16px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid $color-border-grey;
+    }
+
+    .annotation-badge__area {
+      display: flex;
+      gap: 18px;
+      &-header {
+        padding-left: 6px;
+        padding-top: 9px;
+      }
+    }
+    .annotation-filter__list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .annotation-filter__badges {
+      flex: 1;
+      display: flex;
+      justify-content: end;
+      gap: 9px;
+      padding-top: 6px;
+      flex-wrap: wrap;
+    }
+    .annotation-badge {
+      padding: 3px 9px;
+      border-radius: 200px; // just big enough!
+      border: 1.5px solid;
+      font-size: 0.9em;
+      font-weight: 500;
+      opacity: 0.8;
+      &:hover {
+        opacity: 1;
+      }
+    }
+
+    .button {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 3px;
+      white-space: nowrap;
+      &:hover {
+        background: $color-hover-background;
+      }
+    }
+
+    .button--add-filter {
+      width: min-content;
+      white-space: nowrap;
+      padding: 6px 12px;
+    }
+
+    .button--remove-filter {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 1.2em;
+      border-radius: 3px;
+      color: $color-text-medium-grey;
+      padding: 3px 9px;
+    }
+
+    .button--open-save-overlay {
+      color: $color-primary;
+      padding: 3px 6px;
+    }
+
+    .button--reset-sorting {
+      padding: 3px 9px;
+      color: $color-text-medium-grey;
+      font-size: 1.2em;
+    }
+
+    .sorting-area {
+      padding: 12px;
+      &__content {
+        display: grid;
+        grid-template-columns: 1fr 1fr auto;
+        gap: 12px;
+        .Select:first-of-type {
+          margin-right: 18px;
+        }
+        .Select:last-of-type {
+          margin-left: 18px;
+        }
+      }
+    }
+
+    .filter-row {
+      display: grid;
+      gap: 8px;
+      grid-template-columns: 1fr 1fr 1fr auto;
+    }
 
     .filter-options {
       position: relative;
@@ -43,24 +167,26 @@
       }
     }
 
-    .bool-input {
-      a {
-        @include button-look();
-        background-color: $color-button-grey;
-        padding: 8px 30px;
+    .stored-filters-area {
+      background: $color-border-grey;
+      padding: 18px;
+      .stored-filter {
+        display: grid;
+        grid-template-columns: 1fr auto auto;
+        gap: 9px;
+        align-items: center;
+        height: 2em;
+      }
 
-        &.yes {
-          margin-right: 30px;
-        }
-
-        &.active {
-          &.yes {
-            background-color: $color-green;
-          }
-          &.no {
-            background-color: $color-red;
-          }
-        }
+      .button--set-stored-filter {
+        color: $color-primary;
+      }
+      .button--delete-stored-filter {
+        color: $color-text-medium-grey;
+      }
+      .stored-filters {
+        max-height: 13em;
+        overflow-y: auto;
       }
     }
 
@@ -94,99 +220,6 @@
     }
   }
 
-  .filter-row,
-  .sort-row {
-    $button-radius: 30px;
-    overflow: visible;
-    width: 100%;
-    justify-content: space-between;
-    margin-bottom: 20px;
-    display: grid;
-    grid-template-columns: $button-radius 3fr 2fr 5fr $button-radius;
-    grid-column-gap: 8px;
-
-    .filter-array-button {
-      border-radius: 50%;
-      background-color: transparent;
-      border: 1px solid $color-text-light-grey;
-      color: $color-text-light-grey;
-      width: $button-radius;
-      height: $button-radius;
-      padding: 0;
-
-      position: relative;
-
-      &:hover {
-        color: $color-primary;
-        border-color: $color-primary;
-      }
-
-      i {
-        position: absolute;
-        left: 50%;
-        top: 50%;
-        transform: translate(-50%, -50%);
-      }
-    }
-
-    .filter-input {
-      height: 30px;
-      padding: 0 10px;
-      line-height: 30px;
-      border: 1px solid $color-grey-dark;
-      @include border-radius(3px);
-      width: 200px;
-
-      &:focus,
-      &:active {
-        border-color: $color-primary-lighter;
-      }
-
-      &:disabled {
-        background-color: $color-background-disabled;
-
-        &:active {
-          border-color: $color-grey-dark;
-        }
-      }
-    }
-
-    .filter-select {
-      width: 220px;
-      display: inline-block;
-      vertical-align: middle;
-    }
-
-    .bool-input {
-      display: inline-flex;
-      flex-direction: row;
-      align-items: center;
-      width: 222px;
-
-      .selection-text {
-        font-style: italic;
-        color: $color-text-medium-grey;
-      }
-
-      .checkbox {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        width: 26px;
-        height: 26px;
-        border: 1px solid $color-text-light-grey;
-        border-radius: 3px;
-        margin-right: 10px;
-
-        &.checked:before {
-          font-family: FontAwesome;
-          content: "\f00c";
-          color: $color-primary-text;
-        }
-      }
-    }
-  }
-
   .filter-popup-button {
     @include header-button-look();
     font-family: "Roboto", Helvetica Neue, Helvetica, Arial, sans-serif;
@@ -210,7 +243,7 @@
       color: $color-text-light-grey;
       padding: 20px 0;
       margin-top: 20px;
-      border-top: 2px solid $color-border-grey;
+      margin-bottom: 20px;
       line-height: 1.5em;
       display: flex;
       justify-content: flex-end;
@@ -353,19 +386,21 @@
   top: 50%;
   transform: translate(-50%, -50%);
 
+  &__header {
+    color: $color-primary-text;
+    font-weight: bold;
+
+    margin-bottom: 20px;
+  }
+
+  &__footer {
+    display: flex;
+    gap: 20px;
+  }
+
   .button {
     @include button-look();
-
-    &:not(:first-of-type) {
-      margin-left: 20px;
-    }
   }
-}
-
-.save-template-popup__header {
-  font-weight: bold;
-  color: $color-text-medium-grey;
-  margin-bottom: 20px;
 }
 
 .save-template__name-input {
@@ -377,6 +412,16 @@
   border-radius: 3px;
 }
 
+.filter-input {
+  border-radius: 4px;
+  border: 1px solid transparentize($color-text-light-grey, 0.4);
+  outline: none;
+  padding: 0 8px;
+  &:focus {
+    outline: none;
+  }
+  box-shadow: none;
+}
 .filter-input__clear-button {
   background: transparentize(white, 0.3);
   position: absolute;

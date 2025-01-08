@@ -28,12 +28,21 @@
 
 .revision-block:last-of-type .revision__item:last-of-type {
   border-color: transparent;
-  border-image: linear-gradient(lighten($color-primary, 5) 20px, transparent 1px) 1;
+  border-image: linear-gradient(
+      lighten($color-primary, 5) 20px,
+      transparent 1px
+    )
+    1;
 }
 
 .revision-block:first-of-type .revision__item:first-of-type {
   border-color: transparent;
-  border-image: linear-gradient(to top, lighten($color-primary, 5) 20px, transparent 1px) 1;
+  border-image: linear-gradient(
+      to top,
+      lighten($color-primary, 5) 20px,
+      transparent 1px
+    )
+    1;
 }
 
 .revision-item--non-consecutive {
@@ -76,13 +85,14 @@
   display: flex;
   margin: 0 -5px;
 
-  &>div {
+  & > div {
     margin: 0 5px;
   }
 }
 
-.revision-item-header__time, .revision-item-header__title {
-  font-weight: bold
+.revision-item-header__time,
+.revision-item-header__title {
+  font-weight: bold;
 }
 
 .revision-item-header__revert-button {
@@ -159,11 +169,11 @@
   display: flex;
 
   &.content-diff--added {
-    @include link-diff-color($color-revision-link-added)
+    @include link-diff-color($color-revision-link-added);
   }
 
   &.content-diff--deleted {
-    @include link-diff-color($color-revision-deleted)
+    @include link-diff-color($color-revision-deleted);
   }
 
   .link-diff__icon {
@@ -190,16 +200,20 @@
   border: none;
 
   &.important {
-    background-color: lighten($color-important, 10)
+    background-color: color-mix(in srgb, var(--color-important), white 10);
   }
   &.check-me {
-    background-color: lighten($color-checkme, 10)
+    background-color: color-mix(in srgb, var(color-checkme), white 10);
   }
   &.postpone {
-    background-color: lighten($color-postpone, 10)
+    background-color: color-mix(in srgb, var(color-postpone), white 10);
   }
   &.translation {
-    background-color: lighten($color-needs-translation, 10)
+    background-color: color-mix(
+      in srgb,
+      var(color-needs-translation),
+      white 10
+    );
   }
 }
 
@@ -269,10 +283,11 @@
 .history-popup__header {
   margin-top: 20px;
   display: flex;
-  align-items:center;
+  align-items: center;
 }
 
-.history-filter__toggle-filters-button, .history-filter__clear-filters-button {
+.history-filter__toggle-filters-button,
+.history-filter__clear-filters-button {
   @include button-look();
   display: flex;
 
@@ -282,7 +297,7 @@
 }
 
 .toggle-filter-button__arrow {
-  margin-left: 5px
+  margin-left: 5px;
 }
 
 .history-filter__clear-filters-button {
@@ -309,7 +324,8 @@
     border-radius: 3px 3px 0 0;
   }
 
-  &.toggle-filters-button--has-filters, &:hover {
+  &.toggle-filters-button--has-filters,
+  &:hover {
     background-color: $color-primary;
     color: $color-primary-contrast-text;
   }
@@ -317,7 +333,7 @@
 
 .history-popup__body {
   border-top: 2px solid $color-text-light-grey;
-  background-color: #2D3135;
+  background-color: #2d3135;
   padding: 10px;
   padding-bottom: 0;
   display: grid;
@@ -366,7 +382,9 @@
   margin-bottom: 10px;
   padding-bottom: 3px;
 
-  &.item__select-from, &.item__select-to, &.item__select-author {
+  &.item__select-from,
+  &.item__select-to,
+  &.item__select-author {
     border-bottom: 1px solid $color-primary;
 
     .search-bar__input {
@@ -472,12 +490,11 @@
 
 .overlay .revision-history-overlay .confirm-revert {
   padding: 0;
-  margin: 0
+  margin: 0;
 }
 
-
 @media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
-// ------ IE needs every grid item to be placed manually
+  // ------ IE needs every grid item to be placed manually
 
   .item__select-from {
     -ms-grid-column: 1;
@@ -507,11 +524,11 @@
     -ms-grid-column: 2;
   }
 
-// ----- and IE places stuff wrong
+  // ----- and IE places stuff wrong
 
-  .overlay .revision-history-overlay.overlay-wrapper.full-height.is-right:not(.is-left) {
+  .overlay
+    .revision-history-overlay.overlay-wrapper.full-height.is-right:not(.is-left) {
     transition: none;
     left: 55vw;
   }
-
 }

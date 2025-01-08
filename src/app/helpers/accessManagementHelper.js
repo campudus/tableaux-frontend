@@ -31,8 +31,8 @@ const _lookUpPermissions = params => {
   const lookupStructureCached = memoizeWith(lookupKey, (tblId, colId) => {
     const state = store.getState();
     const tables = state.tables;
-    const columns = state.columns[tblId];
-    const rows = (tblId && state.rows[tblId].data) || {};
+    const columns = f.propOr(["columns", tblId], state);
+    const rows = f.propOr({}, ["rows", tblId, "data", state]);
 
     const lookUpTable = id => f.find(f.propEq(["data", "id"], id), tables);
     const missingColumnIds = id => f.isNil(id) || f.isNil(tblId);
@@ -70,7 +70,7 @@ const getPermission = pathToPermission =>
 
 // (cell | {tableId: number, columnId: number}) -> (langtag | nil) -> boolean
 export const canUserChangeCell = f.curry((cell, langtag) => {
-  const { kind, row } = cell;
+  const { kind, row } = cell ?? {};
   const editCellValue = getPermission(["column", "editCellValue"])(cell);
   const language = f.propEq("column.languageType", LanguageType.country)(cell)
     ? getCountryOfLangtag(langtag)

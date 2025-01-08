@@ -24,6 +24,7 @@ const envParams = [
   "host",
   "port",
   "webhookUrl",
+  "authClientId",
   "authServerUrl",
   "authRealm",
   "enableHistory",

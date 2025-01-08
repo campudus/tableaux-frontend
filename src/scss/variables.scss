@@ -36,7 +36,7 @@ $color-grey-dark: #dedede;
 $color-light-link-color: #e7f1f8;
 $color-darker-link-color: #c5d9e8;
 $color-text-link-color: #7c94a6;
-$color-selected-row: #f3faff;
+$color-selected-row: var(--color-selected-row);
 $color-selected-multi: #e0f2ff;
 $color-select-list-focus: #e8e8e8;
 $color-select-list-selected: #e8f6ff;
@@ -48,14 +48,18 @@ $color-very-light-blue: #e7f1f8;
 $dark-blue-grey-background: #3c4246;
 $color-background-disabled: #fafafa;
 $color-foreground-disabled: $color-text-medium-grey;
-$color-needs-translation: #fb9429;
-$color-needs-translation-dark: darken(#ff9600, 5);
+$color-needs-translation: var(--color-needs-translation);
+$color-needs-translation-dark: color-mix(
+  in srgb,
+  var(--color-needs-translation),
+  black 5%
+);
 $color-fully-translated: lighten($color-green, 30);
 $color-hover-background: $color-light-link-color;
 $color-hover-foreground: $color-primary;
-$color-important: #ed475e;
-$color-checkme: #66d6b0;
-$color-postpone: #999999;
+$color-important: var(--color-important);
+$color-checkme: var(--color-doublecheck);
+$color-postpone: var(--color-postpone);
 $color-comments: #2f95db;
 $color-disabled-grey: #f0f0f0;
 
@@ -149,7 +153,7 @@ $space-height-link-delete-button: 23px;
 
   &.inactive:before {
     box-shadow: none;
-    background: darken($dot-color, 10);
+    background: color-mix(in srgb, $dot-color, black 10%);
   }
 }
 
@@ -175,7 +179,7 @@ $space-height-link-delete-button: 23px;
 
   &.active:before {
     box-shadow: none;
-    background: darken($dot-color, 10);
+    background: color-mix(in srgb, $dot-color, black 10%);
   }
 }
 
@@ -216,3 +220,11 @@ $space-height-link-delete-button: 23px;
 // stolen from MUI elevation-6
 $box-shadow-light: 0px 3px 5px -1px rgba(0, 0, 0, 0.2),
   0px 6px 10px 0px rgba(0, 0, 0, 0.14), 0px 1px 18px 0px rgba(0, 0, 0, 0.12);
+
+:root {
+  --color-important: #ed475e;
+  --color-postpone: #999999;
+  --color-doublecheck: #66d6b0;
+  --color-needs-translation: #fb9429;
+  --color-selected-row: #f3faff;
+}

@@ -1,12 +1,12 @@
 import f from "lodash/fp";
 import PropTypes from "prop-types";
 import React, { useCallback } from "react";
-import Select from "react-select";
 import { getLanguageOrCountryIcon } from "../../helpers/multiLanguage";
+import Select from "../GrudSelect";
 import { Langtags } from "./../../constants/TableauxConstants";
 
 const LanguageSwitcher = props => {
-  const { disabled, langtag, limitLanguages, onChange, openOnTop } = props;
+  const { disabled, langtag, limitLanguages, onChange } = props;
   const languages = f.isNil(props.languages) ? Langtags : props.languages;
   // Inside select box show user just the languages he has access to
   const languagesToDisplay =
@@ -29,27 +29,33 @@ const LanguageSwitcher = props => {
     [onChange]
   );
 
-  const renderOption = useCallback(
-    option => getLanguageOrCountryIcon(option.value, "language"),
-    []
-  );
-
   return (
-    <div className="language-switcher">
-      <Select
-        className={openOnTop ? "open-on-top" : ""}
-        options={options}
-        searchable={false}
-        clearable={false}
-        value={langtag}
-        onChange={handleChange}
-        optionRenderer={renderOption}
-        valueRenderer={renderOption}
-        disabled={disabled}
-      />
-    </div>
+    <Select
+      className="language-switcher"
+      options={options}
+      searchable={false}
+      clearable={false}
+      value={langtag}
+      onChange={handleChange}
+      components={{ Option, SingleValue }}
+      Disabled={disabled}
+    />
   );
 };
+
+const renderFlagAndText = key => props => {
+  return (
+    <span
+      className="language-switcher__option"
+      onClick={() => props.selectOption(props.data)}
+      style={props.getStyles(key, props)}
+    >
+      {getLanguageOrCountryIcon(props.data.value, "language")}
+    </span>
+  );
+};
+const Option = renderFlagAndText("option");
+const SingleValue = renderFlagAndText("singleValue");
 
 LanguageSwitcher.propTypes = {
   langtag: PropTypes.string.isRequired,

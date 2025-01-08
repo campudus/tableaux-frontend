@@ -1,21 +1,21 @@
 /*
  * Context menu for column options. Opened by ColumnEntry.
  */
-import React from "react";
-import f from "lodash/fp";
 import i18n from "i18next";
-import listensToClickOutside from "react-onclickoutside";
-
+import f from "lodash/fp";
 import PropTypes from "prop-types";
-
+import React from "react";
+import listensToClickOutside from "react-onclickoutside";
+import TableauxConstants, {
+  SortValue
+} from "../../constants/TableauxConstants";
 import {
   canUserEditColumnDisplayProperty,
   canUserSeeTable
 } from "../../helpers/accessManagementHelper";
-import TableauxConstants from "../../constants/TableauxConstants";
-
-import store from "../../redux/store";
 import actions from "../../redux/actionCreators";
+import store from "../../redux/store";
+import RowFilters from "../../RowFilters/index";
 
 const PROTECTED_CELL_KINDS = ["concat"]; // cell kinds that should not be editable
 
@@ -102,32 +102,31 @@ class ColumnContextMenu extends React.Component {
       );
 
     const sortByThisColumn = direction => () => {
-      const currentFilters =
-        store.getState() |> f.prop(["tableView", "filters"]);
+      const currentFilters = f.prop(["tableView", "filters"], store.getState());
       store.dispatch(
         actions.setFiltersAndSorting(currentFilters, {
-          columnId: column.id,
-          value: direction
+          colName: column.name,
+          direction
         })
       );
     };
 
-    const sortingItems = (
+    const sortingItems = RowFilters.canSortByColumnKind(column.kind) ? (
       <>
         <ContextMenuItem
           closeMenu={closeHandler}
-          onClick={sortByThisColumn("ASC")}
+          onClick={sortByThisColumn(SortValue.asc)}
           iconName="fa-sort-alpha-asc"
           title="filter:help.sortasc"
         />
         <ContextMenuItem
           closeMenu={closeHandler}
-          onClick={sortByThisColumn("DESC")}
+          onClick={sortByThisColumn(SortValue.desc)}
           iconName="fa-sort-alpha-desc"
           title="filter:help.sortdesc"
         />
       </>
-    );
+    ) : null;
 
     return (
       <div
