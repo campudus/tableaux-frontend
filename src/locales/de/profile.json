@@ -12,7 +12,7 @@
   },
   "global-settings": {
     "title": "Globale Einstellungen",
-    "subtitle": "Einstellungen des User Interface un der Ansichten ändern",
+    "subtitle": "Einstellungen des User Interface und der Ansichten ändern",
     "table-settings": "Tabelleneinstellungen und -ansichten",
     "filter": "Filter",
     "filter-reset-label": "Filter automatisch zurücksetzen",
