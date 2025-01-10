@@ -160,7 +160,6 @@ const filterRows = (
     when([false, false, false], [])
   ).filter(setting => !f.isEmpty(setting));
 
-  console.log({ filterSetting, keepSelectedRowFilter });
   const filterRows = filterStateful(
     RowFilters.parse(filterContext)(filterSetting),
     new Set(visibleColumnIds)

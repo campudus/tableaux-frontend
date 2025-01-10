@@ -683,7 +683,6 @@ export const addEmptyRowAndOpenEntityView = (
 };
 
 const fetchSingleRow = ({ tableId, selectedRowId }) => async dispatch => {
-  console.log("Adding row", selectedRowId);
   const url = urlToTableDestination({ tableId, rowId: selectedRowId });
   const row = await makeRequest({ url });
   dispatch({ type: ADD_ROWS, rows: [row], tableId });
