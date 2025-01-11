@@ -9,7 +9,6 @@ import classNames from "classnames";
 import { FilterModes } from "../../../constants/TableauxConstants";
 import {
   either,
-  maybe,
   preventDefault,
   stopPropagation,
   when
@@ -69,41 +68,39 @@ const SearchBar = ({
   const togglePopup = () => {
     setPopupOpen(!popupOpen);
   };
-  const focusInput = React.useCallback(() =>
-    maybe(inputRef.current).method("focus")
-  );
-  const handleChange = React.useCallback(event =>
-    setFilterValue(event.target.value)
-  );
-
+  const focusInput = React.useCallback(() => {
+    requestAnimationFrame(() => void inputRef.current?.focus());
+  }, [inputRef.current]);
+  const handleChange = event => void setFilterValue(event.target.value);
   React.useEffect(() => {
     updateSharedData(f.assoc("focusInput", focusInput));
-  }, [inputRef.current]);
+  }, [focusInput]);
 
-  const handleInputKeys = React.useCallback(event => {
-    const clearOrClose = () => {
-      if (!f.isEmpty(filterValue)) {
-        setFilterValue("");
+  const handleInputKeys = React.useCallback(
+    event => {
+      const clearOrClose = () => {
+        if (!f.isEmpty(filterValue)) {
+          setFilterValue("");
+          preventDefault(event);
+          stopPropagation(event);
+        }
+      };
+      const passOnKey = event => {
         preventDefault(event);
         stopPropagation(event);
-        focusInput();
-      }
-    };
-    const passOnKey = event => {
-      preventDefault(event);
-      stopPropagation(event);
-      onKeyStroke && onKeyStroke(event);
-      focusInput();
-    };
+        onKeyStroke && onKeyStroke(event);
+      };
 
-    const isIn = x => y => f.contains(f.toLower(y), f.map(f.toLower, x));
+      const isIn = x => y => f.contains(f.toLower(y), f.map(f.toLower, x));
 
-    f.cond([
-      [f.eq("Escape"), () => clearOrClose],
-      [isIn(["arrowup", "arrowdown", "tab", "enter"]), () => passOnKey],
-      [f.stubTrue, () => f.noop]
-    ])(event.key)(event);
-  });
+      f.cond([
+        [f.eq("Escape"), () => clearOrClose],
+        [isIn(["arrowup", "arrowdown", "tab", "enter"]), () => passOnKey],
+        [f.stubTrue, () => f.noop]
+      ])(event.key)(event);
+    },
+    [setFilterValue, focusInput, onKeyStroke]
+  );
 
   const filterName = either(SearchFunctions[filterMode || FilterModes.CONTAINS])
     .map(f.prop("displayName"))
@@ -122,8 +119,9 @@ const SearchBar = ({
         autoFocus
         ref={inputRef}
         placeholder={filterName}
-        onKeyDown={handleInputKeys}
+        onInput={handleInputKeys}
         onChange={handleChange}
+        onBlur={focusInput}
       />
       <button className="popup-button" onClick={togglePopup}>
         <i className="fa fa-search" />
