@@ -45,6 +45,7 @@ const {
 } = API_ROUTES;
 
 const {
+  ADD_ROWS,
   ADDITIONAL_ROWS_DATA_LOADED,
   CLEAN_UP,
   COLUMNS_DATA_LOADED,
@@ -317,9 +318,12 @@ const generateDisplayValues = (rows, columns, tableId) => (
   };
 };
 
-const loadCompleteTable = tableId => async dispatch => {
+const loadCompleteTable = ({ tableId, selectedRowId }) => async dispatch => {
   dispatch(setCurrentTable(tableId));
   await dispatch(loadColumns(tableId));
+  if (selectedRowId > 0) {
+    dispatch(fetchSingleRow({ tableId, selectedRowId }));
+  }
   dispatch(loadAllRows(tableId));
 };
 
@@ -678,6 +682,12 @@ export const addEmptyRowAndOpenEntityView = (
   onSuccess && onSuccess(freshRow);
 };
 
+const fetchSingleRow = ({ tableId, selectedRowId }) => async dispatch => {
+  const url = urlToTableDestination({ tableId, rowId: selectedRowId });
+  const row = await makeRequest({ url });
+  dispatch({ type: ADD_ROWS, rows: [row], tableId });
+};
+
 const changeTableName = (tableId, displayName) => ({
   promise: makeRequest({
     apiRoute: toTable({ tableId }),
@@ -717,7 +727,7 @@ const actionCreators = {
   setCurrentTable: setCurrentTable,
   generateDisplayValues: generateDisplayValues,
   addDisplayValues: dispatchParamsFor(GENERATED_DISPLAY_VALUES),
-  loadCompleteTable: loadCompleteTable,
+  loadCompleteTable,
   loadTableView,
   setCurrentLanguage: setCurrentLanguage,
   addSkeletonColumns: dispatchParamsFor(COLUMNS_DATA_LOADED),
@@ -773,7 +783,8 @@ const actionCreators = {
     MultiSelect.TOGGLE_MULTISELECT_CELL
   ),
   clearMultiselect: dispatchParamsFor(MultiSelect.CLEAR_MULTISELECT),
-  setShowArchivedRows
+  setShowArchivedRows,
+  fetchSingleRow
 };
 
 export default actionCreators;

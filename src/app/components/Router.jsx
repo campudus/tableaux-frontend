@@ -54,7 +54,7 @@ const GRUDRouter = React.memo(() => {
 
   const renderTableView = React.useCallback(routeProps => {
     const validParams = validateRouteParams(routeProps.match.params, tables);
-    const { tableId, langtag } = validParams;
+    const { tableId, langtag, rowId } = validParams;
     const currentTable = currentTableSelector(store.getState());
     const currentLanguage = currentLanguageSelector(store.getState());
     const { filter } = parseOptions(routeProps.location.search);
@@ -65,7 +65,9 @@ const GRUDRouter = React.memo(() => {
         switchTable(history, tableId);
         store.dispatch(actionCreators.cleanUp(tableId));
         store.dispatch(actionCreators.toggleCellSelection(validParams));
-        store.dispatch(actionCreators.loadCompleteTable(tableId));
+        store.dispatch(
+          actionCreators.loadCompleteTable({ tableId, selectedRowId: rowId })
+        );
         store.dispatch(actionCreators.loadTableView(tableId, filter));
       });
     }
