@@ -75,6 +75,7 @@ const SearchBar = ({
   React.useEffect(() => {
     updateSharedData(f.assoc("focusInput", focusInput));
   }, [focusInput]);
+  React.useEffect(() => void focusInput(), [filterValue, focusInput]);
 
   const handleInputKeys = React.useCallback(
     event => {
@@ -105,7 +106,6 @@ const SearchBar = ({
   const filterName = either(SearchFunctions[filterMode || FilterModes.CONTAINS])
     .map(f.prop("displayName"))
     .map(x => i18n.t(x))
-
     .getOrElse("unknown search value: " + filterMode);
 
   const FilterPopup = listensToClickOutside(SearchModePopup);
@@ -121,7 +121,6 @@ const SearchBar = ({
         placeholder={filterName}
         onInput={handleInputKeys}
         onChange={handleChange}
-        onBlur={focusInput}
       />
       <button className="popup-button" onClick={togglePopup}>
         <i className="fa fa-search" />
