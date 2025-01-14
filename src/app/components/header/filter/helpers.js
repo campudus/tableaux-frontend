@@ -1,7 +1,7 @@
 import { match, otherwise, when } from "match-iz";
 import f from "lodash/fp";
 import {
-  Annotation,
+  AnnotationConfigs,
   AnnotationKind
 } from "../../../constants/TableauxConstants";
 import { getCssVar } from "../../../helpers/getCssVar";
@@ -22,7 +22,7 @@ export const mkAnnotationFilterTemplates = langtag => ({
     langtag
   ],
   ...Object.fromEntries(
-    Annotation.map(({ name, kind }) =>
+    AnnotationConfigs.map(({ name, kind }) =>
       match(kind)(
         when(AnnotationKind.flag, [
           name,
@@ -50,15 +50,15 @@ export const toCombinedFilter = settings => {
 };
 
 export const getAnnotationColor = kind => {
-  const annotationSettings = f.indexBy("name", Annotation);
+  const annotationSettings = f.indexBy("name", AnnotationConfigs);
   return f.cond([
     [
       key => /needs.*?translation/i.test(key),
       () => getCssVar("--color-needs-translation")
     ],
     [
-      key => annotationSettings[key]?.color,
-      key => annotationSettings[key].color
+      key => annotationSettings[key]?.bgColor,
+      key => annotationSettings[key].bgColor
     ],
     [() => true, () => "#ddd"]
   ])(kind);

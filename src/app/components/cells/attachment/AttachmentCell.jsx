@@ -96,21 +96,23 @@ const AttachmentCell = props => {
   };
 
   return (
-    <div className={cellClass} onClick={handleClick}>
-      {f.size(attachments) === f.size(value)
-        ? attachments
-        : [
-            ...attachments,
-            <span key={"more"} className="more">
-              &hellip;
-            </span>
-          ]}
+    <>
+      <div className={cellClass} onClick={handleClick}>
+        {f.size(attachments) === f.size(value)
+          ? attachments
+          : [
+              ...attachments,
+              <span key={"more"} className="more">
+                &hellip;
+              </span>
+            ]}
+      </div>
       {editing && selected ? (
         <button key={"add-btn"} className="edit" onClick={handleClick}>
           <span className="fa fa-pencil" />
         </button>
       ) : null}
-    </div>
+    </>
   );
 };
 

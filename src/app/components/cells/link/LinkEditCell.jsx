@@ -40,16 +40,16 @@ const LinkEditCell = props => {
   }, [Boolean(editing), isLocked(cell.row)]);
 
   return (
-    <div className={"cell-content"} onScroll={catchScrolling}>
-      {canUserChangeCell(cell, langtag)
-        ? [
-            ...links,
-            <button key={"add-btn"} className="edit">
-              <span className="fa fa-pencil" />
-            </button>
-          ]
-        : links}
-    </div>
+    <>
+      <div className={"cell-content"} onScroll={catchScrolling}>
+        {links}
+      </div>
+      {canUserChangeCell(cell, langtag) && (
+        <button key={"add-btn"} className="edit">
+          <span className="fa fa-pencil" />
+        </button>
+      )}
+    </>
   );
 };
 

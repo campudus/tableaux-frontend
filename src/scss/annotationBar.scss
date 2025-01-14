@@ -1,0 +1,73 @@
+.annotation-bar {
+  position: absolute;
+  top: 1px;
+  width: calc(100% - 18px);
+  display: flex;
+  justify-content: space-between;
+
+  .tooltip {
+    &:after {
+      display: none; // hide tooltip arrow
+    }
+  }
+
+  &__tooltip-wrapper {
+    position: relative;
+  }
+
+  &__flags {
+    display: flex;
+    gap: 4px;
+  }
+
+  &__flag {
+    margin: 1px 0;
+    width: 40px;
+    height: 4px;
+    border-radius: 999px;
+  }
+
+  &__flag-infos {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  &__flag-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  &__flag-icon {
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+  }
+
+  &__ellipsis {
+    margin: 1px 0;
+    width: 15px;
+    height: 2px;
+    padding: 1px 3px;
+    border-radius: 999px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    gap: 2px;
+    background-color: #d1d1d1;
+
+    &-dot {
+      width: 2px;
+      height: 2px;
+      border-radius: 999px;
+      background-color: #333333;
+    }
+  }
+
+  &__comment-button {
+    position: absolute;
+    right: 0;
+  }
+}

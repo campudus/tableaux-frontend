@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from "react";
 import { retrieveTranslation } from "../../../helpers/multiLanguage";
-import StatusIconTooltip from "../../helperComponents/Tooltip/Tooltip";
+import Tooltip from "../../helperComponents/Tooltip/Tooltip";
 
 const FontIcon = ({ fontIconKey, style }) => (
   <i style={style} className={"fa " + `fa-${fontIconKey}`} />
@@ -30,9 +30,7 @@ const StatusIcon = props => {
       onMouseLeave={handleMouseLeave}
       onClick={() => !blockMode && clickHandler(filterValue)}
     >
-      {!blockMode && tooltipVisible ? (
-        <StatusIconTooltip langtag={langtag} translations={tooltip} />
-      ) : null}
+      {!blockMode && tooltipVisible ? <Tooltip>{nameToDisplay}</Tooltip> : null}
       <FontIcon style={{ color }} fontIconKey={value} />
       {blockMode && <div>{nameToDisplay}</div>}
     </div>

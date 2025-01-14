@@ -1,7 +1,7 @@
 import classNames from "classnames";
 import f from "lodash/fp";
 import PropTypes from "prop-types";
-import React, { createRef, useCallback } from "react";
+import React, { createRef } from "react";
 import {
   branch,
   compose,
@@ -15,16 +15,15 @@ import {
   canUserChangeAnyCountryTypeCell,
   canUserChangeCell
 } from "../../helpers/accessManagementHelper";
-import { isLocked } from "../../helpers/annotationHelper";
 import KeyboardShortcutsHelper from "../../helpers/KeyboardShortcutsHelper";
 import { getModifiers } from "../../helpers/modifierState";
 import reduxActionHoc from "../../helpers/reduxActionHoc";
+import AnnotationBar from "../annotationBar/AnnotationBar";
 import AttachmentCell from "./attachment/AttachmentCell.jsx";
 import BooleanCell from "./boolean/BooleanCell";
 import CurrencyCell from "./currency/CurrencyCell.jsx";
 import DateCell from "./date/DateCell";
 import DisabledCell from "./disabled/DisabledCell.jsx";
-import FlagIconRenderer from "./FlagIconRenderer";
 import IdentifierCell from "./identifier/IdentifierCell.jsx";
 import LinkCell from "./link/LinkCell.jsx";
 import NumericCell from "./numeric/NumericCell.jsx";
@@ -54,48 +53,6 @@ const mapStateToProps = (state, props) => {
     inMultiSelection,
     inSelectedRow
   };
-};
-
-const ExpandCorner = ({ show, actions, cell }) => {
-  const handleClick = useCallback(
-    event => {
-      event.stopPropagation();
-      actions.toggleExpandedRow({ rowId: cell.row.id });
-    },
-    [cell.row.id]
-  );
-
-  return show ? (
-    <div className="needs-translation-other-language" onClick={handleClick} />
-  ) : null;
-};
-
-export const getAnnotationState = cell => {
-  const flags = f.flow(
-    f.keys,
-    f.filter(f.contains(f, ["important", "check-me", "postpone"])),
-    f.join(":")
-  )(cell.annotations);
-
-  const translations = f.flow(
-    f.get(["translationNeeded", "langtags"]),
-    f.join(":")
-  )(cell.annotations);
-
-  const comments = f.flow(
-    f.pick(["info", "error", "warning"]),
-    f.reduce(f.concat, []),
-    f.map(
-      f.flow(
-        f.get("uuid"),
-        f.take(8),
-        f.join("")
-      )
-    ),
-    f.join(":")
-  )(cell.annotations);
-
-  return f.join("-", [flags, translations, comments, isLocked(cell.row)]);
 };
 
 class Cell extends React.Component {
@@ -279,6 +236,8 @@ class Cell extends React.Component {
       value,
       allDisplayValues,
       langtag,
+      userLangtag,
+      isPrimaryLang,
       selected,
       editing,
       inMultiSelection,
@@ -292,10 +251,6 @@ class Cell extends React.Component {
     const { column, row, table } = cell;
     const noKeyboard = [concat, "disabled", text, richtext];
     const kind = column.kind;
-    const { translationNeeded } = cell.annotations || {};
-    const isPrimaryLanguage = langtag === f.first(Langtags);
-    const needsTranslationOtherLanguages =
-      !f.isEmpty(f.prop("langtags", translationNeeded)) && isPrimaryLanguage;
     const cssClass = classNames(`cell cell-${kind} ${cell.id}`, {
       selected: selected,
       editing: this.userCanEditValue() && editing,
@@ -328,6 +283,14 @@ class Cell extends React.Component {
             : f.noop
         }
       >
+        <AnnotationBar
+          cell={cell}
+          langtag={langtag}
+          userLangtag={userLangtag}
+          annotationsOpen={annotationsOpen}
+          toggleAnnotationPopup={toggleAnnotationPopup}
+          isPrimaryLang={isPrimaryLang}
+        />
         <CellKind
           table={table}
           row={row}
@@ -353,18 +316,6 @@ class Cell extends React.Component {
           cell={cell}
           width={width}
           rowIndex={rowIndex}
-        />
-        <FlagIconRenderer
-          cell={cell}
-          annotationState={getAnnotationState(cell)}
-          langtag={langtag}
-          annotationsOpen={annotationsOpen}
-          toggleAnnotationPopup={toggleAnnotationPopup}
-        />
-        <ExpandCorner
-          actions={this.props.actions}
-          show={needsTranslationOtherLanguages}
-          cell={cell}
         />
       </div>
     );
