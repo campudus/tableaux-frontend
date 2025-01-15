@@ -341,6 +341,30 @@ describe("buildContext()", () => {
       expect(result2).toEqual([]);
     });
   });
+  describe("AnyColumn", () => {
+    it("should search for values across columns (A)", () => {
+      const parse = RowFilters.parse(ctx);
+      const testAllColumns = parse(["any-value", "contains", "s"]);
+      const [foundRows, foundColumns] = filterStateful(
+        testAllColumns,
+        new Set()
+      )(rows);
+      // Matches "Schnappt Shortie" in row 1, columns 0, 11
+      // and "Dolor sit amet" in row 2, columns 10, 11
+      expect(foundRows.map(row => row.id)).toEqual([1, 2]);
+      expect(Array.from(foundColumns).sort()).toEqual([0, 10, 11, 12]);
+    });
+    it("should search for values across columns (B)", () => {
+      const parse = RowFilters.parse(ctx);
+      const testAllColumns = parse(["any-value", "contains", "1"]);
+      const [foundRows, foundColumns] = filterStateful(
+        testAllColumns,
+        new Set()
+      )(rows);
+      expect(foundRows.map(row => row.id)).toEqual([1, 2]);
+      expect(Array.from(foundColumns).sort()).toEqual([5, 7, 8]);
+    });
+  });
   describe("Annotation", () => {
     const parse = RowFilters.parse(ctx);
     it("should find simple flag annotations", () => {
