@@ -108,13 +108,24 @@ const FilterPopup = ({
     setOrdering({ direction: SortValue.asc });
     actions.setFiltersAndSorting([], [], true);
   };
+  const handleKeyPress = event => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      event.stopPropagation();
+      handleSubmit();
+    }
+  };
   return (
     <>
       <div
         className="full-screen capture-outside-click"
         onClick={onClickedOutside}
       />
-      <div className="filter-popup" onClick={evt => void evt.stopPropagation()}>
+      <div
+        className="filter-popup"
+        onClick={evt => void evt.stopPropagation()}
+        onKeyDown={handleKeyPress}
+      >
         <section className="filter-popup__content-section">
           <header className="filter-popup__header">
             <div className="filter-popup__heading">
