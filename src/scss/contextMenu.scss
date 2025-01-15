@@ -16,25 +16,29 @@
     align-items: center;
 
     i {
-      width: 20px;
+      width: 13px;
+      margin-right: 7px;
       color: $color-text-medium-grey;
       position: relative;
+    }
 
-      &.dot.translation {
-        @include status-dot($color-needs-translation, $color-overlay-header);
-      }
+    .item-dot {
+      width: 8px;
+      height: 8px;
+      margin-right: 10px;
+      border-radius: 999px;
+      border: 2px solid $color-overlay-header;
+      outline: 1px solid transparent !important;
 
-      &.dot.important {
-        @include status-dot($color-important, $color-overlay-header);
+      &--active {
+        outline: 1px solid currentColor !important;
       }
+    }
 
-      &.dot.check-me {
-        @include status-dot($color-checkme, $color-overlay-header);
-      }
-
-      &.dot.postpone {
-        @include status-dot($color-postpone, $color-overlay-header);
-      }
+    .item-label ~ i {
+      position: absolute;
+      right: 0;
+      margin-right: 10px;
     }
 
     .item-label {
@@ -44,23 +48,8 @@
     &:hover {
       background-color: $color-hover-dark;
 
-      .dot.translation {
-        @include status-dot-hovered(
-          $color-needs-translation,
-          $color-hover-dark
-        );
-      }
-
-      .dot.important {
-        @include status-dot-hovered($color-important, $color-hover-dark);
-      }
-
-      .dot.check-me {
-        @include status-dot-hovered($color-checkme, $color-hover-dark);
-      }
-
-      .dot.postpone {
-        @include status-dot-hovered($color-postpone, $color-hover-dark);
+      .item-dot {
+        border-color: $color-hover-dark;
       }
     }
   }
@@ -113,6 +102,26 @@
 
     &:hover {
       background-color: $color-select-list-selected;
+    }
+  }
+}
+
+.annotation-context-menu {
+  display: none;
+  padding: 10px 0;
+  width: 230px;
+  position: absolute;
+  top: -10px;
+  left: 100%;
+}
+
+.annotation-context-menu-button {
+  position: relative;
+  cursor: pointer;
+
+  &:hover {
+    .annotation-context-menu {
+      display: block;
     }
   }
 }
