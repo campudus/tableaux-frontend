@@ -91,6 +91,10 @@ export const fromCombinedFilter = (columns, langtag) => {
       const [colName, mode, value] = rest;
       const column = columnLookup[colName];
       rowFilters.push({ column, mode, value });
+    } else if (kind === "any-value") {
+      const [mode, value] = rest;
+      const column = columnLookup["any-column"];
+      rowFilters.push({ column, mode, value });
     } else if (kind === "row-prop" && rest[0] === "id") {
       rowFilters.push(["value", "rowId", ...rest.slice(1)]);
     } else if (kind === "and") {

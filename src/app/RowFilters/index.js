@@ -20,6 +20,7 @@ export const Text = FilterText.Mode;
 export const RowProp = FilterRowProp.Mode;
 
 const ModesForKind = {
+  "any-column": FilterAnyColumn,
   [ColumnKinds.attachment]: null,
   [ColumnKinds.boolean]: FilterBoolean,
   [ColumnKinds.concat]: FilterText,
