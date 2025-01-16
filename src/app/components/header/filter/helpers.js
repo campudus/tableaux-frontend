@@ -4,16 +4,10 @@ import {
   AnnotationConfigs,
   AnnotationKind
 } from "../../../constants/TableauxConstants";
-import { getCssVar } from "../../../helpers/getCssVar";
 import { t } from "i18next";
+import { retrieveTranslation } from "../../../helpers/multiLanguage";
 
 export const mkAnnotationFilterTemplates = langtag => ({
-  needsAnyTranslation: [
-    "annotation",
-    "flag-type",
-    "needs_translation",
-    "is-set"
-  ],
   needsMyTranslation: [
     "annotation",
     "flag-type",
@@ -22,19 +16,22 @@ export const mkAnnotationFilterTemplates = langtag => ({
     langtag
   ],
   ...Object.fromEntries(
-    AnnotationConfigs.map(({ name, kind }) =>
-      match(kind)(
-        when(AnnotationKind.flag, [
-          name,
-          ["annotation", "flag-type", name, "is-set"]
-        ]),
-        when(AnnotationKind.data, [
-          name,
-          ["annotation", "type", name, "is-set"]
-        ]),
-        when(AnnotationKind.rowProp, [name, ["row-prop", name, "is-set"]])
+    f.flow(
+      f.sortBy("priority"),
+      f.map(({ name, kind }) =>
+        match(kind)(
+          when(AnnotationKind.flag, [
+            name,
+            ["annotation", "flag-type", name, "is-set"]
+          ]),
+          when(AnnotationKind.data, [
+            name,
+            ["annotation", "type", name, "is-set"]
+          ]),
+          when(AnnotationKind.rowProp, [name, ["row-prop", name, "is-set"]])
+        )
       )
-    )
+    )(AnnotationConfigs)
   )
 });
 
@@ -50,31 +47,40 @@ export const toCombinedFilter = settings => {
 };
 
 export const getAnnotationColor = kind => {
-  const annotationSettings = f.indexBy("name", AnnotationConfigs);
+  const configs = f.indexBy("name", AnnotationConfigs);
   return f.cond([
     [
       key => /needs.*?translation/i.test(key),
-      () => getCssVar("--color-needs-translation")
+      () => f.prop(["needs_translation", "bgColor"], configs)
     ],
     [
-      key => annotationSettings[key]?.bgColor,
-      key => annotationSettings[key].bgColor
+      key => f.prop([key, "bgColor"], configs),
+      key => f.prop([key, "bgColor"], configs)
     ],
     [() => true, () => "#ddd"]
   ])(kind);
 };
 
-export const getAnnotationTitle = (kind, langtag) =>
-  t(
-    match(kind)(
-      when("info", "filter:has-comments"),
-      when("needsAnyTranslation", "table:translation_needed"),
-      when("needsMyTranslation", "table:this_translation_needed"),
-      when("final", "table:filter.is_final"),
-      otherwise(`table:${kind}`)
+export const getAnnotationTitle = (kind, langtag) => {
+  const configs = f.indexBy("name", AnnotationConfigs);
+
+  const getDisplayName = kind => {
+    const displayName = f.prop([kind, "displayName"], configs);
+
+    return retrieveTranslation(langtag, displayName);
+  };
+
+  return match(kind)(
+    when("info", t("filter:has-comments")),
+    when("final", t("table:filter.is_final")),
+    when("needsAnyTranslation", getDisplayName("needs_translation")),
+    when(
+      "needsMyTranslation",
+      `${getDisplayName("needs_translation")}: ${langtag}`
     ),
-    { langtag }
+    otherwise(getDisplayName(kind))
   );
+};
 
 export const fromCombinedFilter = (columns, langtag) => {
   const templates = mkAnnotationFilterTemplates(langtag);

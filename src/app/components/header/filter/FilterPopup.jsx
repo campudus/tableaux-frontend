@@ -278,7 +278,7 @@ const AnnotationFilterArea = ({ onToggle, filters, options, langtag }) => {
               onClick={onToggle(kind)}
             >
               <div className="annotation-filter__label">
-                {getAnnotationTitle(kind)}
+                {getAnnotationTitle(kind, langtag)}
               </div>
               <div className="annotation-filter__checkbox">
                 <input
