@@ -16,10 +16,23 @@ $currencyWidth: 50px;
     color: $color-text-medium-grey;
   }
 
-  &.editing .cell-content {
+  &.editing {
+    border: 0;
     padding: 0;
-    background-color: white;
-    box-shadow: none;
+    align-items: flex-start;
+
+    .cell-content {
+      padding: 0;
+      background-color: white;
+      box-shadow: none;
+      border: 1px solid $color-primary;
+      z-index: 1;
+      height: auto;
+      min-height: $space-height-cell;
+      max-height: 170px;
+      overflow-y: visible;
+      overflow-x: hidden;
+    }
   }
   .disabled {
     opacity: 0.5;
