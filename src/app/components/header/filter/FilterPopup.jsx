@@ -312,7 +312,7 @@ const AnnotationFilterArea = ({ onToggle, filters, options, langtag }) => {
     </div>
   );
 };
-const AnnotationBadge = ({ title, onClick, active, color }) => {
+export const AnnotationBadge = ({ title, onClick, active, color }) => {
   const cssClass = buildClassName("annotation-badge", { active });
   const style = active
     ? { color: "white", borderColor: color, background: color }

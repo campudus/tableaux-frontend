@@ -10,7 +10,11 @@ import {
   withHandlers
 } from "recompose";
 import { isRowArchived } from "../../archivedRows/helpers";
-import { ColumnKinds, Langtags } from "../../constants/TableauxConstants";
+import {
+  ColumnKinds,
+  Langtags,
+  AnnotationConfigs
+} from "../../constants/TableauxConstants";
 import {
   canUserChangeAnyCountryTypeCell,
   canUserChangeCell
@@ -35,7 +39,8 @@ const mapStateToProps = (state, props) => {
   const { cell, langtag } = props;
   const {
     selectedCell: { selectedCell, editing },
-    multiSelect
+    multiSelect,
+    tableView: { annotationHighlight }
   } = state;
   const rowId = cell.row.id;
   const columnId = cell.column.id;
@@ -47,11 +52,13 @@ const mapStateToProps = (state, props) => {
     rowId === selectedCell.rowId &&
     (f.isEmpty(langtag) || langtag === selectedCell.langtag);
   const inMultiSelection = f.map("id", multiSelect).includes(cell.id);
+  console.log({ annotationHighlight });
   return {
     selected,
     editing: selected && editing,
     inMultiSelection,
-    inSelectedRow
+    inSelectedRow,
+    annotationHighlight
   };
 };
 
@@ -83,6 +90,7 @@ class Cell extends React.Component {
       this.props.inMultiSelection !== nextProps.inMultiSelection ||
       this.props.editing !== nextProps.editing ||
       this.props.annotationsOpen !== nextProps.annotationsOpen ||
+      this.props.annotationHighlight !== nextProps.annotationHighlight ||
       !f.isEqual(
         getRelevantCellProps(this.props.cell),
         getRelevantCellProps(nextProps.cell)
@@ -245,7 +253,9 @@ class Cell extends React.Component {
       focusTable,
       toggleAnnotationPopup,
       width,
-      rowIndex
+      rowIndex,
+      style = {},
+      annotationHighlight
     } = this.props;
     const { concat, text, richtext } = ColumnKinds;
     const { column, row, table } = cell;
@@ -263,11 +273,30 @@ class Cell extends React.Component {
     const CellKind =
       kind === "disabled" ? DisabledCell : Cell.cellKinds[kind] || TextCell;
 
+    const highlightColor = f.flow(
+      f.find({ name: annotationHighlight }),
+      f.propOr("#ffffff", "bgColor"),
+      f.thru(hexColor => hexColor + "33") // add hex transparency of 20%
+    )(AnnotationConfigs);
+    const shouldHighlight = f.flow(
+      f.prop("annotations"),
+      f.keys,
+      f.some(flag =>
+        annotationHighlight === "needs_translation"
+          ? flag === "translationNeeded"
+          : annotationHighlight === flag
+      ),
+      f.thru(hasAnnotation => hasAnnotation && !selected && isPrimaryLang)
+    )(cell);
+
     // onKeyDown event just for selected components
     return (
       <div
         ref={this.cellRef}
-        style={this.props.style}
+        style={{
+          ...style,
+          ...(shouldHighlight && { backgroundColor: highlightColor })
+        }}
         className={cssClass}
         onClick={this.cellClicked}
         onMouseDown={this.preventTextRangeSelection}
