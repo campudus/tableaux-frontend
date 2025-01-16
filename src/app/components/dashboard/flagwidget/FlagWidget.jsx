@@ -44,7 +44,7 @@ const pickTables = props => {
 
   const selector = f.cond([
     [f.eq("comments"), f.always(pickComments)],
-    [f.eq("needs-translation"), f.always(pickTranslation)],
+    [f.eq("needs_translation"), f.always(pickTranslation)],
     [f.stubTrue, f.always(pickByFlag)]
   ])(flag);
 
@@ -104,11 +104,7 @@ const FlagWidget = props => {
   } = props;
 
   return (
-    <div
-      className={classNames("flag-widget tile", {
-        wide: flag === "needs-translation"
-      })}
-    >
+    <div className={"flag-widget tile " + flag}>
       <Header {...props} />
       <div
         onMouseLeave={handleMouseLeave}
@@ -135,7 +131,7 @@ const FlagWidget = props => {
 const LoadingFlagWidget = props => (
   <div
     className={classNames("flag-widget tile", {
-      wide: props.flag === "needs-translation"
+      wide: props.flag === "needs_translation"
     })}
   >
     <Header {...props} />
@@ -171,6 +167,7 @@ const enhance = compose(
     mkTableEntry: ({
       selectedIdx,
       flag,
+      config,
       tables,
       setSelection,
       langtag,
@@ -187,6 +184,7 @@ const enhance = compose(
           active={selectedIdx >= 0}
           handleMouseEnter={setSelection}
           flag={flag}
+          config={config}
           langtag={langtag}
           selectedLang={selectedLang}
         />
