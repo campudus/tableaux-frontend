@@ -6,18 +6,13 @@ import classNames from "classnames";
 import { Langtags } from "../../../constants/TableauxConstants";
 import { retrieveTranslation } from "../../../helpers/multiLanguage";
 import i18n from "i18next";
+import AnnotationDot from "../../annotation/AnnotationDot";
 
 const HeaderIcon = ({ flag, config }) =>
   flag === "comments" ? (
     <i className="fa fa-commenting" />
   ) : (
-    <i
-      className="dot dot--active"
-      style={{
-        color: config?.bgColor,
-        backgroundColor: config?.bgColor
-      }}
-    />
+    <AnnotationDot color={config?.bgColor} active />
   );
 
 const DefaultHeader = ({ langtag, flag, config, children }) => (

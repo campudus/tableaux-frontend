@@ -6,6 +6,7 @@ import Tooltip from "../helperComponents/Tooltip/Tooltip";
 import { useMeasure } from "../../helpers/useMeasure";
 import TextAnnotationButton from "../textannotations/TextAnnotationButton";
 import { retrieveTranslation } from "../../helpers/multiLanguage";
+import AnnotationDot from "./AnnotationDot";
 
 const COMMENT_KEYS = ["info", "warning", "error"];
 const FLAG_WIDTH = 40;
@@ -42,17 +43,12 @@ function AnnotationBarFlag({ config }) {
   );
 }
 
-function AnnotationBarFlagInfo({ config, userLangtag, withIcon = false }) {
+function AnnotationBarFlagInfo({ config, userLangtag, withDot = false }) {
   const text = retrieveTranslation(userLangtag, config?.displayName);
 
   return (
     <div className="annotation-bar__flag-info">
-      {withIcon && (
-        <div
-          className="annotation-bar__flag-icon"
-          style={{ backgroundColor: config?.bgColor }}
-        />
-      )}
+      {withDot && <AnnotationDot color={config?.bgColor} />}
       <div className="annotation-bar__flag-text">{text}</div>
     </div>
   );
@@ -112,7 +108,7 @@ export default function AnnotationBar({
                 <AnnotationBarFlagInfo
                   config={config}
                   userLangtag={userLangtag}
-                  withIcon
+                  withDot
                 />
               }
             >
@@ -130,7 +126,7 @@ export default function AnnotationBar({
                     key={config.name}
                     config={config}
                     userLangtag={userLangtag}
-                    withIcon
+                    withDot
                   />
                 ))}
               </div>

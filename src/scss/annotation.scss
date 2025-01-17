@@ -38,12 +38,6 @@
     align-items: center;
     gap: 8px;
   }
-  
-  &__flag-icon {
-    width: 8px;
-    height: 8px;
-    border-radius: 999px;
-  }
 
   &__ellipsis {
     margin: 1px 0;
@@ -83,4 +77,27 @@
   &:hover {
     opacity: 1;
   }
+}
+
+.annotation-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+  background-color: transparent;
+  border: 1px solid transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  &--active {
+    border: 1px solid currentColor;
+  }
+
+  &__inner {
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+    background-color: currentColor;
+  }
+
 }

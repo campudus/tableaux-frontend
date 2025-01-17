@@ -6,10 +6,7 @@
     margin-bottom: 5px;
     font-weight: bold;
     display: flex;
-
-    i {
-      margin-right: 10px;
-    }
+    gap: 8px;
 
     &.needs_translation {
       padding-bottom: 0;
@@ -40,18 +37,6 @@
       &.active {
         color: white;
         background-color: $color-needs-translation;
-      }
-    }
-
-    .dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 999px;
-      border: 2px solid white;
-      outline: 1px solid transparent !important;
-
-      &--active {
-        outline: 1px solid currentColor !important;
       }
     }
   }
