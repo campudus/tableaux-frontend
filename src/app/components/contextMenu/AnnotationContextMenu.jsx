@@ -34,26 +34,28 @@ export default function AnnotationContextMenu({ cell, langtag }) {
   const keyMap = { needs_translation: "translationNeeded" };
   const getKey = key => keyMap[key] ?? key;
 
+  console.log(cell.value, { cell });
+
   const annotationItems = f.flow(
     f.filter(({ kind }) => kind === "flag"),
     f.flatMap(config => {
       const annotation = f.get(["annotations", getKey(config.name)], cell);
       const hasAnnotation = !!annotation;
-      const uuid = f.propOr(null, "uuid", annotation);
+      const uuid = f.propOr(null, ["uuid"], annotation);
       const opts = { type: "flag", value: config.name };
       const isTranslationFlag = config.name === "needs_translation";
       const isPrimaryLanguage = langtag === f.first(Langtags);
-      const langtags = f.propOr([], "langtags", annotation);
+      const langtags = f.propOr([], ["langtags"], annotation);
       const langtagsNew = isPrimaryLanguage ? f.drop(1)(Langtags) : [langtag];
       const langtagsRemaining = f.xor(langtags, langtagsNew);
       const langtagsRemove = f.intersection(langtags, langtagsNew);
-      const translationAction = !f.includes(langtag, langtags)
-        ? () => addTranslationNeeded(langtagsNew, cell)
-        : f.isEmpty(langtagsRemaining)
+      const translationAction = f.isEmpty(langtagsRemaining)
         ? () => deleteCellAnnotation({ ...opts, uuid }, cell)
+        : !f.includes(langtag, langtags)
+        ? () => addTranslationNeeded(langtagsNew, cell)
         : () => removeTranslationNeeded(langtagsRemove, cell);
       const annotationAction = hasAnnotation
-        ? () => deleteCellAnnotation({ ...opts, uuid: annotation }, cell)
+        ? () => deleteCellAnnotation({ ...opts, uuid }, cell)
         : () => setCellAnnotation(opts, cell);
 
       if (isTranslationFlag && !canTranslate(cell)) {
