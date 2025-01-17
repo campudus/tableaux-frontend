@@ -232,6 +232,11 @@ describe("buildContext()", () => {
     });
     describe("Number", () => {
       const valueOf = ctx.getValue("integer");
+      it("contains", () => {
+        const matches = ctx.getValueFilter("integer", Number.contains, 23);
+        expect(matches(valueOf(rows[0]))).toBe(true);
+        expect(matches(valueOf(rows[1]))).toBe(false);
+      });
       it("equals", () => {
         const matches = ctx.getValueFilter("integer", Number.equals, 123);
         expect(matches(valueOf(rows[0]))).toBe(true);
