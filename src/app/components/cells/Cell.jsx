@@ -52,7 +52,6 @@ const mapStateToProps = (state, props) => {
     rowId === selectedCell.rowId &&
     (f.isEmpty(langtag) || langtag === selectedCell.langtag);
   const inMultiSelection = f.map("id", multiSelect).includes(cell.id);
-  console.log({ annotationHighlight });
   return {
     selected,
     editing: selected && editing,
