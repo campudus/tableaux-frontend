@@ -195,26 +195,9 @@
   text-decoration: line-through;
 }
 
-.action-item.annotation_removed {
+.annotation_removed {
   text-decoration: line-through;
   border: none;
-
-  &.important {
-    background-color: color-mix(in srgb, var(--color-important), white 10);
-  }
-  &.check-me {
-    background-color: color-mix(in srgb, var(color-checkme), white 10);
-  }
-  &.postpone {
-    background-color: color-mix(in srgb, var(color-postpone), white 10);
-  }
-  &.translation {
-    background-color: color-mix(
-      in srgb,
-      var(color-needs-translation),
-      white 10
-    );
-  }
 }
 
 .diff-comment-item {

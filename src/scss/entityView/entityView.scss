@@ -37,49 +37,7 @@
 .action-tags {
   padding-top: 10px;
   display: flex;
-}
-
-.action-item {
-  @include button-with-icon();
-  width: auto;
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  background-color: $color-text-light-grey;
-  border-radius: 10px;
-  border: 1px solid $color-text-light-grey;
-  text-transform: uppercase;
-  color: $color-primary-contrast-text;
-  padding: 4px 10px 3px 10px;
-  font-size: 10px;
-  letter-spacing: 1px;
-  font-weight: normal;
-  margin-right: 1em;
-  cursor: pointer;
-
-  &.translation {
-    background-color: $color-needs-translation;
-    border-color: $color-needs-translation;
-    &:hover {
-      background-color: $color-needs-translation-dark;
-      border-color: $color-needs-translation-dark;
-    }
-  }
-
-  &.important {
-    background-color: $color-important;
-    border-color: $color-important;
-  }
-
-  &.check-me {
-    background-color: $color-checkme;
-    border-color: $color-checkme;
-  }
-
-  &.postpone {
-    background-color: $color-postpone;
-    border-color: $color-postpone;
-  }
+  gap: 8px;
 }
 
 .overlay .entity-view {

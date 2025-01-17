@@ -73,12 +73,13 @@ export const getAnnotationTitle = (kind, langtag) => {
   return match(kind)(
     when("info", t("filter:has-comments")),
     when("final", t("table:filter.is_final")),
+    when("archived", t("table:archived:is-archived")),
     when("needsAnyTranslation", getDisplayName("needs_translation")),
     when(
       "needsMyTranslation",
       `${getDisplayName("needs_translation")}: ${langtag}`
     ),
-    otherwise(getDisplayName(kind))
+    otherwise(getDisplayName(kind) || kind)
   );
 };
 

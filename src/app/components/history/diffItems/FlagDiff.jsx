@@ -1,43 +1,27 @@
-import i18n from "i18next";
-import f from "lodash/fp";
 import React from "react";
-import { ifElse, when } from "../../../helpers/functools";
+import { AnnotationBadge } from "../../header/filter/FilterPopup";
+import {
+  getAnnotationColor,
+  getAnnotationTitle
+} from "../../header/filter/helpers";
 
 const FlagDiff = props => {
   const {
+    langtag,
     revision,
     revision: { event }
   } = props;
 
-  const value = ifElse(
-    f.isString,
-    when(f.eq("final"), () => "final.final"),
-    f.compose(
-      when(f.eq("needs_translation"), () => "translations.translation_needed"),
-      f.first,
-      f.values
-    ),
-    revision.value || revision.valueType
-  );
-
-  const translationKey =
-    value === "archived" ? "table:archived:is-archived" : `table:${value}`;
+  const value = revision.value || revision.valueType;
 
   return (
-    <div
-      className={
-        "diff-flag-item__flag-type action-item " +
-        when(
-          f.eq("translations.translation_needed"),
-          () => "translation",
-          value
-        ) +
-        " " +
-        event
-      }
-    >
-      {i18n.t(translationKey)}
-    </div>
+    <AnnotationBadge
+      key={value}
+      className={event}
+      active={true}
+      color={getAnnotationColor(value)}
+      title={getAnnotationTitle(value, langtag)}
+    />
   );
 };
 
