@@ -15,7 +15,7 @@ import {
   getCountryOfLangtag,
   retrieveTranslation
 } from "../../helpers/multiLanguage";
-import { AnnotationBadge } from "../header/filter/FilterPopup";
+import AnnotationBadge from "../annotation/AnnotationBadge";
 import {
   getAnnotationColor,
   getAnnotationTitle

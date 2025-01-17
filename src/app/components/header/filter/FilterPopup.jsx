@@ -6,10 +6,10 @@ import { useSelector } from "react-redux";
 import TableauxConstants, {
   SortValue
 } from "../../../constants/TableauxConstants";
-import { buildClassName } from "../../../helpers/buildClassName";
 import * as Storage from "../../../helpers/localStorage";
 import { getColumnDisplayName } from "../../../helpers/multiLanguage";
 import RowFilters from "../../../RowFilters";
+import AnnotationBadge from "../../annotation/AnnotationBadge";
 import Select from "../../GrudSelect";
 import FilterPopupFooter from "./FilterPopupFooter";
 import FilterRow from "./FilterRow";
@@ -312,25 +312,6 @@ const AnnotationFilterArea = ({ onToggle, filters, options, langtag }) => {
     </div>
   );
 };
-export const AnnotationBadge = ({
-  title,
-  onClick,
-  active,
-  color,
-  className
-}) => {
-  const cssClass = buildClassName("annotation-badge", { active }, className);
-  const style = active
-    ? { color: "white", borderColor: color, background: color }
-    : { color, borderColor: color, background: "white" };
-
-  return (
-    <button onClick={onClick} className={cssClass} style={style}>
-      {title}
-    </button>
-  );
-};
-
 const ColumnFilterArea = ({ columns, filters, langtag, onChange }) => {
   const addFilterRow = () => onChange([...filters, {}]);
   const removeFilterRow = idxToRemove => () =>

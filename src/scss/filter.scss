@@ -428,15 +428,3 @@
     fill: $color-primary;
   }
 }
-
-.annotation-badge {
-  padding: 3px 9px;
-  border-radius: 200px; // just big enough!
-  border: 1.5px solid;
-  font-size: 0.9em;
-  font-weight: 500;
-  opacity: 0.8;
-  &:hover {
-    opacity: 1;
-  }
-}

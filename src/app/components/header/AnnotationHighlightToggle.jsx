@@ -6,7 +6,7 @@ import Action from "../../redux/actionCreators";
 import { AnnotationConfigs } from "../../constants/TableauxConstants";
 import { outsideClickEffect } from "../../helpers/useOutsideClick";
 import { selectAnnotationHighlight } from "../../redux/reducers/tableView";
-import { AnnotationBadge } from "./filter/FilterPopup";
+import AnnotationBadge from "../annotation/AnnotationBadge";
 import { getAnnotationColor, getAnnotationTitle } from "./filter/helpers";
 
 const AnnotationHighlightToggle = ({ langtag }) => {

@@ -22,7 +22,7 @@ import {
 import KeyboardShortcutsHelper from "../../helpers/KeyboardShortcutsHelper";
 import { getModifiers } from "../../helpers/modifierState";
 import reduxActionHoc from "../../helpers/reduxActionHoc";
-import AnnotationBar from "../annotationBar/AnnotationBar";
+import AnnotationBar from "../annotation/AnnotationBar";
 import AttachmentCell from "./attachment/AttachmentCell.jsx";
 import BooleanCell from "./boolean/BooleanCell";
 import CurrencyCell from "./currency/CurrencyCell.jsx";
