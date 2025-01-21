@@ -16,8 +16,8 @@ import {
   canUserChangeCell
 } from "../../helpers/accessManagementHelper";
 import {
-  getAnnotationColor,
-  getAnnotationConfig
+  getAnnotationByName,
+  getAnnotationColor
 } from "../../helpers/annotationHelper";
 import KeyboardShortcutsHelper from "../../helpers/KeyboardShortcutsHelper";
 import { getModifiers } from "../../helpers/modifierState";
@@ -275,13 +275,9 @@ class Cell extends React.Component {
     const annotationColor = getAnnotationColor(annotationHighlight, "#ffffff");
     const hexTransparency = "33"; // hex transparency of 20%
     const highlightColor = annotationColor + hexTransparency;
-
-    const shouldHighlight = f.flow(
-      f.prop("annotations"),
-      f.keys,
-      f.some(annotationKey => !!getAnnotationConfig(annotationKey)),
-      f.thru(hasAnnotation => hasAnnotation && !selected && isPrimaryLang)
-    )(cell);
+    const annotation = getAnnotationByName(annotationHighlight, cell);
+    const hasAnnotation = !!annotation;
+    const shouldHighlight = hasAnnotation && !selected && isPrimaryLang;
 
     // onKeyDown event just for selected components
     return (
