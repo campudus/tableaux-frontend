@@ -313,7 +313,11 @@ class RowContextMenu extends React.Component {
                 {this.props.t("show-annotations")}
               </div>
               <i className="fa fa-chevron-right" />
-              <AnnotationContextMenu cell={cell} langtag={this.props.langtag} />
+              <AnnotationContextMenu
+                cell={cell}
+                langtag={this.props.langtag}
+                closeAction={this.closeRowContextMenu}
+              />
             </a>
           }
           <ContextMenuServices cell={cell} langtag={this.props.langtag} />

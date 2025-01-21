@@ -159,6 +159,7 @@
 @mixin popup-menu {
   @include rounded-lower-borders;
   background-color: $color-white;
+  color: $color-primary-text;
   position: absolute;
   @include grud-shadow(0, 5px, 15px);
   border-top: 3px solid $color-primary;
@@ -176,48 +177,26 @@
       @include rounded-lower-borders();
     }
 
-    i {
+    i, .svg-icon {
+      padding: 0;
+      margin: 0;
       color: $color-text-medium-grey;
-      width: 25px;
+      fill: $color-text-medium-grey;
+      width: 13px;
+      margin-right: 12px;
       position: relative;
+    }
 
-      &.dot.important {
-        @include status-dot($color-important, $color-primary-contrast-text);
-      }
-      &.dot.translation {
-        @include status-dot(
-          $color-needs-translation,
-          $color-primary-contrast-text
-        );
-      }
-      &.dot.postpone {
-        @include status-dot($color-postpone, $color-primary-contrast-text);
-      }
-      &.dot.check-me {
-        @include status-dot($color-checkme, $color-primary-contrast-text);
-      }
+    div ~ i {
+      position: absolute;
+      right: 0;
+      margin-right: 10px;
     }
 
     &:hover,
     &.active {
       background-color: $color-hover-background;
       color: $color-hover-foreground;
-
-      .dot.important {
-        @include status-dot-hovered($color-important, $color-hover-background);
-      }
-      .dot.translation {
-        @include status-dot-hovered(
-          $color-needs-translation,
-          $color-hover-background
-        );
-      }
-      .dot.postpone {
-        @include status-dot-hovered($color-postpone, $color-hover-background);
-      }
-      .dot.check-me {
-        @include status-dot-hovered($color-checkme, $color-hover-background);
-      }
     }
   }
 }

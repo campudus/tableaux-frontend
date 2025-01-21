@@ -16,8 +16,14 @@ import {
 } from "../../helpers/annotationHelper";
 import { canUserChangeCell } from "../../helpers/accessManagementHelper";
 import AnnotationDot from "../annotation/AnnotationDot";
+import { buildClassName } from "../../helpers/buildClassName";
 
-export default function AnnotationContextMenu({ cell, langtag }) {
+export default function AnnotationContextMenu({
+  classNames,
+  cell,
+  langtag,
+  closeAction
+}) {
   const canTranslate = cell => {
     return (
       cell.column.multilanguage &&
@@ -71,12 +77,24 @@ export default function AnnotationContextMenu({ cell, langtag }) {
   )(AnnotationConfigs);
 
   return (
-    <div className="context-menu annotation-context-menu">
+    <div
+      className={buildClassName(
+        "context-menu annotation-context-menu",
+        null,
+        classNames
+      )}
+    >
       {annotationItems.map(({ title, color, annotation, action }) => {
         const hasAnnotation = !!annotation;
 
         return (
-          <button key={title} onClick={action}>
+          <button
+            key={title}
+            onClick={f.compose(
+              closeAction,
+              action
+            )}
+          >
             <AnnotationDot
               className="item-dot"
               color={color}

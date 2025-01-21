@@ -7,6 +7,26 @@
   border-radius: 4px;
   padding: 20px 0;
 
+  &.light {
+    background-color: $color-white;
+
+    .item-label {
+      color: $color-primary-text;
+    }
+
+    button, a {
+      &:hover,
+      &.active {
+        background-color: $color-hover-background;
+        color: $color-hover-foreground;
+
+        .item-label {
+          color: $color-hover-foreground;
+        }
+      }
+    }
+  }
+
   button,
   a {
     box-sizing: border-box;
