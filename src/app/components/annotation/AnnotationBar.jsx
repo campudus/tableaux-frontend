@@ -98,7 +98,7 @@ export default function AnnotationBar({
   const flagsCountMax = Math.floor(widthAvailable / (FLAG_WIDTH + FLAG_GAP));
   const flagsCountCurrent = annotationItems.length;
   const flagsCountAvailable = Math.min(flagsCountMax, flagsCountCurrent);
-  const showEllipsis = flagsCountAvailable < flagsCountCurrent;
+  const showEllipsis = width > 0 && flagsCountAvailable < flagsCountCurrent;
 
   return (
     <div ref={barRef} className="annotation-bar">
