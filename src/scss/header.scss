@@ -295,9 +295,16 @@
     &__popup-button {
       @include header-button-look();
     }
-    &.active .annotation-highlight-toggle__popup-button,
-    &.active .archive-mode-toggle__popup-button {
+    &--open .annotation-highlight-toggle__popup-button,
+    &--open .archive-mode-toggle__popup-button {
       background: black;
+      .svg-icon svg, i {
+        filter: invert(100%) brightness(150%);
+      }
+    }
+    &--active .annotation-highlight-toggle__popup-button,
+    &--active .archive-mode-toggle__popup-button {
+      background: $color-primary;
       .svg-icon svg, i {
         filter: invert(100%) brightness(150%);
       }

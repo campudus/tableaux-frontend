@@ -11,6 +11,8 @@ import {
   getAnnotationColor,
   getAnnotationTitle
 } from "../../helpers/annotationHelper";
+import SvgIcon from "../helperComponents/SvgIcon";
+import { buildClassName } from "../../helpers/buildClassName";
 
 const AnnotationHighlightToggle = ({ langtag }) => {
   const [showPopup, setShowPopup] = useState(false);
@@ -22,6 +24,7 @@ const AnnotationHighlightToggle = ({ langtag }) => {
   )(AnnotationConfigs);
 
   const annotationHighlight = useSelector(selectAnnotationHighlight);
+  const hasHighlight = !!annotationHighlight;
   const dispatch = useDispatch();
 
   const setAnnotationHighlight = flag => () => {
@@ -33,8 +36,6 @@ const AnnotationHighlightToggle = ({ langtag }) => {
     dispatch(Action.setAnnotationHighlight());
     setShowPopup(false);
   };
-
-  const className = `annotation-highlight-toggle ${showPopup ? "active" : ""}`;
 
   const containerRef = useRef();
   useEffect(
@@ -48,12 +49,17 @@ const AnnotationHighlightToggle = ({ langtag }) => {
 
   return (
     <div className="annotation-highlight-toggle__wrapper">
-      <div className={className}>
+      <div
+        className={buildClassName("annotation-highlight-toggle", {
+          open: showPopup,
+          active: hasHighlight
+        })}
+      >
         <button
           className="small-button annotation-highlight-toggle__popup-button"
           onClick={togglePopup}
         >
-          <i className="fa fa-pencil" />
+          <SvgIcon icon="highlight" />
         </button>
       </div>
       {showPopup ? (

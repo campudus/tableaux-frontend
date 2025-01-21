@@ -15,10 +15,12 @@
     padding: 10px 25px;
     align-items: center;
 
-    i {
+    i, .svg-icon {
       width: 13px;
       margin-right: 7px;
+      padding: 0;
       color: $color-text-medium-grey;
+      fill: $color-text-medium-grey;
       position: relative;
     }
 

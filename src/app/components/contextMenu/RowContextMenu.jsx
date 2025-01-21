@@ -27,6 +27,7 @@ import GenericContextMenu from "./GenericContextMenu";
 import { isTextInRange } from "../../helpers/limitTextLength";
 import { clearSelectedCellValue } from "../../redux/actions/cellActions";
 import AnnotationContextMenu from "./AnnotationContextMenu";
+import SvgIcon from "../helperComponents/SvgIcon";
 
 // Distance between clicked coordinate and the left upper corner of the context menu
 const CLICK_OFFSET = 3;
@@ -307,7 +308,7 @@ class RowContextMenu extends React.Component {
             : null}
           {
             <a className="annotation-context-menu-button">
-              <i className="fa fa-pencil" />
+              <SvgIcon icon="highlight" />
               <div className="item-label">
                 {this.props.t("show-annotations")}
               </div>
