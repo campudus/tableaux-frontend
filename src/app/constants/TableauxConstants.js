@@ -6,7 +6,7 @@ import { getCssVar } from "../helpers/getCssVar";
  * First language is default language.
  * Also, this is the order an expanded row shows the languages
  */
-let languagetags;
+let languagetags = ["de-DE"];
 let _config = {};
 
 const AnnotationKind = {

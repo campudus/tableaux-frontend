@@ -1,6 +1,8 @@
 import { maybe } from "../helpers/functools";
+import Text from "./Text";
 
 const Mode = {
+  contains: "contains",
   equals: "equals",
   gt: "gt",
   gte: "gte",
@@ -17,6 +19,10 @@ export default {
       .map(parseFloat)
       .filter(isFinite)
       .getOrElse(null),
+  [Mode.contains]: x => {
+    const test = Text.contains(String(x));
+    return y => test(String(y));
+  },
   [Mode.equals]: x => y => y === x,
   [Mode.gt]: x => y => y > x,
   [Mode.gte]: x => y => y >= x,

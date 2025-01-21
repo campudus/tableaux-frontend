@@ -114,7 +114,7 @@
     "rows_hidden": "Only displaying specific rows",
     "needs_translation": "Needs translation",
     "is_final": "Is marked as final",
-    "row-contains": "Any row contains...",
+    "any-column": "Any column",
     "generic": "Generic filters",
     "specific": "Row values",
     "toggle-list": "Choose existing filter",

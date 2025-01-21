@@ -28,12 +28,19 @@ const of = el => (Array.isArray(el) ? el : [el]);
 
 const FilterPopup = ({
   actions,
-  columns,
+  columns: rawColumns,
   langtag,
   onClickedOutside,
   currentFilter
 }) => {
   const tableId = useSelector(f.prop("tableView.currentTable"));
+  const anyColumnContains = {
+    id: -1,
+    name: "any-column",
+    kind: "any-column",
+    displayName: { [langtag]: t("table:filter.any-column") }
+  };
+  const columns = useMemo(() => [anyColumnContains, ...rawColumns]);
 
   const [showFilterSavePopup, setShowFilterSavePopup] = useState(false);
 
@@ -241,9 +248,11 @@ const settingToFilter = ({ column, mode, value }) => {
   const needsValueArg = RowFilters.needsFilterValue(column?.kind, mode);
   const hasValue = !f.isNil(value) && value !== "";
   const isIncomplete = !column || !mode || (needsValueArg && !hasValue);
+  const isAnyColumnFilter = !isIncomplete && column.name === "any-column";
 
-  return match({ isIncomplete })(
+  return match({ isIncomplete, isAnyColumnFilter })(
     when({ isIncomplete: true }, () => null),
+    when({ isAnyColumnFilter: true }, () => ["any-value", mode, value]),
     otherwise(() => ["value", column.name, mode, value])
   );
 };
@@ -315,6 +324,7 @@ const AnnotationBadge = ({ title, onClick, active, color }) => {
     </button>
   );
 };
+
 const ColumnFilterArea = ({ columns, filters, langtag, onChange }) => {
   const addFilterRow = () => onChange([...filters, {}]);
   const removeFilterRow = idxToRemove => () =>

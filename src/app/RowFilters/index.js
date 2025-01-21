@@ -1,6 +1,7 @@
 import f from "lodash/fp";
 import { ColumnKinds, SortValue } from "../constants/TableauxConstants";
 import FilterAnnotation from "./Annotation";
+import FilterAnyColumn from "./AnyColumn";
 import FilterBoolean from "./Boolean";
 import FilterDate from "./Date";
 import FilterDateTime from "./DateTime";
@@ -19,6 +20,7 @@ export const Text = FilterText.Mode;
 export const RowProp = FilterRowProp.Mode;
 
 const ModesForKind = {
+  "any-column": FilterAnyColumn,
   [ColumnKinds.attachment]: null,
   [ColumnKinds.boolean]: FilterBoolean,
   [ColumnKinds.concat]: FilterText,
@@ -48,6 +50,7 @@ const canSortByColumnKind = canFilterByColumnKind;
  *
  * Filter         := [Predicate | And | Or]
  * Predicate      := ["value" ColumnName Operator ?OperatorValue]
+ *                   | ["any-value" Operator ?OperatorValue]
  *                   | ["row-prop" PropPath Operator ?OperatorValue]
  *                   | ["annotation" AnnotationProp FlagName Operator ?OperatorValue]
  * PropPath       := \w+(\.\w+)*
@@ -89,11 +92,22 @@ const parse = ctx => {
         return parseRowPropFilter(list);
       case "annotation":
         return parseAnnotationFilter(ctx, list);
+      case "any-value":
+        return parseAnyColumnFilter(ctx, list);
       default:
         throw new Error(`Could not parse filter instruction of kind ${kind}`);
     }
   };
   return parseImpl;
+};
+
+const parseAnyColumnFilter = (ctx, [_, op, opValue]) => {
+  const pred = FilterAnyColumn[op];
+  if (typeof pred !== "function")
+    throw new Error(
+      `Can not test if any columns' display value "${op}", unknown operation`
+    );
+  return pred(ctx, opValue);
 };
 
 const parseAnnotationFilter = (ctx, [_, findBy, kind, op, opValue]) => {
@@ -103,7 +117,6 @@ const parseAnnotationFilter = (ctx, [_, findBy, kind, op, opValue]) => {
     throw new Error(`Can not find annotation by "${find}", unknown operation`);
   if (typeof pred !== "function")
     throw new Error(`Can not compare annotation by "${op}", unknown operation`);
-
   return pred(find(kind), ctx.columns, opValue);
 };
 
@@ -221,6 +234,7 @@ const buildContext = (tableId, langtag, store) => {
 
   return {
     columns,
+    getDisplayValue: (name, row) => retrieveDisplayValue(name)(row),
     getValue: name =>
       name === "rowId" ? row => row.id : lookupFn[columnKindLookup[name]](name),
     getValueFilter: buildValueFilter

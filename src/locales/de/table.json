@@ -113,7 +113,7 @@
     "rows_hidden": "Es werden nur bestimmte Datensätze angezeigt",
     "needs_translation": "Übersetzung benötigt",
     "is_final": "Als freigegeben markiert",
-    "row-contains": "Irgendeine Spalte enthält...",
+    "any-column": "Irgendeine Spalte",
     "generic": "Allgemeine Filter",
     "specific": "Spaltenwerte",
     "toggle-list": "Bestehende Filter wählen",
