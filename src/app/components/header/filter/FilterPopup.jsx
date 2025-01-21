@@ -18,11 +18,13 @@ import FilterSavingPopup, {
 } from "./FilterSavingPopup";
 import {
   fromCombinedFilter,
-  getAnnotationColor,
-  getAnnotationTitle,
   mkAnnotationFilterTemplates,
   toCombinedFilter
 } from "./helpers";
+import {
+  getAnnotationColor,
+  getAnnotationTitle
+} from "../../../helpers/annotationHelper";
 
 const of = el => (Array.isArray(el) ? el : [el]);
 

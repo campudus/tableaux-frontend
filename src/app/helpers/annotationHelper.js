@@ -1,6 +1,8 @@
 import f from "lodash/fp";
-
+import { match, otherwise, when, includedIn } from "match-iz";
+import i18n from "i18next";
 import { extractAnnotations, refreshAnnotations } from "./annotationHelper";
+import { AnnotationConfigs, Langtags } from "../constants/TableauxConstants";
 import {
   isFlagAnnotation,
   isMultilangAnnotation,
@@ -8,9 +10,9 @@ import {
 } from "../redux/actions/annotation-specs";
 import { maybe, unless } from "./functools";
 import { setRowFlag } from "../redux/actions/annotationActions";
-// import { showDialog } from "../components/overlay/GenericOverlay";
 import actions from "../redux/actionCreators";
 import store from "../redux/store";
+import { retrieveTranslation } from "./multiLanguage";
 
 const getAnnotation = (annotation, cell) => {
   const cellAnnotations = cell.annotations;
@@ -139,6 +141,64 @@ const isLocked = row =>
     .map(f.get("id"))
     .getOrElse(null) !== row.id;
 
+const getAnnotationConfig = annotationKey => {
+  const configsByName = f.indexBy("name", AnnotationConfigs);
+
+  return match(annotationKey)(
+    when(
+      includedIn(
+        "needsAnyTranslation",
+        "needsMyTranslation",
+        "translationNeeded"
+      ),
+      () => f.prop(["needs_translation"], configsByName)
+    ),
+    otherwise(() => f.prop([annotationKey], configsByName))
+  );
+};
+
+const getAnnotationTitle = (
+  annotationKey,
+  langtag,
+  cell,
+  fallbackTitle = annotationKey
+) => {
+  const config = getAnnotationConfig(annotationKey);
+  const displayName = match(annotationKey)(
+    when("info", i18n.t("filter:has-comments")),
+    when("final", i18n.t("table:filter.is_final")),
+    when("archived", i18n.t("table:archived:is-archived")),
+    otherwise(retrieveTranslation(i18n.language, config?.displayName))
+  );
+
+  const isTranslationAnnotation = config.name === "needs_translation";
+  const primaryLangtag = f.first(Langtags);
+  const isPrimaryLangtag = langtag === primaryLangtag;
+  const needsTranslation = isTranslationNeeded(langtag)(cell);
+  const suffix =
+    annotationKey === "needsMyTranslation" ||
+    (isTranslationAnnotation && !isPrimaryLangtag && needsTranslation)
+      ? `: ${langtag}`
+      : "";
+
+  return displayName + suffix || fallbackTitle || "";
+};
+
+const getAnnotationColor = (annotationKey, fallbackColor = "#dddddd") => {
+  const config = getAnnotationConfig(annotationKey);
+
+  return f.propOr(fallbackColor, ["bgColor"], config);
+};
+
+const getAnnotationByName = (configName, cell) => {
+  const annotationKey = match(configName)(
+    when("needs_translation", "translationNeeded"),
+    otherwise(configName)
+  );
+
+  return f.get(["annotations", annotationKey], cell);
+};
+
 export {
   deleteCellAnnotation,
   addTranslationNeeded,
@@ -152,5 +212,9 @@ export {
   setRowFinal,
   unlockRow,
   isLocked,
-  isTranslationNeeded
+  isTranslationNeeded,
+  getAnnotationTitle,
+  getAnnotationColor,
+  getAnnotationConfig,
+  getAnnotationByName
 };

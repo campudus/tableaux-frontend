@@ -5,21 +5,22 @@ import PropTypes from "prop-types";
 import React, { PureComponent } from "react";
 import {
   ColumnKinds,
-  Langtags,
   AnnotationConfigs
 } from "../../constants/TableauxConstants";
 import * as Access from "../../helpers/accessManagementHelper";
-import * as Annotations from "../../helpers/annotationHelper";
+import {
+  getAnnotationByName,
+  getAnnotationColor,
+  getAnnotationTitle,
+  isLocked,
+  isTranslationNeeded
+} from "../../helpers/annotationHelper";
 import { unless } from "../../helpers/functools";
 import {
   getCountryOfLangtag,
   retrieveTranslation
 } from "../../helpers/multiLanguage";
 import AnnotationBadge from "../annotation/AnnotationBadge";
-import {
-  getAnnotationColor,
-  getAnnotationTitle
-} from "../header/filter/helpers";
 import Spinner from "../header/Spinner";
 import { connectOverlayToCellValue } from "../helperComponents/connectOverlayToCellHOC";
 import AttachmentView from "./attachment/AttachmentView";
@@ -72,8 +73,7 @@ class View extends PureComponent {
     return theoretically
       ? canEditUnlocked
       : canEditUnlocked &&
-          (!Annotations.isLocked(cell.row) ||
-            Annotations.isTranslationNeeded(langtag)(cell));
+          (!isLocked(cell.row) || isTranslationNeeded(langtag)(cell));
   };
 
   clickHandler = () => {
@@ -127,9 +127,6 @@ class View extends PureComponent {
       otherwise(!this.canEditValue() || isLocked)
     );
 
-    const isMyTranslationNeeded =
-      langtag !== f.first(Langtags) &&
-      Annotations.isTranslationNeeded(langtag)(cell);
     const CellKind = views[kind];
     const viewClass = classNames(
       `view item ${this.getViewKind()} ${this.getViewId()}`,
@@ -147,23 +144,18 @@ class View extends PureComponent {
       f.filter(({ kind }) => kind === "flag"),
       f.sortBy("priority"),
       f.flatMap(config => {
-        // eslint-disable-next-line camelcase
-        const keyMap = { needs_translation: "translationNeeded" };
-        const getKey = key => keyMap[key] ?? key;
-        const annotation = f.get(["annotations", getKey(config.name)], cell);
-        const isTranslationFlag = config.name === "needs_translation";
+        const isTranslationAnnotation = config.name === "needs_translation";
+        const annotation = getAnnotationByName(config.name, cell);
         const color = getAnnotationColor(config.name);
-        const title = getAnnotationTitle(config.name, langtag);
-        const suffix =
-          isTranslationFlag && isMyTranslationNeeded ? `: ${langtag}` : "";
-        const action = isTranslationFlag
+        const title = getAnnotationTitle(config.name, langtag, cell);
+        const action = isTranslationAnnotation
           ? evt => {
               evt.stopPropagation();
               setTranslationView({ cell, show: true });
             }
           : null;
 
-        return annotation ? [{ title, suffix, color, action }] : [];
+        return annotation ? [{ title, color, action }] : [];
       })
     )(AnnotationConfigs);
 
@@ -218,13 +210,13 @@ class View extends PureComponent {
           }
         >
           <div className="action-tags">
-            {annotationItems.map(({ title, suffix, color, action }) => (
+            {annotationItems.map(({ title, color, action }) => (
               <AnnotationBadge
                 key={title}
                 onClick={action}
                 active={true}
                 color={color}
-                title={title + suffix}
+                title={title}
               />
             ))}
           </div>

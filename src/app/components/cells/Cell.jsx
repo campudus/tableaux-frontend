@@ -10,15 +10,15 @@ import {
   withHandlers
 } from "recompose";
 import { isRowArchived } from "../../archivedRows/helpers";
-import {
-  ColumnKinds,
-  Langtags,
-  AnnotationConfigs
-} from "../../constants/TableauxConstants";
+import { ColumnKinds, Langtags } from "../../constants/TableauxConstants";
 import {
   canUserChangeAnyCountryTypeCell,
   canUserChangeCell
 } from "../../helpers/accessManagementHelper";
+import {
+  getAnnotationColor,
+  getAnnotationConfig
+} from "../../helpers/annotationHelper";
 import KeyboardShortcutsHelper from "../../helpers/KeyboardShortcutsHelper";
 import { getModifiers } from "../../helpers/modifierState";
 import reduxActionHoc from "../../helpers/reduxActionHoc";
@@ -272,19 +272,14 @@ class Cell extends React.Component {
     const CellKind =
       kind === "disabled" ? DisabledCell : Cell.cellKinds[kind] || TextCell;
 
-    const highlightColor = f.flow(
-      f.find({ name: annotationHighlight }),
-      f.propOr("#ffffff", "bgColor"),
-      f.thru(hexColor => hexColor + "33") // add hex transparency of 20%
-    )(AnnotationConfigs);
+    const annotationColor = getAnnotationColor(annotationHighlight, "#ffffff");
+    const hexTransparency = "33"; // hex transparency of 20%
+    const highlightColor = annotationColor + hexTransparency;
+
     const shouldHighlight = f.flow(
       f.prop("annotations"),
       f.keys,
-      f.some(flag =>
-        annotationHighlight === "needs_translation"
-          ? flag === "translationNeeded"
-          : annotationHighlight === flag
-      ),
+      f.some(annotationKey => !!getAnnotationConfig(annotationKey)),
       f.thru(hasAnnotation => hasAnnotation && !selected && isPrimaryLang)
     )(cell);
 

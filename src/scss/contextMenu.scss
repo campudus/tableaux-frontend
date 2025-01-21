@@ -23,16 +23,7 @@
     }
 
     .item-dot {
-      width: 8px;
-      height: 8px;
       margin-right: 10px;
-      border-radius: 999px;
-      border: 2px solid $color-overlay-header;
-      outline: 1px solid transparent !important;
-
-      &--active {
-        outline: 1px solid currentColor !important;
-      }
     }
 
     .item-label ~ i {
@@ -47,10 +38,6 @@
 
     &:hover {
       background-color: $color-hover-dark;
-
-      .item-dot {
-        border-color: $color-hover-dark;
-      }
     }
   }
 
@@ -109,7 +96,7 @@
 .annotation-context-menu {
   display: none;
   padding: 10px 0;
-  width: 230px;
+  width: 250px;
   position: absolute;
   top: -10px;
   left: 100%;

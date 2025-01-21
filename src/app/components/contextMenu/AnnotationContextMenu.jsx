@@ -5,15 +5,17 @@ import {
   ColumnKinds,
   Langtags
 } from "../../constants/TableauxConstants";
-import { retrieveTranslation } from "../../helpers/multiLanguage";
 import {
   addTranslationNeeded,
   removeTranslationNeeded,
   deleteCellAnnotation,
-  setCellAnnotation
+  setCellAnnotation,
+  getAnnotationByName,
+  getAnnotationTitle,
+  getAnnotationColor
 } from "../../helpers/annotationHelper";
-import { buildClassName } from "../../helpers/buildClassName";
 import { canUserChangeCell } from "../../helpers/accessManagementHelper";
+import AnnotationDot from "../annotation/AnnotationDot";
 
 export default function AnnotationContextMenu({ cell, langtag }) {
   const canTranslate = cell => {
@@ -30,16 +32,10 @@ export default function AnnotationContextMenu({ cell, langtag }) {
     );
   };
 
-  // eslint-disable-next-line camelcase
-  const keyMap = { needs_translation: "translationNeeded" };
-  const getKey = key => keyMap[key] ?? key;
-
-  console.log(cell.value, { cell });
-
   const annotationItems = f.flow(
     f.filter(({ kind }) => kind === "flag"),
     f.flatMap(config => {
-      const annotation = f.get(["annotations", getKey(config.name)], cell);
+      const annotation = getAnnotationByName(config.name, cell);
       const hasAnnotation = !!annotation;
       const uuid = f.propOr(null, ["uuid"], annotation);
       const opts = { type: "flag", value: config.name };
@@ -64,7 +60,8 @@ export default function AnnotationContextMenu({ cell, langtag }) {
 
       return [
         {
-          config,
+          title: getAnnotationTitle(config.name, langtag, cell),
+          color: getAnnotationColor(config.name),
           annotation,
           action: isTranslationFlag ? translationAction : annotationAction
         }
@@ -75,21 +72,17 @@ export default function AnnotationContextMenu({ cell, langtag }) {
 
   return (
     <div className="context-menu annotation-context-menu">
-      {annotationItems.map(({ config, annotation, action }) => {
+      {annotationItems.map(({ title, color, annotation, action }) => {
         const hasAnnotation = !!annotation;
 
         return (
-          <button key={config.name} onClick={action}>
-            <div
-              className={buildClassName("item-dot", { active: hasAnnotation })}
-              style={{
-                color: config?.bgColor,
-                backgroundColor: config?.bgColor
-              }}
+          <button key={title} onClick={action}>
+            <AnnotationDot
+              className="item-dot"
+              color={color}
+              active={hasAnnotation}
             />
-            <div className="item-label">
-              {retrieveTranslation(langtag, config?.displayName)}
-            </div>
+            <div className="item-label">{title}</div>
             {hasAnnotation && <i className="fa fa-check" />}
           </button>
         );

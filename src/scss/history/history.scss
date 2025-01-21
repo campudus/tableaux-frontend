@@ -197,6 +197,7 @@
 
 .annotation_removed {
   text-decoration: line-through;
+  text-decoration-color: $color-text-medium-grey;
   border: none;
 }
 
@@ -219,6 +220,7 @@
 
   .diff-comment-item__comment-value {
     text-decoration: line-through;
+    text-decoration-color: $color-text-medium-grey;
   }
 }
 

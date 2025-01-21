@@ -4,10 +4,14 @@ import {
   AnnotationConfigs,
   AnnotationKind
 } from "../../../constants/TableauxConstants";
-import { t } from "i18next";
-import { retrieveTranslation } from "../../../helpers/multiLanguage";
 
 export const mkAnnotationFilterTemplates = langtag => ({
+  needsAnyTranslation: [
+    "annotation",
+    "flag-type",
+    "needs_translation",
+    "is-set"
+  ],
   needsMyTranslation: [
     "annotation",
     "flag-type",
@@ -17,6 +21,7 @@ export const mkAnnotationFilterTemplates = langtag => ({
   ],
   ...Object.fromEntries(
     f.flow(
+      f.reject(config => config.name === "needs_translation"), // already set
       f.sortBy("priority"),
       f.map(({ name, kind }) =>
         match(kind)(
@@ -44,43 +49,6 @@ export const toCombinedFilter = settings => {
     otherwise(["and", ...validSettings])
   );
   return combined;
-};
-
-export const getAnnotationColor = kind => {
-  const configs = f.indexBy("name", AnnotationConfigs);
-  return f.cond([
-    [
-      key => /needs.*?translation/i.test(key),
-      () => f.prop(["needs_translation", "bgColor"], configs)
-    ],
-    [
-      key => f.prop([key, "bgColor"], configs),
-      key => f.prop([key, "bgColor"], configs)
-    ],
-    [() => true, () => "#ddd"]
-  ])(kind);
-};
-
-export const getAnnotationTitle = (kind, langtag) => {
-  const configs = f.indexBy("name", AnnotationConfigs);
-
-  const getDisplayName = kind => {
-    const displayName = f.prop([kind, "displayName"], configs);
-
-    return retrieveTranslation(langtag, displayName);
-  };
-
-  return match(kind)(
-    when("info", t("filter:has-comments")),
-    when("final", t("table:filter.is_final")),
-    when("archived", t("table:archived:is-archived")),
-    when("needsAnyTranslation", getDisplayName("needs_translation")),
-    when(
-      "needsMyTranslation",
-      `${getDisplayName("needs_translation")}: ${langtag}`
-    ),
-    otherwise(getDisplayName(kind) || kind)
-  );
 };
 
 export const fromCombinedFilter = (columns, langtag) => {

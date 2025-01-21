@@ -1,9 +1,9 @@
 import React from "react";
-import { AnnotationBadge } from "../../annotation/AnnotationBadge";
+import AnnotationBadge from "../../annotation/AnnotationBadge";
 import {
   getAnnotationColor,
   getAnnotationTitle
-} from "../../header/filter/helpers";
+} from "../../../helpers/annotationHelper";
 
 const FlagDiff = props => {
   const {

@@ -1,12 +1,15 @@
 import React, { useCallback, useState } from "react";
 import f from "lodash/fp";
-import { AnnotationConfigs } from "../../constants/TableauxConstants";
 import { useDebouncedValue } from "../../helpers/useDebouncedValue";
 import Tooltip from "../helperComponents/Tooltip/Tooltip";
 import { useMeasure } from "../../helpers/useMeasure";
 import TextAnnotationButton from "../textannotations/TextAnnotationButton";
-import { retrieveTranslation } from "../../helpers/multiLanguage";
 import AnnotationDot from "./AnnotationDot";
+import {
+  getAnnotationColor,
+  getAnnotationConfig,
+  getAnnotationTitle
+} from "../../helpers/annotationHelper";
 
 const COMMENT_KEYS = ["info", "warning", "error"];
 const FLAG_WIDTH = 40;
@@ -34,22 +37,20 @@ function AnnotationBarTooltipWrapper({ children, tooltip }) {
   );
 }
 
-function AnnotationBarFlag({ config }) {
+function AnnotationBarFlag({ color }) {
   return (
     <div
       className="annotation-bar__flag"
-      style={{ backgroundColor: config?.bgColor }}
+      style={{ backgroundColor: color }}
     ></div>
   );
 }
 
-function AnnotationBarFlagInfo({ config, userLangtag, withDot = false }) {
-  const text = retrieveTranslation(userLangtag, config?.displayName);
-
+function AnnotationBarFlagInfo({ title, color, withDot = false }) {
   return (
     <div className="annotation-bar__flag-info">
-      {withDot && <AnnotationDot color={config?.bgColor} />}
-      <div className="annotation-bar__flag-text">{text}</div>
+      {withDot && <AnnotationDot color={color} />}
+      <div className="annotation-bar__flag-text">{title}</div>
     </div>
   );
 }
@@ -74,18 +75,20 @@ export default function AnnotationBar({
 }) {
   const [barRef, { width }] = useMeasure();
   const entries = Object.entries(cell.annotations ?? {});
-  const keyMap = { translationNeeded: "needs_translation" };
-  const getKey = key => keyMap[key] ?? key;
-  const isTranslationKey = key => key === "translationNeeded";
   const isCommentKey = key => COMMENT_KEYS.includes(key);
-  const flagConfigs = f.flow(
-    f.filter(([key]) => !isCommentKey(key)),
-    f.flatMap(([key, flag]) => {
-      const hasLang = isTranslationKey(key) && flag.langtags.includes(langtag);
+  const annotationItems = f.flow(
+    f.filter(([annotationKey]) => !isCommentKey(annotationKey)),
+    f.flatMap(([annotationKey, annotation]) => {
+      const config = getAnnotationConfig(annotationKey);
+      const title = getAnnotationTitle(annotationKey, langtag, cell);
+      const color = getAnnotationColor(annotationKey);
+      const priority = config.priority;
+      const isTranslation = config.name === "needs_translation";
+      const hasLangtag = annotation?.langtags?.includes(langtag);
 
-      return AnnotationConfigs.filter(c => {
-        return c.name === getKey(key) && (isPrimaryLang || hasLang);
-      });
+      return isPrimaryLang || (isTranslation && hasLangtag)
+        ? [{ title, color, priority }]
+        : [];
     }),
     f.sortBy("priority")
   )(entries);
@@ -93,39 +96,43 @@ export default function AnnotationBar({
   const widthRequired = ELLIPSIS_WIDTH + COMMENT_BTN_WIDTH + COMMENT_BTN_GAP;
   const widthAvailable = width - widthRequired;
   const flagsCountMax = Math.floor(widthAvailable / (FLAG_WIDTH + FLAG_GAP));
-  const flagsCountCurrent = flagConfigs.length;
+  const flagsCountCurrent = annotationItems.length;
   const flagsCountAvailable = Math.min(flagsCountMax, flagsCountCurrent);
   const showEllipsis = flagsCountAvailable < flagsCountCurrent;
 
   return (
     <div ref={barRef} className="annotation-bar">
       <div className="annotation-bar__flags">
-        {f.take(flagsCountAvailable, flagConfigs).map(config => {
-          return (
-            <AnnotationBarTooltipWrapper
-              key={config.name}
-              tooltip={
-                <AnnotationBarFlagInfo
-                  config={config}
-                  userLangtag={userLangtag}
-                  withDot
-                />
-              }
-            >
-              <AnnotationBarFlag config={config} userLangtag={userLangtag} />
-            </AnnotationBarTooltipWrapper>
-          );
-        })}
+        {f
+          .take(flagsCountAvailable, annotationItems)
+          .map(({ title, color }) => {
+            return (
+              <AnnotationBarTooltipWrapper
+                key={title}
+                tooltip={
+                  <AnnotationBarFlagInfo
+                    cell={cell}
+                    title={title}
+                    color={color}
+                    withDot
+                  />
+                }
+              >
+                <AnnotationBarFlag color={color} />
+              </AnnotationBarTooltipWrapper>
+            );
+          })}
 
         {showEllipsis && (
           <AnnotationBarTooltipWrapper
             tooltip={
               <div className="annotation-bar__flag-infos">
-                {flagConfigs.map(config => (
+                {annotationItems.map(({ title, color }) => (
                   <AnnotationBarFlagInfo
-                    key={config.name}
-                    config={config}
-                    userLangtag={userLangtag}
+                    key={title}
+                    cell={cell}
+                    title={title}
+                    color={color}
                     withDot
                   />
                 ))}
