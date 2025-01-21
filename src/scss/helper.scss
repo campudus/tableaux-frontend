@@ -165,6 +165,10 @@
   border-top: 3px solid $color-primary;
   z-index: 6;
 
+  .context-menu {
+    @include grud-shadow(0, 5px, 15px);
+  }
+
   .entry {
     display: flex;
     justify-content: flex-start;

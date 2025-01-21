@@ -171,7 +171,7 @@ const getAnnotationTitle = (
     otherwise(retrieveTranslation(i18n.language, config?.displayName))
   );
 
-  const isTranslationAnnotation = config.name === "needs_translation";
+  const isTranslationAnnotation = config?.name === "needs_translation";
   const primaryLangtag = f.first(Langtags);
   const isPrimaryLangtag = langtag === primaryLangtag;
   const needsTranslation = isTranslationNeeded(langtag)(cell);
@@ -184,7 +184,7 @@ const getAnnotationTitle = (
   return displayName + suffix || fallbackTitle || "";
 };
 
-const getAnnotationColor = (annotationKey, fallbackColor = "#dddddd") => {
+const getAnnotationColor = (annotationKey, fallbackColor = "#bbbbbb") => {
   const config = getAnnotationConfig(annotationKey);
 
   return f.propOr(fallbackColor, ["bgColor"], config);

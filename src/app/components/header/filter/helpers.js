@@ -21,7 +21,7 @@ export const mkAnnotationFilterTemplates = langtag => ({
   ],
   ...Object.fromEntries(
     f.flow(
-      f.reject(config => config.name === "needs_translation"), // already set
+      f.reject(config => config.name === "needs_translation"), // already set via "needsAnyTranslation" and "needsMyTranslation"
       f.sortBy("priority"),
       f.map(({ name, kind }) =>
         match(kind)(

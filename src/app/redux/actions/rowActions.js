@@ -3,6 +3,7 @@ import {
   createRowDuplicatesRequest,
   getSaveableRowDuplicate
 } from "../../components/cells/cellCopyHelper";
+import { getAnnotationConfig } from "../../helpers/annotationHelper";
 import { makeRequest } from "../../helpers/apiHelper";
 import route from "../../helpers/apiRoutes.js";
 import { doto } from "../../helpers/functools";
@@ -71,6 +72,7 @@ export const safelyDuplicateRow = ({
       langtag
     });
 
+    const hasCheckMeAnnotationConfig = !!getAnnotationConfig("check-me");
     // Set a flag when we deleted values during copy
     const checkMeAnnotation = { type: "flag", value: "check-me" };
     saveableRowDuplicate.constrainedLinkIds.forEach(columnId =>
@@ -81,7 +83,7 @@ export const safelyDuplicateRow = ({
             row: { id: duplicatedRow[0].id },
             column: { id: columnId }
           },
-          annotation: checkMeAnnotation
+          ...(hasCheckMeAnnotationConfig && { annotation: checkMeAnnotation })
         })
       )
     );
