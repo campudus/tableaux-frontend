@@ -89,6 +89,15 @@ describe("buildContext()", () => {
         expect(matches(valueOf(rows[0]))).toBe(false);
         expect(matches(valueOf(rows[1]))).toBe(true);
       });
+      it("contains-not", () => {
+        const matches = ctx.getValueFilter(
+          "text",
+          Text.containsNot,
+          " ipsum dolor    "
+        );
+        expect(matches(valueOf(rows[0]))).toBe(true);
+        expect(matches(valueOf(rows[1]))).toBe(false);
+      });
       it("ends-with", () => {
         const matches = ctx.getValueFilter("text", Text.endsWith, "sit amet");
         expect(matches(valueOf(rows[0]))).toBe(false);
@@ -236,6 +245,11 @@ describe("buildContext()", () => {
         const matches = ctx.getValueFilter("integer", Number.contains, 23);
         expect(matches(valueOf(rows[0]))).toBe(true);
         expect(matches(valueOf(rows[1]))).toBe(false);
+      });
+      it("contains-not", () => {
+        const matches = ctx.getValueFilter("integer", Number.containsNot, 23);
+        expect(matches(valueOf(rows[0]))).toBe(false);
+        expect(matches(valueOf(rows[1]))).toBe(true);
       });
       it("equals", () => {
         const matches = ctx.getValueFilter("integer", Number.equals, 123);
