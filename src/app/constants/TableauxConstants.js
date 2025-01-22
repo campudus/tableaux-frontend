@@ -7,7 +7,7 @@ import keyMirror from "keymirror";
  */
 let languagetags = ["de-DE"];
 let _config = {};
-let annotationConfigs;
+let annotationConfigs = [];
 
 const AnnotationKind = {
   flag: "flag",
