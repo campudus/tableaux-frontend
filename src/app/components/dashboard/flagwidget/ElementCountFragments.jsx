@@ -36,6 +36,6 @@ const DefaultElementCount = ({ n, flag, selected }) => {
 };
 
 export default branch(
-  props => props.flag === "needs-translation",
+  props => props.flag === "needs_translation",
   renderComponent(ElementCountWithPercents)
 )(DefaultElementCount);
