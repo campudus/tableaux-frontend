@@ -1,5 +1,6 @@
 const Mode = {
   contains: "contains",
+  containsNot: "contains-not",
   endsWith: "ends-with",
   equals: "equals",
   isEmpty: "is-empty",
@@ -16,6 +17,10 @@ export default {
   [Mode.contains]: query => {
     const cleanQuery = clean(query);
     return str => clean(str).includes(cleanQuery);
+  },
+  [Mode.containsNot]: query => {
+    const cleanQuery = clean(query);
+    return str => !clean(str).includes(cleanQuery);
   },
   [Mode.endsWith]: query => {
     const cleanQuery = clean(query);

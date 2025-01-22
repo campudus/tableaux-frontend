@@ -7,6 +7,10 @@ export default {
     const matches = Text[Text.Mode.contains](query);
     return values => values?.some(matches);
   },
+  [Text.Mode.containsNot]: query => {
+    const matches = Text[Text.Mode.containsNot](query);
+    return values => values.every(matches);
+  },
   [Text.Mode.endsWith]: query => {
     const matches = Text[Text.Mode.endsWith](query);
     return values => values?.some(matches);
