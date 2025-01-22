@@ -127,6 +127,7 @@
     "add-filter": "Add filter",
     "mode": {
       "contains": "Contains",
+      "contains-not": "Does not contain",
       "equals": "Equals",
       "ends-with": "Ends with",
       "starts-with": "Starts with",
