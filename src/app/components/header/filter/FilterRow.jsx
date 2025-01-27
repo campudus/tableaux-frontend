@@ -105,8 +105,19 @@ const ValueInput = ({ column, mode, value, onChange }) => {
   );
   const disabled = !column || !mode;
   const filterMode = RowFilters.ModesForKind[(column?.kind)];
-  const handleSetEventValue = evt =>
-    void onChange(filterMode?.readValue(evt.target.value));
+  const handleSetEventValue = evt => {
+    const input = evt.target.value;
+    const endChar = input.length > 1 && input.endsWith("|") ? "|" : "";
+    const newValue =
+      input
+        .replace(/[|]+/g, "|")
+        .split(/[|]+/)
+        .filter(Boolean)
+        .map(filterMode?.readValue)
+        .join("|") + endChar;
+    onChange(newValue);
+  };
+
   return RowFilters.needsFilterValue(column?.kind, mode) ? (
     <input
       className="filter-input"
