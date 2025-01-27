@@ -1,12 +1,13 @@
 import f from "lodash/fp";
+import { match, otherwise, when } from "match-iz";
 import React, { useEffect, useMemo } from "react";
 import { useSelector } from "react-redux";
+import { SortDirection } from "react-virtualized";
 import { ShowArchived } from "../../archivedRows";
+import { ColumnKinds } from "../../constants/TableauxConstants";
 import DVWorkerCtl from "../../helpers/DisplayValueWorkerControls";
 import { selectShowArchivedState } from "../../redux/reducers/tableView";
-import { match, otherwise, when } from "match-iz";
 import RowFilters, { filterStateful, sortRows } from "../../RowFilters";
-import { SortDirection } from "react-virtualized";
 
 const withFiltersAndVisibility = Component => props => {
   const store = useSelector(x => x);
@@ -40,7 +41,10 @@ const withFiltersAndVisibility = Component => props => {
 
     return canRenderContent
       ? f.compose(
-          ([rs, ids]) => [applyRowOrdering(rs), ids],
+          ([rs, ids]) => [
+            applyRowOrdering(rs),
+            ids.difference(getGroupColumnIds(columns))
+          ],
           filterRows
         )(ctx, { filters, table, store, selectedRowId: selectedCell?.rowId })
       : [[], []];
@@ -98,6 +102,13 @@ const withFiltersAndVisibility = Component => props => {
     return <Component {...{ ...props, canRenderTable, showCellJumpOverlay }} />;
   }
 };
+
+const getGroupColumnIds = columns =>
+  new Set(
+    columns
+      .filter(col => col.kind === ColumnKinds.group)
+      .flatMap(col => col.groups.map(group => group.id))
+  );
 
 const getSorting = (sorting = {}, defaultIsDesc = false) =>
   !f.isEmpty(sorting)
