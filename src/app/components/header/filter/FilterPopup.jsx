@@ -245,16 +245,22 @@ const SortingArea = ({ columns, onChange, ordering, langtag }) => {
 };
 
 const settingToFilter = ({ column, mode, value }) => {
+  const cleanValue = value?.replace(/[|]+$/, "") ?? "";
   const needsValueArg = RowFilters.needsFilterValue(column?.kind, mode);
-  const hasValue = !f.isNil(value) && value !== "";
+  const hasValue = !f.isNil(cleanValue) && cleanValue !== "";
   const isIncomplete = !column || !mode || (needsValueArg && !hasValue);
   const isAnyColumnFilter = !isIncomplete && column.name === "any-column";
+  const multiValues = cleanValue.split(/[|]+/);
+  const hasMultiValues = multiValues.length > 1;
 
-  return match({ isIncomplete, isAnyColumnFilter })(
+  const singleFilter = match({ isIncomplete, isAnyColumnFilter })(
     when({ isIncomplete: true }, () => null),
-    when({ isAnyColumnFilter: true }, () => ["any-value", mode, value]),
-    otherwise(() => ["value", column.name, mode, value])
+    when({ isAnyColumnFilter: true }, () => ["any-value", mode, cleanValue]),
+    otherwise(() => ["value", column.name, mode, cleanValue])
   );
+  return hasMultiValues
+    ? ["or", ...multiValues.map(v => [...singleFilter.slice(0, -1), v])]
+    : singleFilter;
 };
 
 const AnnotationFilterArea = ({ onToggle, filters, options, langtag }) => {

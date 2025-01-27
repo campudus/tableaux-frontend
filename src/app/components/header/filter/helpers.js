@@ -101,6 +101,11 @@ export const fromCombinedFilter = (columns, langtag) => {
       rest.forEach(next =>
         filterToSettingM(next, rowFilters, annotationFilters)
       );
+    } else if (kind === "or") {
+      const values = rest.flatMap(args => args.slice(-1));
+      const setting = rest[0].slice(0, -1);
+      const multiFilter = [...setting, values.join("|")];
+      filterToSettingM(multiFilter, rowFilters, annotationFilters);
     } else {
       const [templateName] =
         Object.entries(templates).find(([_, setting]) =>
