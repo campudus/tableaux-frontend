@@ -19,7 +19,8 @@ const withFiltersAndVisibility = Component => props => {
     columnOrdering = [],
     filters = [],
     langtag,
-    table
+    table,
+    visibleColumns: customVisibleColumnIdces
   } = props;
   const shouldLaunchDisplayValueWorker = DVWorkerCtl.shouldStartForTable(props);
   useEffect(() => {
@@ -43,7 +44,7 @@ const withFiltersAndVisibility = Component => props => {
       ? f.compose(
           ([rs, ids]) => [
             applyRowOrdering(rs),
-            ids.difference(getGroupColumnIds(columns))
+            ids.difference(getHiddenGroupColumnIDs(columns))
           ],
           filterRows
         )(ctx, { filters, table, store, selectedRowId: selectedCell?.rowId })
@@ -56,12 +57,15 @@ const withFiltersAndVisibility = Component => props => {
     sorting,
     canRenderContent,
     workerStillRunning,
-    langtag
+    langtag,
+    customVisibleColumnIdces.join(",")
   ]);
+  const customVisibleColumnIDs = new Set(customVisibleColumnIdces);
   const columnsWithVisibility = columns.map((col, idx) => ({
     ...col,
     visible:
       idx === 0 ||
+      customVisibleColumnIDs.has(idx) ||
       col.id === selectedCell?.columnId ||
       visibleColumnIDs.has(col.id)
   }));
@@ -103,10 +107,10 @@ const withFiltersAndVisibility = Component => props => {
   }
 };
 
-const getGroupColumnIds = columns =>
+const getHiddenGroupColumnIDs = columns =>
   new Set(
     columns
-      .filter(col => col.kind === ColumnKinds.group)
+      .filter(col => col.kind === ColumnKinds.group && !col.showMemberColumns)
       .flatMap(col => col.groups.map(group => group.id))
   );
 
