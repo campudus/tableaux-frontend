@@ -9,6 +9,11 @@ import DVWorkerCtl from "../../helpers/DisplayValueWorkerControls";
 import { selectShowArchivedState } from "../../redux/reducers/tableView";
 import RowFilters, { filterStateful, sortRows } from "../../RowFilters";
 
+const setDifference = (a, b) =>
+  typeof Set.prototype.difference === "function"
+    ? a.difference(b)
+    : new Set(f.difference(Array.from(a), Array.from(b)));
+
 const withFiltersAndVisibility = Component => props => {
   const store = useSelector(x => x);
   const showArchived = selectShowArchivedState(store);
@@ -44,7 +49,7 @@ const withFiltersAndVisibility = Component => props => {
       ? f.compose(
           ([rs, ids]) => [
             applyRowOrdering(rs),
-            ids.difference(findGroupMemberIds(columns))
+            setDifference(ids, findGroupMemberIds(columns))
           ],
           filterRows
         )(ctx, { filters, table, store, selectedRowId: selectedCell?.rowId })
@@ -60,15 +65,16 @@ const withFiltersAndVisibility = Component => props => {
     langtag,
     customVisibleColumnIDs.join(",")
   ]);
-  const customVisibleColumnIDSet = new Set(customVisibleColumnIDs);
-  const columnsWithVisibility = columns.map((col, idx) => ({
-    ...col,
-    visible:
+  const columnsWithVisibility = columns.map((col, idx) => {
+    const visible =
       idx === 0 ||
-      customVisibleColumnIDSet.has(idx) ||
       col.id === selectedCell?.columnId ||
-      visibleColumnIDs.has(col.id)
-  }));
+      visibleColumnIDs.has(col.id);
+    return {
+      ...col,
+      visible
+    };
+  });
   const columnIdxLookup = (columns || []).reduce((acc, col, idx) => {
     acc[col.id] = idx;
     return acc;
