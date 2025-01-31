@@ -4,10 +4,18 @@ import React, { useEffect, useMemo } from "react";
 import { useSelector } from "react-redux";
 import { SortDirection } from "react-virtualized";
 import { ShowArchived } from "../../archivedRows";
-import { ColumnKinds } from "../../constants/TableauxConstants";
+import { findGroupMemberIds } from "../../helpers/columnHelper";
 import DVWorkerCtl from "../../helpers/DisplayValueWorkerControls";
 import { selectShowArchivedState } from "../../redux/reducers/tableView";
 import RowFilters, { filterStateful, sortRows } from "../../RowFilters";
+
+// Use fast, native set difference when available, fall back for Safari and
+// older browsers.
+// https://caniuse.com/mdn-javascript_builtins_set_difference
+const setDifference = (a, b) =>
+  typeof Set.prototype.difference === "function"
+    ? a.difference(b)
+    : new Set(f.difference(Array.from(a), Array.from(b)));
 
 const withFiltersAndVisibility = Component => props => {
   const store = useSelector(x => x);
@@ -19,7 +27,8 @@ const withFiltersAndVisibility = Component => props => {
     columnOrdering = [],
     filters = [],
     langtag,
-    table
+    table,
+    visibleColumns: customVisibleColumnIDs
   } = props;
   const shouldLaunchDisplayValueWorker = DVWorkerCtl.shouldStartForTable(props);
   useEffect(() => {
@@ -43,7 +52,7 @@ const withFiltersAndVisibility = Component => props => {
       ? f.compose(
           ([rs, ids]) => [
             applyRowOrdering(rs),
-            ids.difference(getGroupColumnIds(columns))
+            setDifference(ids, findGroupMemberIds(columns))
           ],
           filterRows
         )(ctx, { filters, table, store, selectedRowId: selectedCell?.rowId })
@@ -56,15 +65,19 @@ const withFiltersAndVisibility = Component => props => {
     sorting,
     canRenderContent,
     workerStillRunning,
-    langtag
+    langtag,
+    customVisibleColumnIDs.join(",")
   ]);
-  const columnsWithVisibility = columns.map((col, idx) => ({
-    ...col,
-    visible:
+  const columnsWithVisibility = columns.map((col, idx) => {
+    const visible =
       idx === 0 ||
       col.id === selectedCell?.columnId ||
-      visibleColumnIDs.has(col.id)
-  }));
+      visibleColumnIDs.has(col.id);
+    return {
+      ...col,
+      visible
+    };
+  });
   const columnIdxLookup = (columns || []).reduce((acc, col, idx) => {
     acc[col.id] = idx;
     return acc;
@@ -102,13 +115,6 @@ const withFiltersAndVisibility = Component => props => {
     return <Component {...{ ...props, canRenderTable, showCellJumpOverlay }} />;
   }
 };
-
-const getGroupColumnIds = columns =>
-  new Set(
-    columns
-      .filter(col => col.kind === ColumnKinds.group)
-      .flatMap(col => col.groups.map(group => group.id))
-  );
 
 const getSorting = (sorting = {}, defaultIsDesc = false) =>
   !f.isEmpty(sorting)
