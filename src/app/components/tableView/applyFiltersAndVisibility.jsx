@@ -20,7 +20,7 @@ const withFiltersAndVisibility = Component => props => {
     filters = [],
     langtag,
     table,
-    visibleColumns: customVisibleColumnIdces
+    visibleColumns: customVisibleColumnIDs
   } = props;
   const shouldLaunchDisplayValueWorker = DVWorkerCtl.shouldStartForTable(props);
   useEffect(() => {
@@ -58,14 +58,14 @@ const withFiltersAndVisibility = Component => props => {
     canRenderContent,
     workerStillRunning,
     langtag,
-    customVisibleColumnIdces.join(",")
+    customVisibleColumnIDs.join(",")
   ]);
-  const customVisibleColumnIDs = new Set(customVisibleColumnIdces);
+  const customVisibleColumnIDSet = new Set(customVisibleColumnIDs);
   const columnsWithVisibility = columns.map((col, idx) => ({
     ...col,
     visible:
       idx === 0 ||
-      customVisibleColumnIDs.has(idx) ||
+      customVisibleColumnIDSet.has(idx) ||
       col.id === selectedCell?.columnId ||
       visibleColumnIDs.has(col.id)
   }));
