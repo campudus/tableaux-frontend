@@ -4,7 +4,7 @@ import React, { useEffect, useMemo } from "react";
 import { useSelector } from "react-redux";
 import { SortDirection } from "react-virtualized";
 import { ShowArchived } from "../../archivedRows";
-import { ColumnKinds } from "../../constants/TableauxConstants";
+import { findGroupMemberIds } from "../../helpers/columnHelper";
 import DVWorkerCtl from "../../helpers/DisplayValueWorkerControls";
 import { selectShowArchivedState } from "../../redux/reducers/tableView";
 import RowFilters, { filterStateful, sortRows } from "../../RowFilters";
@@ -44,7 +44,7 @@ const withFiltersAndVisibility = Component => props => {
       ? f.compose(
           ([rs, ids]) => [
             applyRowOrdering(rs),
-            ids.difference(getHiddenGroupColumnIDs(columns))
+            ids.difference(findGroupMemberIds(columns))
           ],
           filterRows
         )(ctx, { filters, table, store, selectedRowId: selectedCell?.rowId })
@@ -106,13 +106,6 @@ const withFiltersAndVisibility = Component => props => {
     return <Component {...{ ...props, canRenderTable, showCellJumpOverlay }} />;
   }
 };
-
-const getHiddenGroupColumnIDs = columns =>
-  new Set(
-    columns
-      .filter(col => col.kind === ColumnKinds.group && !col.showMemberColumns)
-      .flatMap(col => col.groups.map(group => group.id))
-  );
 
 const getSorting = (sorting = {}, defaultIsDesc = false) =>
   !f.isEmpty(sorting)
