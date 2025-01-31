@@ -9,6 +9,9 @@ import DVWorkerCtl from "../../helpers/DisplayValueWorkerControls";
 import { selectShowArchivedState } from "../../redux/reducers/tableView";
 import RowFilters, { filterStateful, sortRows } from "../../RowFilters";
 
+// Use fast, native set difference when available, fall back for Safari and
+// older browsers.
+// https://caniuse.com/mdn-javascript_builtins_set_difference
 const setDifference = (a, b) =>
   typeof Set.prototype.difference === "function"
     ? a.difference(b)
