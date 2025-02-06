@@ -77,12 +77,14 @@ const annotationsToObject = annotations => {
           () => "translationNeeded",
           value
         );
-        obj[key] = {
-          createdAt,
-          uuid,
-          type,
-          ...(langtags ? { langtags } : { value: true })
-        };
+        if (!f.isNil(key)) {
+          obj[key] = {
+            createdAt,
+            uuid,
+            type,
+            ...(langtags ? { langtags } : { value: true })
+          };
+        }
       } else {
         const _value = { value, uuid, createdAt, type };
         obj[type] = f.isEmpty(obj[type]) ? [_value] : [...obj[type], _value];

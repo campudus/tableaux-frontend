@@ -82,8 +82,8 @@ export default function AnnotationBar({
       const config = getAnnotationConfig(annotationKey);
       const title = getAnnotationTitle(annotationKey, langtag, cell);
       const color = getAnnotationColor(annotationKey);
-      const priority = config.priority;
-      const isTranslation = config.name === "needs_translation";
+      const priority = config?.priority;
+      const isTranslation = config?.name === "needs_translation";
       const hasLangtag = annotation?.langtags?.includes(langtag);
 
       return isPrimaryLang || (isTranslation && hasLangtag)
