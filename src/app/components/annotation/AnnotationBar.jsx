@@ -4,6 +4,7 @@ import { useDebouncedValue } from "../../helpers/useDebouncedValue";
 import Tooltip from "../helperComponents/Tooltip/Tooltip";
 import { useMeasure } from "../../helpers/useMeasure";
 import TextAnnotationButton from "../textannotations/TextAnnotationButton";
+import { ColumnKinds } from "../../constants/TableauxConstants";
 import AnnotationDot from "./AnnotationDot";
 import {
   getAnnotationColor,
@@ -75,6 +76,16 @@ export default function AnnotationBar({
 }) {
   const [barRef, { width }] = useMeasure();
   const entries = Object.entries(cell.annotations ?? {});
+  const isMultilangCell =
+    cell.column.multilanguage &&
+    !f.contains(cell.kind, [
+      ColumnKinds.currency,
+      ColumnKinds.link,
+      ColumnKinds.attachment,
+      ColumnKinds.concat,
+      ColumnKinds.status
+    ]);
+
   const isCommentKey = key => COMMENT_KEYS.includes(key);
   const annotationItems = f.flow(
     f.filter(([annotationKey]) => !isCommentKey(annotationKey)),
@@ -85,10 +96,11 @@ export default function AnnotationBar({
       const priority = config?.priority;
       const isTranslation = config?.name === "needs_translation";
       const hasLangtag = annotation?.langtags?.includes(langtag);
+      const shouldDisplay = isTranslation
+        ? isMultilangCell && (isPrimaryLang || hasLangtag)
+        : isPrimaryLang;
 
-      return isPrimaryLang || (isTranslation && hasLangtag)
-        ? [{ title, color, priority }]
-        : [];
+      return shouldDisplay ? [{ title, color, priority }] : [];
     }),
     f.sortBy("priority")
   )(entries);
