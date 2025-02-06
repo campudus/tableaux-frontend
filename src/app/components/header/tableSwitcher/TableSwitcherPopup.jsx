@@ -31,7 +31,7 @@ class SwitcherPopup extends React.PureComponent {
           : null,
       filterTableName: "",
       focusTableId,
-      filteredTables: this.getFilteredTables(focusTableId, "")
+      filteredTables: this.getFilteredTables(props.currentGroupId, "")
     };
   }
 
