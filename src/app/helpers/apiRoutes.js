@@ -67,6 +67,8 @@ const toFrontendServiceView = (id, langtag, params = {}) => {
 const toCellHistory = ({ tableId, rowId, columnId }) =>
   toCell({ tableId, rowId, columnId }) + "/history";
 
+const toAnnotationConfigs = () => "/system/annotations";
+
 const API_ROUTES = {
   joinUrlParts,
   getAllTables,
@@ -82,7 +84,8 @@ const API_ROUTES = {
   toSetting,
   toServiceRegistry,
   toFrontendServiceView,
-  toCellHistory
+  toCellHistory,
+  toAnnotationConfigs
 };
 
 export default API_ROUTES;

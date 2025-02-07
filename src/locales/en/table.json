@@ -176,6 +176,7 @@
   "no-column-search-result": "No columns match your search",
   "has-no-rows": "This table is empty.",
   "cell": "Cell",
+  "show-annotations": "Highlight",
   "new-comment": "New comment",
   "add-comment": "Add comments",
   "show-comments": "Show comments",

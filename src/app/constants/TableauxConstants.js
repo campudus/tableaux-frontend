@@ -1,5 +1,4 @@
 import keyMirror from "keymirror";
-import { getCssVar } from "../helpers/getCssVar";
 
 /*
  * Order is important.
@@ -8,6 +7,7 @@ import { getCssVar } from "../helpers/getCssVar";
  */
 let languagetags = ["de-DE"];
 let _config = {};
+let annotationConfigs = [];
 
 const AnnotationKind = {
   flag: "flag",
@@ -135,26 +135,22 @@ const grudConstants = {
 
   initConfig: config => (_config = config),
 
+  initAnnotationConfigs: configs => {
+    annotationConfigs = configs;
+  },
+
   AnnotationKind,
-  Annotation: [
-    { name: "info", kind: AnnotationKind.data },
-    { name: "final", kind: AnnotationKind.rowProp },
-    {
-      name: "important",
-      kind: AnnotationKind.flag,
-      color: getCssVar("--color-important")
-    },
-    {
-      name: "postpone",
-      kind: AnnotationKind.flag,
-      color: getCssVar("--color-postpone")
-    },
-    {
-      name: "check-me",
-      kind: AnnotationKind.flag,
-      color: getCssVar("--color-doublecheck")
-    }
-  ]
+
+  get AnnotationConfigs() {
+    return [
+      { name: "info", kind: AnnotationKind.data },
+      { name: "final", kind: AnnotationKind.rowProp },
+      ...annotationConfigs?.map(annotationConfig => ({
+        ...annotationConfig,
+        kind: AnnotationKind.flag
+      }))
+    ];
+  }
 };
 
 module.exports = grudConstants;

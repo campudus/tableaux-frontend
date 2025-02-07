@@ -22,7 +22,7 @@ import KeyboardShortcutsHelper from "../../helpers/KeyboardShortcutsHelper";
 import { saveColumnWidths } from "../../helpers/localStorage";
 import actions from "../../redux/actionCreators";
 import store from "../../redux/store";
-import Cell, { getAnnotationState } from "../cells/Cell";
+import Cell from "../cells/Cell";
 import MetaCell from "../cells/MetaCell";
 import MetaCellHeader from "../cells/MetaCellHeader";
 import ColumnHeader from "../columns/ColumnHeader";
@@ -282,12 +282,10 @@ export default class VirtualTable extends PureComponent {
     const { value } = cell;
     const { width } = style;
 
-    const annotationState = getAnnotationState(cell);
     return (
       <Cell
         actions={actions}
         allDisplayValues={tableView.displayValues}
-        annotationState={annotationState}
         annotationsOpen={
           !!openAnnotations.cellId && openAnnotations.cellId === cell.id
         }
@@ -298,6 +296,8 @@ export default class VirtualTable extends PureComponent {
         focusTable={this.focusTable}
         isExpandedCell={false}
         langtag={langtag}
+        userLangtag={langtag}
+        isPrimaryLang={true}
         openCellContextMenu={this.openCellContextMenu}
         rowIndex={rowIndex}
         rows={this.props.rows}
@@ -321,7 +321,6 @@ export default class VirtualTable extends PureComponent {
     const { openAnnotations } = this.state;
     const column = this.getVisibleElement(columns, columnIndex);
     const cell = this.getCell(rowIndex, columnIndex);
-    const annotationsState = getAnnotationState(cell);
     const { width } = style;
 
     return (
@@ -341,7 +340,6 @@ export default class VirtualTable extends PureComponent {
             <Cell
               actions={actions}
               allDisplayValues={tableView.displayValues}
-              annotationState={annotationsState}
               annotationsOpen={
                 isPrimaryLang &&
                 !!openAnnotations.cellId &&
@@ -355,6 +353,8 @@ export default class VirtualTable extends PureComponent {
               isExpandedCell={!isPrimaryLang}
               key={`${userLangtag}-${langtag}-${key}`}
               langtag={langtag}
+              userLangtag={userLangtag}
+              isPrimaryLang={isPrimaryLang}
               openCellContextMenu={this.openCellContextMenu}
               rows={this.props.rows}
               selectedCell={this.getSelectedCell()}

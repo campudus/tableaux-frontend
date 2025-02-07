@@ -4,27 +4,40 @@ import { doto } from "../../../helpers/functools";
 import f from "lodash/fp";
 import classNames from "classnames";
 import { Langtags } from "../../../constants/TableauxConstants";
+import { retrieveTranslation } from "../../../helpers/multiLanguage";
 import i18n from "i18next";
+import AnnotationDot from "../../annotation/AnnotationDot";
 
-const HeaderIcon = ({ flag }) =>
+const HeaderIcon = ({ flag, config }) =>
   flag === "comments" ? (
     <i className="fa fa-commenting" />
   ) : (
-    <i className={"dot active " + flag} />
+    <AnnotationDot color={config?.bgColor} active />
   );
 
-const DefaultHeader = ({ flag, children }) => (
-  <div className={"header-wrapper " + flag}>
-    <HeaderIcon flag={flag} />
+const DefaultHeader = ({ langtag, flag, config, children }) => (
+  <div
+    className={"header-wrapper " + flag}
+    style={{ borderColor: config?.bgColor }}
+  >
+    <HeaderIcon flag={flag} config={config} />
     <div className="heading">
-      {i18n.t(`dashboard:flag.heading-${flag}`) || flag}
+      {flag === "comments"
+        ? i18n.t(`dashboard:flag.heading-${flag}`)
+        : retrieveTranslation(langtag, config?.displayName)}
     </div>
     {children}
   </div>
 );
 
-const HeaderWithLangTabs = ({ setLangtag, selectedLang, flag }) => (
-  <DefaultHeader flag={flag}>
+const HeaderWithLangTabs = ({
+  langtag: _langtag,
+  setLangtag,
+  selectedLang,
+  flag,
+  config
+}) => (
+  <DefaultHeader flag={flag} config={config} langtag={_langtag}>
     {f.map(
       langtag => (
         <button
@@ -49,6 +62,6 @@ const HeaderWithLangTabs = ({ setLangtag, selectedLang, flag }) => (
 );
 
 export default branch(
-  props => props.flag === "needs-translation",
+  props => props.flag === "needs_translation",
   renderComponent(HeaderWithLangTabs)
 )(DefaultHeader);

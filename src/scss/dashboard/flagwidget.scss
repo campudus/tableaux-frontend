@@ -6,31 +6,15 @@
     margin-bottom: 5px;
     font-weight: bold;
     display: flex;
+    gap: 8px;
 
-    i {
-      width: 20px;
-      position: relative;
-    }
-
-    &.postpone {
-      border-color: $color-postpone;
-    }
-
-    &.important {
-      border-color: $color-important;
-    }
-
-    &.needs-translation {
-      border-color: $color-needs-translation;
+    &.needs_translation {
       padding-bottom: 0;
-    }
-
-    &.check-me {
-      border-color: $color-checkme;
     }
 
     &.comments {
       border-color: $color-comments;
+
       i {
         color: $color-comments;
       }
@@ -41,7 +25,7 @@
     }
 
     .language-tab {
-      padding: 5px 8px;
+      padding: 2px 8px 3px 8px;
       border-radius: 3px 3px 0 0;
       margin-left: 5px;
       font: inherit;
@@ -54,22 +38,6 @@
         color: white;
         background-color: $color-needs-translation;
       }
-    }
-
-    .dot.important {
-      @include status-dot($color-important, white);
-    }
-    .dot.needs-translation {
-      @include status-dot($color-needs-translation, white);
-    }
-    .dot.postpone {
-      @include status-dot($color-postpone, white);
-    }
-    .dot.check-me {
-      @include status-dot($color-checkme, white);
-    }
-    .dot::before {
-      top: 2px !important;
     }
   }
 

@@ -17,12 +17,22 @@ export const initGrud = async setSuccess => {
     const initLangtags = makeRequest({
       apiRoute: route.toSetting("langtags")
     }).then(response => TableauxConstants.initLangtags(response.value));
+    const initAnnotationConfigs = makeRequest({
+      apiRoute: route.toAnnotationConfigs()
+    }).then(response =>
+      TableauxConstants.initAnnotationConfigs(response.annotations)
+    );
     const loadTables = promisifyAction(actions.loadTables)();
 
     store.dispatch(actions.loadGlobalSettings());
     store.dispatch(actions.createDisplayValueWorker());
 
-    await Promise.all([loadServices, initLangtags, loadTables]);
+    await Promise.all([
+      loadServices,
+      initLangtags,
+      loadTables,
+      initAnnotationConfigs
+    ]);
     setSuccess(true);
     return true;
   } catch (err) {

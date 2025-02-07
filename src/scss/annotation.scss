@@ -1,0 +1,111 @@
+.annotation-bar {
+  position: absolute;
+  top: 1px;
+  width: calc(100% - 18px);
+  display: flex;
+  justify-content: space-between;
+
+  .tooltip {
+    &:after {
+      display: none; // hide tooltip arrow
+    }
+  }
+
+  &__tooltip-wrapper {
+    position: relative;
+  }
+
+  &__flags {
+    @keyframes animate-fade {
+      0% { opacity: 0; }
+      100% { opacity: 1; }
+    }
+
+    animation-duration: 0.3s;
+    animation-name: animate-fade;
+    animation-timing-function: ease-in-out;
+    display: flex;
+    gap: 4px;
+  }
+
+  &__flag {
+    margin: 1px 0;
+    width: 40px;
+    height: 4px;
+    border-radius: 999px;
+  }
+
+  &__flag-infos {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  &__flag-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  &__ellipsis {
+    margin: 1px 0;
+    width: 15px;
+    height: 2px;
+    padding: 1px 3px;
+    border-radius: 999px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    gap: 2px;
+    background-color: #d1d1d1;
+
+    &-dot {
+      width: 2px;
+      height: 2px;
+      border-radius: 999px;
+      background-color: #333333;
+    }
+  }
+
+  &__comment-button {
+    position: absolute;
+    right: 0;
+  }
+}
+
+.annotation-badge {
+  padding: 3px 9px;
+  border-radius: 200px; // just big enough!
+  border: 1.5px solid;
+  font-size: 0.9em;
+  font-weight: 500;
+  opacity: 0.8;
+
+  &:hover {
+    opacity: 1;
+  }
+}
+
+.annotation-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+  background-color: transparent;
+  border: 1px solid transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  &--active {
+    border: 1px solid currentColor;
+  }
+
+  &__inner {
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+    background-color: currentColor;
+  }
+
+}

@@ -47,13 +47,15 @@ const TextCell = props => {
   };
 
   return (
-    <div className={`cell-content ${isMultiLine ? "is-multiline" : ""}`}>
-      <div>{displayValue[langtag].split("\n")[0]}</div>
+    <>
+      <div className={`cell-content ${isMultiLine ? "is-multiline" : ""}`}>
+        <div>{displayValue[langtag].split("\n")[0]}</div>
+        {isMultiLine ? (
+          <i className="fa fa-paragraph multiline-indicator" />
+        ) : null}
+      </div>
       {selected ? <ExpandButton onTrigger={handleSetEditing} /> : null}
-      {isMultiLine ? (
-        <i className="fa fa-paragraph multiline-indicator" />
-      ) : null}
-    </div>
+    </>
   );
 };
 

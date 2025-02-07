@@ -177,6 +177,7 @@
   "no-column-search-result": "Keine Spalte mit diesem Namen vorhanden",
   "has-no-rows": "Diese Tabelle ist leer.",
   "cell": "Zelle",
+  "show-annotations": "Hervorheben",
   "new-comment": "Neuer Kommentar",
   "add-comment": "Kommentar hinzufügen",
   "show-comments": "Kommentare anzeigen",

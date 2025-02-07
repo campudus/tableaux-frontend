@@ -21,6 +21,7 @@ import ResetTableViewButton from "../header/ResetTableViewButton";
 import Spinner from "../header/Spinner.jsx";
 import TableSettings from "../header/tableSettings/TableSettings";
 import TableSwitcher from "../header/tableSwitcher/TableSwitcher.jsx";
+import AnnotationHighlightToggle from "../header/AnnotationHighlightToggle.jsx";
 import { showDialog } from "../overlay/GenericOverlay";
 import { navigate, switchLanguageHandler } from "../Router";
 import Table from "../table/Table.jsx";
@@ -315,6 +316,7 @@ class TableView extends PureComponent {
                 />
               ) : null}
               <ToggleArchivedRowsButton table={table} langtag={langtag} />
+              <AnnotationHighlightToggle table={table} langtag={langtag} />
               <HistoryButtons
                 tableId={tableId}
                 actions={actions}

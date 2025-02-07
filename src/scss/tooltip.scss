@@ -30,7 +30,7 @@ $bubble-background: transparentize(black, 0.3);
   }
 
   &--invert {
-    bottom: calc(100% - 65px);
+    top: calc(100% + 15px);
 
     &:after {
       @include tooltip-arrow();

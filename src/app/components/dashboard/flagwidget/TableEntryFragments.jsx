@@ -49,7 +49,7 @@ const TableEntry = compose(
     const template = match(flag)(
       when("comments", templates.info),
       when(
-        "needs-translation",
+        "needs_translation",
         langtag === Langtags[0]
           ? templates.needsAnyTranslation
           : templates.needsMyTranslation
@@ -58,7 +58,7 @@ const TableEntry = compose(
     );
     const filterQuery = template?.join(":");
     const href = `/${
-      flag === "needs-translation" ? selectedLang : langtag
+      flag === "needs_translation" ? selectedLang : langtag
     }/tables/${table.id}${cellUrl}?filter:${filterQuery}`;
 
     return (

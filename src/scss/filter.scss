@@ -64,7 +64,7 @@
 
     .annotation-badge__area {
       display: flex;
-      gap: 18px;
+      gap: 50px;
       &-header {
         padding-left: 6px;
         padding-top: 9px;
@@ -82,17 +82,6 @@
       gap: 9px;
       padding-top: 6px;
       flex-wrap: wrap;
-    }
-    .annotation-badge {
-      padding: 3px 9px;
-      border-radius: 200px; // just big enough!
-      border: 1.5px solid;
-      font-size: 0.9em;
-      font-weight: 500;
-      opacity: 0.8;
-      &:hover {
-        opacity: 1;
-      }
     }
 
     .button {

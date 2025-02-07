@@ -73,7 +73,8 @@ const {
   TABLE_NAME_EDIT,
   TABLE_NAME_EDIT_ERROR,
   TABLE_NAME_EDIT_SUCCESS,
-  TOGGLE_COLUMN_VISIBILITY
+  TOGGLE_COLUMN_VISIBILITY,
+  SET_ANNOTATION_HIGHLIGHT
 } = actionTypes;
 
 const {
@@ -617,6 +618,10 @@ const setShowArchivedRows = (
   dispatch({ type: SET_FILTERS_AND_SORTING, showArchived: shouldShow });
 };
 
+const setAnnotationHighlight = (annotationHighlight = "") => dispatch => {
+  dispatch({ type: SET_ANNOTATION_HIGHLIGHT, annotationHighlight });
+};
+
 const deleteRow = action => {
   const { mergeWithRowId, tableId, rowId } = action;
   const queryString =
@@ -784,7 +789,8 @@ const actionCreators = {
   ),
   clearMultiselect: dispatchParamsFor(MultiSelect.CLEAR_MULTISELECT),
   setShowArchivedRows,
-  fetchSingleRow
+  fetchSingleRow,
+  setAnnotationHighlight
 };
 
 export default actionCreators;

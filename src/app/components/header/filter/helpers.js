@@ -1,11 +1,9 @@
 import { match, otherwise, when } from "match-iz";
 import f from "lodash/fp";
 import {
-  Annotation,
+  AnnotationConfigs,
   AnnotationKind
 } from "../../../constants/TableauxConstants";
-import { getCssVar } from "../../../helpers/getCssVar";
-import { t } from "i18next";
 
 export const mkAnnotationFilterTemplates = langtag => ({
   needsAnyTranslation: [
@@ -22,19 +20,23 @@ export const mkAnnotationFilterTemplates = langtag => ({
     langtag
   ],
   ...Object.fromEntries(
-    Annotation.map(({ name, kind }) =>
-      match(kind)(
-        when(AnnotationKind.flag, [
-          name,
-          ["annotation", "flag-type", name, "is-set"]
-        ]),
-        when(AnnotationKind.data, [
-          name,
-          ["annotation", "type", name, "is-set"]
-        ]),
-        when(AnnotationKind.rowProp, [name, ["row-prop", name, "is-set"]])
+    f.flow(
+      f.reject(config => config.name === "needs_translation"), // already set via "needsAnyTranslation" and "needsMyTranslation"
+      f.sortBy("priority"),
+      f.map(({ name, kind }) =>
+        match(kind)(
+          when(AnnotationKind.flag, [
+            name,
+            ["annotation", "flag-type", name, "is-set"]
+          ]),
+          when(AnnotationKind.data, [
+            name,
+            ["annotation", "type", name, "is-set"]
+          ]),
+          when(AnnotationKind.rowProp, [name, ["row-prop", name, "is-set"]])
+        )
       )
-    )
+    )(AnnotationConfigs)
   )
 });
 
@@ -48,33 +50,6 @@ export const toCombinedFilter = settings => {
   );
   return combined;
 };
-
-export const getAnnotationColor = kind => {
-  const annotationSettings = f.indexBy("name", Annotation);
-  return f.cond([
-    [
-      key => /needs.*?translation/i.test(key),
-      () => getCssVar("--color-needs-translation")
-    ],
-    [
-      key => annotationSettings[key]?.color,
-      key => annotationSettings[key].color
-    ],
-    [() => true, () => "#ddd"]
-  ])(kind);
-};
-
-export const getAnnotationTitle = (kind, langtag) =>
-  t(
-    match(kind)(
-      when("info", "filter:has-comments"),
-      when("needsAnyTranslation", "table:translation_needed"),
-      when("needsMyTranslation", "table:this_translation_needed"),
-      when("final", "table:filter.is_final"),
-      otherwise(`table:${kind}`)
-    ),
-    { langtag }
-  );
 
 export const fromCombinedFilter = (columns, langtag) => {
   const templates = mkAnnotationFilterTemplates(langtag);

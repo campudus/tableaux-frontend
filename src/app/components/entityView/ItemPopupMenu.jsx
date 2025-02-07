@@ -6,20 +6,14 @@ import React, { Component } from "react";
 import ReactDOM from "react-dom";
 import listenToClickOutside from "react-onclickoutside";
 import pasteCellValue from "../../components/cells/cellCopyHelper";
-import { ColumnKinds, Langtags } from "../../constants/TableauxConstants";
-import {
-  addTranslationNeeded,
-  deleteCellAnnotation,
-  removeTranslationNeeded,
-  setCellAnnotation
-} from "../../helpers/annotationHelper";
+import { ColumnKinds } from "../../constants/TableauxConstants";
 import { canConvert } from "../../helpers/cellValueConverter";
-import { merge } from "../../helpers/functools";
 import actions from "../../redux/actionCreators";
 import store from "../../redux/store";
 import SvgIcon from "../helperComponents/SvgIcon";
 import { openShowDependency } from "../overlay/ConfirmDependentOverlay";
 import { clearSelectedCellValue } from "../../redux/actions/cellActions";
+import AnnotationContextMenu from "../contextMenu/AnnotationContextMenu";
 
 @listenToClickOutside
 class MenuPopup extends Component {
@@ -84,100 +78,6 @@ class ItemPopupMenu extends Component {
         <div>{value ? i18n.t(title, { langtag: value }) : i18n.t(title)}</div>
       </button>
     );
-  };
-
-  mkToggleFlagItem = flag => {
-    const { cell } = this.props;
-    const flagValue = f.get(["annotations", flag], cell);
-    const toggleFn = flagValue
-      ? () =>
-          deleteCellAnnotation(
-            { type: "flag", value: flag, uuid: flagValue },
-            cell,
-            "do-it!"
-          )
-      : () => setCellAnnotation({ type: "flag", value: flag }, cell);
-    return this.mkEntry(flag, {
-      fn: toggleFn,
-      title: `table:${flag}`,
-      classes: `dot ${flag} ${flagValue ? "active" : "inactive"}`
-    });
-  };
-
-  isPrimaryLanguage = () => {
-    const { langtag } = this.props;
-    return langtag === f.first(Langtags);
-  };
-
-  needsTranslation = () => {
-    const { cell, langtag } = this.props;
-    const neededTranslations = f.get(
-      ["annotations", "translationNeeded", "langtags"],
-      cell
-    );
-    return (
-      f.contains(langtag, neededTranslations) ||
-      (this.isPrimaryLanguage() &&
-        f.isEmpty(f.xor(neededTranslations, f.drop(1)(Langtags))))
-    );
-  };
-
-  mkAddTranslationEntry = () => {
-    const { cell, langtag } = this.props;
-    if (this.needsTranslation()) {
-      return null;
-    }
-    const neededTranslation = this.isPrimaryLanguage()
-      ? f.drop(1, Langtags)
-      : [
-          ...(f.prop(["annotation", "translationNeeded", "langtags"], cell) ||
-            []),
-          langtag
-        ];
-    const text = this.isPrimaryLanguage()
-      ? "table:translations.translation_needed"
-      : "table:translations.this_translation_needed";
-    return this.mkEntry(3, {
-      title: text,
-      value: !this.isPrimaryLanguage() ? langtag : null,
-      fn: () => addTranslationNeeded(neededTranslation, cell),
-      classes: "dot translation inactive"
-    });
-  };
-
-  mkRemoveTranslationEntry = () => {
-    const { cell, langtag } = this.props;
-    const cellTranslationAnnotation = f.prop(
-      ["annotations", "translationNeeded"],
-      cell
-    );
-    const untranslated = f.get(["langtags"], cellTranslationAnnotation);
-    if (!this.needsTranslation()) {
-      return null;
-    }
-    const remaining = f.remove(f.eq(langtag), untranslated);
-    const deleteAnnotationFn = cellTranslationAnnotation
-      ? () =>
-          deleteCellAnnotation(
-            merge(cellTranslationAnnotation, {
-              type: "flag",
-              value: "translationNeeded"
-            }),
-            cell,
-            true
-          )
-      : f.noop;
-    return this.mkEntry(4, {
-      title: this.isPrimaryLanguage()
-        ? "table:translations.translation_needed"
-        : "table:translations.this_translation_needed",
-      value: langtag,
-      fn:
-        this.isPrimaryLanguage() || f.isEmpty(remaining)
-          ? deleteAnnotationFn
-          : () => removeTranslationNeeded(langtag, cell),
-      classes: "dot translation active"
-    });
   };
 
   componentDidUpdate() {
@@ -283,32 +183,34 @@ class ItemPopupMenu extends Component {
                   },
                   icon: "times"
                 })}
-            {this.mkToggleFlagItem("important")}
-            {this.mkToggleFlagItem("check-me")}
-            {this.mkToggleFlagItem("postpone")}
+            {
+              <a className="entry annotation-context-menu-button">
+                <SvgIcon icon="highlight" />
+                <div>{i18n.t("table:show-annotations")}</div>
+                <i className="fa fa-chevron-right" />
+                <AnnotationContextMenu
+                  classNames="light"
+                  cell={cell}
+                  langtag={this.props.langtag}
+                  closeAction={this.closePopup}
+                />
+              </a>
+            }
             {cell.column.multilanguage &&
-            canConvert(cell.kind, ColumnKinds.text) ? (
-              <div>
-                <div className="separator">
-                  {i18n.t("table:menus.translation")}
-                </div>
-                {this.mkAddTranslationEntry()}
-                {this.mkRemoveTranslationEntry()}
-                {this.mkEntry(5, {
-                  title: "table:show_translation",
-                  fn: () => {
-                    this.props.setTranslationView({
-                      show: true,
-                      cell
-                    });
-                    this.props.funcs.setTranslationItem(
-                      this.props.funcs.viewElement
-                    );
-                  },
-                  icon: "flag"
-                })}
-              </div>
-            ) : null}
+              canConvert(cell.kind, ColumnKinds.text) &&
+              this.mkEntry(5, {
+                title: "table:show_translation",
+                fn: () => {
+                  this.props.setTranslationView({
+                    show: true,
+                    cell
+                  });
+                  this.props.funcs.setTranslationItem(
+                    this.props.funcs.viewElement
+                  );
+                },
+                icon: "flag"
+              })}
           </MenuPopup>
         ) : null}
       </div>

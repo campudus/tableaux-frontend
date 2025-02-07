@@ -6,10 +6,10 @@ import { useSelector } from "react-redux";
 import TableauxConstants, {
   SortValue
 } from "../../../constants/TableauxConstants";
-import { buildClassName } from "../../../helpers/buildClassName";
 import * as Storage from "../../../helpers/localStorage";
 import { getColumnDisplayName } from "../../../helpers/multiLanguage";
 import RowFilters from "../../../RowFilters";
+import AnnotationBadge from "../../annotation/AnnotationBadge";
 import Select from "../../GrudSelect";
 import FilterPopupFooter from "./FilterPopupFooter";
 import FilterRow from "./FilterRow";
@@ -18,11 +18,13 @@ import FilterSavingPopup, {
 } from "./FilterSavingPopup";
 import {
   fromCombinedFilter,
-  getAnnotationColor,
-  getAnnotationTitle,
   mkAnnotationFilterTemplates,
   toCombinedFilter
 } from "./helpers";
+import {
+  getAnnotationColor,
+  getAnnotationTitle
+} from "../../../helpers/annotationHelper";
 
 const of = el => (Array.isArray(el) ? el : [el]);
 
@@ -284,7 +286,7 @@ const AnnotationFilterArea = ({ onToggle, filters, options, langtag }) => {
               onClick={onToggle(kind)}
             >
               <div className="annotation-filter__label">
-                {getAnnotationTitle(kind)}
+                {getAnnotationTitle(kind, langtag)}
               </div>
               <div className="annotation-filter__checkbox">
                 <input
@@ -318,19 +320,6 @@ const AnnotationFilterArea = ({ onToggle, filters, options, langtag }) => {
     </div>
   );
 };
-const AnnotationBadge = ({ title, onClick, active, color }) => {
-  const cssClass = buildClassName("annotation-badge", { active });
-  const style = active
-    ? { color: "white", borderColor: color, background: color }
-    : { color, borderColor: color, background: "white" };
-
-  return (
-    <button onClick={onClick} className={cssClass} style={style}>
-      {title}
-    </button>
-  );
-};
-
 const ColumnFilterArea = ({ columns, filters, langtag, onChange }) => {
   const addFilterRow = () => onChange([...filters, {}]);
   const removeFilterRow = idxToRemove => () =>

@@ -30,21 +30,19 @@
 
   .widgets {
     width: 100%;
-    display: flex;
-    flex-flow: row wrap;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-template-rows: auto;
     padding-bottom: 25px;
 
+    .greeter, .needs_translation {
+      grid-column: span 2;
+    }
+
     .tile {
-      flex: 1;
       padding: 35px;
-      min-width: 15vw;
       height: 200px;
       position: relative;
-
-      &.wide {
-        flex: 2;
-        min-width: 30vw;
-      }
     }
   }
 

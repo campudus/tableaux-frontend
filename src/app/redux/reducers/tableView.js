@@ -40,7 +40,8 @@ const {
   ROW_CREATE_SUCCESS,
   SET_FILTERS_AND_SORTING,
   CLEAN_UP,
-  SET_COLUMN_ORDERING
+  SET_COLUMN_ORDERING,
+  SET_ANNOTATION_HIGHLIGHT
 } = ActionTypes;
 
 const initialState = {
@@ -58,6 +59,7 @@ const initialState = {
   filters: [],
   sorting: [],
   showArchived: ShowArchived.hide,
+  annotationHighlight: "",
   history: {
     undoQueue: [],
     redoQueue: []
@@ -367,6 +369,11 @@ export default (state = initialState, action, completeState) => {
         )(rows)
       };
     }
+    case SET_ANNOTATION_HIGHLIGHT:
+      return {
+        ...state,
+        annotationHighlight: action.annotationHighlight
+      };
     case SET_FILTERS_AND_SORTING:
       return {
         ...state,
@@ -397,3 +404,5 @@ export default (state = initialState, action, completeState) => {
 };
 
 export const selectShowArchivedState = store => store.tableView?.showArchived;
+export const selectAnnotationHighlight = store =>
+  store.tableView?.annotationHighlight;

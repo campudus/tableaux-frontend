@@ -1,17 +1,26 @@
 import classNames from "classnames";
-import i18n from "i18next";
 import * as f from "lodash/fp";
 import { match, otherwise, when as on } from "match-iz";
 import PropTypes from "prop-types";
 import React, { PureComponent } from "react";
-import { ColumnKinds, Langtags } from "../../constants/TableauxConstants";
+import {
+  ColumnKinds,
+  AnnotationConfigs
+} from "../../constants/TableauxConstants";
 import * as Access from "../../helpers/accessManagementHelper";
-import * as Annotations from "../../helpers/annotationHelper";
+import {
+  getAnnotationByName,
+  getAnnotationColor,
+  getAnnotationTitle,
+  isLocked,
+  isTranslationNeeded
+} from "../../helpers/annotationHelper";
 import { unless } from "../../helpers/functools";
 import {
   getCountryOfLangtag,
   retrieveTranslation
 } from "../../helpers/multiLanguage";
+import AnnotationBadge from "../annotation/AnnotationBadge";
 import Spinner from "../header/Spinner";
 import { connectOverlayToCellValue } from "../helperComponents/connectOverlayToCellHOC";
 import AttachmentView from "./attachment/AttachmentView";
@@ -64,8 +73,7 @@ class View extends PureComponent {
     return theoretically
       ? canEditUnlocked
       : canEditUnlocked &&
-          (!Annotations.isLocked(cell.row) ||
-            Annotations.isTranslationNeeded(langtag)(cell));
+          (!isLocked(cell.row) || isTranslationNeeded(langtag)(cell));
   };
 
   clickHandler = () => {
@@ -119,12 +127,6 @@ class View extends PureComponent {
       otherwise(!this.canEditValue() || isLocked)
     );
 
-    const isMyTranslationNeeded =
-      langtag !== f.first(Langtags) &&
-      Annotations.isTranslationNeeded(langtag)(cell);
-    const isAnyTranslationNeeded =
-      langtag === f.first(Langtags) &&
-      !f.isEmpty(f.get(["annotations", "translationNeeded", "langtags"], cell));
     const CellKind = views[kind];
     const viewClass = classNames(
       `view item ${this.getViewKind()} ${this.getViewId()}`,
@@ -138,35 +140,24 @@ class View extends PureComponent {
       column.description
     );
 
-    const translationTag =
-      isMyTranslationNeeded || isAnyTranslationNeeded ? (
-        <button
-          className="action-item translation"
-          onClick={evt => {
-            evt.stopPropagation();
-            setTranslationView({
-              cell,
-              show: true
-            });
-          }}
-        >
-          {isMyTranslationNeeded
-            ? i18n.t("table:translations.this_translation_needed", {
-                langtag
-              })
-            : i18n.t("table:translations.translation_needed")}
-        </button>
-      ) : null;
+    const annotationItems = f.flow(
+      f.filter(({ kind }) => kind === "flag"),
+      f.sortBy("priority"),
+      f.flatMap(config => {
+        const isTranslationAnnotation = config.name === "needs_translation";
+        const annotation = getAnnotationByName(config.name, cell);
+        const color = getAnnotationColor(config.name);
+        const title = getAnnotationTitle(config.name, langtag, cell);
+        const action = isTranslationAnnotation
+          ? evt => {
+              evt.stopPropagation();
+              setTranslationView({ cell, show: true });
+            }
+          : null;
 
-    const tagList = ["important", "check-me", "postpone"]
-      .map(tagName =>
-        cell.annotations && cell.annotations[tagName] ? (
-          <span key={tagName} className={`action-item ${tagName}`}>
-            {i18n.t(`table:${tagName}`)}
-          </span>
-        ) : null
-      )
-      .filter(f.identity);
+        return annotation ? [{ title, color, action }] : [];
+      })
+    )(AnnotationConfigs);
 
     const itemKey = `${cell.table.id}-${cell.column.id}-${cell.row.id}`;
 
@@ -219,8 +210,15 @@ class View extends PureComponent {
           }
         >
           <div className="action-tags">
-            {translationTag}
-            {tagList}
+            {annotationItems.map(({ title, color, action }) => (
+              <AnnotationBadge
+                key={title}
+                onClick={action}
+                active={true}
+                color={color}
+                title={title}
+              />
+            ))}
           </div>
         </CellKind>
       </div>

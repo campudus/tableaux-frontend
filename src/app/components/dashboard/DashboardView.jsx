@@ -1,6 +1,7 @@
 import { withRouter, Redirect } from "react-router-dom";
 import React from "react";
 import i18n from "i18next";
+import f from "lodash/fp";
 
 import PropTypes from "prop-types";
 
@@ -11,45 +12,37 @@ import GrudHeader from "../GrudHeader";
 import SupportWidget from "./support/SupportWidget";
 import TranslationStatusWidget from "./translationstatus/TranslationStatusWidget";
 import withDashboardStatusData from "./RequestStatusData";
+import { AnnotationConfigs } from "../../constants/TableauxConstants";
 
 const WidgetColletion = withDashboardStatusData(
-  ({ langtag, requestedData }) => (
-    <div className="widgets-wrapper">
-      <div className="widgets">
-        <GreeterWidget langtag={langtag} />
-        <FlagWidget
+  ({ langtag, requestedData, flagConfigs }) => {
+    return (
+      <div className="widgets-wrapper">
+        <div className="widgets">
+          <GreeterWidget langtag={langtag} />
+          <FlagWidget
+            langtag={langtag}
+            flag="comments"
+            requestedData={requestedData}
+          />
+          {flagConfigs.map(config => (
+            <FlagWidget
+              key={config.name}
+              langtag={langtag}
+              flag={config.name}
+              config={config}
+              requestedData={requestedData}
+            />
+          ))}
+        </div>
+        <TranslationStatusWidget
           langtag={langtag}
-          flag="comments"
           requestedData={requestedData}
         />
-        <FlagWidget
-          langtag={langtag}
-          flag="important"
-          requestedData={requestedData}
-        />
-        <FlagWidget
-          langtag={langtag}
-          flag="needs-translation"
-          requestedData={requestedData}
-        />
-        <FlagWidget
-          langtag={langtag}
-          flag="check-me"
-          requestedData={requestedData}
-        />
-        <FlagWidget
-          langtag={langtag}
-          flag="postpone"
-          requestedData={requestedData}
-        />
+        <Redirect to={`/${langtag}/dashboard`} />
       </div>
-      <TranslationStatusWidget
-        langtag={langtag}
-        requestedData={requestedData}
-      />
-      <Redirect to={`/${langtag}/dashboard`} />
-    </div>
-  )
+    );
+  }
 );
 
 const DashboardView = props => {
@@ -57,6 +50,10 @@ const DashboardView = props => {
   const handleLanguageSwitch = React.useCallback(newLangtag =>
     switchLanguageHandler(history, newLangtag)
   );
+  const flagConfigs = f.flow(
+    f.filter(config => config.kind === "flag" && config.isDashboard),
+    f.sortBy("priority")
+  )(AnnotationConfigs);
 
   return (
     <React.Fragment>
@@ -66,7 +63,7 @@ const DashboardView = props => {
         handleLanguageSwitch={handleLanguageSwitch}
       />
       <div id="dashboard-view" className={"wrapper"}>
-        <WidgetColletion langtag={langtag} />
+        <WidgetColletion langtag={langtag} flagConfigs={flagConfigs} />
 
         <SupportWidget langtag={langtag} />
         <footer>

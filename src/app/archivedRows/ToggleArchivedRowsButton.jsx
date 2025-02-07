@@ -2,6 +2,7 @@ import { t } from "i18next";
 import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import SvgIcon from "../components/helperComponents/SvgIcon";
+import { buildClassName } from "../helpers/buildClassName";
 import { outsideClickEffect } from "../helpers/useOutsideClick";
 import actionCreators from "../redux/actionCreators";
 import Action from "../redux/actionCreators";
@@ -59,8 +60,6 @@ const ToggleArchivedRowsButton = ({ table, langtag }) => {
     setShowPopup(false);
   };
 
-  const className = `archive-mode-toggle ${showPopup ? "active" : ""}`;
-
   const containerRef = useRef();
   useEffect(
     outsideClickEffect({
@@ -73,7 +72,9 @@ const ToggleArchivedRowsButton = ({ table, langtag }) => {
 
   return (
     <div className="archive-mode-toggle__wrapper">
-      <div className={className}>
+      <div
+        className={buildClassName("archive-mode-toggle", { open: showPopup })}
+      >
         <button
           className="small-button archive-mode-toggle__popup-button"
           onClick={togglePopup}
