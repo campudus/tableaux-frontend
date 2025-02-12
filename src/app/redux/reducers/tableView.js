@@ -164,25 +164,35 @@ const toggleExpandedRow = (state, action) => {
   );
 };
 
-const setInitialVisibleColumns = (action, completeState) => state =>
-  f.get(["globalSettings", "columnsReset"], completeState) ||
-  f.isEmpty(f.get("visibleColumns", state))
-    ? f.flow(
-        f.prop(["result", "columns"]),
-        f.map("id"),
-        ids => f.assoc("visibleColumns")(ids)(state)
-      )(action)
-    : state;
+const setInitialVisibleColumns = (action, completeState) => state => {
+  const isCurrentTable = state.currentTable === action.tableId;
+  const isReset = f.get(["globalSettings", "columnsReset"], completeState);
+  const isVisibleColumnsEmpty = f.isEmpty(f.get("visibleColumns", state));
 
-const setInitialColumnOrdering = (action, completeState) => state =>
-  f.get(["globalSettings", "columnsReset"], completeState) ||
-  f.isEmpty(f.get("columnOrdering", state))
-    ? f.flow(
-        f.prop(["result", "columns"]),
-        mapIndexed(({ id }, idx) => ({ id, idx })),
-        ids => f.assoc("columnOrdering", ids, state)
-      )(action)
-    : state;
+  if ((isReset || isVisibleColumnsEmpty) && isCurrentTable) {
+    const columns = f.get(["result", "columns"], action);
+    const visibleColumns = f.map("id", columns);
+
+    return { ...state, visibleColumns };
+  }
+
+  return state;
+};
+
+const setInitialColumnOrdering = (action, completeState) => state => {
+  const isCurrentTable = state.currentTable === action.tableId;
+  const isReset = f.get(["globalSettings", "columnsReset"], completeState);
+  const isColumnOrderingEmpty = f.isEmpty(f.get("columnOrdering", state));
+
+  if ((isReset || isColumnOrderingEmpty) && isCurrentTable) {
+    const columns = f.get(["result", "columns"], action);
+    const columnOrdering = mapIndexed(({ id }, idx) => ({ id, idx }))(columns);
+
+    return { ...state, columnOrdering };
+  }
+
+  return state;
+};
 
 const displayValueSelector = ({ tableId, dvRowIdx, columnIdx }) => [
   "displayValues",
