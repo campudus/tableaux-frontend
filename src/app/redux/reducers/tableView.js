@@ -401,7 +401,8 @@ export default (state = initialState, action, completeState) => {
         displayValues: {},
         history: [],
         expandedRowIds: [],
-        visibleColumns: []
+        visibleColumns: [],
+        annotationHighlight: ""
       };
     case RERENDER_TABLE:
       return {

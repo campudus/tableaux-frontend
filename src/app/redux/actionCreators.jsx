@@ -17,7 +17,8 @@ import {
   saveColumnVisibility,
   saveColumnWidths,
   saveFilterSettings,
-  storeGlobalSettings
+  storeGlobalSettings,
+  saveAnnotationHighlight
 } from "../helpers/localStorage";
 import { checkOrThrow } from "../specs/type";
 import {
@@ -337,7 +338,12 @@ const loadTableView = (tableId, customFilters) => (dispatch, getState) => {
     sortingDesc
   } = globalSettings;
   const storedView = getStoredViewObject(tableId);
-  const { visibleColumns, rowsFilter, columnOrdering } = storedView;
+  const {
+    visibleColumns,
+    rowsFilter,
+    columnOrdering,
+    annotationHighlight
+  } = storedView;
   const storedFilters = f.get(["filters"], rowsFilter) ?? [];
   const storedSortColumnName = f.get(["sortColumnName"], rowsFilter);
   const storedSortDirection = f.get(["sortDirection"], rowsFilter);
@@ -382,6 +388,10 @@ const loadTableView = (tableId, customFilters) => (dispatch, getState) => {
 
   if (!f.isEmpty(visibleColumns)) {
     dispatch(setColumnsVisible(visibleColumns));
+  }
+
+  if (!f.isEmpty(annotationHighlight)) {
+    dispatch(setAnnotationHighlight(annotationHighlight));
   }
 
   if (columnsReset) {
@@ -618,8 +628,13 @@ const setShowArchivedRows = (
   dispatch({ type: SET_FILTERS_AND_SORTING, showArchived: shouldShow });
 };
 
-const setAnnotationHighlight = (annotationHighlight = "") => dispatch => {
+const setAnnotationHighlight = (annotationHighlight = "") => (
+  dispatch,
+  getState
+) => {
   dispatch({ type: SET_ANNOTATION_HIGHLIGHT, annotationHighlight });
+  const tableId = f.get(["tableView", "currentTable"], getState());
+  saveAnnotationHighlight(tableId, annotationHighlight);
 };
 
 const deleteRow = action => {

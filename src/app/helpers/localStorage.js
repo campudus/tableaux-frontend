@@ -59,6 +59,16 @@ const saveColumnWidths = (tableId, widths = {}, name = "default") => {
   );
 };
 
+const saveAnnotationHighlight = (tableId, highlight = "", name = "default") => {
+  if (!localStorage) {
+    return;
+  }
+  const savedViews = getStoredViewObject(null, name);
+  localStorage["tableViews"] = JSON.stringify(
+    f.set([tableId, name, "annotationHighlight"], highlight, savedViews)
+  );
+};
+
 const readGlobalSettings = () => {
   return either(localStorage)
     .map(f.get("globalSettings"))
@@ -83,6 +93,7 @@ export {
   saveColumnVisibility,
   saveColumnOrdering,
   saveColumnWidths,
+  saveAnnotationHighlight,
   readGlobalSettings,
   storeGlobalSettings
 };
