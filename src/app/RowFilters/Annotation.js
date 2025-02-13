@@ -48,6 +48,6 @@ export default {
         visibleColumns.add(columns[idx]?.id);
         return true;
       } else return found;
-    });
+    }, false);
   }
 };
