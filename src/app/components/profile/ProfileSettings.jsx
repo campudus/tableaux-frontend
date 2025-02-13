@@ -12,7 +12,8 @@ const {
   FILTER_RESET,
   COLUMNS_RESET,
   SORTING_RESET,
-  SORTING_DESC
+  SORTING_DESC,
+  ANNOTATION_RESET
 } = GLOBAL_SETTING;
 
 const { setGlobalSettings } = action;
@@ -36,6 +37,9 @@ export default function ProfileSettings({ langtag }) {
   };
   const onChangeSortingDesc = event => {
     dispatch(setGlobalSettings({ [SORTING_DESC]: event.target.checked }));
+  };
+  const onChangeAnnotationReset = event => {
+    dispatch(setGlobalSettings({ [ANNOTATION_RESET]: event.target.checked }));
   };
 
   return (
@@ -100,6 +104,22 @@ export default function ProfileSettings({ langtag }) {
             className="profile-tab__toggle"
             checked={settings[COLUMNS_RESET]}
             onChange={onChangeColumnsReset}
+          />
+        </div>
+
+        <hr className="profile-tab__divider" />
+
+        <div className="profile-tab__section">
+          <div className="profile-tab__label">
+            {t("profile:global-settings.annotation-reset-label")}
+          </div>
+          <div className="profile-tab__description">
+            {t("profile:global-settings.annotation-reset-description")}
+          </div>
+          <Toggle
+            className="profile-tab__toggle"
+            checked={settings[ANNOTATION_RESET]}
+            onChange={onChangeAnnotationReset}
           />
         </div>
 

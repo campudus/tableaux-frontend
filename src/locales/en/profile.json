@@ -20,6 +20,8 @@
     "columns": "Column view",
     "columns-reset-label": "Automatically reset column view",
     "columns-reset-description": "If this setting is activated, all individual column settings will be reset after a table change.",
+    "annotation-reset-label": "Automatically reset annotation highlight",
+    "annotation-reset-description": "If this setting is activated, annotation highlighting will be reset after a table change.",
     "sorting": "Sorting",
     "sorting-reset-label": "Automatically reset sorting",
     "sorting-reset-description": "If this setting is activated, all sorting settings are automatically reset when the table changes.",

@@ -335,7 +335,8 @@ const loadTableView = (tableId, customFilters) => (dispatch, getState) => {
     filterReset,
     columnsReset,
     sortingReset,
-    sortingDesc
+    sortingDesc,
+    annotationReset
   } = globalSettings;
   const storedView = getStoredViewObject(tableId);
   const {
@@ -390,8 +391,10 @@ const loadTableView = (tableId, customFilters) => (dispatch, getState) => {
     dispatch(setColumnsVisible(visibleColumns));
   }
 
-  if (!f.isEmpty(annotationHighlight)) {
-    dispatch(setAnnotationHighlight(annotationHighlight));
+  if (!f.isEmpty(annotationHighlight) || annotationReset) {
+    const updateValue = annotationReset ? "" : annotationHighlight;
+
+    dispatch(setAnnotationHighlight(updateValue));
   }
 
   if (columnsReset) {
