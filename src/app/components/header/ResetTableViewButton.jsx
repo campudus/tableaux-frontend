@@ -21,6 +21,7 @@ export default function ResetTableViewButton({
     store.dispatch(actions.setFiltersAndSorting([], [], true));
     store.dispatch(actions.setColumnsVisible(columnIds));
     store.dispatch(actions.setColumnOrdering(columnOrdering));
+    store.dispatch(actions.setAnnotationHighlight(""));
     saveColumnWidths(tableId, {});
     store.dispatch(actions.rerenderTable());
   };
