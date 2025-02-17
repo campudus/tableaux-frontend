@@ -139,6 +139,7 @@ const handleShowDeletionError = err => {
 const handleDeleteRow = ({
   tableId,
   deletionAction,
+  langtag,
   oldRowTitle,
   linkTargetTitle
 }) =>
@@ -174,6 +175,7 @@ const handleDeleteRow = ({
     store.dispatch(
       actions.toggleCellSelection({
         columnId,
+        langtag,
         tableId,
         selected: false
       })
