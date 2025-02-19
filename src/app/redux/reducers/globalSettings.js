@@ -6,14 +6,16 @@ export const GLOBAL_SETTING = {
   FILTER_RESET: "filterReset",
   COLUMNS_RESET: "columnsReset",
   SORTING_RESET: "sortingReset",
-  SORTING_DESC: "sortingDesc"
+  SORTING_DESC: "sortingDesc",
+  ANNOTATION_RESET: "annotationReset"
 };
 
 export const GLOBAL_SETTINGS_DEFAULT = {
   [GLOBAL_SETTING.FILTER_RESET]: false,
   [GLOBAL_SETTING.COLUMNS_RESET]: false,
   [GLOBAL_SETTING.SORTING_RESET]: false,
-  [GLOBAL_SETTING.SORTING_DESC]: false
+  [GLOBAL_SETTING.SORTING_DESC]: false,
+  [GLOBAL_SETTING.ANNOTATION_RESET]: false
 };
 
 export default (state = GLOBAL_SETTINGS_DEFAULT, action) => {

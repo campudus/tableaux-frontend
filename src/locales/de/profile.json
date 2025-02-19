@@ -20,6 +20,8 @@
     "columns": "Spaltenansicht",
     "columns-reset-label": "Spaltenansicht automatisch zurücksetzen",
     "columns-reset-description": "Ist diese Einstellung aktiviert, werden nach einem Tabellenwechsel alle individuellen Spalteneinstellungen zurückgesetzt.",
+    "annotation-reset-label": "Zellenhervorhebung automatisch zurücksetzen",
+    "annotation-reset-description": "Ist diese Einstellung aktiviert, wird nach einem Tabellenwechsel die Zellenhervorhebung zurückgesetzt.",
     "sorting": "Sortierung",
     "sorting-reset-label": "Sortierung automatisch zurücksetzen",
     "sorting-reset-description": "Ist diese Einstellung aktiviert, werden sämtliche Sortierungseinstellungen bei Tabellenwechsel automatisch zurückgesetzt.",

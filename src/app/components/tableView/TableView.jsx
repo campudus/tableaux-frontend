@@ -174,7 +174,13 @@ class TableView extends PureComponent {
 
   hasResettableChange() {
     const { tableView, columns = [], table } = this.props;
-    const { columnOrdering, filters, sorting, visibleColumns } = tableView;
+    const {
+      columnOrdering,
+      filters,
+      sorting,
+      visibleColumns,
+      annotationHighlight
+    } = tableView;
     const { columnWidths } = getStoredViewObject(table.id);
 
     const initialVisibleColumns = f.map("id", columns);
@@ -187,7 +193,8 @@ class TableView extends PureComponent {
       initialVisibleColumns.length !== visibleColumns.length ||
       !f.isEmpty(filters) ||
       !f.isEmpty(sorting) ||
-      !f.isEmpty(columnWidths)
+      !f.isEmpty(columnWidths) ||
+      !f.isEmpty(annotationHighlight)
     );
   }
 
