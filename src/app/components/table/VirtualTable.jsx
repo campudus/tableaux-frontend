@@ -503,6 +503,10 @@ export default class VirtualTable extends PureComponent {
   }
 
   componentDidUpdate(prev) {
+    const keys = new Set([...Object.keys(prev), Object.keys(this.props)]);
+    const changed = Array.from(keys).filter(
+      key => !f.equals(prev[key], this.props[key])
+    );
     // jump one row down if a new one was created from keyboardnavigation
     if (this.state.newRowAdded && f.size(prev.rows) < f.size(this.props.rows)) {
       tableNavigationWorker.setNextSelectedCell.call(this, Directions.DOWN);
@@ -512,7 +516,7 @@ export default class VirtualTable extends PureComponent {
         newRowAdded: false
       });
     }
-    this.focusTable();
+    if (!f.isEmpty(changed)) this.focusTable();
   }
 
   divRef = null;

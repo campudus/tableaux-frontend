@@ -138,20 +138,14 @@ const handleShowDeletionError = err => {
 
 const handleDeleteRow = ({
   tableId,
-  langtag,
   deletionAction,
+  langtag,
   oldRowTitle,
   linkTargetTitle
 }) =>
   new Promise((resolve, reject) => {
     const rowId = deletionAction.rowToDeleteId;
     const mergeWithRowId = deletionAction.mergedLinkTargetId;
-    const rows = store.getState() |> f.get(["rows", tableId, "data"]);
-    const rowIdx = f.findIndex(f.propEq("id", rowId))(rows);
-    const neighborRowId =
-      mergeWithRowId ||
-      (rows |> f.nth(rowIdx > 0 ? rowIdx - 1 : rowIdx + 1) |> f.prop("id"));
-
     const {
       selectedCell: {
         selectedCell: { columnId }
@@ -180,10 +174,10 @@ const handleDeleteRow = ({
 
     store.dispatch(
       actions.toggleCellSelection({
-        rowId: neighborRowId,
-        tableId,
         columnId,
-        langtag
+        langtag,
+        tableId,
+        selected: false
       })
     );
   });
