@@ -37,10 +37,10 @@ export const getLogin = f.memoize(
         const keycloak = new Keycloak(keycloakSettings);
         keycloak
           .init(keycloakInitOptions)
-          .success(status => {
+          .then(status => {
             store.dispatch(actions.setUserAuthenticated({ status }));
           })
-          .error(err => {
+          .catch(err => {
             console.error("Error authenticating user:", err);
             store.dispatch(actions.setUserAuthenticated({ status: false }));
           });
