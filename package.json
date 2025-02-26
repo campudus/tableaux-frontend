@@ -6,7 +6,7 @@
   "main": "index.js",
   "scripts": {
     "start": "export NODE_ENV=production; export BUILD_ID=${BUILD_ID:-$(./getCommitHash.sh)}; node out/grud-frontend-server.js",
-    "build": "export NODE_ENV=production; export BUILD_ID=${BUILD_ID:-$(./getCommitHash.sh)}; parcel build src/index.html src/worker.js --out-dir out",
+    "build": "export NODE_ENV=production; export BUILD_ID=${BUILD_ID:-$(./getCommitHash.sh)}; parcel build src/index.html src/worker.js --out-dir out --no-minify",
     "dev": "export NODE_ENV=development; export BUILD_ID=${BUILD_ID:-$(./getCommitHash.sh)}; node dev-server.js",
     "lint": "eslint -f stylish --ignore-pattern src/scss/FontAwesome \"src/**/*.{js,jsx}\"",
     "lint:changes": "git diff master --name-only | grep -E \"src\\/.*\\.jsx?$\" | xargs -I{} sh -c \"test -f '{}' && echo '{}'\" | xargs eslint",
