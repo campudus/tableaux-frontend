@@ -34,7 +34,7 @@ export const getLogin = f.memoize(
           "confidential-port": 0
         };
 
-        const keycloak = Keycloak(keycloakSettings);
+        const keycloak = new Keycloak(keycloakSettings);
         keycloak
           .init(keycloakInitOptions)
           .success(status => {
