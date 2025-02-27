@@ -1,8 +1,10 @@
-const f = require("lodash/fp");
-const initLangtags = require("./app/constants/TableauxConstants").initLangtags;
-const getDisplayValue = require("./app/helpers/getDisplayValue").default;
-const identifyUniqueLinkedRows = require("./app/helpers/linkHelper").default;
+import f from "lodash/fp";
+import { initLangtags } from "../../constants/TableauxConstants";
+import getDisplayValue from "../../helpers/getDisplayValue";
+import identifyUniqueLinkedRows from "../../helpers/linkHelper";
+
 const mapWithIndex = f.map.convert({ cap: false });
+
 onmessage = function(e) {
   const rows = e.data[0];
   const columns = e.data[1];

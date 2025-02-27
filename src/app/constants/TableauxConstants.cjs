@@ -1,4 +1,4 @@
-import keyMirror from "keymirror";
+const keyMirror = require("keymirror");
 
 /*
  * Order is important.

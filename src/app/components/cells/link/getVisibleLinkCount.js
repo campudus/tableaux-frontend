@@ -10,7 +10,7 @@ const linkLabelStyle = {
 
 const { max } = Math;
 
-const measureLinkWidth = (displayValue: string) => {
+const measureLinkWidth = (displayValue) => {
   const label = document.createElement("div");
   Object.keys(linkLabelStyle).forEach(
     attr => (label.style[attr] = linkLabelStyle[attr])
@@ -25,10 +25,10 @@ const measureLinkWidth = (displayValue: string) => {
 };
 
 export const getVisibleLinkCount = (
-  values: string[],
-  availableWidth: number,
+  values,
+  availableWidth,
   n = 0
-): number => {
+) => {
   if (n >= values.length) return max(n, 1);
   const nextVal = values[n];
   const vWidth = measureLinkWidth(nextVal);

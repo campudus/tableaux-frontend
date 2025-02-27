@@ -6,13 +6,17 @@ RUN apk update && apk upgrade && \
 WORKDIR /usr/app
 
 COPY .npmrc ./
+COPY vite.config.js ./
 COPY package* ./
 COPY setupTests.js ./
+COPY patches patches
 
 RUN npm ci -d
 
 COPY [".babelrc", ".eslint*", ".prettierrc", "./"]
 COPY src src
+COPY public public
+COPY server server
 
 ARG BUILD_ID=unknown
 ENV BUILD_ID=${BUILD_ID}
@@ -34,6 +38,7 @@ RUN addgroup -g 1234 campudus && \
 COPY --from=build /usr/app/node_modules /usr/app/node_modules
 COPY --from=build /usr/app/package.json /usr/app/package.json
 COPY --from=build /usr/app/out /usr/app/out
+COPY --from=build /usr/app/server /usr/app/server
 
 USER campudus
 

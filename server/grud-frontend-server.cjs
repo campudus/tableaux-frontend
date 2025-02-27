@@ -1,7 +1,7 @@
 const serveStatic = require("serve-static");
 const finalhandler = require("finalhandler");
 const path = require("path");
-const ServerConfigTool = require("./ServerConfigTool");
+const ServerConfigTool = require("./ServerConfigTool.cjs");
 
 /**
  * Usage `node grud-frontend-server.js [--config=<path-to-config-file.json>]`
@@ -11,7 +11,7 @@ const ServerConfigTool = require("./ServerConfigTool");
 // Apply settings --------------------------------------------------------------
 
 const config = ServerConfigTool.enrichConfig({
-  outDir: __dirname // path to serve static files from
+  outDir: path.join(__dirname, "..", "out") // path to serve static files from
 });
 
 const proxyDestinations = [
@@ -36,7 +36,7 @@ const proxyHandler = ServerConfigTool.configProxy(
 
 // serve index.html of webapp
 const appHandler = (req, res) => {
-  return res.sendFile(path.normalize(config.outDir + "/index.html"));
+  return res.sendFile("/index.html", { root: config.outDir });
 };
 
 // The resource handler will intercept all requests to files.

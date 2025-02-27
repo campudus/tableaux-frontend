@@ -1,7 +1,6 @@
 import f from "lodash/fp";
 import { match, otherwise, when, includedIn } from "match-iz";
 import i18n from "i18next";
-import { extractAnnotations, refreshAnnotations } from "./annotationHelper";
 import { AnnotationConfigs, Langtags } from "../constants/TableauxConstants";
 import {
   isFlagAnnotation,
@@ -204,8 +203,6 @@ export {
   addTranslationNeeded,
   removeTranslationNeeded,
   getAnnotation,
-  extractAnnotations,
-  refreshAnnotations,
   setRowArchived,
   setRowAnnotation,
   setCellAnnotation,

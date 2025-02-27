@@ -45,7 +45,7 @@ const configDefaults = {
 const enrichConfig = config => {
   try {
     const configPrefix = "--config=";
-    const projectBaseDir = __dirname.replace(/\/src\/static$|\/out$/, "");
+    const projectBaseDir = __dirname.replace(/\/server$|\/out$/, "");
     const configFile =
       process.argv
         .filter(arg => arg.startsWith(configPrefix))
@@ -128,12 +128,12 @@ const configProxy = (
   });
 
   return (req, res, next) => {
-    if (req.url.includes("/api") && !config.disableAuth) {
+    if (req.url.includes("/api/") && !config.disableAuth) {
       upgradeAuthHeaders(req);
     }
 
     const requestHandler = routes.reduce((_handler, { prefix, handler }) => {
-      return _handler || (req.url.includes(prefix) ? handler : null);
+      return _handler || (req.url.includes(prefix + "/") ? handler : null);
     }, null);
 
     const proxyHandler = requestHandler || defaultHandler;
@@ -153,7 +153,8 @@ const startServer = (config, handlers) => {
   app.get("/config.json", (req, res) => res.json(config));
   handlers.forEach(handler => app.use(handler));
   app.listen(config.port, config.host, () => {
-    console.log(`GRUD server listening at ${config.host}:${config.port}`);
+    const url = `http://${config.host}:${config.port}`;
+    console.log(`GRUD server listening at ${url}`);
   });
 };
 
