@@ -77,17 +77,12 @@ const handleCreateRow = ({ table, langtag, onCreateRow }) => async () => {
   openEntityView({ langtag, row: newRow, table });
 };
 
-type RowCreatorProps = {
-  tableName: string,
-  noRowsAvailable: boolean,
-  onClick: () => void
-};
 const RowCreator = ({
   noRowsAvailable,
   table,
   onClick,
   langtag
-}: RowCreatorProps) => {
+}) => {
   const cssClass = buildClassName("row-creator", {
     "no-rows-available": noRowsAvailable
   });
