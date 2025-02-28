@@ -108,8 +108,6 @@ const SearchBar = ({
     .map(x => i18n.t(x))
     .getOrElse("unknown search value: " + filterMode);
 
-  const FilterPopup = listensToClickOutside(SearchModePopup);
-
   return (
     <div className="filter-bar">
       <input
@@ -126,7 +124,7 @@ const SearchBar = ({
         <i className="fa fa-search" />
         <i className="fa fa-angle-down" />
       </button>
-      <FilterPopup
+      <SearchModePopup
         closePopup={closePopup}
         popupOpen={popupOpen}
         handleClickOutside={closePopup}
