@@ -32,9 +32,7 @@ export default defineConfig({
     "import.meta.env.BUILD_ID": JSON.stringify(process.env.BUILD_ID),
     "import.meta.env.REDUX_DEVTOOLS": JSON.stringify(process.env.REDUX_DEVTOOLS)
   },
-  server: {
-    host: true
-  },
+  clearScreen: false,
   build: {
     // minify: false,
     outDir: "out",
