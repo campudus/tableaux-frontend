@@ -108,19 +108,17 @@ app.use((req, res, next) => {
 });
 
 if (dev) {
-  const devServer = await createDevServer({ root: baseDir });
-
-  await devServer.listen();
+  const devServer = await createDevServer({
+    root: baseDir,
+    server: {
+      middlewareMode: true
+    }
+  });
 
   console.log("NODE_ENV:", process.env.NODE_ENV);
   console.log("BUILD_ID:", process.env.BUILD_ID);
 
-  app.use((req, res) => {
-    proxy.web(req, res, {
-      target: "http://127.0.0.1:5173", // vite dev server
-      ws: true
-    });
-  });
+  app.use(devServer.middlewares);
 } else {
   app.use((req, res, next) => {
     const resourceRegex = /\/[^/]+\.[^/]+$/;
