@@ -89,7 +89,7 @@ const superagentRequest = ({ method, targetUrl, file, onProgress }) =>
   });
 
 const logDevRoute = fetchFn => {
-  if (process.env.NODE_ENV !== "production") {
+  if (import.meta.env.NODE_ENV !== "production") {
     return fetchParams => {
       console.log(
         `(${fetchFn.name}) ${fetchParams.method.toUpperCase()} ${

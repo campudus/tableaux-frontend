@@ -8,6 +8,7 @@ import serveStatic from "serve-static";
 import finalhandler from "finalhandler";
 import httpProxy from "http-proxy";
 import uuid from "uuid";
+import { createServer as createDevServer } from "vite";
 import loadConfig from "./config.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -19,10 +20,15 @@ const { values: processArgs } = parseArgs({
     config: {
       type: "string",
       default: defaultConfigPath
+    },
+    dev: {
+      type: "boolean",
+      default: false
     }
   }
 });
 const configPath = processArgs.config;
+const dev = processArgs.dev;
 const config = loadConfig(configPath);
 
 console.log("GRUD server options:", config);
@@ -101,21 +107,37 @@ app.use((req, res, next) => {
   }
 });
 
-app.use((req, res, next) => {
-  const resourceRegex = /\/[^/]+\.[^/]+$/;
+if (dev) {
+  const devServer = await createDevServer({ root: baseDir });
 
-  if (resourceRegex.test(req.url)) {
-    const final = finalhandler(req, res); // callback for mime types and error handling
-    const serve = serveStatic(config.outDir);
-    return serve(req, res, final);
-  } else {
-    return next();
-  }
-});
+  await devServer.listen();
 
-app.use((req, res) => {
-  return res.sendFile("/index.html", { root: config.outDir });
-});
+  console.log("NODE_ENV:", process.env.NODE_ENV);
+  console.log("BUILD_ID:", process.env.BUILD_ID);
+
+  app.use((req, res) => {
+    proxy.web(req, res, {
+      target: "http://127.0.0.1:5173", // vite dev server
+      ws: true
+    });
+  });
+} else {
+  app.use((req, res, next) => {
+    const resourceRegex = /\/[^/]+\.[^/]+$/;
+
+    if (resourceRegex.test(req.url)) {
+      const final = finalhandler(req, res); // callback for mime types and error handling
+      const serve = serveStatic(config.outDir);
+      return serve(req, res, final);
+    } else {
+      return next();
+    }
+  });
+
+  app.use((req, res) => {
+    return res.sendFile("/index.html", { root: config.outDir });
+  });
+}
 
 app.listen(config.port, config.host, () => {
   const url = `http://${config.host}:${config.port}`;

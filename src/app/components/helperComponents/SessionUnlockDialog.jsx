@@ -3,7 +3,7 @@ import { unlockRow, isLocked } from "../../helpers/annotationHelper";
 import * as f from "lodash/fp";
 import i18n from "i18next";
 import { canUserChangeCell } from "../../helpers/accessManagementHelper";
-import TableauxConstants from "../../constants/TableauxConstants";
+import { Langtags } from "../../constants/TableauxConstants";
 
 const TOAST_TIME = 3000;
 
@@ -26,7 +26,7 @@ class Candidates {
 
 const canChangeAnyLangtag = cell => {
   const canBeEdited = f.partial(canUserChangeCell, cell);
-  return f.any(canBeEdited, TableauxConstants.Langtags);
+  return f.any(canBeEdited, Langtags);
 };
 
 const hasSomeEditableCell = row =>

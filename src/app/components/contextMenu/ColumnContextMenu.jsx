@@ -6,9 +6,7 @@ import f from "lodash/fp";
 import PropTypes from "prop-types";
 import React from "react";
 import listensToClickOutside from "react-onclickoutside";
-import TableauxConstants, {
-  SortValue
-} from "../../constants/TableauxConstants";
+import { ColumnKinds, SortValue } from "../../constants/TableauxConstants";
 import {
   canUserEditColumnDisplayProperty,
   canUserSeeTable
@@ -80,7 +78,7 @@ class ColumnContextMenu extends React.Component {
 
     const followLinkItem =
       !this.props.isMetaColumn &&
-      column.kind === TableauxConstants.ColumnKinds.link &&
+      column.kind === ColumnKinds.link &&
       canUserSeeTable(toTable.id) ? (
         <ContextMenuItem
           closeMenu={closeHandler}

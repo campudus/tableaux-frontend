@@ -3,7 +3,7 @@ import f from "lodash/fp";
 import PropTypes from "prop-types";
 import React from "react";
 import { translate } from "react-i18next";
-import TableauxConstants from "../../../constants/TableauxConstants";
+import { FallbackLanguage } from "../../../constants/TableauxConstants";
 import { memoizeOne } from "../../../helpers/functools.js";
 import { getTableDisplayName } from "../../../helpers/multiLanguage";
 import { isTaxonomyTable } from "../../taxonomy/taxonomy";
@@ -74,7 +74,7 @@ class TableSwitcherButton extends React.PureComponent {
     const sortedGroups = f.sortBy(
       f.flow(
         f.get("displayName"),
-        f.props(["langtags", TableauxConstants.FallbackLanguage]),
+        f.props(["langtags", FallbackLanguage]),
         f.find(f.identity)
       ),
       groups
