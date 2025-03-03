@@ -7,7 +7,7 @@
   "scripts": {
     "start": "export NODE_ENV=production; export BUILD_ID=${BUILD_ID:-$(./getCommitHash.sh)}; node --experimental-modules server/server.js",
     "build": "export NODE_ENV=production; export BUILD_ID=${BUILD_ID:-$(./getCommitHash.sh)}; vite build",
-    "dev": "export NODE_ENV=development; export BUILD_ID=${BUILD_ID:-$(./getCommitHash.sh)}; concurrently -n build,server \"vite build --watch\" \"wait-on out/index.html && node --experimental-modules server/server.js\"",
+    "dev": "export NODE_ENV=development; export BUILD_ID=${BUILD_ID:-$(./getCommitHash.sh)}; node --experimental-modules server/server.js --dev",
     "lint": "eslint -f stylish --ignore-pattern src/scss/FontAwesome \"src/**/*.{js,jsx}\"",
     "lint:changes": "git diff master --name-only | grep -E \"src\\/.*\\.jsx?$\" | xargs -I{} sh -c \"test -f '{}' && echo '{}'\" | xargs eslint",
     "lint:fix": "eslint --fix -f stylish --ignore-pattern src/scss/FontAwesome \"src/**/*.{js,jsx}\"",

@@ -1,3 +1,5 @@
+window.global ||= window;
+
 // babel polyfill: https://babeljs.io/docs/en/babel-polyfill
 import "core-js/stable";
 import "regenerator-runtime/runtime";
@@ -10,13 +12,13 @@ import { Provider } from "react-redux";
 import React from "react";
 import ReactDOM from "react-dom";
 
-import TableauxConstants from "./app/constants/TableauxConstants";
+import { initConfig } from "./app/constants/TableauxConstants";
 
-console.log("Campudus GRUD frontend", process.env.BUILD_ID);
+console.log("Build id:", import.meta.env.BUILD_ID);
 
 fetch("/config.json")
   .then(response => response.json())
-  .then(TableauxConstants.initConfig)
+  .then(initConfig)
   .then(async () => {
     // postpone loading of this imports after config is loaded
     // this is needed, else the disabled authentication will not work as it memoize the config value without the config being loaded

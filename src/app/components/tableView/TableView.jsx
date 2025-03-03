@@ -5,7 +5,9 @@ import React, { PureComponent } from "react";
 import { Redirect, withRouter } from "react-router-dom";
 import { branch, renderComponent } from "recompose";
 import ToggleArchivedRowsButton from "../../archivedRows/ToggleArchivedRowsButton";
-import TableauxConstants, {
+import {
+  initLangtags,
+  PageTitle,
   ColumnKinds,
   RowIdColumn
 } from "../../constants/TableauxConstants";
@@ -53,7 +55,7 @@ const mapStatetoProps = (state, props) => {
   const allDisplayValues = f.get(["tableView", "displayValues"], state);
 
   if (table) {
-    TableauxConstants.initLangtags(table.langtags);
+    initLangtags(table.langtags);
   }
   return {
     table,
@@ -163,8 +165,8 @@ class TableView extends PureComponent {
     if (table) {
       const tableDisplayName = getTableDisplayName(table, langtag);
       document.title = tableDisplayName
-        ? tableDisplayName + " | " + TableauxConstants.PageTitle
-        : TableauxConstants.PageTitle;
+        ? tableDisplayName + " | " + PageTitle
+        : PageTitle;
     }
   };
 

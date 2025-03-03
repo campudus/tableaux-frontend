@@ -24,6 +24,11 @@ export default defineConfig({
       }
     }
   },
+  define: {
+    "import.meta.env.NODE_ENV": JSON.stringify(process.env.NODE_ENV),
+    "import.meta.env.BUILD_ID": JSON.stringify(process.env.BUILD_ID),
+    "import.meta.env.REDUX_DEVTOOLS": JSON.stringify(process.env.REDUX_DEVTOOLS)
+  },
   build: {
     // minify: false,
     outDir: "out",
