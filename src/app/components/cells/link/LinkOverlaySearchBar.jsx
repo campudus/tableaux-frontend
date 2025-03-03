@@ -1,7 +1,6 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import * as f from "lodash/fp";
 import i18n from "i18next";
-import listensToClickOutside from "react-onclickoutside";
 
 import PropTypes from "prop-types";
 import classNames from "classnames";
@@ -16,6 +15,7 @@ import {
 import SearchFunctions, {
   SEARCH_FUNCTION_IDS
 } from "../../../helpers/searchFunctions";
+import { outsideClickEffect } from "../../../helpers/useOutsideClick";
 
 const SearchModePopup = ({
   closePopup,
@@ -23,6 +23,7 @@ const SearchModePopup = ({
   filterMode,
   setFilterMode
 }) => {
+  const containerRef = useRef();
   const activeIdx = f.compose(
     when(f.gt(0), () => 0),
     f.findIndex(f.eq(filterMode))
@@ -33,9 +34,18 @@ const SearchModePopup = ({
     closePopup();
   });
 
+  useEffect(
+    outsideClickEffect({
+      shouldListen: popupOpen,
+      containerRef: containerRef,
+      onOutsideClick: closePopup
+    }),
+    [popupOpen, containerRef.current]
+  );
+
   return (
     popupOpen && (
-      <div className="filter-option-popup">
+      <div ref={containerRef} className="filter-option-popup">
         {SEARCH_FUNCTION_IDS.map((id, idx) => {
           const name = i18n.t(SearchFunctions[id].displayName);
           const itemClass = classNames("menu-item", {
@@ -127,7 +137,6 @@ const SearchBar = ({
       <SearchModePopup
         closePopup={closePopup}
         popupOpen={popupOpen}
-        handleClickOutside={closePopup}
         filterMode={filterMode}
         setFilterMode={setFilterMode}
       />
