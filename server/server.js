@@ -1,0 +1,123 @@
+import path from "path";
+import { fileURLToPath } from "url";
+import { parseArgs } from "util";
+import express from "express";
+import session from "express-session";
+import connectLoki from "connect-loki";
+import serveStatic from "serve-static";
+import finalhandler from "finalhandler";
+import httpProxy from "http-proxy";
+import uuid from "uuid";
+import loadConfig from "./config.js";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const baseDir = path.join(__dirname, "..");
+const defaultConfigPath = path.join(baseDir, "config.json");
+
+const { values: processArgs } = parseArgs({
+  options: {
+    config: {
+      type: "string",
+      default: defaultConfigPath
+    }
+  }
+});
+const configPath = processArgs.config;
+const config = loadConfig(configPath);
+
+console.log("GRUD server options:", config);
+
+const LokiStore = connectLoki(session);
+const app = express();
+
+const ROUTES = {
+  API: {
+    prefix: "/api/", // with ending slash, otherwise resources starting with "api" won't work
+    handler: {
+      target: `http://${config.apiHost}:${config.apiPort}`,
+      prependPath: true
+    }
+  }
+};
+
+const proxy = httpProxy.createProxyServer({
+  changeOrigin: true,
+  xfwd: true
+});
+
+proxy.on("proxyReq", (proxyReq, req) => {
+  // if keycloak's env PROXY_ADDRESS_FORWARDING=true then keycloak will set
+  // the cookie for the given `X-Forwarded-Url`
+  proxyReq.setHeader("X-Forwarded-Url", req.originalUrl);
+
+  // rewrite path
+  for (const route of Object.values(ROUTES)) {
+    const prefixRegExp = new RegExp(`^${route.prefix}`);
+    const cleanPath = proxyReq.path.replace(prefixRegExp, "/");
+    proxyReq.path = cleanPath;
+  }
+});
+
+proxy.on("error", (err, req, res) => {
+  console.error("Proxy error:", err);
+  res?.writeHead(500, { "Content-Type": "text/plain" });
+  res?.end(JSON.stringify(err));
+});
+
+if (!config.disableAuth) {
+  app.use(
+    session({
+      store: new LokiStore({
+        autosave: false,
+        ttl: 60 // in production, pings will keep the session alive
+      }),
+      secret: uuid(),
+      resave: true,
+      saveUninitialized: false,
+      unset: "destroy",
+      proxy: true
+    })
+  );
+}
+
+app.get("/config.json", (req, res) => res.json(config));
+
+app.use((req, res, next) => {
+  if (req.url.includes(ROUTES.API.prefix)) {
+    const withAuth = !config.disableAuth;
+
+    // upgrade auth headers
+    if (withAuth && req.headers.authorization) {
+      // Despite the look, no session data leaks to the client, only a session id gets attached
+      // (see https://github.com/expressjs/session#readme)
+      req.session.token = req.headers.authorization;
+    } else if (withAuth && req.session.token) {
+      req.headers.authorization = req.session.token;
+    }
+
+    proxy.web(req, res, ROUTES.API.handler);
+  } else {
+    next();
+  }
+});
+
+app.use((req, res, next) => {
+  const resourceRegex = /\/[^/]+\.[^/]+$/;
+
+  if (resourceRegex.test(req.url)) {
+    const final = finalhandler(req, res); // callback for mime types and error handling
+    const serve = serveStatic(config.outDir);
+    return serve(req, res, final);
+  } else {
+    return next();
+  }
+});
+
+app.use((req, res) => {
+  return res.sendFile("/index.html", { root: config.outDir });
+});
+
+app.listen(config.port, config.host, () => {
+  const url = `http://${config.host}:${config.port}`;
+  console.log(`GRUD server listening at ${url}`);
+});

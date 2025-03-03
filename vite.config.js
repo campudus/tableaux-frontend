@@ -25,6 +25,7 @@ export default defineConfig({
     }
   },
   build: {
+    // minify: false,
     outDir: "out",
     chunkSizeWarningLimit: 4000,
     rollupOptions: {
