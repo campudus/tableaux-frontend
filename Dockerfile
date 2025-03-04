@@ -5,18 +5,16 @@ RUN apk update && apk upgrade && \
 
 WORKDIR /usr/app
 
-COPY .npmrc ./
-COPY vite.config.js ./
-COPY package* ./
-COPY setupTests.js ./
-COPY patches patches
+COPY package*.json vite.config.js ./
+COPY .npmrc .babelrc .eslint* .prettierrc ./
+COPY ./patches/ ./patches/
 
 RUN npm ci -d
 
-COPY [".babelrc", ".eslint*", ".prettierrc", "./"]
-COPY src src
-COPY public public
-COPY server server
+COPY ./src/ ./src/
+COPY ./public/ ./public/
+COPY ./server/ ./server/
+COPY ./index.html ./index.html
 
 ARG BUILD_ID=unknown
 ENV BUILD_ID=${BUILD_ID}
@@ -25,7 +23,7 @@ RUN echo "Build with BUILD_ID: $BUILD_ID"
 RUN npm run lint && \
     npm run test:ci && \
     npm run build && \
-    npm prune --production
+    npm prune --omit=dev
 
 FROM node:20.10.0-alpine
 
