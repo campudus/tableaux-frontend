@@ -1,7 +1,7 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`Redux helpers geGroupColumn() identifies group member's group column correctly 1`] = `
-Array [
+exports[`Redux helpers > geGroupColumn() > identifies group member's group column correctly 1`] = `
+[
   null,
   null,
   null,
@@ -39,8 +39,8 @@ Array [
 ]
 `;
 
-exports[`Redux helpers getLookupMap() creates correct lookup maps 1`] = `
-Object {
+exports[`Redux helpers > getLookupMap() > creates correct lookup maps 1`] = `
+{
   "10": "25",
   "2": "31",
   "30": "31",
@@ -49,8 +49,8 @@ Object {
 }
 `;
 
-exports[`Redux helpers isGroupMember() retrieves columns' membership status correctly 1`] = `
-Array [
+exports[`Redux helpers > isGroupMember() > retrieves columns' membership status correctly 1`] = `
+[
   false,
   false,
   false,

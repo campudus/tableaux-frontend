@@ -60,5 +60,29 @@ export default defineConfig({
     commonjsOptions: {
       transformMixedEsModules: true
     }
+  },
+  test: {
+    environment: "happy-dom",
+    reporters: [
+      [
+        "junit",
+        {
+          suiteName: "grud-frontend",
+          outputFile: "./output/coverage/junit.xml"
+        }
+      ],
+      [
+        "default",
+        {
+          summary: false
+        }
+      ]
+    ],
+    coverage: {
+      provider: "v8",
+      reporter: ["cobertura", "html", "text-summary"],
+      reportsDirectory: "./output/coverage",
+      include: ["/(src|tests)/**/*.(j|t)sx?"]
+    }
   }
 });
