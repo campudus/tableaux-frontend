@@ -1,3 +1,5 @@
+// vite doesn't define a global field in window as webpack does.
+// some libraries rely on it since webpack is much older than vite.
 window.global ||= window;
 
 // babel polyfill: https://babeljs.io/docs/en/babel-polyfill
