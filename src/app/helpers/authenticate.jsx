@@ -16,7 +16,7 @@ const keycloakInitOptions = {
 // react-redux@7 selector
 export const authSelector = f.propOr(false, ["grudStatus", "authenticated"]);
 
-export const noAuthNeeded = f.memoize(() => config.disableAuth);
+export const noAuthNeeded = f.memoize(() => config?.disableAuth ?? false);
 
 // () => Keycloak
 // Side effects: Will login on first load and memoize the result

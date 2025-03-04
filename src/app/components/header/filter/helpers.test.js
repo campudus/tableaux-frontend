@@ -1,6 +1,5 @@
+import { describe, expect, it } from "vitest";
 import { fromCombinedFilter } from "./helpers";
-
-describe("toCombinedFilter", () => {});
 
 describe("fromCombinedFilter", () => {
   const columns = [{ name: "col-a" }, { name: "col-b" }, { name: "col-c" }];

@@ -1,3 +1,4 @@
+import { describe, expect, it } from "vitest";
 import P from "./promise";
 
 const sleep = t =>
