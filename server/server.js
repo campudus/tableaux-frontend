@@ -8,7 +8,6 @@ import serveStatic from "serve-static";
 import finalhandler from "finalhandler";
 import httpProxy from "http-proxy";
 import uuid from "uuid";
-import { createServer as createDevServer } from "vite";
 import loadConfig from "./config.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -108,6 +107,7 @@ app.use((req, res, next) => {
 });
 
 if (dev) {
+  const { createServer: createDevServer } = await import("vite");
   const devServer = await createDevServer({
     root: baseDir,
     server: {
