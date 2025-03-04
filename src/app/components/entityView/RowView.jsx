@@ -7,7 +7,10 @@ import {
   ColumnKinds,
   AnnotationConfigs
 } from "../../constants/TableauxConstants";
-import * as Access from "../../helpers/accessManagementHelper";
+import {
+  canUserChangeAnyCountryTypeCell,
+  canUserChangeCell
+} from "../../helpers/accessManagementHelper";
 import {
   getAnnotationByName,
   getAnnotationColor,
@@ -16,10 +19,7 @@ import {
   isTranslationNeeded
 } from "../../helpers/annotationHelper";
 import { unless } from "../../helpers/functools";
-import {
-  getCountryOfLangtag,
-  retrieveTranslation
-} from "../../helpers/multiLanguage";
+import { retrieveTranslation } from "../../helpers/multiLanguage";
 import AnnotationBadge from "../annotation/AnnotationBadge";
 import Spinner from "../header/Spinner";
 import { connectOverlayToCellValue } from "../helperComponents/connectOverlayToCellHOC";
@@ -63,13 +63,16 @@ class View extends PureComponent {
   componentDidCatch() {}
 
   canEditValue = theoretically => {
-    const { cell, langtag } = this.props;
-    const langtagOrCountry = f.propEq(["column", "languageType"], "country")(
-      cell
-    )
-      ? getCountryOfLangtag(langtag)
-      : langtag;
-    const canEditUnlocked = Access.canUserChangeCell(cell, langtagOrCountry);
+    const {
+      cell,
+      cell: { column },
+      langtag
+    } = this.props;
+    const canEditUnlocked =
+      column.multilanguage && column.languageType === "country"
+        ? canUserChangeAnyCountryTypeCell(cell)
+        : canUserChangeCell(cell, langtag);
+
     return theoretically
       ? canEditUnlocked
       : canEditUnlocked &&
