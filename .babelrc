@@ -1,11 +1,5 @@
 {
   "presets": [
-    // [
-    //   "@babel/preset-env",
-    //   {
-    //     "targets": ["IE >= 11"]
-    //   }
-    // ],
     "@babel/preset-flow",
     "@babel/preset-react"
   ],
