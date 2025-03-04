@@ -13,3 +13,4 @@ devAccessSettings.json
 .idea
 /config.json
 output/
+coverage/

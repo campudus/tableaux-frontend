@@ -1,3 +1,4 @@
+import { describe, expect, it } from "vitest";
 import * as t from "./taxonomy";
 import { performance } from "perf_hooks";
 import { range } from "lodash/fp";

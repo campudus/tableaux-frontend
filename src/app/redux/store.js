@@ -8,8 +8,8 @@ import thunkMiddleware from "./thunkMiddleware";
 // and we didn't request devtools to be disabled, then use redux devtools
 const composeEnhancers = maybe(window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__)
   .map(devCompose =>
-    process.env.NODE_ENV === "production" ||
-    process.env.REDUX_DEVTOOLS === "false"
+    import.meta.env.NODE_ENV === "production" ||
+    import.meta.env.REDUX_DEVTOOLS === "false"
       ? null
       : devCompose
   )

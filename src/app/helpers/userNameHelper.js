@@ -5,7 +5,7 @@ export const getUserName = (onlyFirstName = false) => {
   const keycloak = getLogin();
 
   const fallbackUserName =
-    process.env.NODE_ENV === "production" ? "John Doe" : "GRUDling";
+    import.meta.env.NODE_ENV === "production" ? "John Doe" : "GRUDling";
   return noAuthNeeded()
     ? fallbackUserName
     : firstValidPropOr(

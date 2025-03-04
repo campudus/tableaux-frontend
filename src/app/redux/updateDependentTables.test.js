@@ -1,3 +1,4 @@
+import { describe, expect, it } from "vitest";
 import columnResponse from "./__fixtures/modelColumns.json";
 
 import { calcColumnDependencies } from "./updateDependentTables";

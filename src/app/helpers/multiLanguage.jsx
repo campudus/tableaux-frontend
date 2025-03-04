@@ -6,7 +6,8 @@ import i18n from "i18next";
 import { checkOrThrow } from "../specs/type";
 import { either, match, memoizeWith, when } from "./functools";
 import { getLangObjSpec } from "./multilanguage-specs";
-import TableauxConstants, {
+import {
+  Langtags,
   ColumnKinds,
   DefaultLangtag,
   FallbackLanguage
@@ -231,8 +232,7 @@ const tests = {
 
 // if all object keys are langtags, value is multi language
 const isMultiLanguage = value =>
-  f.isObject(value) &&
-  f.all(f.contains(f.__, TableauxConstants.Langtags), f.keys(value));
+  f.isObject(value) && f.all(f.contains(f.__, Langtags), f.keys(value));
 
 // if all object keys are country codes, value is multi country
 const isMultiCountry = value => {

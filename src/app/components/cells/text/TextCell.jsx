@@ -1,6 +1,5 @@
 import f from "lodash/fp";
 import React, { useEffect } from "react";
-import "../../../../scss/main.scss";
 import { canUserChangeCell } from "../../../helpers/accessManagementHelper";
 import { getTableDisplayName } from "../../../helpers/multiLanguage";
 import MarkdownEditor from "../../markdownEditor/MarkdownEditor";
