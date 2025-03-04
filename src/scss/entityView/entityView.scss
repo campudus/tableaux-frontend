@@ -134,6 +134,10 @@
     border: none;
     border-color: transparent;
 
+    &.disabled {
+      cursor: not-allowed;
+    }
+
     &.not-set {
       .currency-string,
       .langtag-label,
