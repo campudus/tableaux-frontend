@@ -34,21 +34,21 @@ export default defineConfig({
   },
   clearScreen: false,
   build: {
-    // minify: false,
     outDir: "out",
     chunkSizeWarningLimit: 4000,
     rollupOptions: {
       maxParallelFileOps: 100,
       onLog(level, log, handler) {
         if (log.code === "EMPTY_BUNDLE") {
-          return; // Ignore empty bundle warnings
+          return;
         } else {
-          handler(level, log); // otherwise, just print the log
+          handler(level, log);
         }
       },
       output: {
         manualChunks(id) {
           if (id.includes("node_modules")) {
+            // DEBUG: split dependencies into separate files
             // return id.match(/node_modules\/(.+?)\//).at(1);
             return "vendor";
           }
