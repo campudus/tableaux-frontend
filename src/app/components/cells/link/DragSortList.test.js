@@ -1,4 +1,3 @@
-import { describe, expect, it } from "vitest";
 import { dragReorder } from "./dragHelper";
 
 describe("dragReorder()", () => {

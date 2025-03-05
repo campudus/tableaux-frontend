@@ -1,4 +1,3 @@
-import { describe, expect, it } from "vitest";
 import { buildClassName } from "./buildClassName";
 
 describe("buildClassName()", () => {
