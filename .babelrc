@@ -1,8 +1,5 @@
 {
-  "presets": [
-    "@babel/preset-flow",
-    "@babel/preset-react"
-  ],
+  "presets": ["@babel/preset-react"],
   "plugins": [
     "@babel/plugin-proposal-function-bind",
     ["@babel/plugin-proposal-pipeline-operator", { "proposal": "fsharp" }],
