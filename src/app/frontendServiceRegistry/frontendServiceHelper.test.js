@@ -1,4 +1,3 @@
-import { describe, expect, it } from "vitest";
 import { expandServiceUrl, isServiceAllowed } from "./frontendServiceHelper";
 
 describe("frontend service helper", () => {

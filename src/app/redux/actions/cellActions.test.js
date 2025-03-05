@@ -1,4 +1,3 @@
-import { describe, expect, test } from "vitest";
 import { ColumnKinds } from "../../constants/TableauxConstants";
 import { getEmptyValue, isEmptyValue } from "./cellActions";
 
