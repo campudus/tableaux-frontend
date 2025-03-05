@@ -5,14 +5,15 @@ RUN apk update && apk upgrade && \
 
 WORKDIR /usr/app
 
-COPY .npmrc ./
-COPY package* ./
-COPY setupTests.js ./
+COPY package*.json vite.config.js ./
+COPY .npmrc .babelrc .eslint* .prettierrc ./
 
 RUN npm ci -d
 
-COPY [".babelrc", ".eslint*", ".prettierrc", "./"]
-COPY src src
+COPY ./src/ ./src/
+COPY ./public/ ./public/
+COPY ./server/ ./server/
+COPY ./index.html ./index.html
 
 ARG BUILD_ID=unknown
 ENV BUILD_ID=${BUILD_ID}
@@ -21,7 +22,7 @@ RUN echo "Build with BUILD_ID: $BUILD_ID"
 RUN npm run lint && \
     npm run test:ci && \
     npm run build && \
-    npm prune --production
+    npm prune --omit=dev
 
 FROM node:20.10.0-alpine
 
@@ -34,6 +35,7 @@ RUN addgroup -g 1234 campudus && \
 COPY --from=build /usr/app/node_modules /usr/app/node_modules
 COPY --from=build /usr/app/package.json /usr/app/package.json
 COPY --from=build /usr/app/out /usr/app/out
+COPY --from=build /usr/app/server /usr/app/server
 
 USER campudus
 

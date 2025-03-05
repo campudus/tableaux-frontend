@@ -3,7 +3,8 @@ import f from "lodash/fp";
 import { match, otherwise, when } from "match-iz";
 import React, { useMemo, useState } from "react";
 import { useSelector } from "react-redux";
-import TableauxConstants, {
+import {
+  DefaultLangtag,
   SortValue
 } from "../../../constants/TableauxConstants";
 import * as Storage from "../../../helpers/localStorage";
@@ -266,7 +267,7 @@ const settingToFilter = ({ column, mode, value }) => {
 };
 
 const AnnotationFilterArea = ({ onToggle, filters, options, langtag }) => {
-  const isPrimaryLang = langtag === TableauxConstants.DefaultLangtag;
+  const isPrimaryLang = langtag === DefaultLangtag;
   const shouldDropFilter = isPrimaryLang
     ? f.eq("needsMyTranslation")
     : f.eq("needsAnyTranslation");

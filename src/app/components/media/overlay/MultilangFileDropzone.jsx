@@ -19,7 +19,8 @@ import {
   canUserEditFiles
 } from "../../../helpers/accessManagementHelper";
 import LanguageSwitcher from "../../header/LanguageSwitcher";
-import route, { makeRequest } from "../../../helpers/apiHelper";
+import { makeRequest } from "../../../helpers/apiHelper";
+import route from "../../../helpers/apiRoutes";
 
 const enhance = compose(
   withStateHandlers(
@@ -58,7 +59,7 @@ const enhance = compose(
       uploadCallback,
       actions
     }) => files => {
-      const uploadUrl = route.toFile() + uuid + "/" + langtag;
+      const uploadUrl = route.toFile(uuid, langtag);
       files.forEach(file => {
         makeRequest({ apiRoute: uploadUrl, method: "PUT", file }).then(
           uploadCallback(actions)

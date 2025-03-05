@@ -6,7 +6,10 @@
 
 import { makeRequest } from "./helpers/apiHelper";
 import { promisifyAction } from "./redux/redux-helpers";
-import TableauxConstants from "./constants/TableauxConstants";
+import {
+  initLangtags,
+  initAnnotationConfigs
+} from "./constants/TableauxConstants";
 import actions from "./redux/actionCreators";
 import route from "./helpers/apiRoutes";
 import store from "./redux/store";
@@ -14,25 +17,18 @@ import store from "./redux/store";
 export const initGrud = async setSuccess => {
   try {
     const loadServices = promisifyAction(actions.queryFrontendServices)();
-    const initLangtags = makeRequest({
+    const initLangs = makeRequest({
       apiRoute: route.toSetting("langtags")
-    }).then(response => TableauxConstants.initLangtags(response.value));
-    const initAnnotationConfigs = makeRequest({
+    }).then(response => initLangtags(response.value));
+    const initAnnotations = makeRequest({
       apiRoute: route.toAnnotationConfigs()
-    }).then(response =>
-      TableauxConstants.initAnnotationConfigs(response.annotations)
-    );
+    }).then(response => initAnnotationConfigs(response.annotations));
     const loadTables = promisifyAction(actions.loadTables)();
 
     store.dispatch(actions.loadGlobalSettings());
     store.dispatch(actions.createDisplayValueWorker());
 
-    await Promise.all([
-      loadServices,
-      initLangtags,
-      loadTables,
-      initAnnotationConfigs
-    ]);
+    await Promise.all([loadServices, initLangs, loadTables, initAnnotations]);
     setSuccess(true);
     return true;
   } catch (err) {
