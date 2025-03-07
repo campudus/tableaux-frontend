@@ -173,15 +173,6 @@ const getConcatValue = selector => column => value => {
   return applyToAllLangs(lt => format(column, f.map(f.get(lt), displayValues)));
 };
 
-const getColumnIdForIndex = (column, index) => {
-  const index2columnId = f.flow(
-    f.get("groups"),
-    f.map("id"),
-    f.nth(index - 1)
-  );
-  return index2columnId(column);
-};
-
 const moustache = f.memoize(
   n => new RegExp(`\\{\\{${n}\\}\\}`, "g") // double-escape regex generator string to get single-escaped regex-braces
 );
@@ -205,14 +196,21 @@ const format = f.curryN(2)((column, displayValue) => {
     const hasAnyValues =
       !f.isEmpty(valueArray) && !f.every(f.isEmpty, valueArray);
 
+    const innerColumns =
+      column.kind === ColumnKinds.concat
+        ? f.get("concats", column)
+        : f.get("groups", column);
     // replace all occurences of {{n+1}} with displayValue[n];
     // Because the formatPatterns consists of absolute columnId we first have to map index to columnId
     const applyFormat = (result, dVal, idx) => {
-      const colIdx = getColumnIdForIndex(column, idx + 1);
+      const colIdx = f.flow(
+        f.map("id"),
+        f.nth(idx)
+      )(innerColumns);
 
       // Boolean columns are a special case; falsy bool values deliver an empty string which we want to keep
       const isEmptyValue =
-        f.get(`groups.${idx}.kind`, column) === ColumnKinds.boolean
+        f.get(`${idx}.kind`, innerColumns) === ColumnKinds.boolean
           ? f.F
           : f.isEmpty;
 
