@@ -17,7 +17,6 @@ const mapStateToProps = state => {
   };
 };
 
-@withRouter
 class MediaView extends Component {
   constructor(props) {
     super(props);
@@ -108,4 +107,4 @@ MediaView.propTypes = {
   folderId: PropTypes.number
 };
 
-export default ReduxActionHoc(MediaView, mapStateToProps);
+export default ReduxActionHoc(withRouter(MediaView), mapStateToProps);

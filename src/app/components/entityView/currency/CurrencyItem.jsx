@@ -17,7 +17,6 @@ import { getCurrencyWithCountry } from "../../cells/currency/currencyHelper";
 const PRE_COMMA = "PRE_COMMA";
 const POST_COMMA = "POST_COMMA";
 
-@listensToClickOutside
 class CurrencyItem extends PureComponent {
   static propTypes = {
     cell: PropTypes.object.isRequired,
@@ -195,4 +194,4 @@ class CurrencyItem extends PureComponent {
   }
 }
 
-export default CurrencyItem;
+export default listensToClickOutside(CurrencyItem);

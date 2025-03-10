@@ -6,7 +6,6 @@ import i18n from "i18next";
 import listenToClickOutside from "react-onclickoutside";
 import classNames from "classnames";
 
-@listenToClickOutside
 class MultiselectArea extends PureComponent {
   static propTypes = {
     langtag: PropTypes.string.isRequired,
@@ -176,4 +175,4 @@ class MultiselectArea extends PureComponent {
   }
 }
 
-export default MultiselectArea;
+export default listenToClickOutside(MultiselectArea);

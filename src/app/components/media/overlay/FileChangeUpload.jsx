@@ -11,7 +11,6 @@ import FileIcon from "../folder/FileIcon.jsx";
 import ProgressBar from "../ProgressBar.jsx";
 import route from "../../../helpers/apiRoutes";
 
-@translate(["media"])
 class FileChangeUpload extends PureComponent {
   static propTypes = {
     langtag: PropTypes.string.isRequired,
@@ -88,4 +87,4 @@ class FileChangeUpload extends PureComponent {
   }
 }
 
-export default FileChangeUpload;
+export default translate(["media"])(FileChangeUpload);
