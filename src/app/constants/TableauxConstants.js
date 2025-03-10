@@ -1,58 +1,56 @@
-import keyMirror from "keymirror";
-
 export let config;
 
 export const initConfig = cfg => {
   config = cfg;
 };
 
-export const Directions = keyMirror({
-  DOWN: null,
-  RIGHT: null,
-  LEFT: null,
-  UP: null
-});
+export const Directions = {
+  DOWN: "DOWN",
+  RIGHT: "RIGHT",
+  LEFT: "LEFT",
+  UP: "UP"
+};
 
 // Lowercase on purpose. Reflects exact API naming
-export const ColumnKinds = keyMirror({
-  attachment: null,
-  boolean: null,
-  concat: null,
-  currency: null,
-  date: null,
-  datetime: null,
-  group: null,
-  integer: null,
-  link: null,
-  numeric: null,
-  richtext: null,
-  shorttext: null,
-  status: null,
-  text: null
-});
+export const ColumnKinds = {
+  attachment: "attachment",
+  boolean: "boolean",
+  concat: "concat",
+  currency: "currency",
+  date: "date",
+  datetime: "datetime",
+  group: "group",
+  integer: "integer",
+  link: "link",
+  numeric: "numeric",
+  richtext: "richtext",
+  shorttext: "shorttext",
+  status: "status",
+  text: "text"
+};
 
 export const ImmutableColumnKinds = ["status", "concat"];
 
-export const LanguageType = keyMirror({
-  country: null,
-  language: null
-});
+export const LanguageType = {
+  country: "country",
+  language: "language"
+};
 
-export const ViewNames = keyMirror({
-  TABLE_VIEW: null,
-  MEDIA_VIEW: null,
-  DASHBOARD_VIEW: null,
-  FRONTEND_SERVICE_VIEW: null,
-  TAXONOMY_DASHBOARD_VIEW: null,
-  PROFILE_VIEW: null
-});
+export const ViewNames = {
+  TABLE_VIEW: "TABLE_VIEW",
+  MEDIA_VIEW: "MEDIA_VIEW",
+  DASHBOARD_VIEW: "DASHBOARD_VIEW",
+  FRONTEND_SERVICE_VIEW: "FRONTEND_SERVICE_VIEW",
+  TAXONOMY_DASHBOARD_VIEW: "TAXONOMY_DASHBOARD_VIEW",
+  PROFILE_VIEW: "PROFILE_VIEW"
+};
 
-export const Alignments = keyMirror({
-  UPPER_LEFT: null,
-  UPPER_RIGHT: null,
-  LOWER_LEFT: null,
-  LOWER_RIGHT: null
-});
+export const Alignments = {
+  UPPER_LEFT: "UPPER_LEFT",
+  UPPER_RIGHT: "UPPER_RIGHT",
+  LOWER_LEFT: "LOWER_LEFT",
+  LOWER_RIGHT: "LOWER_RIGHT"
+};
 
 export const DateTimeFormats = {
   formatForServer: "YYYY-MM-DDTHH:mm:ss.SSSZ",
@@ -90,27 +88,27 @@ export const initLangtags = langtags => {
   DefaultLangtag = langtags[0] || null;
 };
 
-export const SortValue = keyMirror({
-  asc: null,
-  desc: null
-});
+export const SortValue = {
+  asc: "asc",
+  desc: "desc"
+};
 
-export const FilterModes = keyMirror({
-  ANY_UNTRANSLATED: null,
-  CHECK_ME: null,
-  CONTAINS: null,
-  FINAL: null,
-  ID_ONLY: null,
-  IS_EMPTY: null,
-  IMPORTANT: null,
-  POSTPONE: null,
-  ROW_CONTAINS: null,
-  STARTS_WITH: null,
-  STATUS: null,
-  TRANSLATOR_FILTER: null,
-  UNTRANSLATED: null,
-  WITH_COMMENT: null
-});
+export const FilterModes = {
+  ANY_UNTRANSLATED: "ANY_UNTRANSLATED",
+  CHECK_ME: "CHECK_ME",
+  CONTAINS: "CONTAINS",
+  FINAL: "FINAL",
+  ID_ONLY: "ID_ONLY",
+  IS_EMPTY: "IS_EMPTY",
+  IMPORTANT: "IMPORTANT",
+  POSTPONE: "POSTPONE",
+  ROW_CONTAINS: "ROW_CONTAINS",
+  STARTS_WITH: "STARTS_WITH",
+  STATUS: "STATUS",
+  TRANSLATOR_FILTER: "TRANSLATOR_FILTER",
+  UNTRANSLATED: "UNTRANSLATED",
+  WITH_COMMENT: "WITH_COMMENT"
+};
 
 export const AnnotationKind = {
   flag: "flag",
