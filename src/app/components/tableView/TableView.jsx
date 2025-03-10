@@ -77,8 +77,6 @@ const mapStatetoProps = (state, props) => {
   };
 };
 
-@applyFiltersAndVisibility
-@withRouter
 class TableView extends PureComponent {
   constructor(props) {
     super(props);
@@ -391,4 +389,12 @@ TableView.propTypes = {
 export default branch(
   props => f.isNil(props.tableId),
   renderComponent(EmptyTableView)
-)(reduxActionHoc(TableView, mapStatetoProps));
+)(
+  reduxActionHoc(
+    f.flow(
+      applyFiltersAndVisibility,
+      withRouter
+    )(TableView),
+    mapStatetoProps
+  )
+);

@@ -16,7 +16,6 @@ import { openShowDependency } from "../ConfirmDependentOverlay";
 
 const CLOSING_TIMEOUT = 300; // ms; time to close popup after mouse left
 
-@listenToClickOutside
 class HeaderPopupMenu extends Component {
   static propTypes = {
     langtag: PropTypes.string.isRequired,
@@ -228,4 +227,4 @@ class HeaderPopupMenu extends Component {
   }
 }
 
-export default HeaderPopupMenu;
+export default listenToClickOutside(HeaderPopupMenu);
