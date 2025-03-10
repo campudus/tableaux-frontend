@@ -1,9 +1,0 @@
-{
-  "compilerOptions": {
-    "baseUrl": "./src",
-    "target": "es6",
-    "experimentalDecorators": true,
-    "esModuleInterop": true
-  },
-  "include": ["src/**/*"],
-}

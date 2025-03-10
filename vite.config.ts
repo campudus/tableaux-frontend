@@ -1,15 +1,15 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import dns from "dns";
+import checker from "vite-plugin-checker";
 
 dns.setDefaultResultOrder("verbatim");
 
 export default defineConfig({
   plugins: [
-    react({
-      babel: {
-        babelrc: true
-      }
+    react(),
+    checker({
+      typescript: true
     })
   ],
   css: {
@@ -17,6 +17,7 @@ export default defineConfig({
       scss: {
         api: "modern-compiler",
         // TODO: fix deprecations!
+        // @ts-ignore
         silenceDeprecations: [
           "slash-div",
           "mixed-decls",
