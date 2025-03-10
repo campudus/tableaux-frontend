@@ -16,7 +16,6 @@ import Empty from "../helperComponents/emptyEntry";
 import SvgIcon from "../helperComponents/SvgIcon";
 import { canUserEditCellAnnotations } from "../../helpers/accessManagementHelper";
 
-@listenToClickOutside
 class AnnotationPopup extends Component {
   constructor(props) {
     super(props);
@@ -237,7 +236,7 @@ class AnnotationPopup extends Component {
   }
 }
 
-export default AnnotationPopup;
+export default listenToClickOutside(AnnotationPopup);
 
 AnnotationPopup.propTypes = {
   cell: PropTypes.object.isRequired,

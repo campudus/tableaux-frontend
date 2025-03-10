@@ -6,7 +6,6 @@ import PropTypes from "prop-types";
 import { maybe } from "../../../helpers/functools";
 import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
 
-@listensToClickOutside
 class SubfolderEdit extends PureComponent {
   handleClickOutside = () => {
     this.onSave();
@@ -83,4 +82,4 @@ SubfolderEdit.propTypes = {
   onCancel: PropTypes.func.isRequired
 };
 
-export default SubfolderEdit;
+export default listensToClickOutside(SubfolderEdit);
