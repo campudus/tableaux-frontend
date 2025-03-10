@@ -5,6 +5,7 @@ import { set } from "lodash"; // eslint-disable-line
 
 import { ColumnKinds } from "../constants/TableauxConstants";
 import {
+  doto,
   mapIndexed,
   mapPromise,
   memoizeWith,
@@ -32,12 +33,12 @@ export const calcColumnDependencies = columnCollection => {
     return accum;
   }, {});
 
-  return (
-    columnCollection
-    |> f.toPairs
-    |> f.map(filterLinkColumns)
-    |> f.flatMap(extractToTables)
-    |> toDependencyMap
+  return doto(
+    columnCollection,
+    f.toPairs,
+    f.map(filterLinkColumns),
+    f.flatMap(extractToTables),
+    toDependencyMap
   );
 };
 
@@ -64,11 +65,11 @@ export const performRowDeletion = (tableId, rowId, state) => {
 
   const hasDependants = () => !f.isEmpty(dependencies[tableId]);
 
-  return (
-    state
-    |> removeRowFromState
-    |> when(hasDependants, propagateRowDelete(tableId, rowId))
-    |> f.prop("rows")
+  return doto(
+    state,
+    removeRowFromState,
+    when(hasDependants, propagateRowDelete(tableId, rowId)),
+    f.prop("rows")
   );
 };
 
@@ -103,11 +104,12 @@ export const propagateRowDelete = f.curryN(
 
 export const hasTransitiveDependencies = (tableId, state) => {
   const dependencies = getCachedDependencyMap(state);
-  const primaryDependencies = dependencies[tableId] |> f.keys;
-  const transitiveDependencies =
-    primaryDependencies
-    |> f.map(tblId => dependencies[tblId])
-    |> f.reject(f.isEmpty);
+  const primaryDependencies = doto(dependencies[tableId], f.keys);
+  const transitiveDependencies = doto(
+    primaryDependencies,
+    f.map(tblId => dependencies[tblId]),
+    f.reject(f.isEmpty)
+  );
   return !f.isEmpty(transitiveDependencies);
 };
 
@@ -132,18 +134,19 @@ export const refreshDependentRows = async (
     refreshedTables.add(tableId);
 
     const columns = state.columns[tableId].data;
-    const linkColumnIndices =
-      columns
-      |> mapIndexed((column, idx) => ({ ...column, idx }))
-      |> f.filter(f.propEq("toTable", parentTable))
-      |> f.map("idx");
+    const linkColumnIndices = doto(
+      columns,
+      mapIndexed((column, idx) => ({ ...column, idx })),
+      f.filter(f.propEq("toTable", parentTable)),
+      f.map("idx")
+    );
     const getLinkCellValues = row =>
       f.flatMap(
-        idx => f.nth(idx, row.values) |> f.map(f.prop("id")),
+        idx => doto(f.nth(idx, row.values), f.map(f.prop("id"))),
         linkColumnIndices
       );
     const linksToChangedRow = row =>
-      row |> getLinkCellValues |> f.any(f.contains(f.__, changedParentRows));
+      doto(row, getLinkCellValues, f.any(f.contains(f.__, changedParentRows)));
     const rowsToUpdate = f
       .propOr([], ["rows", tableId, "data"], clonedState)
       .filter(linksToChangedRow);
@@ -183,11 +186,11 @@ export const refreshDependentRows = async (
     });
 
     const subDependencies = dependentTables[tableId];
-    return (
-      subDependencies
-      |> f.keys
-      |> f.filter(tblId => hasTransitiveDependencies(tblId, state.columns))
-      |> mapPromise(tblId =>
+    return doto(
+      subDependencies,
+      f.keys,
+      f.filter(tblId => hasTransitiveDependencies(tblId, state.columns)),
+      mapPromise(tblId =>
         fetchChangedRows(tblId, tableId, rowsToUpdate.map(f.prop("id")))
       )
     );

@@ -1,8 +1,4 @@
 {
   "presets": ["@babel/preset-react"],
-  "plugins": [
-    "@babel/plugin-proposal-function-bind",
-    ["@babel/plugin-proposal-pipeline-operator", { "proposal": "fsharp" }],
-    ["@babel/plugin-proposal-decorators", { "legacy": true }]
-  ]
+  "plugins": [["@babel/plugin-proposal-decorators", { "legacy": true }]]
 }
