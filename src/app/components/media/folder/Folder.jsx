@@ -15,8 +15,6 @@ import FileUpload from "./FileUpload.jsx";
 import NewFolderAction from "./NewFolderAction.jsx";
 import Subfolder from "./Subfolder.jsx";
 
-@translate(["media"])
-@withRouter
 class Folder extends Component {
   constructor(props) {
     super(props);
@@ -176,4 +174,7 @@ Folder.propTypes = {
   modifiedFiles: PropTypes.array
 };
 
-export default Folder;
+export default f.flow(
+  translate(["media"]),
+  withRouter
+)(Folder);

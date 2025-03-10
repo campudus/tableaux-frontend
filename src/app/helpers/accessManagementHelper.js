@@ -7,7 +7,7 @@ import {
 } from "../constants/TableauxConstants";
 import store from "../redux/store";
 import { noAuthNeeded } from "./authenticate";
-import { memoizeWith, unless } from "./functools";
+import { doto, memoizeWith, unless } from "./functools";
 import { getCountryOfLangtag } from "./multiLanguage";
 
 // Table data editing permissions
@@ -96,11 +96,12 @@ export const canUserChangeAllLangsOfCell = cellInfo => {
 };
 
 export const canUserChangeAnyCountryTypeCell = cellInfo => {
-  const allowed =
-    cellInfo
-    |> getPermission(["column", "editCellValue"])
-    |> f.values
-    |> f.any(f.identity);
+  const allowed = doto(
+    cellInfo,
+    getPermission(["column", "editCellValue"]),
+    f.values,
+    f.any(f.identity)
+  );
   return allowed || noAuthNeeded();
 };
 

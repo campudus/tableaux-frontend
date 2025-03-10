@@ -15,8 +15,7 @@ import { openShowDependency } from "../overlay/ConfirmDependentOverlay";
 import { clearSelectedCellValue } from "../../redux/actions/cellActions";
 import AnnotationContextMenu from "../contextMenu/AnnotationContextMenu";
 
-@listenToClickOutside
-class MenuPopup extends Component {
+class MenuPopupInner extends Component {
   static props = {
     clickOutside: PropTypes.func.isRequired,
     handleMouseEnter: PropTypes.func.isRequired,
@@ -40,6 +39,8 @@ class MenuPopup extends Component {
     );
   }
 }
+
+const MenuPopup = listenToClickOutside(MenuPopupInner);
 
 class ItemPopupMenu extends Component {
   static propTypes = {

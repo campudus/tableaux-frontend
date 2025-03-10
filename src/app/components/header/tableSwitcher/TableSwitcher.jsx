@@ -16,7 +16,6 @@ const sortTables = memoizeOne((langtag, tables, getDisplayName) =>
   )(tables)
 );
 
-@translate(["header"])
 class TableSwitcherButton extends React.PureComponent {
   static propTypes = {
     langtag: PropTypes.string.isRequired,
@@ -133,4 +132,4 @@ class TableSwitcherButton extends React.PureComponent {
   }
 }
 
-export default TableSwitcherButton;
+export default translate(["header"])(TableSwitcherButton);

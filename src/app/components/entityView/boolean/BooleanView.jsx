@@ -5,7 +5,6 @@ import classNames from "classnames";
 import SvgIcon from "../../helperComponents/SvgIcon";
 import f from "lodash/fp";
 
-@translate(["common"])
 class BooleanView extends PureComponent {
   static propTypes = {
     langtag: PropTypes.string.isRequired,
@@ -72,4 +71,4 @@ class BooleanView extends PureComponent {
   }
 }
 
-export default BooleanView;
+export default translate(["common"])(BooleanView);
