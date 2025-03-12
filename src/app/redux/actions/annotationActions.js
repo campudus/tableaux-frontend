@@ -115,7 +115,6 @@ const getRequestParam = change => (cell, annotationObj) => {
     f.prop("annotation"),
     annotationObj
   );
-  if (change === Change.DELETE && param) return null;
   const apiRoute =
     route.toCell({
       tableId: table.id,
