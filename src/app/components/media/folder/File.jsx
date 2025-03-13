@@ -22,7 +22,6 @@ import apiUrl from "../../../helpers/apiUrl";
 
 const enhance = withState("saveChanges", "setSaveChanges", false);
 
-@translate(["media"])
 class File extends Component {
   onRemove = () => {
     if (canUserDeleteFiles()) {
@@ -161,4 +160,4 @@ File.propTypes = {
   actions: PropTypes.object.isRequired
 };
 
-export default enhance(File);
+export default enhance(translate(["media"])(File));

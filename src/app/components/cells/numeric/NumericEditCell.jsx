@@ -8,7 +8,6 @@ import NumberInput from "../../helperComponents/NumberInput";
 import { stopPropagation } from "../../../helpers/functools";
 import { getDecimalDigits } from "../../../helpers/columnHelper";
 
-@listensToClickOutside
 class NumericEditCell extends React.Component {
   constructor(props) {
     super(props);
@@ -102,4 +101,4 @@ NumericEditCell.propTypes = {
   column: PropTypes.object.isRequired
 };
 
-export default NumericEditCell;
+export default listensToClickOutside(NumericEditCell);

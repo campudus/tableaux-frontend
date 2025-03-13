@@ -31,7 +31,6 @@ const ContextMenuItem = ({ iconName, title, onClick, closeMenu, children }) => {
   );
 };
 
-@listensToClickOutside
 class ColumnContextMenu extends React.Component {
   constructor(props) {
     super(props);
@@ -155,4 +154,4 @@ ColumnContextMenu.propTypes = {
   isMetaColumn: PropTypes.bool
 };
 
-export default ColumnContextMenu;
+export default listensToClickOutside(ColumnContextMenu);

@@ -18,6 +18,7 @@ import { canUserCreateMedia } from "../../../helpers/accessManagementHelper";
 import { makeRequest } from "../../../helpers/apiHelper";
 import ProgressBar from "../ProgressBar.jsx";
 import route from "../../../helpers/apiRoutes";
+import { doto } from "../../../helpers/functools";
 
 const withUploadHandlers = compose(
   withState("runningUploads", "applyUploadUpdater", {}),
@@ -90,15 +91,16 @@ const RunningUploadPanel = compose(
 const FileUpload = props => {
   const { runningUploads, t, onDrop } = props;
 
-  const uploads =
-    runningUploads
-    |> f.keys
-    |> f.map(uploadUuid => (
+  const uploads = doto(
+    runningUploads,
+    f.keys,
+    f.map(uploadUuid => (
       <div className="file-upload" key={uploadUuid}>
         <span>{runningUploads[uploadUuid].name}</span>
         <ProgressBar progress={runningUploads[uploadUuid].progress} />
       </div>
-    ));
+    ))
+  );
 
   return (
     <div className="file-uploads">

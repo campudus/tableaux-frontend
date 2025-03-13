@@ -16,9 +16,6 @@ import SearchFunctions from "../../../helpers/searchFunctions";
 import Action from "../../../redux/actionCreators";
 import store from "../../../redux/store";
 
-@translate(["header"])
-@listensToClickOutside
-@withRouter
 class SwitcherPopup extends React.PureComponent {
   constructor(props) {
     super(props);
@@ -418,4 +415,8 @@ SwitcherPopup.propTypes = {
   currentGroupId: PropTypes.number
 };
 
-export default SwitcherPopup;
+export default f.flow(
+  translate(["header"]),
+  listensToClickOutside,
+  withRouter
+)(SwitcherPopup);

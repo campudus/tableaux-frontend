@@ -66,18 +66,20 @@ const HistoryBody = props => {
   }, []);
 
   const retrieveDisplayValue = rev =>
-    rev
-    |> f.assoc(
-      "displayValue",
-      f.propEq("valueType", column.kind)
-        ? getDisplayValue(column, when(f.isNil, () => {}, rev.fullValue))
-        : {}
-    )
-    |> f.assoc(
-      "prevDisplayValue",
-      f.propEq("valueType", column.kind)
-        ? getDisplayValue(column, when(f.isNil, () => {}, rev.prevContent))
-        : {}
+    doto(
+      rev,
+      f.assoc(
+        "displayValue",
+        f.propEq("valueType", column.kind)
+          ? getDisplayValue(column, when(f.isNil, () => {}, rev.fullValue))
+          : {}
+      ),
+      f.assoc(
+        "prevDisplayValue",
+        f.propEq("valueType", column.kind)
+          ? getDisplayValue(column, when(f.isNil, () => {}, rev.prevContent))
+          : {}
+      )
     );
 
   const filterFunction = f.allPass([
