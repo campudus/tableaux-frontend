@@ -14,3 +14,4 @@ devAccessSettings.json
 /config.json
 output/
 coverage/
+.vscode/
