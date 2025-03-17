@@ -5,7 +5,7 @@ RUN apk update && apk upgrade && \
 
 WORKDIR /usr/app
 
-COPY package*.json vite.config.ts ./
+COPY package*.json vite.config.js ./
 COPY .npmrc .eslint* .prettierrc ./
 COPY ./patches/ ./patches/
 
