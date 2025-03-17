@@ -1,8 +1,8 @@
 ---
 extends:
   - "eslint:recommended"
+  - "plugin:@typescript-eslint/recommended"
   - "plugin:react/recommended"
-  - "plugin:jest/recommended"
 
 parser: "@typescript-eslint/parser"
 
@@ -16,16 +16,12 @@ parserOptions:
 env:
   browser: true
   es6: true
-  node: true
-  jest: true
 
 plugins:
-  - standard
-  - eslint-plugin-promise
-  - eslint-plugin-react
+  - "@typescript-eslint/eslint-plugin"
+  - react
   - prettier
   - lodash-fp
-  - jest
 
 settings:
   react:
