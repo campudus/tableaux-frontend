@@ -1,4 +1,3 @@
-/* eslint-disable jest/no-disabled-tests */
 import { maybe } from "../helpers/functools";
 import Text from "./Text";
 import { complement } from "lodash/fp";
