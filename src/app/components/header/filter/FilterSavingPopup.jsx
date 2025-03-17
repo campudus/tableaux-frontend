@@ -1,8 +1,8 @@
 import i18n from "i18next";
 import f from "lodash/fp";
 import PropTypes from "prop-types";
-import React, { useCallback, useState } from "react";
-import listensToClickOutside from "react-onclickoutside";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import { outsideClickEffect } from "../../../helpers/useOutsideClick";
 
 const FilterSavingPopup = ({ filters, onClose, onSubmit }) => {
   const [title, setTitle] = useState("");
@@ -26,10 +26,7 @@ const FilterSavingPopup = ({ filters, onClose, onSubmit }) => {
   });
 
   return (
-    <div
-      className="save-template-popup"
-      onClick={event => void event.stopPropagation()}
-    >
+    <div className="save-template-popup">
       <header className="save-template-popup__header">
         {i18n.t("table:filter.save-filter")}
       </header>
@@ -83,7 +80,8 @@ export const RestoreSavedFiltersArea = ({
   columns,
   onSubmit,
   storedFilters,
-  onClear
+  onClear,
+  onClose
 }) => {
   const columnNames = new Set(columns.map(col => col.name));
   const isValidTemplate = isApplicable(columnNames);
@@ -97,8 +95,17 @@ export const RestoreSavedFiltersArea = ({
   const templates = getGoodTemplates(storedFilters);
   const clearTemplate = name => void onClear(name);
 
+  const container = useRef();
+  useEffect(() => {
+    outsideClickEffect({
+      shouldListen: true,
+      containerRef: container,
+      onOutsideClick: onClose
+    });
+  }, [container.current]);
+
   return (
-    <section className="stored-filters-area">
+    <section className="stored-filters-area" ref={container}>
       <header className="filter-popup__header">
         <span className="filter-popup__heading">Gespeicherte Filter</span>
       </header>
@@ -125,7 +132,7 @@ export const RestoreSavedFiltersArea = ({
   );
 };
 
-export default listensToClickOutside(FilterSavingPopup);
+export default FilterSavingPopup;
 FilterSavingPopup.propTypes = {
   filters: PropTypes.array.isRequired,
   onClose: PropTypes.func.isRequired
