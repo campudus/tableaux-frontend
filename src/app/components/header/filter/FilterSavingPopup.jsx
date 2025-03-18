@@ -1,10 +1,11 @@
 import i18n from "i18next";
 import f from "lodash/fp";
 import PropTypes from "prop-types";
-import React, { useCallback, useState } from "react";
-import listensToClickOutside from "react-onclickoutside";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import { outsideClickEffect } from "../../../helpers/useOutsideClick";
 
 const FilterSavingPopup = ({ filters, onClose, onSubmit }) => {
+  const container = useRef();
   const [title, setTitle] = useState("");
   const handleTitleChange = useCallback(event => setTitle(event.target.value));
 
@@ -24,12 +25,18 @@ const FilterSavingPopup = ({ filters, onClose, onSubmit }) => {
       }
     }
   });
+  
+  useEffect(
+    outsideClickEffect({
+      shouldListen: true,
+      containerRef: container,
+      onOutsideClick: onClose
+    }),
+    [container.current]
+  );
 
   return (
-    <div
-      className="save-template-popup"
-      onClick={event => void event.stopPropagation()}
-    >
+    <div className="save-template-popup" ref={container}>
       <header className="save-template-popup__header">
         {i18n.t("table:filter.save-filter")}
       </header>
@@ -125,7 +132,7 @@ export const RestoreSavedFiltersArea = ({
   );
 };
 
-export default listensToClickOutside(FilterSavingPopup);
+export default FilterSavingPopup;
 FilterSavingPopup.propTypes = {
   filters: PropTypes.array.isRequired,
   onClose: PropTypes.func.isRequired
