@@ -2,9 +2,8 @@
  * Content for the TableSettings menu. Entries are individual React items with specific functions.
  */
 
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import i18n from "i18next";
-import listensToClickOutside from "react-onclickoutside";
 
 import PropTypes from "prop-types";
 
@@ -13,18 +12,31 @@ import {
   canUserEditRowAnnotations
 } from "../../../helpers/accessManagementHelper";
 import NameEditor from "./NameEditor";
+import { outsideClickEffect } from "../../../helpers/useOutsideClick";
 
 const TableSettingsPopup = ({
   table,
   langtag,
-  actions: { setAllRowsFinal, changeTableName }
+  actions: { setAllRowsFinal, changeTableName },
+  onClose
 }) => {
+  const container = useRef();
   const canEditRowAnnotations = canUserEditRowAnnotations({ table });
   const canEditTableDisplayProperty = canUserEditTableDisplayProperty({
     table
   });
+
+  useEffect(
+    outsideClickEffect({
+      shouldListen: true,
+      containerRef: container,
+      onOutsideClick: onClose
+    }),
+    [container.current]
+  );
+
   return (
-    <div id="table-settings-popup">
+    <div id="table-settings-popup" ref={container}>
       <button
         key="i-need-no-key"
         className={
@@ -48,7 +60,6 @@ const TableSettingsPopup = ({
 TableSettingsPopup.propTypes = {
   table: PropTypes.object.isRequired,
   langtag: PropTypes.string.isRequired,
-  handleClickOutside: PropTypes.func.isRequired
 };
 
-export default listensToClickOutside(TableSettingsPopup);
+export default TableSettingsPopup;

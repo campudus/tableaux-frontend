@@ -5,6 +5,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { outsideClickEffect } from "../../../helpers/useOutsideClick";
 
 const FilterSavingPopup = ({ filters, onClose, onSubmit }) => {
+  const container = useRef();
   const [title, setTitle] = useState("");
   const handleTitleChange = useCallback(event => setTitle(event.target.value));
 
@@ -24,9 +25,18 @@ const FilterSavingPopup = ({ filters, onClose, onSubmit }) => {
       }
     }
   });
+  
+  useEffect(
+    outsideClickEffect({
+      shouldListen: true,
+      containerRef: container,
+      onOutsideClick: onClose
+    }),
+    [container.current]
+  );
 
   return (
-    <div className="save-template-popup">
+    <div className="save-template-popup" ref={container}>
       <header className="save-template-popup__header">
         {i18n.t("table:filter.save-filter")}
       </header>
@@ -80,8 +90,7 @@ export const RestoreSavedFiltersArea = ({
   columns,
   onSubmit,
   storedFilters,
-  onClear,
-  onClose
+  onClear
 }) => {
   const columnNames = new Set(columns.map(col => col.name));
   const isValidTemplate = isApplicable(columnNames);
@@ -95,17 +104,8 @@ export const RestoreSavedFiltersArea = ({
   const templates = getGoodTemplates(storedFilters);
   const clearTemplate = name => void onClear(name);
 
-  const container = useRef();
-  useEffect(() => {
-    outsideClickEffect({
-      shouldListen: true,
-      containerRef: container,
-      onOutsideClick: onClose
-    });
-  }, [container.current]);
-
   return (
-    <section className="stored-filters-area" ref={container}>
+    <section className="stored-filters-area">
       <header className="filter-popup__header">
         <span className="filter-popup__heading">Gespeicherte Filter</span>
       </header>

@@ -1,27 +1,26 @@
 import React, { useState, useCallback, useEffect, useRef } from "react";
 import i18n from "i18next";
-import listensToClickOutside from "react-onclickoutside";
 
 import PropTypes from "prop-types";
 import classNames from "classnames";
 
 import { getTableDisplayName } from "../../../helpers/multiLanguage";
 import { preventDefault, stopPropagation } from "../../../helpers/functools";
+import { outsideClickEffect } from "../../../helpers/useOutsideClick";
 
-const NameEditorInput = listensToClickOutside(
-  ({ onChange, onKeyDown, value }) => (
-    <input
-      type="text"
-      className="input"
-      value={value}
-      autoFocus
-      onKeyDown={onKeyDown}
-      onChange={onChange}
-    />
-  )
+const NameEditorInput = ({ onChange, onKeyDown, value }) => (
+  <input
+    type="text"
+    className="input"
+    value={value}
+    autoFocus
+    onKeyDown={onKeyDown}
+    onChange={onChange}
+  />
 );
 
 const NameEditor = ({ table, langtag, changeTableName, locked }) => {
+  const container = useRef();
   const [editMode, setEditMode] = useState(false);
 
   const exitEditMode = useCallback(() => setEditMode(false));
@@ -69,17 +68,25 @@ const NameEditor = ({ table, langtag, changeTableName, locked }) => {
     active: editMode
   });
 
+  useEffect(
+    outsideClickEffect({
+      shouldListen: true,
+      containerRef: container,
+      onOutsideClick: saveAndClose
+    }),
+    [container.current]
+  );
+
   return (
-    <button className={cssClass} onClick={enterEditMode}>
+    <button className={cssClass} onClick={enterEditMode} ref={container}>
       {editMode ? (
         <NameEditorInput
           onChange={handleChange}
           onKeyDown={handleKeyDown}
           value={value}
-          handleClickOutside={saveAndClose}
         />
       ) : (
-        <span> {i18n.t("table:editor.rename_table")} </span>
+        i18n.t("table:editor.rename_table")
       )}
     </button>
   );

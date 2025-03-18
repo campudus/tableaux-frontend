@@ -26,7 +26,7 @@ export const StyleIcon = ({
     "style-button--disabled": disabled
   });
   return (
-    <div className={cssClass} onMouseDown={disabled ? f.noop : handleClick}>
+    <div className={cssClass} onClick={disabled ? f.noop : handleClick}>
       {label ? (
         <span style={{ fontWeight: "bold" }}>{label}</span>
       ) : icon ? (
