@@ -1,11 +1,11 @@
-FROM node:20.10-alpine AS build
+FROM node:22.14-alpine AS build
 
 RUN apk update && apk upgrade && \
     apk add --no-cache bash git openssh
 
 WORKDIR /usr/app
 
-COPY package*.json vite.config.js ./
+COPY package*.json vite.config* tsconfig.* ./
 COPY .npmrc .eslint* .prettierrc ./
 COPY ./patches/ ./patches/
 
@@ -25,7 +25,7 @@ RUN npm run lint && \
     npm run build && \
     npm prune --omit=dev
 
-FROM node:20.10.0-alpine
+FROM node:22.14-alpine
 
 WORKDIR /usr/app
 

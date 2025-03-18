@@ -18,7 +18,6 @@ export default defineConfig({
       scss: {
         api: "modern-compiler",
         // TODO: fix deprecations!
-        // @ts-ignore
         silenceDeprecations: [
           "slash-div",
           "mixed-decls",
@@ -85,7 +84,7 @@ export default defineConfig({
       provider: "v8",
       reporter: ["cobertura", "html", "text-summary"],
       reportsDirectory: "./output/coverage",
-      include: ["/(src|tests)/**/*.(j|t)sx?"]
+      include: ["src/**/*.js", "src/**/*.jsx", "src/**/*.ts", "src/**/*.tsx"]
     }
   }
 });
