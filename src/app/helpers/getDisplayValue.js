@@ -203,10 +203,7 @@ const format = f.curryN(2)((column, displayValue) => {
     // replace all occurences of {{n+1}} with displayValue[n];
     // Because the formatPatterns consists of absolute columnId we first have to map index to columnId
     const applyFormat = (result, dVal, idx) => {
-      const colIdx = f.flow(
-        f.map("id"),
-        f.nth(idx)
-      )(innerColumns);
+      const colId = innerColumns[idx]?.id;
 
       // Boolean columns are a special case; falsy bool values deliver an empty string which we want to keep
       const isEmptyValue =
@@ -215,7 +212,7 @@ const format = f.curryN(2)((column, displayValue) => {
           : f.isEmpty;
 
       const formattedValue = f.trim(isEmptyValue(dVal) ? placeholder : dVal);
-      return result.replace(moustache(colIdx), formattedValue);
+      return result.replace(moustache(colId), formattedValue);
     };
 
     const formattedString =
