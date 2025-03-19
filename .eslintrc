@@ -4,9 +4,7 @@ extends:
   - "plugin:react/recommended"
   - "plugin:jest/recommended"
 
-parser: "@babel/eslint-parser"
-
-requireConfigFile: false
+parser: "@typescript-eslint/parser"
 
 parserOptions:
   ecmaVersion: 7

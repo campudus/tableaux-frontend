@@ -25,7 +25,7 @@ const FilterSavingPopup = ({ filters, onClose, onSubmit }) => {
       }
     }
   });
-  
+
   useEffect(
     outsideClickEffect({
       shouldListen: true,

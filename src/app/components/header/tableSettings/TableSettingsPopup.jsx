@@ -59,7 +59,7 @@ const TableSettingsPopup = ({
 
 TableSettingsPopup.propTypes = {
   table: PropTypes.object.isRequired,
-  langtag: PropTypes.string.isRequired,
+  langtag: PropTypes.string.isRequired
 };
 
 export default TableSettingsPopup;
