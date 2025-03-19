@@ -5,8 +5,8 @@ RUN apk update && apk upgrade && \
 
 WORKDIR /usr/app
 
-COPY package*.json vite.config.js ./
-COPY .npmrc .babelrc .eslint* .prettierrc ./
+COPY package*.json vite.config.ts ./
+COPY .npmrc .eslint* .prettierrc ./
 COPY ./patches/ ./patches/
 
 RUN npm ci -d
