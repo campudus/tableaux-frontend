@@ -31,7 +31,8 @@ const IdentifierCell = props => {
   return (
     <div className="cell-content" onClick={openEditor}>
       {cell.column.kind === ColumnKinds.concat &&
-      !f.isEmpty(foreignDisplayValues)
+      !f.isEmpty(foreignDisplayValues) &&
+      !cell.column.formatPattern
         ? foreignDisplayValues
         : displayValue[langtag]}
     </div>
