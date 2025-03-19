@@ -285,7 +285,6 @@ class TableView extends PureComponent {
         <GrudHeader
           langtag={langtag}
           handleLanguageSwitch={this.onLanguageSwitch}
-          pageTitleOrKey="pageTitle.tables"
         >
           {isTaxonomyTable(table) ? (
             <div className="hfill" />
@@ -367,7 +366,6 @@ const EmptyTableView = withRouter(({ langtag, history }) => {
       <GrudHeader
         langtag={langtag}
         handleLanguageSwitch={handleLanguageSwitch}
-        pageTitleOrKey="pageTitle.tables"
       />
       <div className="initial-loader">
         <div className="centered-user-message">

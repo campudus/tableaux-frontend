@@ -7,7 +7,6 @@ import f from "lodash/fp";
 import PropTypes from "prop-types";
 
 import { expandServiceUrl } from "../../frontendServiceRegistry/frontendServiceHelper";
-import { retrieveTranslation } from "../../helpers/multiLanguage";
 import { switchLanguageHandler } from "../Router";
 import GrudHeader from "../GrudHeader";
 import FrontendServiceNotFound from "./FrontendServiceNotFound";
@@ -31,10 +30,6 @@ const FrontendServiceView = ({
     ? expandServiceUrl(urlParams, service.config.url)
     : "";
 
-  const pageTitle = !f.isEmpty(service)
-    ? retrieveTranslation(langtag, service.displayName)
-    : "Frontend Service";
-
   const routeToService =
     `/${langtag}/services/${serviceId}` +
     (tableId ? `/tables/${tableId}` : "") +
@@ -48,7 +43,6 @@ const FrontendServiceView = ({
       <GrudHeader
         handleLanguageSwitch={handleLanguageSwitch}
         langtag={langtag}
-        pageTitleOrKey={pageTitle}
       />
       <div className="frontend-service-main-view wrapper">
         {!f.isEmpty(service) && service.active ? (

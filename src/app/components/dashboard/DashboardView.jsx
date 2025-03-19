@@ -58,7 +58,6 @@ const DashboardView = props => {
   return (
     <React.Fragment>
       <GrudHeader
-        pageTitleOrKey="Dashboard"
         langtag={langtag}
         handleLanguageSwitch={handleLanguageSwitch}
       />

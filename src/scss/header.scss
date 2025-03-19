@@ -155,20 +155,6 @@
     }
   }
 
-  #header-pagename {
-    margin-right: 20px;
-    font-weight: bold;
-    text-transform: uppercase;
-    line-height: $space-height-header;
-    color: $color-text-light-grey;
-    font-family: $font-sec;
-
-    //hide on small devices
-    @media (max-width: 800px) {
-      display: none;
-    }
-  }
-
   #main-navigation-wrapper:not(.active) #burger,
   #filter-wrapper:not(.active) a.button,
   a.button {
