@@ -23,6 +23,20 @@
     flex: 1 1 auto;
   }
 
+  .row-count {
+    display: flex;
+    align-items: center;
+    margin-right: 20px;
+    font-weight: 500;
+    color: $color-text-medium-grey;
+    font-family: $font-sec;
+
+    //hide on small devices
+    @media (max-width: 800px) {
+      display: none;
+    }
+  }
+
   .Select {
     .Select-placeholder,
     :not(.Select--multi) > .Select-control .Select-value {

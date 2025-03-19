@@ -1,17 +1,22 @@
+import { PropsWithChildren } from "react";
 import f from "lodash/fp";
-import PropTypes from "prop-types";
 import { useSelector } from "react-redux";
 import { ConnectionStatus } from "./header/ConnectionStatus";
 import LanguageSwitcher from "./header/LanguageSwitcher";
 import Navigation from "./header/Navigation";
 import UserMenu from "./header/UserMenu";
 
+type GrudHeaderProps = PropsWithChildren<{
+  handleLanguageSwitch: (langtag: string) => void,
+  langtag: string,
+}>;
+
 const GrudHeader = ({
   children,
   handleLanguageSwitch,
   langtag,
-}) => {
-  const connectedToBackend = useSelector(
+}: GrudHeaderProps) => {
+  const connectedToBackend: boolean = useSelector(
     f.prop(["grudStatus", "connectedToBackend"])
   );
   return (
@@ -28,8 +33,3 @@ const GrudHeader = ({
 };
 
 export default GrudHeader;
-
-GrudHeader.propTypes = {
-  langtag: PropTypes.string.isRequired,
-  handleLanguageSwitch: PropTypes.func.isRequired
-};

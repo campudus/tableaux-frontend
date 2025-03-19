@@ -10,7 +10,8 @@
   "pageTitle": {
     "media": "Media Management",
     "tables": "Tables",
-    "dashboard": "Dashboard"
+    "dashboard": "Dashboard",
+    "row-count": "{{rowCount}} of {{rowCountAll}} rows"
   },
   "tableSwitcher": {
     "nogroup": "Show all tables...",
