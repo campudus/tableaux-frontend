@@ -95,17 +95,13 @@ export function getKeyboardShortcuts() {
     enter: event => {
       event.preventDefault();
       preventSleepingOnTheKeyboard.call(this, () => {
-        if (isLastRowSelected.call(this) && selectedCellEditing) {
-          // if user is currently editing and presses enter in last row
-          // we create a new row and jump into that (like excel does)
+        if (isLastRowSelected.call(this) && selectedCellEditing && getModifiers(event).shift) {
           createAndSelectNewRow.call(this);
-        } else {
-          if (selectedCell) {
-            toggleCellEditing.call(this, {
-              langtag: selectedCell.langtag || this.props.langtag,
-              event
-            });
-          }
+        } else if (selectedCell) {
+          toggleCellEditing.call(this, {
+            langtag: selectedCell.langtag || this.props.langtag,
+            event
+          });
         }
       });
     },

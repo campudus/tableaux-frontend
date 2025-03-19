@@ -49,6 +49,7 @@
     "fast-diff": "^1.2.0",
     "focus-trap-react": "^6.0.0",
     "full-icu": "1.5.0",
+    "grud-devtools": "git+https://github.com/campudus/grud-devtools.git#v0.2.0",
     "happy-dom": "17.1.9",
     "i18next": "^10.5.0",
     "keycloak-js": "^26.0.0",
