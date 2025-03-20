@@ -1,9 +1,10 @@
+/// <reference types="vitest/config" />
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
-import dns from "dns";
+import { setDefaultResultOrder } from "dns";
 import checker from "vite-plugin-checker";
 
-dns.setDefaultResultOrder("verbatim");
+setDefaultResultOrder("verbatim");
 
 export default defineConfig({
   plugins: [
@@ -17,7 +18,6 @@ export default defineConfig({
       scss: {
         api: "modern-compiler",
         // TODO: fix deprecations!
-        // @ts-ignore
         silenceDeprecations: [
           "slash-div",
           "mixed-decls",
@@ -84,7 +84,7 @@ export default defineConfig({
       provider: "v8",
       reporter: ["cobertura", "html", "text-summary"],
       reportsDirectory: "./output/coverage",
-      include: ["/(src|tests)/**/*.(j|t)sx?"]
+      include: ["src/**/*.js", "src/**/*.jsx", "src/**/*.ts", "src/**/*.tsx"]
     }
   }
 });

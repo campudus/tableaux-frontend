@@ -68,6 +68,7 @@ Grid.prototype.handleScrollEvent = function(trigger) {
 
   if (trigger === this._mainGridNode || trigger === this.leftGridNode) {
     this.props.onScroll(scrollInfo);
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
     const self = this;
     handleScrollLater.start(self, scrollInfo);
     // Cannot directly subscribe to event stream, as React hijacks this and delivers React.VirtualEvents instead,

@@ -122,9 +122,9 @@ export const initAnnotationConfigs = configs => {
   AnnotationConfigs = [
     { name: "info", kind: AnnotationKind.data },
     { name: "final", kind: AnnotationKind.rowProp },
-    ...configs?.map(annotationConfig => ({
+    ...(configs?.map(annotationConfig => ({
       ...annotationConfig,
       kind: AnnotationKind.flag
-    }))
+    })) ?? [])
   ];
 };

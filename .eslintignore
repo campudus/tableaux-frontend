@@ -1,1 +1,13 @@
-src/main/js/thirdparty/*
+/**/node_modules
+/**/lib
+/**/dist
+/**/out
+/**/__tests__
+/**/.cache
+coverage/
+.vscode/
+data/
+docs/
+.idea/
+.git/
+.eslintrc.cjs
