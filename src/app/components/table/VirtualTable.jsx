@@ -7,7 +7,7 @@
 import f from "lodash/fp";
 import PropTypes from "prop-types";
 import React, { createRef, PureComponent } from "react";
-import { AutoSizer } from "react-virtualized";
+import { AutoSizer, MultiGrid } from "react-virtualized";
 import {
   ColumnKinds,
   Directions,
@@ -27,7 +27,6 @@ import MetaCell from "../cells/MetaCell";
 import MetaCellHeader from "../cells/MetaCellHeader";
 import ColumnHeader from "../columns/ColumnHeader";
 import AddNewRowButton from "../rows/NewRow";
-import MultiGrid from "./GrudGrid";
 import * as tableNavigationWorker from "./tableNavigationWorker";
 
 const META_CELL_WIDTH = 80;
@@ -559,8 +558,6 @@ export default class VirtualTable extends PureComponent {
             return (
               <MultiGrid
                 onScroll={this.handleScroll}
-                isScrollingOptOut={true}
-                enableFixedColumnScroll={true}
                 langtag={langtag}
                 ref={this.storeGridElement}
                 key={columnCount < 3 ? "no-fixed-rows" : "with-fixed-rows"}
