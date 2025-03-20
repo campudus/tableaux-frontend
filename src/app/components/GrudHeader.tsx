@@ -7,14 +7,14 @@ import Navigation from "./header/Navigation";
 import UserMenu from "./header/UserMenu";
 
 type GrudHeaderProps = PropsWithChildren<{
-  handleLanguageSwitch: (langtag: string) => void,
-  langtag: string,
+  handleLanguageSwitch: (langtag: string) => void;
+  langtag: string;
 }>;
 
 const GrudHeader = ({
   children,
   handleLanguageSwitch,
-  langtag,
+  langtag
 }: GrudHeaderProps) => {
   const connectedToBackend: boolean = useSelector(
     f.prop(["grudStatus", "connectedToBackend"])
