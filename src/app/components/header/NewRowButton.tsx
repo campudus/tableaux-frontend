@@ -7,12 +7,14 @@ type NewRowButtonProps = {
   rows: Row[];
   showToast: (toast: { content: ReactNode; duration: number }) => void;
   onAdd: () => void;
+  sortingDesc: boolean;
 };
 
 export default function NewRowButton({
   showToast,
   rows,
-  onAdd
+  onAdd,
+  sortingDesc
 }: NewRowButtonProps): ReactElement {
   const isEmpty: (rowValues: Row["values"]) => boolean = f.cond([
     [f.isArray, element => f.isEmpty(element) || f.every(isEmpty, element)],
@@ -21,7 +23,8 @@ export default function NewRowButton({
   ]);
 
   const addNewRow = () => {
-    const hasEmptyRow = f.every(isEmpty, f.prop("values", f.last(rows)));
+    const lastRow = sortingDesc ? f.first(rows) : f.last(rows);
+    const hasEmptyRow = f.every(isEmpty, f.prop("values", lastRow));
     if (f.isEmpty(rows) || !hasEmptyRow) {
       onAdd();
       return;
