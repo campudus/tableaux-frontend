@@ -247,8 +247,9 @@ class TableView extends PureComponent {
   };
 
   renderNewRowButton = () => {
-    const { table, rows, langtag, actions } = this.props;
+    const { table, rows, langtag, actions, globalSettings } = this.props;
     const { toggleCellSelection, showToast, addEmptyRow } = actions;
+    const { sortingDesc } = globalSettings;
 
     if (table.type === "settings" || !canUserCreateRow({ table })) {
       return null;
@@ -268,6 +269,7 @@ class TableView extends PureComponent {
           }}
           rows={rows}
           showToast={showToast}
+          sortingDesc={sortingDesc}
         />
       </div>
     );
