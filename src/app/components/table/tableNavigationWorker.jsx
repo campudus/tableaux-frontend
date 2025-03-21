@@ -95,7 +95,11 @@ export function getKeyboardShortcuts() {
     enter: event => {
       event.preventDefault();
       preventSleepingOnTheKeyboard.call(this, () => {
-        if (isLastRowSelected.call(this) && selectedCellEditing && getModifiers(event).shift) {
+        if (
+          isLastRowSelected.call(this) &&
+          selectedCellEditing &&
+          getModifiers(event).shift
+        ) {
           createAndSelectNewRow.call(this);
         } else if (selectedCell) {
           toggleCellEditing.call(this, {
