@@ -221,19 +221,14 @@ const checkIfSelectedCellExists = (dispatch, tableId, state) => {
     dispatchToast(i18n.t("table:jump.no_such_column", { col: columnId }));
   }
 
-  const anyIdChanged =
-    !f.eq(validRowId, rowId) || !f.eq(validColumnId, columnId);
-
-  if (anyIdChanged) {
-    dispatch(
-      toggleCellSelection({
-        tableId: table.id,
-        columnId: validColumnId,
-        rowId: validRowId,
-        langtag
-      })
-    );
-  }
+  dispatch(
+    toggleCellSelection({
+      tableId: table.id,
+      columnId: validColumnId,
+      rowId: validRowId,
+      langtag
+    })
+  );
 };
 
 const loadAllRows = (tableId, ...params) => async (dispatch, getState) => {
