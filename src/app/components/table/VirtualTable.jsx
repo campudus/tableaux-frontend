@@ -26,7 +26,6 @@ import Cell from "../cells/Cell";
 import MetaCell from "../cells/MetaCell";
 import MetaCellHeader from "../cells/MetaCellHeader";
 import ColumnHeader from "../columns/ColumnHeader";
-import AddNewRowButton from "../rows/NewRow";
 import MultiGrid from "./GrudGrid";
 import * as tableNavigationWorker from "./tableNavigationWorker";
 
@@ -372,36 +371,16 @@ export default class VirtualTable extends PureComponent {
   };
 
   renderButton = ({ columnIndex }) => {
-    const {
-      table: { id, type },
-      table,
-      actions: { addEmptyRow, showToast, toggleCellSelection },
-      rows,
-      columns,
-      langtag
-    } = this.props;
+    const { table, columns, renderNewRowButton } = this.props;
     const hasStatusColumn = columns.find(c => c.kind === ColumnKinds.status);
     const rowButtonColumn = hasStatusColumn ? 2 : 1;
+
     if (
-      type !== "settings" &&
+      table.type !== "settings" &&
       columnIndex === rowButtonColumn &&
       canUserCreateRow({ table })
     ) {
-      return (
-        <AddNewRowButton
-          onAdd={async () => {
-            const { result: newRow } = await addEmptyRow(id);
-            toggleCellSelection({
-              langtag,
-              tableId: id,
-              rowId: newRow.id
-            });
-            this.forceUpdate();
-          }}
-          rows={rows}
-          showToast={showToast}
-        />
-      );
+      return renderNewRowButton();
     }
     return (
       <div
