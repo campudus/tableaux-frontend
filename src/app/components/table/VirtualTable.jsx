@@ -28,6 +28,7 @@ import MetaCellHeader from "../cells/MetaCellHeader";
 import ColumnHeader from "../columns/ColumnHeader";
 import AddNewRowButton from "../rows/NewRow";
 import * as tableNavigationWorker from "./tableNavigationWorker";
+import reduxActionHoc from "../../helpers/reduxActionHoc";
 
 const META_CELL_WIDTH = 80;
 const STATUS_CELL_WIDTH = 120;
@@ -35,9 +36,7 @@ const HEADER_HEIGHT = 37;
 const CELL_WIDTH = 300;
 const ROW_HEIGHT = 45;
 
-const safelyPassIndex = x => (f.isNumber(x) && !f.isNaN(x) ? x : -1);
-
-export default class VirtualTable extends PureComponent {
+class VirtualTable extends PureComponent {
   constructor(props) {
     super(props);
     this.virtualTableRef = createRef();
@@ -46,7 +45,8 @@ export default class VirtualTable extends PureComponent {
       openAnnotations: {},
       newRowAdded: false,
       showResizeBar: false,
-      columnWidths: {}
+      columnWidths: {},
+      selectedCell: {}
     };
   }
 
@@ -75,14 +75,24 @@ export default class VirtualTable extends PureComponent {
     this.divRef.style.left = event.clientX + "px";
   };
 
-  getSelectedCell = () =>
-    f.propOr({}, "selectedCell.selectedCell", store.getState());
-
-  handleScroll = f.debounce(100, () => {
-    if (document.activeElement === document.body) {
-      this.focusTable();
-    }
+  focusTableDebounced = f.debounce(100, () => {
+    this.focusTable();
   });
+
+  handleScroll = () => {
+    if (f.keys(this.state.selectedCell).length > 0) {
+      // this is a hack to prevent out of sync scrolling behaviour
+      // between fixed columns and main columns.
+      // MultiGrid scrolling is only out of sync if scrollToRow or scrolToColumn is set,
+      // so we read rowIndex and columnIndex from state and immediately set them to undefined on scroll
+      // as suggested in https://github.com/bvaughn/react-virtualized/issues/1170#issuecomment-539932805
+      this.setState({ selectedCell: {} });
+    }
+
+    if (document.activeElement === document.body) {
+      this.focusTableDebounced();
+    }
+  };
 
   saveColWidths = index => {
     this.columnStartSize = null;
@@ -300,7 +310,7 @@ export default class VirtualTable extends PureComponent {
         openCellContextMenu={this.openCellContextMenu}
         rowIndex={rowIndex}
         rows={this.props.rows}
-        selectedCell={this.getSelectedCell()}
+        selectedCell={this.props.selectedCell}
         toggleAnnotationPopup={this.setOpenAnnotations}
         value={value}
         visibleColumns={this.props.visibleColumnOrdering}
@@ -356,7 +366,7 @@ export default class VirtualTable extends PureComponent {
               isPrimaryLang={isPrimaryLang}
               openCellContextMenu={this.openCellContextMenu}
               rows={this.props.rows}
-              selectedCell={this.getSelectedCell()}
+              selectedCell={this.props.selectedCell}
               setSelectedCellExpandedRow={setSelectedCellExpandedRow}
               toggleAnnotationPopup={this.setOpenAnnotations}
               value={cell.value}
@@ -469,11 +479,15 @@ export default class VirtualTable extends PureComponent {
       this.setState({ columnWidths: view.columnWidths || {} });
       maybe(this.multiGrid).method("invalidateCellSizeAfterRender");
     }
+
+    if (!f.equals(next.selectedCell, this.props.selectedCell)) {
+      this.setState({ selectedCell: next.selectedCell });
+    }
   }
 
   getScrollInfo = () => {
     const { rows, columns, visibleColumnOrdering } = this.props;
-    const { rowId, columnId, align } = this.getSelectedCell();
+    const { rowId, columnId, align } = this.state.selectedCell;
 
     const rowIndex = f.findIndex(f.matchesProperty("id", rowId), rows);
     const columnIndex = f.compose(
@@ -483,9 +497,11 @@ export default class VirtualTable extends PureComponent {
       f.map(index => ({ id: f.get("id", columns[index]), idx: index }))
     )(visibleColumnOrdering);
 
+    const isSafeIndex = x => f.isNumber(x) && !f.isNaN(x) && x >= 0;
+
     return {
-      columnIndex: columnIndex + 1,
-      rowIndex: rowIndex + 1,
+      columnIndex: isSafeIndex(columnIndex) ? columnIndex + 1 : undefined,
+      rowIndex: isSafeIndex(rowIndex) ? rowIndex + 1 : undefined,
       align
     };
   };
@@ -558,6 +574,7 @@ export default class VirtualTable extends PureComponent {
             return (
               <MultiGrid
                 onScroll={this.handleScroll}
+                enableFixedColumnScroll
                 langtag={langtag}
                 ref={this.storeGridElement}
                 key={columnCount < 3 ? "no-fixed-rows" : "with-fixed-rows"}
@@ -574,8 +591,8 @@ export default class VirtualTable extends PureComponent {
                 height={height}
                 expandedRows={expandedRowIds}
                 openAnnotations={!!openAnnotations && openAnnotations.cellId}
-                scrollToRow={safelyPassIndex(rowIndex)}
-                scrollToColumn={safelyPassIndex(columnIndex)}
+                scrollToRow={rowIndex}
+                scrollToColumn={columnIndex}
                 scrollToAlignment={align}
                 columnKeys={columnKeys}
                 overscanColumnCount={5}
@@ -612,3 +629,11 @@ VirtualTable.propTypes = {
   selectedCellExpandedRow: PropTypes.string,
   visibleColumns: PropTypes.string.isRequired
 };
+
+const mapStateToProps = state => {
+  return {
+    selectedCell: f.propOr({}, "selectedCell.selectedCell", state)
+  };
+};
+
+export default reduxActionHoc(VirtualTable, mapStateToProps);
