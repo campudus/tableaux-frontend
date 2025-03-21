@@ -7,7 +7,6 @@ WORKDIR /usr/app
 
 COPY package*.json vite.config* tsconfig.* ./
 COPY .npmrc .eslint* .prettierrc ./
-COPY ./patches/ ./patches/
 
 RUN npm ci -d
 

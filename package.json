@@ -15,8 +15,7 @@
     "test": "NODE_ICU_DATA=./node_modules/full-icu vitest run",
     "test:ci": "NODE_ICU_DATA=./node_modules/full-icu vitest run --coverage",
     "clean": "rm -fr .cache out",
-    "clean:project": "rm -fr .cache out node_modules; npm install && npm ci",
-    "postinstall": "patch-package"
+    "clean:project": "rm -fr .cache out node_modules; npm install && npm ci"
   },
   "license": "Apache license 2.0",
   "devDependencies": {
@@ -58,7 +57,6 @@
     "markdown-draft-js": "1.7.1",
     "match-iz": "4.0.2",
     "moment": "2.29.4",
-    "patch-package": "8.0.0",
     "postcss": "^8.5.3",
     "prettier": "1.18.2",
     "react": "16.14.0",
