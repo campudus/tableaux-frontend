@@ -11,6 +11,7 @@ import {
   Table
 } from "grud-devtools/types";
 
+// eslint-disable-next-line prettier/prettier
 export type {
   Attachment,
   CellValue,
@@ -21,7 +22,7 @@ export type {
   MultilangValue,
   MultilangCellValue,
   SingleLangCellValue,
-  Table,
+  Table
 };
 
 export type RowValue = CellValue["value"];
