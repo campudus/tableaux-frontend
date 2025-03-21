@@ -80,6 +80,7 @@ module.exports = {
     "@typescript-eslint/no-unused-expressions": "warn",
     "react/jsx-uses-react": "warn",
     "react/jsx-uses-vars": "warn",
+    "react/react-in-jsx-scope": "off",
     "react/no-typos": "error",
     "react/no-this-in-sfc": "error",
     "react/prefer-stateless-function": "warn",

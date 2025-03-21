@@ -71,7 +71,6 @@ const TaxonomyDashboard = props => {
   return (
     <div className="taxonomy-dashboard">
       <GrudHeader
-        pageTitleOrKey={i18n.t("table:taxonomy.title")}
         langtag={langtag}
         handleLanguageSwitch={handleSwitchLangtag}
       />

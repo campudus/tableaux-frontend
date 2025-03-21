@@ -19,7 +19,6 @@ function ProfileView({ langtag, history, profileTab }) {
   return (
     <>
       <GrudHeader
-        pageTitleOrKey="Profile"
         langtag={langtag}
         handleLanguageSwitch={handleLanguageSwitch}
       />

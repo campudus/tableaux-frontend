@@ -32,6 +32,7 @@ import { isTaxonomyTable } from "../taxonomy/taxonomy";
 import applyFiltersAndVisibility from "./applyFiltersAndVisibility";
 import JumpSpinner from "./JumpSpinner";
 import SearchOverlay from "./SearchOverlay";
+import RowCount from "../header/RowCount";
 
 const BIG_TABLE_THRESHOLD = 10000; // Threshold to decide when a table is so big we might not want to search it
 const mapStatetoProps = (state, props) => {
@@ -253,7 +254,9 @@ class TableView extends PureComponent {
       allDisplayValues,
       filtering,
       tableView,
-      columnOrdering
+      columnOrdering,
+      rowCount,
+      rowCountAll
     } = this.props;
     const columnActions = f.pick(
       [
@@ -285,7 +288,6 @@ class TableView extends PureComponent {
         <GrudHeader
           langtag={langtag}
           handleLanguageSwitch={this.onLanguageSwitch}
-          pageTitleOrKey="pageTitle.tables"
         >
           {isTaxonomyTable(table) ? (
             <div className="hfill" />
@@ -346,6 +348,7 @@ class TableView extends PureComponent {
                 tableId={table.id}
                 actions={actions}
               />
+              <RowCount rowCount={rowCount} rowCountAll={rowCountAll} />
             </>
           )}
         </GrudHeader>
@@ -367,7 +370,6 @@ const EmptyTableView = withRouter(({ langtag, history }) => {
       <GrudHeader
         langtag={langtag}
         handleLanguageSwitch={handleLanguageSwitch}
-        pageTitleOrKey="pageTitle.tables"
       />
       <div className="initial-loader">
         <div className="centered-user-message">

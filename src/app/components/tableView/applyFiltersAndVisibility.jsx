@@ -101,6 +101,8 @@ const withFiltersAndVisibility = Component => props => {
         {...{
           ...props,
           columns: columnsWithVisibility,
+          rowCountAll: f.size(rows),
+          rowCount: f.size(visibleRows),
           rows: visibleRows,
           visibleRows: visibleRowIDs,
           canRenderTable,

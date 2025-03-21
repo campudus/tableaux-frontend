@@ -23,6 +23,20 @@
     flex: 1 1 auto;
   }
 
+  .row-count {
+    display: flex;
+    align-items: center;
+    margin-right: 20px;
+    font-weight: 500;
+    color: $color-text-medium-grey;
+    font-family: $font-sec;
+
+    //hide on small devices
+    @media (max-width: 800px) {
+      display: none;
+    }
+  }
+
   .Select {
     .Select-placeholder,
     :not(.Select--multi) > .Select-control .Select-value {
@@ -152,20 +166,6 @@
 
     &.icon-taxonomy .svg-icon {
       padding: 0;
-    }
-  }
-
-  #header-pagename {
-    margin-right: 20px;
-    font-weight: bold;
-    text-transform: uppercase;
-    line-height: $space-height-header;
-    color: $color-text-light-grey;
-    font-family: $font-sec;
-
-    //hide on small devices
-    @media (max-width: 800px) {
-      display: none;
     }
   }
 
