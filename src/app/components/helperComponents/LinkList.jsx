@@ -124,9 +124,9 @@ const LinkList = props => {
       <div className="linked-items">
         <List
           width={window.innerWidth * 0.6 - 100}
-          height={f.min([linksToRender * 42, 430])}
+          height={f.min([linksToRender * 44, 430])}
           rowCount={linksToRender}
-          rowHeight={42}
+          rowHeight={44}
           rowRenderer={renderListItem}
         />
       </div>

@@ -104,7 +104,7 @@ const LinkItem = props => {
       <div className={getCssClass(props)}>
         {showToggleButton && (
           <LinkButton
-            className={classNames(secondaryButtonClass, "roundCorners")}
+            className={secondaryButtonClass}
             onClick={handleClickToggle}
             disabled={isDisabled}
           >
@@ -140,7 +140,7 @@ const LinkItem = props => {
             ) : f.isEmpty(linkName) ? (
               <Empty />
             ) : (
-              linkName
+              <span title={linkName}>{linkName}</span>
             )}
           </div>
         </div>
