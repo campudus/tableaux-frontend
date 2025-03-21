@@ -247,9 +247,8 @@ class TableView extends PureComponent {
   };
 
   renderNewRowButton = () => {
-    const { table, rows, langtag, actions, globalSettings } = this.props;
+    const { table, columns, lastRow, langtag, actions } = this.props;
     const { toggleCellSelection, showToast, addEmptyRow } = actions;
-    const { sortingDesc } = globalSettings;
 
     if (table.type === "settings" || !canUserCreateRow({ table })) {
       return null;
@@ -260,16 +259,18 @@ class TableView extends PureComponent {
         <NewRowButton
           onAdd={async () => {
             const { result: newRow } = await addEmptyRow(table.id);
+            return newRow;
+          }}
+          onSelect={row => {
             toggleCellSelection({
               langtag,
               tableId: table.id,
-              rowId: newRow.id
+              columnId: f.first(columns).id,
+              rowId: row.id
             });
-            this.forceUpdate();
           }}
-          rows={rows}
+          lastRow={lastRow}
           showToast={showToast}
-          sortingDesc={sortingDesc}
         />
       </div>
     );

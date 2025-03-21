@@ -4,17 +4,17 @@ import i18n from "i18next";
 import { Row } from "../../types/grud";
 
 type NewRowButtonProps = {
-  rows: Row[];
+  lastRow?: Row;
+  onAdd: () => Promise<Row>;
+  onSelect: (row: Row) => void;
   showToast: (toast: { content: ReactNode; duration: number }) => void;
-  onAdd: () => void;
-  sortingDesc: boolean;
 };
 
 export default function NewRowButton({
   showToast,
-  rows,
+  lastRow,
   onAdd,
-  sortingDesc
+  onSelect
 }: NewRowButtonProps): ReactElement {
   const isEmpty: (rowValues: Row["values"]) => boolean = f.cond([
     [f.isArray, element => f.isEmpty(element) || f.every(isEmpty, element)],
@@ -22,13 +22,16 @@ export default function NewRowButton({
     [f.stubTrue, f.isEmpty]
   ]);
 
-  const addNewRow = () => {
-    const lastRow = sortingDesc ? f.first(rows) : f.last(rows);
+  const addNewRow = async () => {
     const hasEmptyRow = f.every(isEmpty, f.prop("values", lastRow));
-    if (f.isEmpty(rows) || !hasEmptyRow) {
-      onAdd();
+
+    if (f.isEmpty(lastRow) || !hasEmptyRow) {
+      const newRow = await onAdd();
+      onSelect(newRow);
       return;
     }
+
+    onSelect(lastRow);
     showToast({
       content: <div id="cell-jump-toast">{i18n.t("table:cant-add-row")}</div>,
       duration: 2000
