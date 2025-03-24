@@ -1,19 +1,29 @@
-/*
- * Overlay class that allows to edit an editable column's title and description. Saving data is managed by a
- * handler passed from the current table's Columns instance, which created the ColumnEntry which in turn opened
- * the overlay.
- */
-import React, { useState } from "react";
+import { ChangeEvent, FocusEvent, ReactElement, useState } from "react";
 import i18n from "i18next";
 
-import PropTypes from "prop-types";
+type Input = {
+  displayValue: string;
+  description: string;
+};
 
-const ColumnEditorOverlay = props => {
-  const { handleInput } = props;
+type SetInputState = (value: string) => void;
+type InputElement = HTMLInputElement | HTMLTextAreaElement;
+type InputEvent = ChangeEvent<InputElement> | FocusEvent<InputElement>;
+
+type ColumnEditorOverlayProps = {
+  columnName: string;
+  description: string;
+  handleInput: (input: Input) => void;
+};
+
+export default function ColumnEditorOverlay({
+  handleInput,
+  ...props
+}: ColumnEditorOverlayProps): ReactElement {
   const [columnName, setName] = useState(props.columnName);
   const [description, setDescription] = useState(props.description);
 
-  const setDomElValue = setState => event => {
+  const setDomElValue = (setState: SetInputState) => (event: InputEvent) => {
     setState(event.target.value);
     handleInput({ displayValue: columnName, description });
   };
@@ -40,9 +50,8 @@ const ColumnEditorOverlay = props => {
       <div className="item">
         <div className="item-header">{i18n.t("table:editor.description")}</div>
         <textarea
-          type="text"
           className="item-content"
-          rows="6"
+          rows={6}
           onChange={handleDescriptionChange}
           onBlur={handleDescriptionChange}
           value={description}
@@ -50,12 +59,4 @@ const ColumnEditorOverlay = props => {
       </div>
     </div>
   );
-};
-
-ColumnEditorOverlay.propTypes = {
-  columnName: PropTypes.string.isRequired,
-  description: PropTypes.string.isRequired,
-  handleInput: PropTypes.func.isRequired
-};
-
-export default ColumnEditorOverlay;
+}
