@@ -145,7 +145,8 @@ class Table extends PureComponent {
       finishedLoading,
       visibleColumnOrdering,
       hasStatusColumn,
-      rerenderTable
+      rerenderTable,
+      renderNewRowButton
     } = this.props;
     const { rowContextMenu } = this.state;
     const rowIds = f.map("id", rows);
@@ -200,6 +201,7 @@ class Table extends PureComponent {
               visibleColumnOrdering={visibleColumnOrdering}
               hasStatusColumn={hasStatusColumn}
               rerenderTable={rerenderTable}
+              renderNewRowButton={renderNewRowButton}
             />
           )}
         </div>

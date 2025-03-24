@@ -33,6 +33,8 @@ import applyFiltersAndVisibility from "./applyFiltersAndVisibility";
 import JumpSpinner from "./JumpSpinner";
 import SearchOverlay from "./SearchOverlay";
 import RowCount from "../header/RowCount";
+import NewRowButton from "../header/NewRowButton";
+import { canUserCreateRow } from "../../helpers/accessManagementHelper";
 
 const BIG_TABLE_THRESHOLD = 10000; // Threshold to decide when a table is so big we might not want to search it
 const mapStatetoProps = (state, props) => {
@@ -152,6 +154,7 @@ class TableView extends PureComponent {
             visibleColumnOrdering={visibleColumnOrdering}
             hasStatusColumn={hasStatusColumn}
             rerenderTable={rerenderTable}
+            renderNewRowButton={this.renderNewRowButton}
           />
         </div>
       );
@@ -243,6 +246,36 @@ class TableView extends PureComponent {
     navigate(history, path);
   };
 
+  renderNewRowButton = () => {
+    const { table, columns, lastRow, langtag, actions } = this.props;
+    const { toggleCellSelection, showToast, addEmptyRow } = actions;
+
+    if (table.type === "settings" || !canUserCreateRow({ table })) {
+      return null;
+    }
+
+    return (
+      <div className="new-row">
+        <NewRowButton
+          onAdd={async () => {
+            const { result: newRow } = await addEmptyRow(table.id);
+            return newRow;
+          }}
+          onSelect={row => {
+            toggleCellSelection({
+              langtag,
+              tableId: table.id,
+              columnId: f.first(columns).id,
+              rowId: row.id
+            });
+          }}
+          lastRow={lastRow}
+          showToast={showToast}
+        />
+      </div>
+    );
+  };
+
   render = () => {
     const {
       tables,
@@ -315,6 +348,7 @@ class TableView extends PureComponent {
                 setRowFilter={this.props.actions.setFiltersAndSorting}
                 actions={actions}
               />
+              {this.renderNewRowButton()}
               {table && columns && columns.length > 1 ? (
                 <ColumnFilter
                   langtag={langtag}

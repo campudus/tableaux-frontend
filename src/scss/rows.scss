@@ -31,27 +31,8 @@
     display: table;
   }
 
-
-
   .new-row {
-    padding: 8px 15px;
-    background-color: white; //overlays the background grid image
-
-    .new-row-inner {
-      @include button-look();
-    }
-
-    i, span {
-      vertical-align: middle;
-    }
-
-    i {
-      margin-right: 10px;
-      font-size: 16px;
-
-    }
-
+    margin: 0;
+    background-color: $color-white;
   }
-
 }
-

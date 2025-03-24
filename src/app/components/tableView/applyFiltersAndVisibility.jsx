@@ -103,6 +103,7 @@ const withFiltersAndVisibility = Component => props => {
           columns: columnsWithVisibility,
           rowCountAll: f.size(rows),
           rowCount: f.size(visibleRows),
+          lastRow: f.last(rows), // needed for new row comparison
           rows: visibleRows,
           visibleRows: visibleRowIDs,
           canRenderTable,

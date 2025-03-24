@@ -368,3 +368,19 @@
     }
   }
 }
+
+// also used in table
+.new-row {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  margin-right: 20px;
+
+  .new-row-button {
+    @include header-button-look();
+  
+    i {
+      margin-right: 10px;
+    }
+  }
+}
