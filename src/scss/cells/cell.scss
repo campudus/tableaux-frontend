@@ -217,7 +217,7 @@
   }
 
   &.cell-concat,
-  &.cell-disabled:not(.cell-group) {
+  &.cell-disabled:not(.cell-group,.archived) {
     background-color: #f9f9f9;
     color: #808080;
     //Overwrite editing styling because concat cells are not editable
