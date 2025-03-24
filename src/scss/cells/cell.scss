@@ -102,6 +102,7 @@
     white-space: nowrap;
     width: 100%;
 
+    &.grey-out,
     .grey-out,
     .grey-out input {
       color: $color-text-medium-grey;
@@ -216,9 +217,9 @@
   }
 
   &.cell-concat,
-  &.cell-disabled {
+  &.cell-disabled:not(.cell-group,.archived) {
     background-color: #f9f9f9;
-    color: $color-text-light-grey;
+    color: #808080;
     //Overwrite editing styling because concat cells are not editable
     &.editing {
       @include box-shadow(none);
