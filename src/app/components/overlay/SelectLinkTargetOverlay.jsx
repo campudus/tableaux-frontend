@@ -35,7 +35,7 @@ const ListItem = ({ isLinked, item, onChange, onEdit, style, langtag }) => {
     <div style={style} className="list-item-container">
       <div className="list-item">
         <div
-          className="linkButton roundCorners"
+          className="linkButton"
           onClick={() => onChange(isLinked ? undefined : item.id)}
         >
           <SvgIcon

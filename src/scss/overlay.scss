@@ -193,7 +193,7 @@ $dist-from-top: 20px;
           font-size: 14px;
         }
         & > div {
-          max-width: 100%;
+          max-width: calc(100% - 60px); // 100% minus 60px for history-buttons
         }
         .title {
           color: $color-primary-contrast-text;
@@ -496,6 +496,7 @@ $dist-from-top: 20px;
 
     div {
       max-height: 430px;
+      max-width: 100%;
     }
 
     .link-label-wrapper-2 {
