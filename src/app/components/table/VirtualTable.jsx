@@ -47,6 +47,7 @@ class VirtualTable extends PureComponent {
       columnWidths: {},
       selectedCell: {}
     };
+    this.cacheColumnIndices(props.columns);
   }
 
   colWidths = new Map([[0, META_CELL_WIDTH]]);
@@ -441,8 +442,10 @@ class VirtualTable extends PureComponent {
   filterVisibleCells = (cell, columnIdx) =>
     columnIdx === 0 || f.get("visible", this.props.columns[columnIdx]);
 
-  getVisibleElement = (elements, idx) =>
-    elements[this.props.visibleColumnOrdering[idx]];
+  getVisibleElement = (elements, idx) => {
+    const columnId = this.props.visibleColumnOrdering[idx];
+    return elements[this.columnIndices[columnId]];
+  };
 
   componentWillReceiveProps(next) {
     const newPropKeys = f.keys(next);
@@ -510,8 +513,18 @@ class VirtualTable extends PureComponent {
         newRowAdded: false
       });
     }
+    if (prev.columns !== this.props.columns) {
+      this.cacheColumnIndices(this.props.columns);
+    }
     if (!f.isEmpty(changed)) this.focusTable();
   }
+
+  cacheColumnIndices = columns => {
+    this.columnIndices = columns.reduce((acc, col, idx) => {
+      acc[col.id] = idx;
+      return acc;
+    }, {});
+  };
 
   divRef = null;
 
