@@ -95,6 +95,13 @@ module.exports = {
       globals: {
         ...vitest.environments.env.globals
       }
+    },
+    {
+      files: ["./server/*.{j,t}s", "vite.config.{j,t}s"],
+      env: {
+        node: true,
+        browser: false
+      },
     }
   ]
 };
