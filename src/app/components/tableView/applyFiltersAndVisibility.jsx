@@ -80,7 +80,7 @@ const withFiltersAndVisibility = Component => props => {
   });
   const visibleColumnById = f.indexBy("id", columnsWithVisibility);
   const visibleColumnOrdering = columnOrdering
-    .filter(({ id }) => visibleColumnById[id])
+    .filter(({ id }) => visibleColumnById[id]?.visible)
     .map(({ id }) => id);
 
   const visibleRowIDs = useMemo(() => f.map("id", visibleRows), [visibleRows]);
