@@ -305,38 +305,15 @@ body div div.column-header-context-menu {
 }
 
 .description-tooltip {
-  position: absolute;
-  z-index: 50;
   max-width: 250px;
-  box-sizing: border-box;
-  border-radius: 6px;
-  padding: 10px;
-  background-color: transparentize($color-primary-text, 0.1);
-  color: $color-text-light-grey;
 
-  .description-tooltip-text {
+  &:after {
+    display: none; // hide tooltip arrow
+  }
+
+  .tooltip__content {
     white-space: normal;
     font-weight: normal;
-  }
-  &:before {
-    content: "";
-    position: absolute;
-    left: 7%;
-    top: -15px;
-    border-left: 5px solid transparent;
-    border-right: 8px solid transparent;
-    border-bottom: 15px solid transparentize($color-primary-text, 0.1);
-  }
-
-  &.shift-left {
-    transform: translateX(-90%);
-
-    &:before {
-      left: auto;
-      right: 4%;
-      border-left: 8px solid transparent;
-      border-right: 5px solid transparent;
-    }
   }
 }
 
