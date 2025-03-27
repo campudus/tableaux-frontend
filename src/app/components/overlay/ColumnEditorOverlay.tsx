@@ -1,61 +1,111 @@
 import i18n from "i18next";
-import { ChangeEvent, FocusEvent, ReactElement } from "react";
-import { Column } from "../../types/grud";
-
-export type ColumnDetails = Pick<Column, "displayName" | "description">;
-
-type ColumnEditorOverlayProps = {
-  langtag: string;
-  details: ColumnDetails;
-  handleUpdate: (details: ColumnDetails) => void;
-};
+import {
+  ChangeEvent,
+  FocusEvent,
+  ReactElement,
+  useEffect,
+  useRef,
+  useState
+} from "react";
+import Header from "./Header";
+import { Column, Table } from "../../types/grud";
+import { outsideClickEffect } from "../../helpers/useOutsideClick";
 
 type UpdateEvent<T> = ChangeEvent<T> | FocusEvent<T>;
 
+type ColumnEditorOverlayProps = {
+  langtag: string;
+  column: Column;
+  table: Table;
+  actions: {
+    editColumn: (
+      columnId: number,
+      tableId: number,
+      data: Pick<Column, "displayName" | "description">
+    ) => void;
+  };
+  onClose: () => void;
+};
+
 export default function ColumnEditorOverlay({
   langtag,
-  details,
-  handleUpdate
+  column,
+  table,
+  actions: { editColumn },
+  onClose
 }: ColumnEditorOverlayProps): ReactElement {
+  const containerRef = useRef(null);
+  const [displayName, setDisplayName] = useState(column.displayName[langtag]);
+  const [description, setDescription] = useState(column.description[langtag]);
+
   const handleUpdateDisplayName = (event: UpdateEvent<HTMLInputElement>) => {
-    handleUpdate({
-      ...details,
-      displayName: { ...details.displayName, [langtag]: event.target.value }
-    });
+    setDisplayName(event.target.value);
   };
 
   const handleUpdateDescription = (event: UpdateEvent<HTMLTextAreaElement>) => {
-    handleUpdate({
-      ...details,
-      description: { ...details.description, [langtag]: event.target.value }
-    });
+    setDescription(event.target.value);
   };
 
+  const handleUpdateColumn = () => {
+    editColumn(column.id, table.id, {
+      displayName: { ...column.displayName, [langtag]: displayName },
+      description: { ...column.description, [langtag]: description }
+    });
+    onClose();
+  };
+
+  useEffect(
+    outsideClickEffect({
+      shouldListen: true,
+      containerRef,
+      onOutsideClick: onClose
+    }),
+    [containerRef.current]
+  );
+
   return (
-    <div className="content-items">
-      <div className="item">
-        <div className="item-header">{i18n.t("table:editor.colname")}</div>
-        <div className="item-description">
-          ({i18n.t("table:editor.sanity_info")})
+    <div className="overlay open active">
+      <div className="overlay-wrapper" ref={containerRef}>
+        <Header
+          context={i18n.t("table:editor.edit_column")}
+          title={column.displayName[langtag] || column.name}
+          buttonActions={{
+            positive: [i18n.t("common:save"), handleUpdateColumn],
+            neutral: [i18n.t("common:cancel"), onClose]
+          }}
+        />
+        <div className="overlay-content">
+          <div className="content-items">
+            <div className="item">
+              <div className="item-header">
+                {i18n.t("table:editor.colname")}
+              </div>
+              <div className="item-description">
+                ({i18n.t("table:editor.sanity_info")})
+              </div>
+              <input
+                type="text"
+                autoFocus
+                className="item-content"
+                onChange={handleUpdateDisplayName}
+                onBlur={handleUpdateDisplayName}
+                value={displayName}
+              />
+            </div>
+            <div className="item">
+              <div className="item-header">
+                {i18n.t("table:editor.description")}
+              </div>
+              <textarea
+                className="item-content"
+                rows={6}
+                onChange={handleUpdateDescription}
+                onBlur={handleUpdateDescription}
+                value={description}
+              />
+            </div>
+          </div>
         </div>
-        <input
-          type="text"
-          autoFocus
-          className="item-content"
-          onChange={handleUpdateDisplayName}
-          onBlur={handleUpdateDisplayName}
-          value={details.displayName[langtag]}
-        />
-      </div>
-      <div className="item">
-        <div className="item-header">{i18n.t("table:editor.description")}</div>
-        <textarea
-          className="item-content"
-          rows={6}
-          onChange={handleUpdateDescription}
-          onBlur={handleUpdateDescription}
-          value={details.description[langtag]}
-        />
       </div>
     </div>
   );

@@ -1,7 +1,6 @@
-import i18n from "i18next";
 import f from "lodash/fp";
 import { Portal } from "react-portal";
-import { ReactElement, ReactNode, useRef, useState } from "react";
+import { ReactElement, useRef, useState } from "react";
 import { NavigateFunction } from "react-router";
 import classNames from "classnames";
 import { Column, Table } from "../../types/grud";
@@ -22,11 +21,8 @@ import {
   canUserEditColumnDisplayProperty,
   canUserSeeTable
 } from "../../helpers/accessManagementHelper";
-import Header from "../overlay/Header";
 import ColumnEditorOverlay from "../overlay/ColumnEditorOverlay";
 import Tooltip from "../helperComponents/Tooltip/Tooltip";
-
-type ColumnDetails = Pick<Column, "displayName" | "description">;
 
 type ColumnHeaderProps = {
   title?: string;
@@ -38,13 +34,8 @@ type ColumnHeaderProps = {
     editColumn: (
       columnId: number,
       tableId: number,
-      data: ColumnDetails
+      data: Pick<Column, "displayName" | "description">
     ) => void;
-    openOverlay: (payload: {
-      head: ReactNode;
-      body: ReactNode;
-      type: string;
-    }) => void;
     toggleColumnVisibility: (columnId: number) => void;
   };
 };
@@ -55,9 +46,8 @@ export default function ColumnHeader({
   column,
   table,
   navigate = f.noop,
-  actions: { editColumn, openOverlay, toggleColumnVisibility } = {
+  actions = {
     editColumn: f.noop,
-    openOverlay: f.noop,
     toggleColumnVisibility: f.noop
   }
 }: ColumnHeaderProps): ReactElement {
@@ -66,10 +56,7 @@ export default function ColumnHeader({
     headerRef.current && headerRef.current.getBoundingClientRect();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isDescriptionOpen, setIsDescriptionOpen] = useState(false);
-  const [details, setDetails] = useState<ColumnDetails>({
-    displayName: column.displayName,
-    description: column.description
-  });
+  const [isEditOverlayOpen, setIsEditOverlayOpen] = useState(false);
   const isStatus = isStatusColumn(column);
   const isConcat = isConcatColumn(column);
   const isLink = isLinkColumn(column);
@@ -86,31 +73,9 @@ export default function ColumnHeader({
   const handleDescriptionOpen = () => setIsDescriptionOpen(true);
   const handleDescriptionClose = () => setIsDescriptionOpen(false);
   const handleNavigate = (url: string) => navigate(url);
-  const handleColumnHide = () => toggleColumnVisibility(column.id);
-  const handleColumnUpdate = (details: ColumnDetails) => setDetails(details);
-  const handleColumnSave = () => editColumn(column.id, table.id, details);
-  const handleEdit = () => {
-    openOverlay({
-      head: (
-        <Header
-          context={i18n.t("table:editor.edit_column")}
-          title={column.displayName[langtag] || column.name}
-          buttonActions={{
-            positive: [i18n.t("common:save"), handleColumnSave],
-            neutral: [i18n.t("common:cancel"), null]
-          }}
-        />
-      ),
-      body: (
-        <ColumnEditorOverlay
-          langtag={langtag}
-          details={details}
-          handleUpdate={handleColumnUpdate}
-        />
-      ),
-      type: "normal"
-    });
-  };
+  const handleColumnHide = () => actions.toggleColumnVisibility(column.id);
+  const handleEditOverlayOpen = () => setIsEditOverlayOpen(true);
+  const handleEditOverlayClose = () => setIsEditOverlayOpen(false);
 
   return (
     <div
@@ -170,6 +135,18 @@ export default function ColumnHeader({
         />
       )}
 
+      {isEditOverlayOpen && (
+        <Portal>
+          <ColumnEditorOverlay
+            langtag={langtag}
+            column={column}
+            table={table}
+            actions={actions}
+            onClose={handleEditOverlayClose}
+          />
+        </Portal>
+      )}
+
       {isMenuOpen && headerPosition && (
         <Portal>
           <ColumnContextMenu
@@ -184,7 +161,7 @@ export default function ColumnHeader({
               <ContextMenuItem
                 title="table:editor.edit_column"
                 onClose={handleMenuClose}
-                onClick={handleEdit}
+                onClick={handleEditOverlayOpen}
                 iconStart="fa-edit"
               />
             )}
