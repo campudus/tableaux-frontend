@@ -3,7 +3,12 @@ import { buildClassName as bcn } from "../../../helpers/buildClassName";
 
 const HEADER_HEIGHT = 100; // approximately
 
-const Tooltip = ({ children, defaultInvert = false }) => {
+const Tooltip = ({
+  style,
+  className = "",
+  children,
+  defaultInvert = false
+}) => {
   const bubbleRef = useRef();
   const [invert, setInvert] = useState(defaultInvert);
 
@@ -15,10 +20,10 @@ const Tooltip = ({ children, defaultInvert = false }) => {
     }
   }, [bubbleRef.current]);
 
-  const cssClass = bcn("tooltip", { invert });
+  const cssClass = bcn("tooltip", { invert }, className);
 
   return (
-    <div ref={bubbleRef} className={cssClass}>
+    <div ref={bubbleRef} style={style} className={cssClass}>
       <div className="tooltip__content">{children}</div>
     </div>
   );
