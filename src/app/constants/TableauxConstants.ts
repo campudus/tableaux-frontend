@@ -1,6 +1,18 @@
-export let config;
+import { Column, ColumnID, MultilangValue } from "../types/grud";
 
-export const initConfig = cfg => {
+type Config = {
+  disableAuth?: boolean;
+  authRealm?: string;
+  authServerUrl?: string;
+  authClientId?: string;
+  webhookUrl: string;
+  showTableDropdown?: boolean;
+  enableHistory?: boolean;
+};
+
+export let config: Config;
+
+export const initConfig = (cfg: Config) => {
   config = cfg;
 };
 
@@ -9,7 +21,7 @@ export const Directions = {
   RIGHT: "RIGHT",
   LEFT: "LEFT",
   UP: "UP"
-};
+} as const;
 
 // Lowercase on purpose. Reflects exact API naming
 export const ColumnKinds = {
@@ -27,14 +39,14 @@ export const ColumnKinds = {
   shorttext: "shorttext",
   status: "status",
   text: "text"
-};
+} as const;
 
-export const ImmutableColumnKinds = ["status", "concat", "group"];
+export const ImmutableColumnKinds = ["status", "concat", "group"] as const;
 
 export const LanguageType = {
   country: "country",
   language: "language"
-};
+} as const;
 
 export const ViewNames = {
   TABLE_VIEW: "TABLE_VIEW",
@@ -43,24 +55,24 @@ export const ViewNames = {
   FRONTEND_SERVICE_VIEW: "FRONTEND_SERVICE_VIEW",
   TAXONOMY_DASHBOARD_VIEW: "TAXONOMY_DASHBOARD_VIEW",
   PROFILE_VIEW: "PROFILE_VIEW"
-};
+} as const;
 
 export const Alignments = {
   UPPER_LEFT: "UPPER_LEFT",
   UPPER_RIGHT: "UPPER_RIGHT",
   LOWER_LEFT: "LOWER_LEFT",
   LOWER_RIGHT: "LOWER_RIGHT"
-};
+} as const;
 
 export const DateTimeFormats = {
   formatForServer: "YYYY-MM-DDTHH:mm:ss.SSSZ",
   formatForUser: "DD.MM.YYYY - HH:mm"
-};
+} as const;
 
 export const DateFormats = {
   formatForServer: "YYYY-MM-DD",
   formatForUser: "DD.MM.YYYY"
-};
+} as const;
 
 export const RowHeight = 46; // Fixed pixel height of a single row including border
 
@@ -68,30 +80,32 @@ export const PageTitle = "GRUD";
 
 // This is a meta column which doesn't exist in (or is not provided by) the backend
 // but is needed for sorting in the frontend
-export const RowIdColumn = {
-  id: -1,
+export const RowIdColumn: Column = {
+  id: ColumnID(-1),
   ordering: -1,
   displayName: { de: "ID" },
   identifier: false,
   kind: "numeric",
   multilanguage: false,
   name: "rowId",
-  separator: false
-};
+  separator: false,
+  attributes: {},
+  description: {}
+} as const;
 
 export let Langtags = ["de-DE"];
 export let DefaultLangtag = "de-DE";
 export const FallbackLanguage = "en";
 
-export const initLangtags = langtags => {
+export const initLangtags = (langtags: string[]) => {
   Langtags = langtags || null;
-  DefaultLangtag = langtags[0] || null;
+  DefaultLangtag = langtags[0] || DefaultLangtag;
 };
 
 export const SortValue = {
   asc: "asc",
   desc: "desc"
-};
+} as const;
 
 export const FilterModes = {
   ANY_UNTRANSLATED: "ANY_UNTRANSLATED",
@@ -108,23 +122,39 @@ export const FilterModes = {
   TRANSLATOR_FILTER: "TRANSLATOR_FILTER",
   UNTRANSLATED: "UNTRANSLATED",
   WITH_COMMENT: "WITH_COMMENT"
-};
+} as const;
+
+type AnnotationKind = "flag" | "row-prop" | "data";
 
 export const AnnotationKind = {
   flag: "flag",
   rowProp: "row-prop",
   data: "data"
+} as const;
+
+type AnnotationConfig = {
+  name: string;
+  kind: AnnotationKind;
+  bgColor?: string;
+  fgColor?: string;
+  displayName?: MultilangValue<string>;
+  isCustom?: boolean;
+  isDashboard?: boolean;
+  isMultilang?: boolean;
+  priority?: number;
 };
 
-export let AnnotationConfigs = [];
+export let AnnotationConfigs: AnnotationConfig[] = [];
 
-export const initAnnotationConfigs = configs => {
+export const initAnnotationConfigs = (
+  configs: Omit<AnnotationConfig, "kind">[]
+) => {
   AnnotationConfigs = [
     { name: "info", kind: AnnotationKind.data },
     { name: "final", kind: AnnotationKind.rowProp },
-    ...(configs?.map(annotationConfig => ({
+    ...configs.map(annotationConfig => ({
       ...annotationConfig,
       kind: AnnotationKind.flag
-    })) ?? [])
+    }))
   ];
 };

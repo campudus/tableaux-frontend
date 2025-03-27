@@ -1,35 +1,35 @@
-import { ChangeEvent, FocusEvent, ReactElement, useState } from "react";
 import i18n from "i18next";
+import { ChangeEvent, FocusEvent, ReactElement } from "react";
+import { Column } from "../../types/grud";
 
-type Input = {
-  displayValue: string;
-  description: string;
-};
-
-type SetInputState = (value: string) => void;
-type InputElement = HTMLInputElement | HTMLTextAreaElement;
-type InputEvent = ChangeEvent<InputElement> | FocusEvent<InputElement>;
+export type ColumnDetails = Pick<Column, "displayName" | "description">;
 
 type ColumnEditorOverlayProps = {
-  columnName: string;
-  description: string;
-  handleInput: (input: Input) => void;
+  langtag: string;
+  details: ColumnDetails;
+  handleUpdate: (details: ColumnDetails) => void;
 };
 
-export default function ColumnEditorOverlay({
-  handleInput,
-  ...props
-}: ColumnEditorOverlayProps): ReactElement {
-  const [columnName, setName] = useState(props.columnName);
-  const [description, setDescription] = useState(props.description);
+type UpdateEvent<T> = ChangeEvent<T> | FocusEvent<T>;
 
-  const setDomElValue = (setState: SetInputState) => (event: InputEvent) => {
-    setState(event.target.value);
-    handleInput({ displayValue: columnName, description });
+export default function ColumnEditorOverlay({
+  langtag,
+  details,
+  handleUpdate
+}: ColumnEditorOverlayProps): ReactElement {
+  const handleUpdateDisplayName = (event: UpdateEvent<HTMLInputElement>) => {
+    handleUpdate({
+      ...details,
+      displayName: { ...details.displayName, [langtag]: event.target.value }
+    });
   };
 
-  const handleNameChange = setDomElValue(setName);
-  const handleDescriptionChange = setDomElValue(setDescription);
+  const handleUpdateDescription = (event: UpdateEvent<HTMLTextAreaElement>) => {
+    handleUpdate({
+      ...details,
+      description: { ...details.description, [langtag]: event.target.value }
+    });
+  };
 
   return (
     <div className="content-items">
@@ -42,9 +42,9 @@ export default function ColumnEditorOverlay({
           type="text"
           autoFocus
           className="item-content"
-          onChange={handleNameChange}
-          onBlur={handleNameChange}
-          value={columnName}
+          onChange={handleUpdateDisplayName}
+          onBlur={handleUpdateDisplayName}
+          value={details.displayName[langtag]}
         />
       </div>
       <div className="item">
@@ -52,9 +52,9 @@ export default function ColumnEditorOverlay({
         <textarea
           className="item-content"
           rows={6}
-          onChange={handleDescriptionChange}
-          onBlur={handleDescriptionChange}
-          value={description}
+          onChange={handleUpdateDescription}
+          onBlur={handleUpdateDescription}
+          value={details.description[langtag]}
         />
       </div>
     </div>
