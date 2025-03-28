@@ -1,6 +1,6 @@
 import f from "lodash/fp";
 import { Portal } from "react-portal";
-import { ReactElement, useRef, useState } from "react";
+import { ReactElement, ReactNode, useRef, useState } from "react";
 import { NavigateFunction } from "react-router";
 import classNames from "classnames";
 import { Column, Table } from "../../types/grud";
@@ -21,8 +21,17 @@ import {
   canUserEditColumnDisplayProperty,
   canUserSeeTable
 } from "../../helpers/accessManagementHelper";
-import ColumnEditorOverlay from "../overlay/ColumnEditorOverlay";
+import {
+  ColumnEditorOverlayHeader,
+  ColumnEditorOverlayBody
+} from "../overlay/ColumnEditorOverlay";
 import Tooltip from "../helperComponents/Tooltip/Tooltip";
+
+type Overlay = {
+  head: ReactNode;
+  body: ReactNode;
+  type: string;
+};
 
 type ColumnHeaderProps = {
   title?: string;
@@ -31,11 +40,7 @@ type ColumnHeaderProps = {
   table: Table;
   navigate?: NavigateFunction;
   actions?: {
-    editColumn: (
-      columnId: number,
-      tableId: number,
-      data: Pick<Column, "displayName" | "description">
-    ) => void;
+    openOverlay: (overlay: Overlay) => void;
     toggleColumnVisibility: (columnId: number) => void;
   };
 };
@@ -47,7 +52,7 @@ export default function ColumnHeader({
   table,
   navigate = f.noop,
   actions = {
-    editColumn: f.noop,
+    openOverlay: f.noop,
     toggleColumnVisibility: f.noop
   }
 }: ColumnHeaderProps): ReactElement {
@@ -56,12 +61,12 @@ export default function ColumnHeader({
     headerRef.current && headerRef.current.getBoundingClientRect();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isDescriptionOpen, setIsDescriptionOpen] = useState(false);
-  const [isEditOverlayOpen, setIsEditOverlayOpen] = useState(false);
   const isStatus = isStatusColumn(column);
   const isConcat = isConcatColumn(column);
   const isLink = isLinkColumn(column);
   const isMeta = isRowIdColumn(column);
   const linkTableId = isLink ? column.toTable : null;
+  const canSeeLinkTable = linkTableId && canUserSeeTable(linkTableId);
   const icon = isConcat ? "bookmark" : column.identifier ? "bookmark-o" : null;
   const displayName = title || getColumnDisplayName(column, langtag);
   const description = retrieveTranslation(langtag)(column.description || {});
@@ -74,8 +79,14 @@ export default function ColumnHeader({
   const handleDescriptionClose = () => setIsDescriptionOpen(false);
   const handleNavigate = (url: string) => navigate(url);
   const handleColumnHide = () => actions.toggleColumnVisibility(column.id);
-  const handleEditOverlayOpen = () => setIsEditOverlayOpen(true);
-  const handleEditOverlayClose = () => setIsEditOverlayOpen(false);
+  const handleEdit = () => {
+    actions.openOverlay({
+      // prettier-ignore
+      head: <ColumnEditorOverlayHeader langtag={langtag} column={column} table={table} />,
+      body: <ColumnEditorOverlayBody langtag={langtag} column={column} />,
+      type: "normal"
+    });
+  };
 
   return (
     <div
@@ -92,7 +103,7 @@ export default function ColumnHeader({
       >
         {icon && <i className={`fa fa-${icon}`} />}
 
-        {isLink && canUserSeeTable(linkTableId) ? (
+        {canSeeLinkTable ? (
           <a
             className="tableHeader-inner"
             href={`/${langtag}/tables/${linkTableId}`}
@@ -135,18 +146,6 @@ export default function ColumnHeader({
         />
       )}
 
-      {isEditOverlayOpen && (
-        <Portal>
-          <ColumnEditorOverlay
-            langtag={langtag}
-            column={column}
-            table={table}
-            actions={actions}
-            onClose={handleEditOverlayClose}
-          />
-        </Portal>
-      )}
-
       {isMenuOpen && headerPosition && (
         <Portal>
           <ColumnContextMenu
@@ -161,17 +160,17 @@ export default function ColumnHeader({
               <ContextMenuItem
                 title="table:editor.edit_column"
                 onClose={handleMenuClose}
-                onClick={handleEditOverlayOpen}
+                onClick={handleEdit}
                 iconStart="fa-edit"
               />
             )}
 
-            {isLink && canUserSeeTable(column.toTable) && (
+            {canSeeLinkTable && (
               <ContextMenuItem
                 title="table:switch_table"
                 onClose={handleMenuClose}
                 onClick={() =>
-                  handleNavigate(`/${langtag}/tables/${column.toTable}`)
+                  handleNavigate(`/${langtag}/tables/${linkTableId}`)
                 }
                 iconStart="fa-columns"
                 iconEnd="fa-angle-right"
