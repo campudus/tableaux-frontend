@@ -47,6 +47,7 @@ class VirtualTable extends PureComponent {
       columnWidths: {},
       selectedCell: {}
     };
+    this.cacheColumnIndices(props.columns);
   }
 
   colWidths = new Map([[0, META_CELL_WIDTH]]);
@@ -121,13 +122,14 @@ class VirtualTable extends PureComponent {
   };
 
   calcColWidth = ({ index }) => {
+    const columnId = this.props.visibleColumnOrdering[index - 1];
     const { hasStatusColumn } = this.props;
     const widths = this.state.columnWidths || {};
     return index === 0
       ? META_CELL_WIDTH
       : hasStatusColumn && index === 1
       ? STATUS_CELL_WIDTH
-      : widths[index] || CELL_WIDTH;
+      : widths[columnId] || CELL_WIDTH;
   };
 
   moveResizeBar = () => {
@@ -139,8 +141,10 @@ class VirtualTable extends PureComponent {
     if (!this.columnStartSize) {
       this.columnStartSize = this.calcColWidth({ index });
     }
+    const columnId = this.props.visibleColumnOrdering[index - 1];
+    console.log("update", { index, columnId });
     const newWidth = Math.max(100, this.columnStartSize + dx);
-    this.setState(f.update("columnWidths", f.assoc(index, newWidth)));
+    this.setState(f.update("columnWidths", f.assoc(columnId, newWidth)));
     maybe(this.multiGrid)
       .method("recomputeGridSize", { columnIndex: index })
       .method("invalidateCellSizeAfterRender");
@@ -441,8 +445,10 @@ class VirtualTable extends PureComponent {
   filterVisibleCells = (cell, columnIdx) =>
     columnIdx === 0 || f.get("visible", this.props.columns[columnIdx]);
 
-  getVisibleElement = (elements, idx) =>
-    elements[this.props.visibleColumnOrdering[idx]];
+  getVisibleElement = (elements, idx) => {
+    const columnId = this.props.visibleColumnOrdering[idx];
+    return elements[this.columnIndices[columnId]];
+  };
 
   componentWillReceiveProps(next) {
     const newPropKeys = f.keys(next);
@@ -510,8 +516,18 @@ class VirtualTable extends PureComponent {
         newRowAdded: false
       });
     }
+    if (prev.columns !== this.props.columns) {
+      this.cacheColumnIndices(this.props.columns);
+    }
     if (!f.isEmpty(changed)) this.focusTable();
   }
+
+  cacheColumnIndices = columns => {
+    this.columnIndices = columns.reduce((acc, col, idx) => {
+      acc[col.id] = idx;
+      return acc;
+    }, {});
+  };
 
   divRef = null;
 

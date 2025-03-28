@@ -76,13 +76,14 @@ const ColumnFilterPopup = ({
     void dispatch(actions.rerenderTable());
   };
 
-  const renderCheckboxItem = ({ key, index, style }) => {
-    const column = columnsById[key];
+  const renderCheckboxItem = ({ key: id, index, style }) => {
+    const column = columnsById[id];
     const name = getColumnDisplayName(column, langtag);
+    const isSelected = id === selected.id;
     const cssClass = classNames("column-filter-checkbox-wrapper", {
-      even: index % 2 === 0 && key !== selected.id,
-      odd: index % 2 === 1 && key !== selected.id,
-      selected: key === selected.id
+      even: index % 2 === 0 && !isSelected,
+      odd: index % 2 === 1 && !isSelected,
+      selected: isSelected
     });
     const buttonClass = classNames("column-filter__to-column-item", {
       "to-column-item--visible": column.visible
@@ -100,7 +101,7 @@ const ColumnFilterPopup = ({
     return (
       <div
         className={cssClass}
-        key={key}
+        key={id}
         style={style}
         onClick={handleToggleColumnVisibility}
         onMouseEnter={() => selectColumn(column.id, index)}
