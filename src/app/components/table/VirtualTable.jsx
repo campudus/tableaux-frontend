@@ -122,13 +122,14 @@ class VirtualTable extends PureComponent {
   };
 
   calcColWidth = ({ index }) => {
+    const columnId = this.props.visibleColumnOrdering[index - 1];
     const { hasStatusColumn } = this.props;
     const widths = this.state.columnWidths || {};
     return index === 0
       ? META_CELL_WIDTH
       : hasStatusColumn && index === 1
       ? STATUS_CELL_WIDTH
-      : widths[index] || CELL_WIDTH;
+      : widths[columnId] || CELL_WIDTH;
   };
 
   moveResizeBar = () => {
@@ -140,8 +141,10 @@ class VirtualTable extends PureComponent {
     if (!this.columnStartSize) {
       this.columnStartSize = this.calcColWidth({ index });
     }
+    const columnId = this.props.visibleColumnOrdering[index - 1];
+    console.log("update", { index, columnId });
     const newWidth = Math.max(100, this.columnStartSize + dx);
-    this.setState(f.update("columnWidths", f.assoc(index, newWidth)));
+    this.setState(f.update("columnWidths", f.assoc(columnId, newWidth)));
     maybe(this.multiGrid)
       .method("recomputeGridSize", { columnIndex: index })
       .method("invalidateCellSizeAfterRender");
