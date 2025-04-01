@@ -104,7 +104,21 @@
     "sanity_info": "Bitte stellen Sie sicher, dass die Bezeichnung die wirkliche Funktion beschreibt",
     "description": "Beschreibung",
     "edit_column": "Spalte bearbeiten",
-    "rename_table": "Tabelle umbenennen"
+    "rename_table": "Tabelle umbenennen",
+    "attributes": "Attribute",
+    "attribute-type": "Typ",
+    "attribute-type-ph": "Typ auswählen",
+    "attribute-key": "Schlüssel",
+    "attribute-key-ph": "Schlüssel auswählen",
+    "attribute-value": "Wert",
+    "attribute-value-ph": "Wert angeben",
+    "attribute-string": "Text",
+    "attribute-boolean": "Boolean",
+    "attribute-number": "Nummer",
+    "attribute-current": "Aktuelle Auswahl",
+    "attribute-yes": "Ja",
+    "attribute-no": "Nein",
+    "attribute-add": "Attribut hinzufügen"
   },
   "filter": {
     "annotations": "Anmerkungen",

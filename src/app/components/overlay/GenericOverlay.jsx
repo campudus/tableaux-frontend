@@ -179,10 +179,6 @@ class GenericOverlay extends Component {
       >
         <div
           className={wrapperClass}
-          onClick={event => {
-            event.stopPropagation();
-            event.preventDefault();
-          }}
           onScroll={f.throttle(FRAME_DELAY, this.passOnEvents("scroll"))}
         >
           {React.cloneElement(

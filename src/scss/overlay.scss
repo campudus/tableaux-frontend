@@ -415,7 +415,7 @@ $dist-from-top: 20px;
     }
 
     input[type="text"],
-    input[type="numeric"],
+    input[type="number"],
     textarea {
       background-color: transparent;
       outline: none;
@@ -676,4 +676,70 @@ $dist-from-top: 20px;
   right: 0;
   top: 0;
   bottom: 0;
+}
+
+.overlay .content-items.column-editor {
+  .item-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 30px;
+    gap: 12px;
+    margin: 0 0 6px 0;
+
+    &--header {
+      margin: 12px 0;
+    }
+  }
+
+  .item-row:last-of-type {
+    margin: 0 0 10px 0;
+  }
+
+  .item-action {
+    .svg-icon {
+      width: 0.8em;
+      max-width: 0.8em;
+    }
+
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .bold {
+    font-weight: bold;
+  }
+
+  label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 8px;
+  }
+
+  .attribute-select {
+    .react-select__control {
+      background: transparent;
+      border-color: #BDBDBD;
+    }
+  }
+
+  .attribute-input {
+    background: transparent;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0 8px;
+    min-height: 30px;
+    min-width: 15px;
+    border: 1px solid;
+    border-color: #BDBDBD !important;
+    border-radius: 4px;
+    transition: none;
+    text-overflow: ellipsis;
+    overflow: hidden;
+
+    &--invalid,
+    &--invalid:focus {
+      border-color: #D32F2F !important;
+    }
+  }
 }

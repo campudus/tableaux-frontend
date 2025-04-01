@@ -1,22 +1,6 @@
-import {
-  Attachment as _Attachment,
-  CellValue,
-  MultilangValue as _MultilangValue,
-  Column as _Column,
-  Table as _Table,
-  LinkColumn as _LinkColumn,
-  ColumnID as _ColumnID
-} from "grud-devtools/types";
+import { CellValue } from "@grud/devtools/types";
 
-export const ColumnID = _ColumnID;
-
-// upgrade prettier to v2 for support of new ts syntax
-// export type { Attachment, Column, Table };
-export type MultilangValue<T> = _MultilangValue<T>;
-export type Attachment = _Attachment;
-export type Column = _Column;
-export type Table = _Table;
-export type LinkColumn = _LinkColumn;
+export * from "@grud/devtools/types";
 
 export type Annotation = {
   uuid: string;
@@ -31,4 +15,18 @@ export type Row = {
   archived?: boolean;
   values: CellValue["value"][];
   annotations?: Annotation[][];
+};
+
+export type ColumnAttributeString = { type: "string"; value: string };
+export type ColumnAttributeNumber = { type: "number"; value: number };
+export type ColumnAttributeBoolean = { type: "boolean"; value: boolean };
+export type ColumnAttributeArray = { type: "array"; value: ColumnAttribute[] };
+export type ColumnAttribute =
+  | ColumnAttributeString
+  | ColumnAttributeBoolean
+  | ColumnAttributeNumber
+  | ColumnAttributeArray;
+
+export type ColumnAttributeMap = {
+  [key: string]: ColumnAttribute;
 };
