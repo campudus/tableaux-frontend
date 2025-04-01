@@ -35,7 +35,8 @@ const iconUrls = {
   deletedFile: "/img/icons/icon-deleted-file.svg",
   layoutV: "/img/icons/layout-vertical.svg",
   layoutH: "/img/icons/layout-horizontal.svg",
-  layoutPlain: "/img/icons/layout-single.svg"
+  layoutPlain: "/img/icons/layout-single.svg",
+  trash: "/img/icons/trash.svg"
 };
 
 class ImageCache {

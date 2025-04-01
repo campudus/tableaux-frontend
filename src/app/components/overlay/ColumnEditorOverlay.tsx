@@ -1,15 +1,38 @@
-import i18n from "i18next";
 import {
   ChangeEvent,
   FocusEvent,
+  MouseEvent,
   ReactElement,
   useEffect,
   useState
 } from "react";
+import f from "lodash/fp";
+import i18n from "i18next";
+import Select, { ActionMeta, SelectOption } from "../GrudSelect";
 import Header from "./Header";
-import { Column, Table } from "../../types/grud";
+import {
+  Column,
+  ColumnAttribute,
+  ColumnAttributeMap,
+  Table
+} from "../../types/grud";
+import SvgIcon from "../helperComponents/SvgIcon";
+import { buildClassName as cn } from "../../helpers/buildClassName";
 
-type ColumnData = Pick<Column, "displayName" | "description">;
+type ColumnData = Pick<Column, "displayName" | "description"> & {
+  attributes: ColumnAttributeMap;
+};
+
+type ColumnAttributeDef = {
+  key: string;
+  type: ColumnAttribute["type"];
+  value: ColumnAttribute["value"];
+};
+
+type ColumnAttributeTypeOption = {
+  label: string;
+  value: ColumnAttribute["type"];
+};
 
 type ColumnEditorOverlayProps = {
   langtag: string;
@@ -56,8 +79,29 @@ export function ColumnEditorOverlayBody({
   column,
   updateSharedData
 }: ColumnEditorOverlayBodyProps): ReactElement {
+  const columnAttributes = (column.attributes as unknown) as ColumnAttributeMap;
   const [displayName, setDisplayName] = useState(column.displayName[langtag]);
   const [description, setDescription] = useState(column.description[langtag]);
+  const [attributes, setAttributes] = useState<Partial<ColumnAttributeDef>[]>(
+    f.entries(columnAttributes || {}).map(([key, attr]) => ({ key, ...attr }))
+  );
+
+  const attributeTypeOptions: ColumnAttributeTypeOption[] = [
+    { label: i18n.t("table:editor.attribute-string"), value: "string" },
+    { label: i18n.t("table:editor.attribute-number"), value: "number" },
+    { label: i18n.t("table:editor.attribute-boolean"), value: "boolean" }
+  ];
+
+  const getAttributeIdentifier = (index: number) => `attribute-${index}`;
+  const getAttributeIndex = (identifier: string) => {
+    return parseInt(identifier.replace("attribute-", ""));
+  };
+  const getAttributeTypeOption = (type?: ColumnAttribute["type"]) => {
+    return f.find({ value: type }, attributeTypeOptions);
+  };
+  const isAttributeKeyUnique = (key?: string) => {
+    return f.filter({ key }, attributes).length <= 1;
+  };
 
   const handleUpdateDisplayName = (event: UpdateEvent<HTMLInputElement>) => {
     setDisplayName(event.target.value);
@@ -67,17 +111,80 @@ export function ColumnEditorOverlayBody({
     setDescription(event.target.value);
   };
 
+  const handleUpdateAttributeType = (
+    option: ColumnAttributeTypeOption | null,
+    actionMeta: ActionMeta<SelectOption>
+  ) => {
+    const attributeIndex = getAttributeIndex(actionMeta.name!);
+    const attribute = attributes[attributeIndex];
+
+    if (option) {
+      const newAttribute = { ...attribute, type: option.value };
+
+      setAttributes(attributes.toSpliced(attributeIndex, 1, newAttribute));
+    } else {
+      setAttributes(attributes.toSpliced(attributeIndex, 1));
+    }
+  };
+
+  const handleUpdateAttributeKey = (event: UpdateEvent<HTMLInputElement>) => {
+    const attributeIndex = getAttributeIndex(event.target.name);
+    const attribute = attributes[attributeIndex];
+    const newAttribute = { ...attribute, key: event.target.value };
+
+    setAttributes(attributes.toSpliced(attributeIndex, 1, newAttribute));
+  };
+
+  const handleUpdateAttributeValue = (event: UpdateEvent<HTMLInputElement>) => {
+    const attributeIndex = getAttributeIndex(event.target.name);
+    const attribute = attributes[attributeIndex];
+    const value =
+      attribute.type === "boolean"
+        ? event.target.checked
+        : attribute.type === "number"
+        ? parseInt(event.target.value)
+        : event.target.value;
+
+    const newAttribute = { ...attribute, value };
+
+    setAttributes(attributes.toSpliced(attributeIndex, 1, newAttribute));
+  };
+
+  const handleDeleteAttribute = (event: MouseEvent<HTMLButtonElement>) => {
+    const attributeIndex = getAttributeIndex(event.currentTarget.name);
+
+    setAttributes(attributes.toSpliced(attributeIndex, 1));
+  };
+
+  const handleAddAttribute = () => {
+    setAttributes([...attributes, {}]);
+  };
+
   useEffect(() => {
     if (updateSharedData) {
       updateSharedData(() => ({
         displayName: { ...column.displayName, [langtag]: displayName },
-        description: { ...column.description, [langtag]: description }
+        description: { ...column.description, [langtag]: description },
+        attributes: attributes.reduce(
+          (acc, def) => {
+            const { key, type, value } = def;
+            const isValidAttribute = !f.isNil(type) && !f.isNil(value);
+            const isValidKey = !f.isNil(key) && f.isNil(acc[key]);
+
+            if (isValidAttribute && isValidKey) {
+              acc[key] = { type, value } as ColumnAttribute;
+            }
+
+            return acc;
+          },
+          {} as ColumnAttributeMap
+        )
       }));
     }
-  }, [displayName, description]);
+  }, [displayName, description, attributes]);
 
   return (
-    <div className="content-items">
+    <div className="content-items column-editor">
       <div className="item">
         <div className="item-header">{i18n.t("table:editor.colname")}</div>
         <div className="item-description">
@@ -101,6 +208,111 @@ export function ColumnEditorOverlayBody({
           onBlur={handleUpdateDescription}
           value={description}
         />
+      </div>
+      <div className="item">
+        <div className="item-header">{i18n.t("table:editor.attributes")}</div>
+        <div className="item-row item-row--header">
+          <div className="item-header">
+            {i18n.t("table:editor.attribute-type")}
+          </div>
+          <div className="item-header">
+            {i18n.t("table:editor.attribute-key")}
+          </div>
+          <div className="item-header">
+            {i18n.t("table:editor.attribute-value")}
+          </div>
+        </div>
+        {attributes.map((attribute, index) => {
+          const identifier = getAttributeIdentifier(index);
+          const typeOption = getAttributeTypeOption(attribute.type);
+
+          return (
+            <div key={identifier} className="item-row">
+              <div className="item-content">
+                <Select
+                  className="attribute-select"
+                  isMulti={false}
+                  name={identifier}
+                  value={typeOption}
+                  options={attributeTypeOptions}
+                  onChange={handleUpdateAttributeType}
+                  placeholder={i18n.t("table:editor.attribute-type-ph")}
+                />
+              </div>
+              <div className="item-content">
+                <input
+                  className={cn("attribute-input", {
+                    invalid: !isAttributeKeyUnique(attribute.key)
+                  })}
+                  type="text"
+                  name={identifier}
+                  placeholder={i18n.t("table:editor.attribute-key-ph")}
+                  onChange={handleUpdateAttributeKey}
+                  onBlur={handleUpdateAttributeKey}
+                  value={attribute.key ? attribute.key : ""}
+                />
+              </div>
+              <div className="item-content">
+                {attribute && attribute.type && attribute.type === "boolean" && (
+                  <label>
+                    <input
+                      className="attribute-input"
+                      type="checkbox"
+                      name={identifier}
+                      onChange={handleUpdateAttributeValue}
+                      onBlur={handleUpdateAttributeValue}
+                      checked={
+                        (attribute.value as boolean | undefined) || false
+                      }
+                    />
+
+                    <span>{i18n.t("table:editor.attribute-current")}: </span>
+                    <span className="bold">
+                      {attribute.value
+                        ? i18n.t("table:editor.attribute-yes")
+                        : i18n.t("table:editor.attribute-no")}
+                    </span>
+                  </label>
+                )}
+                {attribute && attribute.type && attribute.type === "string" && (
+                  <input
+                    className="attribute-input"
+                    type="text"
+                    name={identifier}
+                    placeholder={i18n.t("table:editor.attribute-value-ph")}
+                    onChange={handleUpdateAttributeValue}
+                    onBlur={handleUpdateAttributeValue}
+                    value={(attribute.value as string | undefined) || ""}
+                  />
+                )}
+                {attribute && attribute.type && attribute.type === "number" && (
+                  <input
+                    className="attribute-input"
+                    type="number"
+                    name={identifier}
+                    placeholder={i18n.t("table:editor.attribute-value-ph")}
+                    onChange={handleUpdateAttributeValue}
+                    onBlur={handleUpdateAttributeValue}
+                    value={(attribute.value as number | undefined) || ""}
+                  />
+                )}
+              </div>
+              <button
+                className="button item-action"
+                name={identifier}
+                onClick={handleDeleteAttribute}
+              >
+                <SvgIcon icon="trash" />
+              </button>
+            </div>
+          );
+        })}
+        {!f.isEmpty(attributes.at(-1)) && (
+          <button className="button item-action" onClick={handleAddAttribute}>
+            <SvgIcon icon="plus" />
+            <span>{i18n.t("table:editor.attribute-add")}</span>
+          </button>
+        )}
       </div>
     </div>
   );
