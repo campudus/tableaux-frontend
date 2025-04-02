@@ -679,6 +679,37 @@ $dist-from-top: 20px;
 }
 
 .overlay .content-items.column-editor {
+  .button {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    border-radius: 3px;
+    white-space: nowrap;
+
+    .svg-icon {
+      height: 0.8em;
+      max-width: 0.8em;
+    }
+
+    &:hover {
+      background: $color-grey-dark;
+    }
+
+    &--delete {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 1.2em;
+      border-radius: 3px;
+      padding: 3px 9px;
+    }
+
+    &--add {
+      white-space: nowrap;
+      padding: 6px 12px;
+    }
+  }
+
   .item-row {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr 30px;
@@ -692,17 +723,6 @@ $dist-from-top: 20px;
 
   .item-row:last-of-type {
     margin: 0 0 10px 0;
-  }
-
-  .item-action {
-    .svg-icon {
-      width: 0.8em;
-      max-width: 0.8em;
-    }
-
-    display: flex;
-    align-items: center;
-    gap: 4px;
   }
 
   .bold {
