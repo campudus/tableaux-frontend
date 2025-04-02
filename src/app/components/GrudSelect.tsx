@@ -2,6 +2,7 @@ import { CSSProperties, ReactElement } from "react";
 import ReactSelect, {
   ActionMeta as _ActionMeta,
   DropdownIndicatorProps,
+  Theme,
   GroupBase,
   OnChangeValue,
   Props as SelectProps
@@ -52,6 +53,18 @@ export default function Select<
       classNamePrefix={"react-select"}
       menuPortalTarget={document.body}
       menuPosition="fixed"
+      theme={(theme): Theme => ({
+        ...theme,
+        colors: {
+          ...theme.colors,
+          danger: "#d86357",
+          dangerLight: "#d86357cc",
+          primary: "#3296dc",
+          primary25: "#3296dc40",
+          primary50: "#3296dc80",
+          primary75: "#3296dcBF"
+        }
+      })}
       styles={{
         menuPortal: base => ({ ...base, zIndex: 9999 }),
         control: base => {
