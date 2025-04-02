@@ -16,7 +16,6 @@ import {
   ColumnAttributeMap,
   Table
 } from "../../types/grud";
-import SvgIcon from "../helperComponents/SvgIcon";
 import { buildClassName as cn } from "../../helpers/buildClassName";
 
 type ColumnData = Pick<Column, "displayName" | "description"> & {
@@ -24,6 +23,7 @@ type ColumnData = Pick<Column, "displayName" | "description"> & {
 };
 
 type ColumnAttributeDef = {
+  originalIndex?: number;
   key: string;
   type: ColumnAttribute["type"];
   value: ColumnAttribute["value"];
@@ -79,12 +79,17 @@ export function ColumnEditorOverlayBody({
   column,
   updateSharedData
 }: ColumnEditorOverlayBodyProps): ReactElement {
-  const columnAttributes = (column.attributes as unknown) as ColumnAttributeMap;
+  const columnAttributesMap = (column.attributes as unknown) as ColumnAttributeMap;
+  const columnAttributes = f
+    .entries(columnAttributesMap || {})
+    .map(([key, attr], originalIndex) => ({ originalIndex, key, ...attr }));
+
   const [displayName, setDisplayName] = useState(column.displayName[langtag]);
   const [description, setDescription] = useState(column.description[langtag]);
-  const [attributes, setAttributes] = useState<Partial<ColumnAttributeDef>[]>(
-    f.entries(columnAttributes || {}).map(([key, attr]) => ({ key, ...attr }))
-  );
+  const [attributes, setAttributes] = useState<Partial<ColumnAttributeDef>[]>([
+    ...columnAttributes,
+    {}
+  ]);
 
   const attributeTypeOptions: ColumnAttributeTypeOption[] = [
     { label: i18n.t("table:editor.attribute-string"), value: "string" },
@@ -119,7 +124,9 @@ export function ColumnEditorOverlayBody({
     const attribute = attributes[attributeIndex];
 
     if (option) {
-      const newAttribute = { ...attribute, type: option.value };
+      const type = option.value;
+      const value = type === "boolean" ? false : "";
+      const newAttribute = { ...attribute, type, value };
 
       setAttributes(attributes.toSpliced(attributeIndex, 1, newAttribute));
     } else {
@@ -167,11 +174,16 @@ export function ColumnEditorOverlayBody({
         description: { ...column.description, [langtag]: description },
         attributes: attributes.reduce(
           (acc, def) => {
-            const { key, type, value } = def;
-            const isValidAttribute = !f.isNil(type) && !f.isNil(value);
-            const isValidKey = !f.isNil(key) && f.isNil(acc[key]);
+            const { originalIndex: index, key, type, value } = def;
+            const original = !f.isNil(index) ? columnAttributes[index] : null;
+            const isValidAttribute =
+              !f.isEmpty(type) && !f.isNil(value) && value !== "";
+            const isValidKey = !f.isEmpty(key) && f.isEmpty(acc[key]);
 
             if (isValidAttribute && isValidKey) {
+              acc[key] = { type, value } as ColumnAttribute;
+            } else if (!f.isEmpty(original)) {
+              const { key, type, value } = original;
               acc[key] = { type, value } as ColumnAttribute;
             }
 
@@ -298,21 +310,23 @@ export function ColumnEditorOverlayBody({
                 )}
               </div>
               <button
-                className="button item-action"
+                className={cn("button", { delete: true })}
                 name={identifier}
                 onClick={handleDeleteAttribute}
               >
-                <SvgIcon icon="trash" />
+                <i className="fa fa-trash"></i>
               </button>
             </div>
           );
         })}
-        {!f.isEmpty(attributes.at(-1)) && (
-          <button className="button item-action" onClick={handleAddAttribute}>
-            <SvgIcon icon="plus" />
-            <span>{i18n.t("table:editor.attribute-add")}</span>
-          </button>
-        )}
+
+        <button
+          className={cn("button", { add: true })}
+          onClick={handleAddAttribute}
+        >
+          <i className="fa fa-plus"></i>
+          <span>{i18n.t("table:editor.attribute-add")}</span>
+        </button>
       </div>
     </div>
   );

@@ -65,7 +65,7 @@ export default function Select<
         },
         valueContainer: base => ({ ...base, padding: "0 0 2px 4px" }),
         menu: base => ({ ...base, margin: 0 }),
-        dropdownIndicator: base => ({ ...base, padding: "3px 6px 6px 3px" }),
+        dropdownIndicator: base => ({ ...base, padding: "5px 6px 6px 3px" }),
         menuList: base => ({ ...base, padding: 0 })
       }}
       onChange={handleChange}
