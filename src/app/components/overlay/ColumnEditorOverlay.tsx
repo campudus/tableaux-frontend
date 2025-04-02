@@ -159,8 +159,9 @@ export function ColumnEditorOverlayBody({
 
   const handleDeleteAttribute = (event: MouseEvent<HTMLButtonElement>) => {
     const attributeIndex = getAttributeIndex(event.currentTarget.name);
+    const newAttributes = attributes.toSpliced(attributeIndex, 1);
 
-    setAttributes(attributes.toSpliced(attributeIndex, 1));
+    setAttributes(f.isEmpty(newAttributes) ? [{}] : newAttributes);
   };
 
   const handleAddAttribute = () => {
