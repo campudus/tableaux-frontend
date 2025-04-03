@@ -14,6 +14,7 @@ import SvgIcon from "../helperComponents/SvgIcon";
 import { openShowDependency } from "../overlay/ConfirmDependentOverlay";
 import { clearSelectedCellValue } from "../../redux/actions/cellActions";
 import AnnotationContextMenu from "../contextMenu/AnnotationContextMenu";
+import { openHistoryOverlay } from "../history/HistoryOverlay";
 
 class MenuPopupInner extends Component {
   static props = {
@@ -155,8 +156,13 @@ class ItemPopupMenu extends Component {
                   icon: "code-fork"
                 })
               : null}
+            {this.mkEntry(1, {
+              title: "history:show_history",
+              fn: () => void openHistoryOverlay({ cell, langtag }),
+              icon: "clock-o"
+            })}
             {cell.kind !== ColumnKinds.status &&
-              this.mkEntry(1, {
+              this.mkEntry(2, {
                 title: "table:copy_cell",
                 fn: () =>
                   store.dispatch(actions.copyCellValue({ cell, langtag })),
@@ -164,7 +170,7 @@ class ItemPopupMenu extends Component {
               })}
             {thisUserCantEdit
               ? null
-              : this.mkEntry(2, {
+              : this.mkEntry(3, {
                   title: "table:paste_cell",
                   fn: () =>
                     pasteCellValue(
@@ -177,7 +183,7 @@ class ItemPopupMenu extends Component {
                 })}
             {thisUserCantEdit || cell.column.kind === ColumnKinds.group
               ? null
-              : this.mkEntry(3, {
+              : this.mkEntry(4, {
                   title: "table:clear-cell.title",
                   fn: () => {
                     clearSelectedCellValue(cell, langtag);
