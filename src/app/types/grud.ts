@@ -17,6 +17,12 @@ export type Row = {
   annotations?: Annotation[][];
 };
 
+export type TableParams = {
+  tableId: string | number;
+  columnId: string | number;
+  rowId: string | number;
+};
+
 export type Folder = {
   id: FolderID;
   name: string;

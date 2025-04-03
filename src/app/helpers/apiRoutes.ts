@@ -1,10 +1,5 @@
 import f from "lodash/fp";
-
-type TableParams = {
-  tableId: string | number;
-  columnId: string | number;
-  rowId: string | number;
-};
+import { TableParams } from "../types/grud";
 
 const urlTrim = (url: string) => url.match(/\.*\/?(.*)\/?/)?.at(1);
 
