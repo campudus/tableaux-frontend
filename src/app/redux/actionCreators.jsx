@@ -32,6 +32,7 @@ import {
 import { changeCellValue, modifyHistory } from "./actions/cellActions";
 import { queryFrontendServices } from "./actions/frontendServices";
 import * as Row from "./actions/rowActions";
+import * as MediaActions from "./actions/mediaActions";
 import actionTypes from "./actionTypes";
 import { overlayParamsSpec } from "./reducers/overlays";
 
@@ -39,8 +40,6 @@ const {
   getAllTables,
   getAllColumnsForTable,
   toRow,
-  toFolder,
-  toFile,
   toColumn,
   toTable
 } = API_ROUTES;
@@ -95,31 +94,6 @@ const {
   SET_OVERLAY_STATE,
   SHOW_TOAST
 } = actionTypes.overlays;
-
-const {
-  MEDIA_FOLDER_GET,
-  MEDIA_FOLDER_GET_SUCCESS,
-  MEDIA_FOLDER_GET_ERROR,
-  MEDIA_FOLDER_CREATE,
-  MEDIA_FOLDER_CREATE_SUCCESS,
-  MEDIA_FOLDER_CREATE_ERROR,
-  MEDIA_FOLDER_EDIT,
-  MEDIA_FOLDER_EDIT_SUCCESS,
-  MEDIA_FOLDER_EDIT_ERROR,
-  MEDIA_FOLDER_DELETE,
-  MEDIA_FOLDER_DELETE_SUCCESS,
-  MEDIA_FOLDER_DELETE_ERROR,
-
-  MEDIA_FILE_GET,
-  MEDIA_FILE_GET_SUCCESS,
-  MEDIA_FILE_GET_ERROR,
-  MEDIA_FILE_EDIT,
-  MEDIA_FILE_EDIT_SUCCESS,
-  MEDIA_FILE_EDIT_ERROR,
-  MEDIA_FILE_DELETE,
-  MEDIA_FILE_DELETE_SUCCESS,
-  MEDIA_FILE_DELETE_ERROR
-} = actionTypes.media;
 
 const MultiSelect = actionTypes.multiSelect;
 
@@ -489,104 +463,6 @@ const toggleCellEditingOrUnlockCell = action => {
     : dispatchParamsFor(TOGGLE_CELL_EDITING)(action);
 };
 
-const getMediaFolder = (folderId, langtag) => {
-  return {
-    promise: makeRequest({
-      apiRoute: toFolder(folderId, langtag),
-      method: "GET"
-    }),
-    actionTypes: [
-      MEDIA_FOLDER_GET,
-      MEDIA_FOLDER_GET_SUCCESS,
-      MEDIA_FOLDER_GET_ERROR
-    ],
-    folderId: folderId || "root-folder"
-  };
-};
-
-const createMediaFolder = data => {
-  return {
-    promise: makeRequest({
-      apiRoute: toFolder(),
-      data: data,
-      method: "POST"
-    }),
-    actionTypes: [
-      MEDIA_FOLDER_CREATE,
-      MEDIA_FOLDER_CREATE_SUCCESS,
-      MEDIA_FOLDER_CREATE_ERROR
-    ]
-  };
-};
-
-const editMediaFolder = (folderId, data) => {
-  return {
-    promise: makeRequest({
-      apiRoute: toFolder(folderId),
-      data: data,
-      method: "PUT"
-    }),
-    actionTypes: [
-      MEDIA_FOLDER_EDIT,
-      MEDIA_FOLDER_EDIT_SUCCESS,
-      MEDIA_FOLDER_EDIT_ERROR
-    ]
-  };
-};
-
-const deleteMediaFolder = folderId => {
-  return {
-    promise: makeRequest({
-      apiRoute: toFolder(folderId),
-      method: "DELETE"
-    }),
-    actionTypes: [
-      MEDIA_FOLDER_DELETE,
-      MEDIA_FOLDER_DELETE_SUCCESS,
-      MEDIA_FOLDER_DELETE_ERROR
-    ]
-  };
-};
-
-const getMediaFile = fileId => {
-  return {
-    promise: makeRequest({
-      apiRoute: toFile(fileId),
-      method: "GET"
-    }),
-    actionTypes: [MEDIA_FILE_GET, MEDIA_FILE_GET_SUCCESS, MEDIA_FILE_GET_ERROR]
-  };
-};
-
-const editMediaFile = (fileId, data) => {
-  return {
-    promise: makeRequest({
-      apiRoute: toFile(fileId),
-      data: data,
-      method: "PUT"
-    }),
-    actionTypes: [
-      MEDIA_FILE_EDIT,
-      MEDIA_FILE_EDIT_SUCCESS,
-      MEDIA_FILE_EDIT_ERROR
-    ]
-  };
-};
-
-const deleteMediaFile = fileId => {
-  return {
-    promise: makeRequest({
-      apiRoute: toFile(fileId),
-      method: "DELETE"
-    }),
-    actionTypes: [
-      MEDIA_FILE_DELETE,
-      MEDIA_FILE_DELETE_SUCCESS,
-      MEDIA_FILE_DELETE_ERROR
-    ]
-  };
-};
-
 const appendFilters = filter => (dispatch, getState) => {
   const state = getState();
   const {
@@ -770,13 +646,13 @@ const actionCreators = {
   setStatusInfo: dispatchParamsFor(SET_STATUS_INFO),
   setOverlayState: dispatchParamsFor(SET_OVERLAY_STATE),
   createDisplayValueWorker: createDisplayValueWorker,
-  getMediaFolder: getMediaFolder,
-  createMediaFolder: createMediaFolder,
-  editMediaFolder: editMediaFolder,
-  deleteMediaFolder: deleteMediaFolder,
-  getMediaFile: getMediaFile,
-  editMediaFile: editMediaFile,
-  deleteMediaFile: deleteMediaFile,
+  getMediaFolder: MediaActions.getMediaFolder,
+  createMediaFolder: MediaActions.createMediaFolder,
+  editMediaFolder: MediaActions.editMediaFolder,
+  deleteMediaFolder: MediaActions.deleteMediaFolder,
+  getMediaFile: MediaActions.getMediaFile,
+  editMediaFile: MediaActions.editMediaFile,
+  deleteMediaFile: MediaActions.deleteMediaFile,
   setFiltersAndSorting: setFiltersAndSorting,
   appendFilters: appendFilters,
   cleanUp: cleanUp,
