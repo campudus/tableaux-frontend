@@ -302,7 +302,7 @@ class RowContextMenu extends React.Component {
           {config.enableHistory && hasHistory(cell)
             ? this.mkItem(this.showHistory, "history:show_history", "clock-o")
             : null}
-          {
+          {canUserEditCellAnnotations(cell) && (
             <a className="annotation-context-menu-button">
               <SvgIcon icon="highlight" />
               <div className="item-label">
@@ -315,7 +315,7 @@ class RowContextMenu extends React.Component {
                 closeAction={this.closeRowContextMenu}
               />
             </a>
-          }
+          )}
           <ContextMenuServices cell={cell} langtag={this.props.langtag} />
           <div className="separator with-line">{t("menus.data_set")}</div>
           {this.props.table.type === "settings"

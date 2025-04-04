@@ -471,16 +471,10 @@ class VirtualTable extends PureComponent {
   }
 
   getScrollInfo = () => {
-    const { rows, columns, visibleColumnOrdering } = this.props;
+    const { rows, visibleColumnOrdering } = this.props;
     const { rowId, columnId, align } = this.state.selectedCell;
-
     const rowIndex = f.findIndex(f.matchesProperty("id", rowId), rows);
-    const columnIndex = f.compose(
-      f.get("orderIdx"),
-      f.find(({ id }) => id === columnId),
-      mapIndexed((obj, orderIdx) => ({ ...obj, orderIdx })),
-      f.map(index => ({ id: f.get("id", columns[index]), idx: index }))
-    )(visibleColumnOrdering);
+    const columnIndex = f.findIndex(f.eq(columnId), visibleColumnOrdering);
 
     const isSafeIndex = x => f.isNumber(x) && !f.isNaN(x) && x >= 0;
 
