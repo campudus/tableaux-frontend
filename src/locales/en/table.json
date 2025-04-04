@@ -105,7 +105,22 @@
     "sanity_info": "Please make sure the title describes the purpose properly",
     "description": "Description",
     "edit_column": "Edit column",
-    "rename_table": "Rename table"
+    "rename_table": "Rename table",
+    "attributes": "Attributes",
+    "attribute-type": "Type",
+    "attribute-type-ph": "Select type",
+    "attribute-key": "Key",
+    "attribute-key-ph": "Select key",
+    "attribute-value": "Value",
+    "attribute-value-ph": "Enter value",
+    "attribute-string": "Text",
+    "attribute-boolean": "Boolean",
+    "attribute-number": "Number",
+    "attribute-current": "Current Selection",
+    "attribute-yes": "Yes",
+    "attribute-no": "No",
+    "attribute-add": "Add attribute"
+
   },
   "filter": {
     "annotations": "Annotations",
