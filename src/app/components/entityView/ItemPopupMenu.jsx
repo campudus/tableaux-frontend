@@ -14,6 +14,7 @@ import SvgIcon from "../helperComponents/SvgIcon";
 import { openShowDependency } from "../overlay/ConfirmDependentOverlay";
 import { clearSelectedCellValue } from "../../redux/actions/cellActions";
 import AnnotationContextMenu from "../contextMenu/AnnotationContextMenu";
+import { canUserEditCellAnnotations } from "../../helpers/accessManagementHelper";
 
 class MenuPopupInner extends Component {
   static props = {
@@ -184,7 +185,7 @@ class ItemPopupMenu extends Component {
                   },
                   icon: "times"
                 })}
-            {
+            {canUserEditCellAnnotations(cell) && (
               <a className="entry annotation-context-menu-button">
                 <SvgIcon icon="highlight" />
                 <div>{i18n.t("table:show-annotations")}</div>
@@ -196,7 +197,7 @@ class ItemPopupMenu extends Component {
                   closeAction={this.closePopup}
                 />
               </a>
-            }
+            )}
             {cell.column.multilanguage &&
               canConvert(cell.kind, ColumnKinds.text) &&
               this.mkEntry(5, {
