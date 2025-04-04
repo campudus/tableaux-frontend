@@ -28,6 +28,7 @@ import { isTextInRange } from "../../helpers/limitTextLength";
 import { clearSelectedCellValue } from "../../redux/actions/cellActions";
 import AnnotationContextMenu from "./AnnotationContextMenu";
 import SvgIcon from "../helperComponents/SvgIcon";
+import { hasHistory } from "../../helpers/history";
 
 // Distance between clicked coordinate and the left upper corner of the context menu
 const CLICK_OFFSET = 3;
@@ -298,12 +299,7 @@ class RowContextMenu extends React.Component {
                 "commenting-o"
               )
             : null}
-          {config.enableHistory &&
-          !f.contains(this.props.cell.kind, [
-            ColumnKinds.group,
-            ColumnKinds.concat,
-            ColumnKinds.status
-          ])
+          {config.enableHistory && hasHistory(cell)
             ? this.mkItem(this.showHistory, "history:show_history", "clock-o")
             : null}
           {

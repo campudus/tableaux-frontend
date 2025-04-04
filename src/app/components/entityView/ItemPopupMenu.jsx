@@ -15,6 +15,7 @@ import { openShowDependency } from "../overlay/ConfirmDependentOverlay";
 import { clearSelectedCellValue } from "../../redux/actions/cellActions";
 import AnnotationContextMenu from "../contextMenu/AnnotationContextMenu";
 import { openHistoryOverlay } from "../history/HistoryOverlay";
+import { hasHistory } from "../../helpers/history";
 
 class MenuPopupInner extends Component {
   static props = {
@@ -156,11 +157,13 @@ class ItemPopupMenu extends Component {
                   icon: "code-fork"
                 })
               : null}
-            {this.mkEntry(1, {
-              title: "history:show_history",
-              fn: () => void openHistoryOverlay({ cell, langtag }),
-              icon: "clock-o"
-            })}
+            {hasHistory(cell)
+              ? this.mkEntry(1, {
+                  title: "history:show_history",
+                  fn: () => void openHistoryOverlay({ cell, langtag }),
+                  icon: "clock-o"
+                })
+              : null}
             {cell.kind !== ColumnKinds.status &&
               this.mkEntry(2, {
                 title: "table:copy_cell",
