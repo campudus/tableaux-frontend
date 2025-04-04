@@ -64,6 +64,9 @@ export const toFile = (fileId?: string | number, langtag?: string) =>
   (fileId ? `/files/${fileId}` : "/files") +
   (langtag ? "?langtag=" + langtag : "");
 
+export const toFileUpload = (fileId: string | number, langtag: string) =>
+  `/files/${fileId}/${langtag}`;
+
 export const toServiceRegistry = () => "/system/services";
 
 export const toFrontendServiceView = (

@@ -4,7 +4,7 @@ import f from "lodash/fp";
 import { ViewNames } from "../constants/TableauxConstants";
 import DashboardView from "./dashboard/DashboardView";
 import FrontendServiceView from "./frontendService/FrontendServiceView";
-import MediaView from "../components/media/MediaView.jsx";
+import MediaView from "../components/media/MediaView";
 import TableView from "./tableView/TableView.jsx";
 import reduxActionHoc from "../helpers/reduxActionHoc";
 import TaxonomyDashboard from "./taxonomy/TaxonomyDashboard";

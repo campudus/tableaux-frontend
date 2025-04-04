@@ -1,4 +1,4 @@
-import { Attachment, Folder } from "../../types/grud";
+import { Attachment, Folder, FolderID } from "../../types/grud";
 import { makeRequest } from "../../helpers/apiHelper";
 import { toFolder, toFile } from "../../helpers/apiRoutes";
 import actionTypes from "../actionTypes";
@@ -80,7 +80,7 @@ export const editMediaFolder = (
   };
 };
 
-export const deleteMediaFolder = (folderId: string | number) => {
+export const deleteMediaFolder = (folderId: string | number | FolderID) => {
   return {
     promise: makeRequest({
       apiRoute: toFolder(folderId),
@@ -104,20 +104,19 @@ export const getMediaFile = (fileId?: string | number, langtag?: string) => {
   };
 };
 
-export const editMediaFile = (
-  fileId: string | number,
-  data: Partial<
-    Pick<
-      Attachment,
-      | "title"
-      | "description"
-      | "externalName"
-      | "internalName"
-      | "mimeType"
-      | "folder"
-    >
+export type FileEditData = Partial<
+  Pick<
+    Attachment,
+    | "title"
+    | "description"
+    | "externalName"
+    | "internalName"
+    | "mimeType"
+    | "folder"
   >
-) => {
+>;
+
+export const editMediaFile = (fileId: string | number, data: FileEditData) => {
   return {
     promise: makeRequest({
       apiRoute: toFile(fileId),

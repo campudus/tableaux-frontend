@@ -28,11 +28,12 @@ export const makeRequest = async ({
   data,
   responseType = "json",
   file,
-  onProgress = f.noop
+  onProgress
 }: RequestParams) => {
   const baseUrl = f.isString(apiRoute) ? apiUrl(apiRoute) : url;
   const paramsString = new URLSearchParams(params).toString();
-  const targetUrl = baseUrl + paramsString ? `?${paramsString}` : "";
+  const suffix = paramsString ? `?${paramsString}` : "";
+  const targetUrl = baseUrl + suffix;
   const isGet = /get/i.test(method);
   const handler = !isGet && (onProgress || file) ? "superagent" : "cross-fetch";
   const body = f.isNil(data) ? undefined : JSON.stringify(data);
@@ -44,14 +45,14 @@ export const makeRequest = async ({
   }
 
   if (handler === "superagent") {
-    return new Promise((resolve, reject) => {
+    return (
       superagent(method, targetUrl)
         .set("Authorization", authHeader)
-        .on("progress", onProgress)
+        .on("progress", onProgress ?? f.noop)
         // @ts-expect-error should accept file
-        .attach("file", file, file.name)
-        .end((err, res) => (err ? reject(err) : resolve(res)));
-    });
+        .attach("file", file, file?.name)
+        .then()
+    );
   } else {
     return fetch(targetUrl, {
       method,

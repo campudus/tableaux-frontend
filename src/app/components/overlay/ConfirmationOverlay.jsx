@@ -2,7 +2,7 @@ import React from "react";
 import { showDialog } from "./GenericOverlay";
 import i18n from "i18next";
 
-export function confirmDeleteFile(fileName, onYes, reduxActions) {
+export function confirmDeleteFile(fileName, onYes) {
   showDialog({
     type: "question",
     context: fileName,
@@ -11,12 +11,11 @@ export function confirmDeleteFile(fileName, onYes, reduxActions) {
     buttonActions: {
       negative: [i18n.t("common:yes"), onYes],
       neutral: [i18n.t("common:no"), null]
-    },
-    reduxActions: reduxActions
+    }
   });
 }
 
-export function confirmDeleteFolder(folderName, onYes, reduxActions) {
+export function confirmDeleteFolder(folderName, onYes) {
   showDialog({
     type: "question",
     context: folderName,
@@ -27,15 +26,13 @@ export function confirmDeleteFolder(folderName, onYes, reduxActions) {
     buttonActions: {
       negative: [i18n.t("common:yes"), onYes],
       neutral: [i18n.t("common:no"), null]
-    },
-    reduxActions: reduxActions
+    }
   });
 }
 
 export function noPermissionAlertWithLanguage(
   allowedLangtags,
-  allowedCountries,
-  reduxActions
+  allowedCountries
 ) {
   let totalError;
   const userError = `${i18n.t(
@@ -94,8 +91,7 @@ export function noPermissionAlertWithLanguage(
     message: totalError,
     buttonActions: {
       neutral: [i18n.t("common:ok"), null]
-    },
-    reduxActions: reduxActions
+    }
   });
 
   console.warn("Access denied. User can not edit this language.");
@@ -132,14 +128,13 @@ export function cellModelSavingError(errorFromServer) {
   });
 }
 
-export function simpleError(reduxActions, errorMsg, errorHead) {
+export function simpleError(errorMsg, errorHead) {
   showDialog({
     type: "warning",
     context: i18n.t("common:error"),
     title: i18n.t("table:error_occured_hl"),
     heading: errorHead || i18n.t("table:error_occured_hl"),
     message: errorMsg,
-    buttonActions: { neutral: [i18n.t("common:ok"), null] },
-    reduxActions: reduxActions
+    buttonActions: { neutral: [i18n.t("common:ok"), null] }
   });
 }
