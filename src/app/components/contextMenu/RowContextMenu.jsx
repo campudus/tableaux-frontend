@@ -15,20 +15,20 @@ import {
 } from "../../helpers/accessManagementHelper";
 import { setRowArchived, setRowFinal } from "../../helpers/annotationHelper";
 import { canConvert } from "../../helpers/cellValueConverter";
+import { hasHistory } from "../../helpers/history";
+import { isTextInRange } from "../../helpers/limitTextLength";
 import {
   initiateDeleteRow,
   initiateDuplicateRow,
   initiateEntityView,
   initiateRowDependency
 } from "../../helpers/rowHelper";
-import ContextMenuServices from "../frontendService/ContextMenuEntries";
-import { openHistoryOverlay } from "../history/HistoryOverlay";
-import GenericContextMenu from "./GenericContextMenu";
-import { isTextInRange } from "../../helpers/limitTextLength";
 import { clearSelectedCellValue } from "../../redux/actions/cellActions";
-import AnnotationContextMenu from "./AnnotationContextMenu";
+import ContextMenuServices from "../frontendService/ContextMenuEntries";
 import SvgIcon from "../helperComponents/SvgIcon";
-import { hasHistory } from "../../helpers/history";
+import { openHistoryOverlay } from "../history/HistoryOverlay";
+import AnnotationContextMenu from "./AnnotationContextMenu";
+import GenericContextMenu from "./GenericContextMenu";
 
 // Distance between clicked coordinate and the left upper corner of the context menu
 const CLICK_OFFSET = 3;
