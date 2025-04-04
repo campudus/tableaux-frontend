@@ -15,19 +15,20 @@ import {
 } from "../../helpers/accessManagementHelper";
 import { setRowArchived, setRowFinal } from "../../helpers/annotationHelper";
 import { canConvert } from "../../helpers/cellValueConverter";
+import { hasHistory } from "../../helpers/history";
+import { isTextInRange } from "../../helpers/limitTextLength";
 import {
   initiateDeleteRow,
   initiateDuplicateRow,
   initiateEntityView,
   initiateRowDependency
 } from "../../helpers/rowHelper";
-import ContextMenuServices from "../frontendService/ContextMenuEntries";
-import { openHistoryOverlay } from "../history/HistoryOverlay";
-import GenericContextMenu from "./GenericContextMenu";
-import { isTextInRange } from "../../helpers/limitTextLength";
 import { clearSelectedCellValue } from "../../redux/actions/cellActions";
-import AnnotationContextMenu from "./AnnotationContextMenu";
+import ContextMenuServices from "../frontendService/ContextMenuEntries";
 import SvgIcon from "../helperComponents/SvgIcon";
+import { openHistoryOverlay } from "../history/HistoryOverlay";
+import AnnotationContextMenu from "./AnnotationContextMenu";
+import GenericContextMenu from "./GenericContextMenu";
 
 // Distance between clicked coordinate and the left upper corner of the context menu
 const CLICK_OFFSET = 3;
@@ -298,12 +299,7 @@ class RowContextMenu extends React.Component {
                 "commenting-o"
               )
             : null}
-          {config.enableHistory &&
-          !f.contains(this.props.cell.kind, [
-            ColumnKinds.group,
-            ColumnKinds.concat,
-            ColumnKinds.status
-          ])
+          {config.enableHistory && hasHistory(cell)
             ? this.mkItem(this.showHistory, "history:show_history", "clock-o")
             : null}
           {canUserEditCellAnnotations(cell) && (

@@ -2,18 +2,20 @@ import classNames from "classnames";
 import i18n from "i18next";
 import f from "lodash/fp";
 import PropTypes from "prop-types";
-import React, { Component } from "react";
+import { Component } from "react";
 import ReactDOM from "react-dom";
 import listenToClickOutside from "react-onclickoutside";
 import pasteCellValue from "../../components/cells/cellCopyHelper";
 import { ColumnKinds } from "../../constants/TableauxConstants";
 import { canConvert } from "../../helpers/cellValueConverter";
+import { hasHistory } from "../../helpers/history";
 import actions from "../../redux/actionCreators";
-import store from "../../redux/store";
-import SvgIcon from "../helperComponents/SvgIcon";
-import { openShowDependency } from "../overlay/ConfirmDependentOverlay";
 import { clearSelectedCellValue } from "../../redux/actions/cellActions";
+import store from "../../redux/store";
 import AnnotationContextMenu from "../contextMenu/AnnotationContextMenu";
+import SvgIcon from "../helperComponents/SvgIcon";
+import { openHistoryOverlay } from "../history/HistoryOverlay";
+import { openShowDependency } from "../overlay/ConfirmDependentOverlay";
 import { canUserEditCellAnnotations } from "../../helpers/accessManagementHelper";
 
 class MenuPopupInner extends Component {
@@ -156,8 +158,15 @@ class ItemPopupMenu extends Component {
                   icon: "code-fork"
                 })
               : null}
+            {hasHistory(cell)
+              ? this.mkEntry(1, {
+                  title: "history:show_history",
+                  fn: () => void openHistoryOverlay({ cell, langtag }),
+                  icon: "clock-o"
+                })
+              : null}
             {cell.kind !== ColumnKinds.status &&
-              this.mkEntry(1, {
+              this.mkEntry(2, {
                 title: "table:copy_cell",
                 fn: () =>
                   store.dispatch(actions.copyCellValue({ cell, langtag })),
@@ -165,7 +174,7 @@ class ItemPopupMenu extends Component {
               })}
             {thisUserCantEdit
               ? null
-              : this.mkEntry(2, {
+              : this.mkEntry(3, {
                   title: "table:paste_cell",
                   fn: () =>
                     pasteCellValue(
@@ -178,7 +187,7 @@ class ItemPopupMenu extends Component {
                 })}
             {thisUserCantEdit || cell.column.kind === ColumnKinds.group
               ? null
-              : this.mkEntry(3, {
+              : this.mkEntry(4, {
                   title: "table:clear-cell.title",
                   fn: () => {
                     clearSelectedCellValue(cell, langtag);
