@@ -7,6 +7,18 @@ import React, {
 } from "react";
 import f from "lodash/fp";
 
+const JAVA_INT_MAX = 2_147_483_647;
+const JAVA_INT_MIN = -2_147_483_648;
+
+// Here we can use that JS uses double precicion floats to represent all numbers
+// and thus can handle bigger "integers" than Java.
+// toStorableInteger: Number -> Number
+export const toStorableInteger = f.cond([
+  [n => n > JAVA_INT_MAX, () => JAVA_INT_MAX],
+  [n => n < JAVA_INT_MIN, () => JAVA_INT_MIN],
+  [f.stubTrue, f.identity]
+]);
+
 import PropTypes from "prop-types";
 
 import {
@@ -40,7 +52,10 @@ const NumberInput = (props, ref) => {
   const thousandSeparator = decimalSeparator === "," ? "." : ",";
 
   const handleChange = event => {
-    onChange && onChange(readLocalizedNumber(event.target.value));
+    const input = readLocalizedNumber(event.target.value);
+    const isInteger = decimalDigits === 0;
+    const newValue = isInteger ? toStorableInteger(input) : input;
+    onChange && onChange(newValue);
   };
 
   const inputRef = useRef();
