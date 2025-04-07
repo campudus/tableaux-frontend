@@ -1,5 +1,5 @@
 import f from "lodash/fp";
-import { ReactElement, useRef } from "react";
+import { ReactElement, useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { switchLanguageHandler } from "../Router";
@@ -19,13 +19,21 @@ type MediaViewProps = {
 export default function MediaView({ langtag }: MediaViewProps): ReactElement {
   const history = useHistory();
   const media = useSelector<ReduxState, MediaState>(state => state.media);
+  const folder = media.data;
   const fileIds = media.data.files?.map(({ uuid }) => uuid) ?? [];
-  const oldFileIds = useRef(fileIds);
-  const modifiedFileIds = f.difference(fileIds, oldFileIds.current);
+  const prevFolder = useRef(folder);
+  const prevFolderId = prevFolder.current.id;
+  const prevFileIds = prevFolder.current.files?.map(({ uuid }) => uuid) ?? [];
+  const modifiedFileIds =
+    prevFolderId === folder.id ? f.difference(fileIds, prevFileIds) : [];
 
   const handleLanguageSwitch = (newLangtag: string) => {
     switchLanguageHandler(history, newLangtag);
   };
+
+  useEffect(() => {
+    prevFolder.current = folder;
+  }, [folder]);
 
   if (media.error) {
     simpleError();
