@@ -16,7 +16,7 @@ import {
 } from "../../constants/TableauxConstants";
 import { canUserCreateRow } from "../../helpers/accessManagementHelper";
 import { isLocked } from "../../helpers/annotationHelper";
-import { doto, either, mapIndexed, maybe } from "../../helpers/functools";
+import { doto, either, maybe } from "../../helpers/functools";
 import getDisplayValue from "../../helpers/getDisplayValue";
 import KeyboardShortcutsHelper from "../../helpers/KeyboardShortcutsHelper";
 import { saveColumnWidths } from "../../helpers/localStorage";
@@ -48,6 +48,9 @@ class VirtualTable extends PureComponent {
       selectedCell: {}
     };
     this.cacheColumnIndices(props.columns);
+    this.handleKeyDown = KeyboardShortcutsHelper.onKeyboardShortcut(
+      tableNavigationWorker.getKeyboardShortcuts.bind(this)
+    );
   }
 
   colWidths = new Map([[0, META_CELL_WIDTH]]);
@@ -494,6 +497,11 @@ class VirtualTable extends PureComponent {
     this.settingsColumnIds = doto(this.props.columns, f.take(2), f.map("id"));
     this.divRef = document.getElementById("resize-bar");
     this.focusTable();
+
+    document.body.addEventListener("keydown", this.handleKeyDown);
+  }
+  componentWillUnmount() {
+    document.body.removeEventListener("keydown", this.handleKeyDown);
   }
 
   componentDidUpdate(prev) {
@@ -525,6 +533,8 @@ class VirtualTable extends PureComponent {
 
   divRef = null;
 
+  handleKeypresses;
+
   render() {
     const {
       rows,
@@ -553,9 +563,7 @@ class VirtualTable extends PureComponent {
         id="virtual-table-wrapper"
         ref={this.virtualTableRef}
         tabIndex="-1"
-        onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(
-          tableNavigationWorker.getKeyboardShortcuts.bind(this)
-        )}
+        onKeyDown={this.handleKeyDown}
       >
         <div id="resize-bar" className={resizeBarClass} />
         <AutoSizer>
