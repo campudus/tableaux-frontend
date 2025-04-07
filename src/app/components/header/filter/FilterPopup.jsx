@@ -7,6 +7,10 @@ import {
   DefaultLangtag,
   SortValue
 } from "../../../constants/TableauxConstants";
+import {
+  getAnnotationColor,
+  getAnnotationTitle
+} from "../../../helpers/annotationHelper";
 import * as Storage from "../../../helpers/localStorage";
 import { getColumnDisplayName } from "../../../helpers/multiLanguage";
 import RowFilters from "../../../RowFilters";
@@ -22,10 +26,6 @@ import {
   mkAnnotationFilterTemplates,
   toCombinedFilter
 } from "./helpers";
-import {
-  getAnnotationColor,
-  getAnnotationTitle
-} from "../../../helpers/annotationHelper";
 
 const of = el => (Array.isArray(el) ? el : [el]);
 
