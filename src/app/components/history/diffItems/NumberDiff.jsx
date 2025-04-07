@@ -4,6 +4,7 @@ import PropTypes from "prop-types";
 import classNames from "classnames";
 
 import { formatNumber } from "../../../helpers/multiLanguage";
+import { MAX_DIGITS } from "../../helperComponents/NumberInput";
 
 const NumberDiff = props => {
   const { diff, shouldFormatNumber = true } = props;
@@ -15,7 +16,9 @@ const NumberDiff = props => {
 
     return (
       <span key={idx} className={cssClass}>
-        {shouldFormatNumber ? formatNumber(value) : value}
+        {shouldFormatNumber
+          ? formatNumber(value, MAX_DIGITS, props.langtag)
+          : value}
       </span>
     );
   });
