@@ -7,7 +7,7 @@ import { List, AutoSizer, WindowScroller } from "react-virtualized";
 import { canUserCreateFolders } from "../../../helpers/accessManagementHelper";
 import { Folder as FolderType } from "../../../types/grud";
 import { switchFolderHandler } from "../../Router";
-import FolderNew from "./FolderNew";
+import SubfolderNew from "./SubfolderNew";
 import FileUpload from "./FileUpload";
 import Subfolder from "./Subfolder";
 import File from "./File";
@@ -51,7 +51,7 @@ export default function Folder({
         </div>
       )}
 
-      {canUserCreateFolders() && <FolderNew parent={folder} />}
+      {canUserCreateFolders() && <SubfolderNew parent={folder} />}
 
       <div className="media-switcher">
         <ol className="media-switcher-menu">

@@ -8,17 +8,17 @@ import {
 } from "react";
 import { outsideClickEffect } from "../../../helpers/useOutsideClick";
 
-type FolderEditProps = {
+type SubfolderEditProps = {
   name: string;
   onClose: () => void;
   onSave: (name: string) => void;
 };
 
-export default function FolderEdit({
+export default function SubfolderEdit({
   name: folderName,
   onClose,
   onSave
-}: FolderEditProps): ReactElement {
+}: SubfolderEditProps): ReactElement {
   const editRef = useRef(null);
   const [name, setName] = useState(folderName);
 
@@ -26,7 +26,7 @@ export default function FolderEdit({
     setName(event.target.value);
   };
 
-  const handleKeydown = (event: KeyboardEvent<HTMLInputElement>)  => {
+  const handleKeydown = (event: KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter") {
       event.preventDefault();
       onSave(name);

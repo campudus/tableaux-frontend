@@ -7,8 +7,8 @@ type FileIconProps = {
 export default function FileIcon({ name }: FileIconProps): ReactElement {
   const extension = name
     ?.split(".")
-    .map(ext => ext.toLowerCase())
-    .at(1);
+    .at(1)
+    ?.toLowerCase();
 
   return (
     <span className="file-icon">

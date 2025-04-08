@@ -3,13 +3,15 @@ import { useDispatch } from "react-redux";
 import { ReactElement, useState } from "react";
 import { Folder } from "../../../types/grud";
 import { createMediaFolder } from "../../../redux/actions/mediaActions";
-import FolderEdit from "./FolderEdit";
+import SubfolderEdit from "./SubfolderEdit";
 
-type FolderNewProps = {
+type SubfolderNewProps = {
   parent: Partial<Folder>;
 };
 
-export default function FolderNew({ parent }: FolderNewProps): ReactElement {
+export default function SubfolderNew({
+  parent
+}: SubfolderNewProps): ReactElement {
   const dispatch = useDispatch();
   const [isEdit, setIsEdit] = useState(false);
   const folderName = i18n.t("media:new_folder");
@@ -28,7 +30,7 @@ export default function FolderNew({ parent }: FolderNewProps): ReactElement {
   return (
     <div className="media-switcher new-folder-action">
       {isEdit ? (
-        <FolderEdit
+        <SubfolderEdit
           name={folderName}
           onClose={handleToggle}
           onSave={handleSave}

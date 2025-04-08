@@ -13,7 +13,7 @@ import {
   editMediaFolder
 } from "../../../redux/actions/mediaActions";
 import { switchFolderHandler } from "../../Router";
-import FolderEdit from "./FolderEdit";
+import SubfolderEdit from "./SubfolderEdit";
 
 type SubfolderProps = {
   langtag: string;
@@ -53,7 +53,7 @@ export default function Subfolder({
   return (
     <div className="subfolder">
       {isEdit ? (
-        <FolderEdit
+        <SubfolderEdit
           name={folder.name}
           onClose={handleToggle}
           onSave={handleSave}

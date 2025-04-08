@@ -41,7 +41,7 @@ export default function File({ langtag, file }: FileProps): ReactElement {
   };
 
   return (
-    <div key={"file" + file.uuid} className="file">
+    <div className="file">
       {canUserEditFiles() ? (
         <button className="file-link" onClick={onEdit}>
           <i className="icon fa fa-file" />
