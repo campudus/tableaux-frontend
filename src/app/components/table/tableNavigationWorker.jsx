@@ -493,10 +493,10 @@ export function getNextColumnCell(getPrev) {
     selectedCell: { selectedCell }
   } = store.getState();
 
-  const getNextColumnId = (visibleColumnOrdering, columns) => {
+  const getNextColumn = (visibleColumnOrdering, columns) => {
     const clampToVisibleRange = range => index => f.clamp(0, index, range);
     const orderedVisibleColumns = f.map(
-      columnIdx => columns[columnIdx],
+      columnId => f.find(col => col.id === columnId, columns),
       visibleColumnOrdering
     );
     return f.compose(
@@ -508,7 +508,7 @@ export function getNextColumnCell(getPrev) {
   };
 
   const currentSelectedRowId = selectedCell.rowId;
-  const nextColumn = getNextColumnId(visibleColumnOrdering, columns);
+  const nextColumn = getNextColumn(visibleColumnOrdering, columns);
 
   const newSelectedCellExpandedRow =
     !nextColumn.multilanguage &&
