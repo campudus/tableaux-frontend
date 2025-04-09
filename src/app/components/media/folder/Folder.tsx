@@ -1,105 +1,145 @@
 import f from "lodash/fp";
 import i18n from "i18next";
-import { useHistory } from "react-router-dom";
-import { MouseEvent, ReactElement } from "react";
-import { List, AutoSizer, WindowScroller } from "react-virtualized";
+import { useDispatch } from "react-redux";
+import { ReactElement, useRef, useState } from "react";
+import { List, AutoSizer } from "react-virtualized";
 
 import { canUserCreateFolders } from "../../../helpers/accessManagementHelper";
 import { Folder as FolderType } from "../../../types/grud";
-import { switchFolderHandler } from "../../Router";
-import SubfolderNew from "./SubfolderNew";
+import { isAttachment } from "../../../types/guards";
 import FileUpload from "./FileUpload";
 import Subfolder from "./Subfolder";
 import File from "./File";
+import Breadcrumbs from "../../helperComponents/Breadcrumbs";
+import SubfolderEdit from "./SubfolderEdit";
+import { createMediaFolder } from "../../../redux/actions/mediaActions";
+import { buildClassName as cn } from "../../../helpers/buildClassName";
+import Dropzone from "react-dropzone";
 
 type FolderProps = {
   langtag: string;
   folder: Partial<FolderType>;
-  modifiedFileIds: string[];
+  fileIdsDiff: string[];
 };
 
 export default function Folder({
   langtag,
   folder,
-  modifiedFileIds
+  fileIdsDiff
 }: FolderProps): ReactElement {
-  const history = useHistory();
-  const { id, name, description, parent, subfolders, files } = folder;
-  const isRoot = name === "root";
-  const rootName = i18n.t("media:root_folder_name");
-  const nameDesc = f.compact([name, description]).join(" - ");
-  const folderName = isRoot ? rootName : name ? nameDesc : `Folder ${id}`;
+  const dropzoneRef = useRef<Dropzone>(null);
+  const dispatch = useDispatch();
+  const [isNewFolder, setIsNewFolder] = useState(false);
+  const { parentId, parents, subfolders = [], files } = folder;
+  const isRoot = folder.id === null;
   const sortedFiles = f.orderBy(f.prop("updatedAt"), "desc", files);
+  const breadcrumbsFolders = f.concat(parents ?? [], !isRoot ? [folder] : []);
+  const newFolderName = i18n.t("media:new_folder");
+  const dirents = [...subfolders, ...sortedFiles];
 
-  const handleBack = (event: MouseEvent<HTMLButtonElement>) => {
-    switchFolderHandler(history, langtag, parent);
-    event.preventDefault();
+  const handleToggleNewFolder = () => {
+    setIsNewFolder(isNew => !isNew);
+  };
+
+  const handleSaveNewFolder = (name: string) => {
+    if (name !== "" && name !== newFolderName) {
+      dispatch(createMediaFolder({ parentId, name, description: "" }));
+    }
+    handleToggleNewFolder();
+  };
+
+  const handleClickUpload = () => {
+    dropzoneRef.current?.open();
   };
 
   return (
-    <div id="media-wrapper">
-      {isRoot ? (
-        <div className="current-folder is-root">{folderName}</div>
-      ) : (
-        <div className="current-folder">
-          <button onClick={handleBack}>
-            <span className="back">
-              <i className="fa fa-chevron-left" />
-              {folderName}
-            </span>
+    <div className="media-folder">
+      <div className="media-folder__toolbar">
+        <Breadcrumbs
+          className="media-folder__breadcrumbs"
+          links={[
+            {
+              path: `/${langtag}/media`,
+              label: i18n.t("media:root_folder_name")
+            },
+            ...breadcrumbsFolders.map(({ id, name }) => ({
+              path: `/${langtag}/media/${id}`,
+              label: (
+                <>
+                  <i className="fa fa-folder-open" />
+                  <span>{name ?? `Folder ${id}`}</span>
+                </>
+              )
+            }))
+          ]}
+        />
+
+        <div className="media-folder__actions">
+          {canUserCreateFolders() && (
+            <button
+              className={cn("media-folder__action", { secondary: true })}
+              onClick={handleToggleNewFolder}
+            >
+              <i className="icon fa fa-plus" />
+              <span>{i18n.t("media:new_folder")}</span>
+            </button>
+          )}
+
+          <button
+            className={cn("media-folder__action", { primary: true })}
+            onClick={handleClickUpload}
+          >
+            <i className="icon fa fa-upload" />
+            <span>{i18n.t("media:upload_file")}</span>
           </button>
         </div>
-      )}
-
-      {canUserCreateFolders() && <SubfolderNew parent={folder} />}
-
-      <div className="media-switcher">
-        <ol className="media-switcher-menu">
-          {subfolders?.map(folder => (
-            <li key={folder.id}>
-              <Subfolder langtag={langtag} folder={folder} />
-            </li>
-          ))}
-        </ol>
       </div>
 
-      <div className="media-switcher">
-        <WindowScroller>
-          {scrollerProps => (
-            <AutoSizer disableHeight>
-              {sizerProps => (
-                <List
-                  autoHeight
-                  width={sizerProps.width}
-                  height={scrollerProps.height}
-                  scrollTop={scrollerProps.scrollTop}
-                  rowCount={files?.length ?? 0}
-                  overscanRowCount={10}
-                  rowHeight={41}
-                  rowRenderer={({ index, style }) => {
-                    const file = sortedFiles[index];
-                    const isModified = f.contains(file.uuid, modifiedFileIds);
+      <div className="media-folder__list">
+        {isNewFolder && (
+          <div className="media-folder__list-item">
+            <SubfolderEdit
+              name={i18n.t("media:new_folder")}
+              onClose={handleToggleNewFolder}
+              onSave={handleSaveNewFolder}
+            />
+          </div>
+        )}
+        <AutoSizer>
+          {({ height, width }) => (
+            <List
+              height={height}
+              width={width}
+              rowCount={dirents.length}
+              overscanRowCount={10}
+              rowHeight={56}
+              rowRenderer={({ index, style }) => {
+                const dirent = dirents[index];
+                const isFile = isAttachment(dirent);
+                const isMod = isFile && f.contains(dirent.uuid, fileIdsDiff);
 
-                    return (
-                      <ol
-                        key={file.uuid}
-                        style={style}
-                        className="media-switcher-menu"
-                      >
-                        <li className={isModified ? "modified-file" : ""}>
-                          <File langtag={langtag} file={file} />
-                        </li>
-                      </ol>
-                    );
-                  }}
-                />
-              )}
-            </AutoSizer>
+                return (
+                  <div
+                    key={isFile ? dirent?.uuid : dirent?.id}
+                    style={style}
+                    className={cn("media-folder__list-item", {
+                      modified: isMod
+                    })}
+                  >
+                    {isFile ? (
+                      <File langtag={langtag} file={dirent} />
+                    ) : (
+                      <Subfolder langtag={langtag} folder={dirent} />
+                    )}
+                  </div>
+                );
+              }}
+            />
           )}
-        </WindowScroller>
+        </AutoSizer>
       </div>
 
-      <FileUpload langtag={langtag} folder={folder} />
+      <FileUpload ref={dropzoneRef} langtag={langtag} folder={folder} />
     </div>
   );
 }

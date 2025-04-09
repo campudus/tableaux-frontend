@@ -1,4 +1,5 @@
 import f from "lodash/fp";
+import i18n from "i18next";
 import { ReactElement, useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
@@ -20,19 +21,19 @@ export default function MediaView({ langtag }: MediaViewProps): ReactElement {
   const history = useHistory();
   const media = useSelector<ReduxState, MediaState>(state => state.media);
   const folder = media.data;
+  const folderPrev = useRef(folder);
+  const folderIdPrev = folderPrev.current.id;
   const fileIds = media.data.files?.map(({ uuid }) => uuid) ?? [];
-  const prevFolder = useRef(folder);
-  const prevFolderId = prevFolder.current.id;
-  const prevFileIds = prevFolder.current.files?.map(({ uuid }) => uuid) ?? [];
-  const modifiedFileIds =
-    prevFolderId === folder.id ? f.difference(fileIds, prevFileIds) : [];
+  const fileIdsPrev = folderPrev.current.files?.map(({ uuid }) => uuid) ?? [];
+  const fileIdsDiff =
+    folderIdPrev === folder.id ? f.difference(fileIds, fileIdsPrev) : [];
 
   const handleLanguageSwitch = (newLangtag: string) => {
     switchLanguageHandler(history, newLangtag);
   };
 
   useEffect(() => {
-    prevFolder.current = folder;
+    folderPrev.current = folder;
   }, [folder]);
 
   if (media.error) {
@@ -40,20 +41,26 @@ export default function MediaView({ langtag }: MediaViewProps): ReactElement {
   }
 
   return (
-    <div>
+    <>
       <GrudHeader
         langtag={langtag}
         handleLanguageSwitch={handleLanguageSwitch}
       />
-      {media.finishedLoading ? (
-        <Folder
-          langtag={langtag}
-          folder={media.data}
-          modifiedFileIds={modifiedFileIds}
-        />
-      ) : (
-        <Spinner isLoading />
-      )}
-    </div>
+      <div className="media-view">
+        <div className="media-view__card">
+          <h4 className="media-view__title">{i18n.t("media:title")}</h4>
+
+          {media.finishedLoading ? (
+            <Folder
+              langtag={langtag}
+              folder={media.data}
+              fileIdsDiff={fileIdsDiff}
+            />
+          ) : (
+            <Spinner isLoading />
+          )}
+        </div>
+      </div>
+    </>
   );
 }

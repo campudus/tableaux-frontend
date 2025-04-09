@@ -1,9 +1,18 @@
-import React, { Fragment } from "react";
+import React, { Fragment, ReactNode } from "react";
 import { NavLink } from "react-router-dom";
+import { buildClassName as cn } from "../../helpers/buildClassName";
 
-export default function Breadcrumbs({ links = [] }) {
+export type BreadcrumbsProps = {
+  className?: string;
+  links: { path: string; label: ReactNode }[];
+};
+
+export default function Breadcrumbs({
+  className,
+  links = []
+}: BreadcrumbsProps) {
   return (
-    <div className="breadcrumbs">
+    <div className={cn("breadcrumbs", {}, className)}>
       {links.map((link, index) => (
         <Fragment key={link.path}>
           {index !== 0 && <i className="fa fa-angle-right breadcrumbs__icon" />}

@@ -46,7 +46,7 @@ export const getMediaFolder = (
 };
 
 export const createMediaFolder = (
-  data: Pick<Folder, "name"> & Partial<Pick<Folder, "description" | "parent">>
+  data: Pick<Folder, "name"> & Partial<Pick<Folder, "description" | "parentId">>
 ) => {
   return {
     promise: makeRequest({
@@ -64,7 +64,7 @@ export const createMediaFolder = (
 
 export const editMediaFolder = (
   folderId: string | number,
-  data: Partial<Pick<Folder, "name" | "description" | "parent">>
+  data: Partial<Pick<Folder, "name" | "description" | "parentId">>
 ) => {
   return {
     promise: makeRequest({

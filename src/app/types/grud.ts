@@ -27,10 +27,11 @@ export type Folder = {
   id: FolderID;
   name: string;
   description: string;
-  parent: number | null; // id
-  parents: number[];
+  parentId: number | null; // id
+  parentIds: number[];
   createdAt: string | null;
   updatedAt: string | null;
+  parents: Folder[];
   subfolders: Folder[];
   files: Attachment[];
 };

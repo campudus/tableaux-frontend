@@ -1,7 +1,7 @@
 import f from "lodash/fp";
 import i18n from "i18next";
 import { useDispatch } from "react-redux";
-import { ReactElement, useState } from "react";
+import { ForwardedRef, forwardRef, ReactElement, useState } from "react";
 import Dropzone, { DropFilesEventHandler } from "react-dropzone";
 import { Attachment, Folder } from "../../../types/grud";
 import { DefaultLangtag } from "../../../constants/TableauxConstants";
@@ -22,10 +22,10 @@ type FileUploadProps = {
   folder: Partial<Folder>;
 };
 
-export default function FileUpload({
-  langtag,
-  folder
-}: FileUploadProps): ReactElement {
+function FileUpload(
+  { langtag, folder }: FileUploadProps,
+  ref: ForwardedRef<Dropzone>
+): ReactElement {
   const dispatch = useDispatch();
   const [uploadMap, setUploadMap] = useState<UploadMap>({});
   const uploads = f.entries(uploadMap);
@@ -67,15 +67,15 @@ export default function FileUpload({
   };
 
   return (
-    <div className="file-uploads">
+    <div className="media-file-upload">
       {uploads.length >= 1 && (
-        <div className="running-uploads">
-          <span className="uploads-text">
+        <div className="media-file-upload__info">
+          <span className="media-file-upload__info-title">
             {i18n.t("media:current_uploads")}:
           </span>
 
           {uploads.map(([uuid, { name, progress }]) => (
-            <div className="file-upload" key={uuid}>
+            <div className="media-file-upload__info-progress" key={uuid}>
               <span>{name}</span>
               <ProgressBar progress={progress} />
             </div>
@@ -83,9 +83,15 @@ export default function FileUpload({
         </div>
       )}
 
-      <Dropzone onDrop={onDrop} className="dropzone">
+      <Dropzone
+        ref={ref}
+        onDrop={onDrop}
+        className="media-file-upload__dropzone"
+      >
         <a>{i18n.t("media:upload_click_or_drop")}</a>
       </Dropzone>
     </div>
   );
 }
+
+export default forwardRef(FileUpload);

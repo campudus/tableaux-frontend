@@ -41,45 +41,31 @@ export default function File({ langtag, file }: FileProps): ReactElement {
   };
 
   return (
-    <div className="file">
-      {canUserEditFiles() ? (
-        <button className="file-link" onClick={onEdit}>
-          <i className="icon fa fa-file" />
-          <span>{title}</span>
-        </button>
-      ) : (
-        <a
-          className="file-link"
-          href={imageUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <i className="icon fa fa-file" />
-          <span>{title}</span>
-        </a>
-      )}
+    <div className="media-file">
+      <a
+        className="media-file__link"
+        href={imageUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <span>{title}</span>
+        <i className="icon fa fa-external-link" />
+      </a>
 
-      <div className="media-options">
+      <div className="media-file__actions">
         {canUserEditFiles() && (
-          <button className="button" onClick={onEdit}>
-            <i className="icon fa fa-pencil-square-o" />
-            {i18n.t("media:change_file")}
+          <button
+            className="media-file__action"
+            onClick={onEdit}
+            title={i18n.t("media:change_file")}
+          >
+            <i className="icon fa fa-cog" />
           </button>
         )}
 
-        <a
-          href={imageUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="button"
-        >
-          <i className="icon fa fa-external-link" />
-          {i18n.t("media:show_file")}
-        </a>
-
         {canUserDeleteFiles() ? (
           <button
-            className="button"
+            className="media-file__action"
             onClick={onRemove}
             title={i18n.t("media:delete_file")}
           >

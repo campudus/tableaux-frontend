@@ -2,6 +2,10 @@
   font-size: $font-size-standard;
   background-color: $color-body-background;
 
+  #tableaux-view {
+    height: 100%;
+  }
+
   .wrapper {
     @include box-sizing(border-box);
     padding-top: $space-height-header;
