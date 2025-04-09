@@ -540,14 +540,8 @@ export function preventSleepingOnTheKeyboard(cb) {
   }
 }
 
-const getColumnIdx = (columnId, visibleColumns, visibleColumnOrdering) =>
-  f.compose(
-    idx => f.findIndex(colIdx => colIdx === idx, visibleColumnOrdering),
-    f.findIndex(col => col.id === columnId)
-  )(visibleColumns);
-
 function copySelectedCell() {
-  const { actions, rows, columns, visibleColumnOrdering } = this.props;
+  const { actions, rows, visibleColumnOrdering } = this.props;
   const {
     selectedCell: {
       selectedCell: { rowId, columnId, langtag }
@@ -555,7 +549,7 @@ function copySelectedCell() {
   } = store.getState();
 
   const rowIndex = f.findIndex(row => row.id === rowId, rows);
-  const columnIndex = getColumnIdx(columnId, columns, visibleColumnOrdering);
+  const columnIndex = f.findIndex(id => id === columnId, visibleColumnOrdering);
 
   const cell = this.getCell(rowIndex, columnIndex);
 
@@ -568,7 +562,6 @@ function copySelectedCell() {
 function pasteSelectedCell() {
   const {
     rows,
-    columns,
     tableView: { copySource },
     visibleColumnOrdering
   } = this.props;
@@ -579,7 +572,7 @@ function pasteSelectedCell() {
   } = store.getState();
 
   const rowIndex = f.findIndex(row => row.id === rowId, rows);
-  const columnIndex = getColumnIdx(columnId, columns, visibleColumnOrdering);
+  const columnIndex = f.findIndex(id => id === columnId, visibleColumnOrdering);
 
   const selectedCellObject = this.getCell(rowIndex, columnIndex);
 
