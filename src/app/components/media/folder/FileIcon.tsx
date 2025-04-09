@@ -18,7 +18,7 @@ export default function FileIcon({ name }: FileIconProps): ReactElement {
           alt={extension}
         />
       ) : (
-        <span className="fa-stack empty-icon">
+        <span className="fa-stack file-icon__empty">
           <i className="fa fa-file-o fa-stack-2x" />
           <i className="fa fa-plus fa-stack-1x" />
         </span>

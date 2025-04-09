@@ -1,10 +1,14 @@
 import f from "lodash/fp";
 import i18n from "i18next";
+import Dropzone from "react-dropzone";
 import { useDispatch } from "react-redux";
 import { ReactElement, useRef, useState } from "react";
 import { List, AutoSizer } from "react-virtualized";
 
-import { canUserCreateFolders } from "../../../helpers/accessManagementHelper";
+import {
+  canUserCreateFiles,
+  canUserCreateFolders
+} from "../../../helpers/accessManagementHelper";
 import { Folder as FolderType } from "../../../types/grud";
 import { isAttachment } from "../../../types/guards";
 import FileUpload from "./FileUpload";
@@ -14,7 +18,6 @@ import Breadcrumbs from "../../helperComponents/Breadcrumbs";
 import SubfolderEdit from "./SubfolderEdit";
 import { createMediaFolder } from "../../../redux/actions/mediaActions";
 import { buildClassName as cn } from "../../../helpers/buildClassName";
-import Dropzone from "react-dropzone";
 
 type FolderProps = {
   langtag: string;
@@ -53,10 +56,10 @@ export default function Folder({
   };
 
   return (
-    <div className="media-folder">
-      <div className="media-folder__toolbar">
+    <div className="folder">
+      <div className="folder__toolbar">
         <Breadcrumbs
-          className="media-folder__breadcrumbs"
+          className="folder__breadcrumbs"
           links={[
             {
               path: `/${langtag}/media`,
@@ -74,10 +77,10 @@ export default function Folder({
           ]}
         />
 
-        <div className="media-folder__actions">
+        <div className="folder__actions">
           {canUserCreateFolders() && (
             <button
-              className={cn("media-folder__action", { secondary: true })}
+              className={cn("folder__action", { secondary: true })}
               onClick={handleToggleNewFolder}
             >
               <i className="icon fa fa-plus" />
@@ -85,19 +88,21 @@ export default function Folder({
             </button>
           )}
 
-          <button
-            className={cn("media-folder__action", { primary: true })}
-            onClick={handleClickUpload}
-          >
-            <i className="icon fa fa-upload" />
-            <span>{i18n.t("media:upload_file")}</span>
-          </button>
+          {canUserCreateFiles() && (
+            <button
+              className={cn("folder__action", { primary: true })}
+              onClick={handleClickUpload}
+            >
+              <i className="icon fa fa-upload" />
+              <span>{i18n.t("media:upload_file")}</span>
+            </button>
+          )}
         </div>
       </div>
 
-      <div className="media-folder__list">
+      <div className="folder__list">
         {isNewFolder && (
-          <div className="media-folder__list-item">
+          <div className="folder__list-item">
             <SubfolderEdit
               name={i18n.t("media:new_folder")}
               onClose={handleToggleNewFolder}
@@ -122,7 +127,7 @@ export default function Folder({
                   <div
                     key={isFile ? dirent?.uuid : dirent?.id}
                     style={style}
-                    className={cn("media-folder__list-item", {
+                    className={cn("folder__list-item", {
                       modified: isMod
                     })}
                   >
@@ -139,7 +144,9 @@ export default function Folder({
         </AutoSizer>
       </div>
 
-      <FileUpload ref={dropzoneRef} langtag={langtag} folder={folder} />
+      {canUserCreateFiles() && (
+        <FileUpload ref={dropzoneRef} langtag={langtag} folder={folder} />
+      )}
     </div>
   );
 }

@@ -67,15 +67,15 @@ function FileUpload(
   };
 
   return (
-    <div className="media-file-upload">
+    <div className="file-upload">
       {uploads.length >= 1 && (
-        <div className="media-file-upload__info">
-          <span className="media-file-upload__info-title">
+        <div className="file-upload__info">
+          <span className="file-upload__info-title">
             {i18n.t("media:current_uploads")}:
           </span>
 
           {uploads.map(([uuid, { name, progress }]) => (
-            <div className="media-file-upload__info-progress" key={uuid}>
+            <div className="file-upload__info-progress" key={uuid}>
               <span>{name}</span>
               <ProgressBar progress={progress} />
             </div>
@@ -83,11 +83,7 @@ function FileUpload(
         </div>
       )}
 
-      <Dropzone
-        ref={ref}
-        onDrop={onDrop}
-        className="media-file-upload__dropzone"
-      >
+      <Dropzone ref={ref} onDrop={onDrop} className="file-upload__dropzone">
         <a>{i18n.t("media:upload_click_or_drop")}</a>
       </Dropzone>
     </div>

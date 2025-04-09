@@ -51,7 +51,7 @@ export default function Subfolder({
   };
 
   return (
-    <div className="media-subfolder">
+    <div className="subfolder">
       {isEdit ? (
         <SubfolderEdit
           name={folder.name}
@@ -60,15 +60,15 @@ export default function Subfolder({
         />
       ) : (
         <>
-          <button className="media-subfolder__link" onClick={handleClick}>
+          <button className="subfolder__link" onClick={handleClick}>
             <i className="icon fa fa-folder" />
             <span>{folder.name}</span>
           </button>
 
-          <div className="media-subfolder__actions">
+          <div className="subfolder__actions">
             {canUserEditFolders() && (
               <button
-                className="media-subfolder__action"
+                className="subfolder__action"
                 onClick={handleToggle}
                 title={i18n.t("media:change_folder")}
               >
@@ -78,7 +78,7 @@ export default function Subfolder({
 
             {canUserDeleteFolders() && (
               <button
-                className="media-subfolder__action"
+                className="subfolder__action"
                 onClick={handleRemove}
                 title={i18n.t("media:delete_folder")}
               >

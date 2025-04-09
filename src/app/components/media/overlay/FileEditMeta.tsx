@@ -1,26 +1,29 @@
+import f from "lodash/fp";
 import { ChangeEvent, MouseEvent, ReactElement, useState } from "react";
 import { FileMeta, FileMetaKey } from "./FileEdit";
 import { Langtags } from "../../../constants/TableauxConstants";
 import { getLanguageOrCountryIcon as getLangIcon } from "../../../helpers/multiLanguage";
 import { canUserEditFiles } from "../../../helpers/accessManagementHelper";
 
-type SingleFileTextInputProps = {
+type FileEditMetaProps = {
   langtag: string;
   label: string;
   name: FileMetaKey;
   fileMeta: FileMeta;
   updateFileMeta: (key: FileMetaKey, langtag: string, value: string) => void;
+  isMultilang?: boolean;
 };
 
-export default function SingleFileTextInput({
+export default function FileEditMeta({
   langtag,
   label,
   name,
   fileMeta,
-  updateFileMeta
-}: SingleFileTextInputProps): ReactElement {
+  updateFileMeta,
+  isMultilang = false
+}: FileEditMetaProps): ReactElement {
   const [isOpen, setIsOpen] = useState(false);
-  const fileLangtags = isOpen ? Langtags : [langtag];
+  const fileLangtags = isOpen && isMultilang ? Langtags : [langtag];
 
   const handleToggle = () => {
     setIsOpen(!isOpen);
@@ -35,23 +38,26 @@ export default function SingleFileTextInput({
   };
 
   return (
-    <div className="item-contents" onClick={handleToggle}>
-      <div className="item-header">{label}</div>
+    <div
+      className="file-edit-meta"
+      onClick={isMultilang ? handleToggle : f.noop}
+    >
+      <div className="file-edit-meta__header">{label}</div>
 
       {fileLangtags.map(fileLangtag => (
-        <div key={fileLangtag} className="item">
-          <div className="item-content">
-            <div onClick={handleToggle}>{getLangIcon(fileLangtag)}</div>
-
-            <input
-              disabled={!canUserEditFiles()}
-              type="text"
-              lang={fileLangtag}
-              value={fileMeta?.[name]?.[fileLangtag] ?? ""}
-              onChange={handleUpdateInput}
-              onClick={handleClickInput}
-            />
+        <div key={fileLangtag} className="file-edit-meta__content">
+          <div onClick={isMultilang ? handleToggle : f.noop}>
+            {getLangIcon(fileLangtag)}
           </div>
+
+          <input
+            disabled={!canUserEditFiles()}
+            type="text"
+            lang={fileLangtag}
+            value={fileMeta?.[name]?.[fileLangtag] ?? ""}
+            onChange={handleUpdateInput}
+            onClick={handleClickInput}
+          />
         </div>
       ))}
     </div>

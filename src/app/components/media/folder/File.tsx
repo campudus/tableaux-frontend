@@ -41,9 +41,9 @@ export default function File({ langtag, file }: FileProps): ReactElement {
   };
 
   return (
-    <div className="media-file">
+    <div className="file">
       <a
-        className="media-file__link"
+        className="file__link"
         href={imageUrl}
         target="_blank"
         rel="noopener noreferrer"
@@ -52,10 +52,10 @@ export default function File({ langtag, file }: FileProps): ReactElement {
         <i className="icon fa fa-external-link" />
       </a>
 
-      <div className="media-file__actions">
+      <div className="file__actions">
         {canUserEditFiles() && (
           <button
-            className="media-file__action"
+            className="file__action"
             onClick={onEdit}
             title={i18n.t("media:change_file")}
           >
@@ -65,7 +65,7 @@ export default function File({ langtag, file }: FileProps): ReactElement {
 
         {canUserDeleteFiles() ? (
           <button
-            className="media-file__action"
+            className="file__action"
             onClick={onRemove}
             title={i18n.t("media:delete_file")}
           >

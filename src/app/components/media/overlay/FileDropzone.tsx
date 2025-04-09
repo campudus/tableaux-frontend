@@ -5,33 +5,35 @@ import { makeRequest } from "../../../helpers/apiHelper";
 import { toFileUpload } from "../../../helpers/apiRoutes";
 import { useDispatch } from "react-redux";
 import { getMediaFile } from "../../../redux/actions/mediaActions";
-import { canUserEditFiles } from "../../../helpers/accessManagementHelper";
-import FileIcon from "../folder/FileIcon";
-import { retrieveTranslation } from "../../../helpers/multiLanguage";
 import ProgressBar from "../ProgressBar";
+import { buildClassName as cn } from "../../../helpers/buildClassName";
 
 type FileDropzoneProps = PropsWithChildren<{
-  langtag: string;
+  className?: string;
   fileLangtag: string;
   file: Attachment;
+  disabled?: boolean;
 }>;
 
 export default function FileDropzone({
-  langtag,
+  className,
   fileLangtag,
   file,
+  disabled,
   children
 }: FileDropzoneProps): ReactElement {
   const dispatch = useDispatch();
   const [progress, setProgress] = useState<number | undefined>(0);
-  const fileInternalName = retrieveTranslation(langtag)(file.internalName);
 
   const onDrop: DropFilesEventHandler = async uploadFiles => {
     for (const uploadFile of uploadFiles) {
       makeRequest({
         method: "PUT",
         apiRoute: toFileUpload(file.uuid, fileLangtag),
-        file: uploadFile
+        file: uploadFile,
+        onProgress: progress => {
+          setProgress(progress.percent ?? 0);
+        }
       })
         .then(() => {
           setProgress(0);
@@ -44,16 +46,13 @@ export default function FileDropzone({
     }
   };
 
-  if (!canUserEditFiles()) {
-    return (
-      <div className="no-permission-upload-file">
-        <FileIcon name={fileInternalName} />
-      </div>
-    );
-  }
-
   return (
-    <Dropzone className="dropzone" onDrop={onDrop} multiple={false}>
+    <Dropzone
+      className={cn("dropzone", {}, className)}
+      onDrop={onDrop}
+      multiple={false}
+      disabled={disabled}
+    >
       {!!progress && <ProgressBar progress={progress} />}
       {children}
     </Dropzone>

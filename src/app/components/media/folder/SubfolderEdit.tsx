@@ -49,7 +49,7 @@ export default function SubfolderEdit({
   );
 
   return (
-    <div ref={editRef} className="media-folder__edit">
+    <div ref={editRef} className="subfolder-edit">
       <i className="icon fa fa-folder" />
       <input
         autoFocus
