@@ -3,7 +3,7 @@ import f from "lodash/fp";
 import PropTypes from "prop-types";
 import React from "react";
 import { translate } from "react-i18next";
-import CustomEvent from "../../../helpers/CustomEvent";
+import { useCustomEvent } from "../../../helpers/CustomEvent";
 import FilterPopup from "./FilterPopup.jsx";
 
 export const OpenFilterEvent = "event/open-row-filter-popup";
@@ -29,7 +29,7 @@ const FilterButton = ({
     [currentFilter, open]
   );
 
-  CustomEvent.useCustomEvent(OpenFilterEvent, openPopup, document.body);
+  useCustomEvent(OpenFilterEvent, openPopup, document.body);
 
   const buttonCssClass = classNames("filter-popup-button", {
     "ignore-react-onclickoutside": open

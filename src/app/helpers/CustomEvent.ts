@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 
-const useCustomEvent = <T>(
+export const useCustomEvent = <T>(
   name: string,
   handler: (_: T) => void,
   element?: HTMLElement
