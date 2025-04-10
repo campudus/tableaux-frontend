@@ -48,7 +48,13 @@ export default function Subfolder({
 
   const handleSave = (name: string) => {
     if (name !== "" && name !== folder.name) {
-      dispatch(editMediaFolder(folder.id, { name: name }));
+      dispatch(
+        editMediaFolder(folder.id, {
+          name: name,
+          description: folder.description,
+          parentId: folder.parentId
+        })
+      );
     }
     handleToggle();
   };
@@ -65,8 +71,8 @@ export default function Subfolder({
         name: `move-folder-${folder.name}`,
         // prettier-ignore
         head: <DirentMoveHeader langtag={langtag} title={i18n.t("media:move_folder")} />,
-        body: <DirentMoveBody langtag={langtag} folderId={folder.id} />,
-        footer: <DirentMoveFooter langtag={langtag} folderId={folder.id} />,
+        body: <DirentMoveBody langtag={langtag} sourceFolder={folder} />,
+        footer: <DirentMoveFooter langtag={langtag} sourceFolder={folder} />,
         classes: "dirent-move"
       })
     );

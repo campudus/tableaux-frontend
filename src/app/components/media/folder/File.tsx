@@ -52,8 +52,8 @@ export default function File({ langtag, file }: FileProps): ReactElement {
         name: `move-file-${title}`,
         // prettier-ignore
         head: <DirentMoveHeader langtag={langtag} title={i18n.t("media:move_file")} />,
-        body: <DirentMoveBody langtag={langtag} fileId={file.uuid} />,
-        footer: <DirentMoveFooter langtag={langtag} fileId={file.uuid} />,
+        body: <DirentMoveBody langtag={langtag} sourceFile={file} />,
+        footer: <DirentMoveFooter langtag={langtag} sourceFile={file} />,
         classes: "dirent-move"
       })
     );

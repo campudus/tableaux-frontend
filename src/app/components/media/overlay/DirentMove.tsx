@@ -5,7 +5,7 @@ import { ReactElement, useEffect } from "react";
 import { AutoSizer, List } from "react-virtualized";
 import { useDispatch, useSelector } from "react-redux";
 import Header from "../../overlay/Header";
-import { Folder, FolderID } from "../../../types/grud";
+import { Attachment, Folder, FolderID } from "../../../types/grud";
 import {
   editMediaFile,
   editMediaFolder
@@ -24,17 +24,23 @@ type ReduxState = { media: MediaState };
 type DirentMoveProps = {
   langtag?: string;
   title?: string;
-  fileId?: string;
-  folderId?: FolderID;
+  sourceFile?: Attachment;
+  sourceFolder?: Folder;
   // provided through hoc
-  sharedData?: Folder; // target
+  sharedData?: Folder; // targetFolder
   updateSharedData?: (updateFn: (data?: Folder) => Folder) => void;
 };
 
 export function DirentMoveHeader(props: DirentMoveProps): ReactElement {
-  const { langtag, sharedData: folder, updateSharedData: updateFolder } = props;
-  const isRoot = folder?.id === null;
-  const folders = f.compact(f.concat(folder?.parents, !isRoot ? [folder] : []));
+  const {
+    langtag,
+    sharedData: targetFolder,
+    updateSharedData: updateTargetFolder
+  } = props;
+  const isRoot = targetFolder?.id === null;
+  const folders = f.compact(
+    f.concat(targetFolder?.parents, !isRoot ? [targetFolder] : [])
+  );
 
   const handleNavigate = async (folderId?: FolderID) => {
     const folder: Folder = await makeRequest({
@@ -42,7 +48,7 @@ export function DirentMoveHeader(props: DirentMoveProps): ReactElement {
       method: "GET"
     });
 
-    updateFolder?.(() => folder);
+    updateTargetFolder?.(() => folder);
   };
 
   return (
@@ -72,11 +78,15 @@ export function DirentMoveHeader(props: DirentMoveProps): ReactElement {
 }
 
 export function DirentMoveBody(props: DirentMoveProps): ReactElement {
-  const { langtag, sharedData: folder, updateSharedData: updateFolder } = props;
+  const {
+    langtag,
+    sharedData: targetFolder,
+    updateSharedData: updateTargetFolder
+  } = props;
   const currentFolder = useSelector<ReduxState, Partial<Folder>>(
     state => state.media.data
   );
-  const subfolders = folder?.subfolders ?? [];
+  const subfolders = targetFolder?.subfolders ?? [];
 
   const handleNavigate = async (folderId?: FolderID) => {
     const folder: Folder = await makeRequest({
@@ -84,11 +94,11 @@ export function DirentMoveBody(props: DirentMoveProps): ReactElement {
       method: "GET"
     });
 
-    updateFolder?.(() => folder);
+    updateTargetFolder?.(() => folder);
   };
 
   useEffect(() => {
-    updateFolder?.(() => currentFolder as Folder);
+    updateTargetFolder?.(() => currentFolder as Folder);
   }, []);
 
   return (
@@ -126,19 +136,25 @@ export function DirentMoveBody(props: DirentMoveProps): ReactElement {
 }
 
 export function DirentMoveFooter(props: DirentMoveProps): ReactElement {
-  const { langtag, fileId, folderId, sharedData: folder } = props;
+  const { langtag, sourceFile, sourceFolder, sharedData: targetFolder } = props;
   const canEdit = canUserEditFiles();
   const history = useHistory();
   const dispatch = useDispatch();
 
   const handleSave = () => {
-    if (fileId) {
-      dispatch(editMediaFile(fileId, { folder: folder?.id }));
-    } else if (folderId) {
-      dispatch(editMediaFolder(folderId, { parentId: folder?.id }));
+    if (sourceFile?.uuid) {
+      dispatch(editMediaFile(sourceFile?.uuid, { folder: targetFolder?.id }));
+    } else if (sourceFolder?.id) {
+      dispatch(
+        editMediaFolder(sourceFolder?.id, {
+          name: sourceFolder.name,
+          description: sourceFolder.description,
+          parentId: targetFolder?.id
+        })
+      );
     }
 
-    switchFolderHandler(history, langtag, folder?.id);
+    switchFolderHandler(history, langtag, targetFolder?.id);
   };
 
   return (
