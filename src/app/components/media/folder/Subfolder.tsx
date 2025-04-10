@@ -69,8 +69,12 @@ export default function Subfolder({
     dispatch(
       actions.openOverlay({
         name: `move-folder-${folder.name}`,
-        // prettier-ignore
-        head: <DirentMoveHeader langtag={langtag} title={i18n.t("media:move_folder")} />,
+        head: (
+          <DirentMoveHeader
+            langtag={langtag}
+            context={i18n.t("media:move_folder", { name: folder.name })}
+          />
+        ),
         body: <DirentMoveBody langtag={langtag} sourceFolder={folder} />,
         footer: <DirentMoveFooter langtag={langtag} sourceFolder={folder} />,
         classes: "dirent-move"

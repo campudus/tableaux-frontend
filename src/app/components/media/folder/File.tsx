@@ -50,8 +50,12 @@ export default function File({ langtag, file }: FileProps): ReactElement {
     dispatch(
       actions.openOverlay({
         name: `move-file-${title}`,
-        // prettier-ignore
-        head: <DirentMoveHeader langtag={langtag} title={i18n.t("media:move_file")} />,
+        head: (
+          <DirentMoveHeader
+            langtag={langtag}
+            context={i18n.t("media:move_file", { name: title })}
+          />
+        ),
         body: <DirentMoveBody langtag={langtag} sourceFile={file} />,
         footer: <DirentMoveFooter langtag={langtag} sourceFile={file} />,
         classes: "dirent-move"

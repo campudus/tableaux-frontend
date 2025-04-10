@@ -28,7 +28,7 @@
   "show_file": "Open",
   "upload_click_or_drop": "Select or drop file here.",
   "folder_back": "Back",
-  "move_file": "Move file",
-  "move_folder": "Move folder",
+  "move_file": "Move file \"{{name}}\" to",
+  "move_folder": "Move folder \"{{name}}\" to",
   "move": "Move"
 }

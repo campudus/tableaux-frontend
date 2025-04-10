@@ -216,7 +216,7 @@
       border: 1px dashed #00000066;
       border-radius: 4px;
       width: 400px;
-      height: 150px;
+      height: 100px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -232,52 +232,24 @@
 
 .overlay .overlay-wrapper.dirent-move {
   .header-wrapper {
-    background-color: #ffffff;
-    display: grid;
-    grid-template-columns: 30px 1fr 100px 30px 30px;
-    grid-template-rows: 30px 1fr;
+    .breadcrumbs__link {
+      font-size: inherit;
+      font-weight: inherit;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      color: $color-primary-contrast-text;
 
-    .close-button {
-      grid-column: 5;
-
-      .svg-icon svg {
-        fill: $color-primary-text;
-        fill-opacity: 1;
-      }
-    }
-
-    .labels {
-      flex-flow: column-reverse;
-      justify-content: flex-end;
-      gap: 16px;
-
-      .title {
-        color: $color-primary-text;
-        font-size: 24px;
-        font-weight: 500;
-      }
-
-      .breadcrumbs {
-        color: $color-primary-text;
-
-        .breadcrumbs__link {
-          font-size: 16px;
-          font-weight: 500;
-          display: flex;
-          align-items: center;
-          gap: 4px;
-        }
+      &:not(.active) {
+        color: $color-text-light-grey;
       }
     }
   }
 
   .overlay-content {
-    background-color: #ffffff;
-
     .dirent-move__list {
       margin: 0;
       box-sizing: border-box;
-      padding-left: 30px;
       height: 100%;
       min-height: 400px;
 
@@ -290,7 +262,12 @@
       box-sizing: border-box;
       width: 100%;
       height: 56px;
+      padding-left: 40px;
       border-bottom: 1px solid #dedede;
+
+      &:hover {
+        background-color: #0000000A;
+      }
     }
 
     .subfolder {
@@ -311,11 +288,6 @@
       }
     }
 
-  }
-
-  footer {
-    border: none;
-    background-color: #f8f8f8;
   }
 }
 

@@ -23,7 +23,7 @@ type ReduxState = { media: MediaState };
 
 type DirentMoveProps = {
   langtag?: string;
-  title?: string;
+  context?: string;
   sourceFile?: Attachment;
   sourceFolder?: Folder;
   // provided through hoc
@@ -54,7 +54,7 @@ export function DirentMoveHeader(props: DirentMoveProps): ReactElement {
   return (
     <Header
       {...props}
-      context={
+      title={
         <Breadcrumbs
           links={[
             {
@@ -80,13 +80,17 @@ export function DirentMoveHeader(props: DirentMoveProps): ReactElement {
 export function DirentMoveBody(props: DirentMoveProps): ReactElement {
   const {
     langtag,
+    sourceFolder,
     sharedData: targetFolder,
     updateSharedData: updateTargetFolder
   } = props;
   const currentFolder = useSelector<ReduxState, Partial<Folder>>(
     state => state.media.data
   );
-  const subfolders = targetFolder?.subfolders ?? [];
+  const subfolders = f.filter(
+    folder => folder.id !== sourceFolder?.id,
+    targetFolder?.subfolders ?? []
+  );
 
   const handleNavigate = async (folderId?: FolderID) => {
     const folder: Folder = await makeRequest({
