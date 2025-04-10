@@ -3,7 +3,7 @@ import f from "lodash/fp";
 import PropTypes from "prop-types";
 import React from "react";
 import { translate } from "react-i18next";
-import CustomEvent from "../../../helpers/CustomEvent.js";
+import CustomEvent from "../../../helpers/CustomEvent";
 import FilterPopup from "./FilterPopup.jsx";
 
 export const OpenFilterEvent = "event/open-row-filter-popup";
