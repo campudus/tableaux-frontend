@@ -103,7 +103,14 @@
 
         .file__action,
         .subfolder__action {
-          color: inherit;
+          color: $color-primary-text;
+
+          .svg-icon svg {
+            path {
+              fill: $color-primary-text;
+              fill-opacity: 1;
+            }
+          }
         }
       }
     }
@@ -155,6 +162,16 @@
       align-items: center;
       justify-content: center;
       color: #00000066;
+
+      .svg-icon svg {
+        width: 14px;
+        height: 14px;
+
+        path {
+          fill: #00000066;
+          fill-opacity: 1;
+        }
+      }
     }
   }
 
@@ -206,10 +223,99 @@
 
       &:hover {
         background-color: #0000000A;
-        color: #000000;
+        color: $color-primary-text;
         border: 1px dashed #000000;
       }
     }
+  }
+}
+
+.overlay .overlay-wrapper.dirent-move {
+  .header-wrapper {
+    background-color: #ffffff;
+    display: grid;
+    grid-template-columns: 30px 1fr 100px 30px 30px;
+    grid-template-rows: 30px 1fr;
+
+    .close-button {
+      grid-column: 5;
+
+      .svg-icon svg {
+        fill: $color-primary-text;
+        fill-opacity: 1;
+      }
+    }
+
+    .labels {
+      flex-flow: column-reverse;
+      justify-content: flex-end;
+      gap: 16px;
+
+      .title {
+        color: $color-primary-text;
+        font-size: 24px;
+        font-weight: 500;
+      }
+
+      .breadcrumbs {
+        color: $color-primary-text;
+
+        .breadcrumbs__link {
+          font-size: 16px;
+          font-weight: 500;
+          display: flex;
+          align-items: center;
+          gap: 4px;
+        }
+      }
+    }
+  }
+
+  .overlay-content {
+    background-color: #ffffff;
+
+    .dirent-move__list {
+      margin: 0;
+      box-sizing: border-box;
+      padding-left: 30px;
+      height: 100%;
+      min-height: 400px;
+
+      .ReactVirtualized__List {
+        overflow: auto !important;
+      }
+    }
+
+    .dirent-move__list-item {
+      box-sizing: border-box;
+      width: 100%;
+      height: 56px;
+      border-bottom: 1px solid #dedede;
+    }
+
+    .subfolder {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      &__link {
+        font-size: 16px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 0;
+        height: 100%;
+        flex: 1;
+      }
+    }
+
+  }
+
+  footer {
+    border: none;
+    background-color: #f8f8f8;
   }
 }
 

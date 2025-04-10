@@ -14,15 +14,24 @@ import {
 } from "../../../redux/actions/mediaActions";
 import { switchFolderHandler } from "../../Router";
 import SubfolderEdit from "./SubfolderEdit";
+import SvgIcon from "../../helperComponents/SvgIcon";
+import actions from "../../../redux/actionCreators";
+import {
+  DirentMoveBody,
+  DirentMoveFooter,
+  DirentMoveHeader
+} from "../overlay/DirentMove";
 
 type SubfolderProps = {
   langtag: string;
   folder: Folder;
+  onClick?: () => void;
 };
 
 export default function Subfolder({
   langtag,
-  folder
+  folder,
+  onClick
 }: SubfolderProps): ReactElement {
   const history = useHistory();
   const dispatch = useDispatch();
@@ -50,6 +59,19 @@ export default function Subfolder({
     });
   };
 
+  const handleMove = () => {
+    dispatch(
+      actions.openOverlay({
+        name: `move-folder-${folder.name}`,
+        // prettier-ignore
+        head: <DirentMoveHeader langtag={langtag} title={i18n.t("media:move_folder")} />,
+        body: <DirentMoveBody langtag={langtag} folderId={folder.id} />,
+        footer: <DirentMoveFooter langtag={langtag} folderId={folder.id} />,
+        classes: "dirent-move"
+      })
+    );
+  };
+
   return (
     <div className="subfolder">
       {isEdit ? (
@@ -60,32 +82,44 @@ export default function Subfolder({
         />
       ) : (
         <>
-          <button className="subfolder__link" onClick={handleClick}>
+          <button className="subfolder__link" onClick={onClick ?? handleClick}>
             <i className="icon fa fa-folder" />
             <span>{folder.name}</span>
           </button>
 
-          <div className="subfolder__actions">
-            {canUserEditFolders() && (
-              <button
-                className="subfolder__action"
-                onClick={handleToggle}
-                title={i18n.t("media:change_folder")}
-              >
-                <i className="icon fa fa-pencil" />
-              </button>
-            )}
+          {!onClick && (
+            <div className="subfolder__actions">
+              {canUserEditFolders() && (
+                <button
+                  className="subfolder__action"
+                  onClick={handleMove}
+                  title={i18n.t("media:move_folder")}
+                >
+                  <SvgIcon icon="move" />
+                </button>
+              )}
 
-            {canUserDeleteFolders() && (
-              <button
-                className="subfolder__action"
-                onClick={handleRemove}
-                title={i18n.t("media:delete_folder")}
-              >
-                <i className="fa fa-trash" />
-              </button>
-            )}
-          </div>
+              {canUserEditFolders() && (
+                <button
+                  className="subfolder__action"
+                  onClick={handleToggle}
+                  title={i18n.t("media:change_folder")}
+                >
+                  <i className="icon fa fa-pencil" />
+                </button>
+              )}
+
+              {canUserDeleteFolders() && (
+                <button
+                  className="subfolder__action"
+                  onClick={handleRemove}
+                  title={i18n.t("media:delete_folder")}
+                >
+                  <i className="fa fa-trash" />
+                </button>
+              )}
+            </div>
+          )}
         </>
       )}
     </div>

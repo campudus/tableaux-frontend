@@ -62,9 +62,13 @@ export const createMediaFolder = (
   };
 };
 
+export type FolderEditData = Partial<
+  Pick<Folder, "name" | "description" | "parentId">
+>;
+
 export const editMediaFolder = (
   folderId: string | number,
-  data: Partial<Pick<Folder, "name" | "description" | "parentId">>
+  data: FolderEditData
 ) => {
   return {
     promise: makeRequest({

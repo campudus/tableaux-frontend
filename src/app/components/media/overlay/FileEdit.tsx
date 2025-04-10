@@ -1,11 +1,14 @@
 import i18n from "i18next";
 import f from "lodash/fp";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { ReactElement, useEffect, useRef, useState } from "react";
 import { Attachment } from "../../../types/grud";
-import { FileEditData } from "../../../redux/actions/mediaActions";
+import { editMediaFile } from "../../../redux/actions/mediaActions";
 import Footer from "../../overlay/Footer";
-import { canUserCreateFiles, canUserEditFiles } from "../../../helpers/accessManagementHelper";
+import {
+  canUserCreateFiles,
+  canUserEditFiles
+} from "../../../helpers/accessManagementHelper";
 import { MediaState } from "../../../redux/reducers/media";
 import { Langtags } from "../../../constants/TableauxConstants";
 import FileEditItem from "./FileEditItem";
@@ -25,9 +28,6 @@ type FileEditProps = {
   // provided through hoc
   sharedData?: FileMeta;
   updateSharedData?: (updateFn: (data?: FileMeta) => FileMeta) => void;
-  actions?: {
-    editMediaFile: (fileId?: string, data?: FileEditData) => void;
-  };
 };
 
 export function FileEditBody({
@@ -123,13 +123,13 @@ export function FileEditBody({
 }
 
 export function FileEditFooter(props: FileEditProps): ReactElement {
-  const { fileId, sharedData: fileMeta, actions } = props;
+  const { fileId, sharedData: fileMeta } = props;
   const canEdit = canUserEditFiles();
+  const dispatch = useDispatch();
 
   const handleSave = () => {
-    if (fileMeta && actions) {
-      // already connected to dispatch
-      actions.editMediaFile(fileId, fileMeta);
+    if (fileMeta) {
+      dispatch(editMediaFile(fileId, fileMeta));
     }
   };
 

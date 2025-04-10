@@ -27,5 +27,8 @@
   "root_folder_name": "Root folder",
   "show_file": "Open",
   "upload_click_or_drop": "Select or drop file here.",
-  "folder_back": "Back"
+  "folder_back": "Back",
+  "move_file": "Move file",
+  "move_folder": "Move folder",
+  "move": "Move"
 }

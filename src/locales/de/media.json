@@ -27,5 +27,8 @@
   "root_folder_name": "Hauptordner",
   "show_file": "Anzeigen",
   "upload_click_or_drop": "Datei auswählen oder hierherziehen",
-  "folder_back": "Zurück"
+  "folder_back": "Zurück",
+  "move_file": "Datei verschieben",
+  "move_folder": "Ordner verschieben",
+  "move": "Verschieben"
 }
