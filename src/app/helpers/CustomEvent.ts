@@ -6,7 +6,7 @@ const useCustomEvent = <T>(
   element?: HTMLElement
 ) => {
   useEffect(() => {
-    const target = element || document;
+    const target = element ?? document;
     const wrappedHandler = (evt: CustomEvent<T>) => handler(evt.detail);
     target.addEventListener(name, wrappedHandler as EventListener);
     return () =>
@@ -15,7 +15,7 @@ const useCustomEvent = <T>(
 };
 
 const emit = <T>(name: string, detail: T, element?: HTMLElement) => {
-  const target = element || document;
+  const target = element ?? document;
   const evt = new CustomEvent<T>(name, { detail });
   target.dispatchEvent(evt);
 };
