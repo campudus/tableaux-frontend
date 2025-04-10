@@ -9,6 +9,7 @@ import {
 import { KEYBOARD_TABLE_HISTORY } from "../../FeatureFlags";
 import { canUserChangeCell } from "../../helpers/accessManagementHelper";
 import { isLocked } from "../../helpers/annotationHelper";
+import CustomEvent from "../../helpers/CustomEvent";
 import { doto, maybe, memoizeWith, unless } from "../../helpers/functools";
 import { getModifiers } from "../../helpers/modifierState";
 import { getTableDisplayName } from "../../helpers/multiLanguage";
@@ -18,6 +19,7 @@ import AttachmentOverlay from "../cells/attachment/AttachmentOverlay";
 import pasteCellValue from "../cells/cellCopyHelper";
 import { openLinkOverlay } from "../cells/link/LinkOverlay";
 import TextEditOverlay from "../cells/text/TextEditOverlay";
+import { OpenFilterEvent } from "../header/filter/Filter";
 import Header from "../overlay/Header";
 
 const tableColumnKey = (tableId, columnId) => `${tableId}-${columnId}`;
@@ -142,7 +144,22 @@ export function getKeyboardShortcuts() {
           ColumnKinds.numeric
         ]);
 
-      if (
+      if (hasActionKey && isKeyPressed("f")) {
+        event.preventDefault();
+        if (selectedCell && selectedCellEditing) {
+          toggleCellEditing.call(this, {
+            editing: false,
+            event
+          });
+        }
+        CustomEvent.emit(
+          OpenFilterEvent,
+          {
+            filters: ["any-value", "contains", ""]
+          },
+          document.body
+        );
+      } else if (
         hasActionKey &&
         isKeyPressed("c") &&
         cellKind !== ColumnKinds.concat &&

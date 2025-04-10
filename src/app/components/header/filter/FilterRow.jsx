@@ -125,6 +125,7 @@ const ValueInput = ({ column, mode, value, onChange }) => {
       value={value || ""}
       onChange={handleSetEventValue}
       disabled={disabled}
+      autoFocus
     />
   ) : (
     <div className="placeholder" />

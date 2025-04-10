@@ -3,7 +3,10 @@ import f from "lodash/fp";
 import PropTypes from "prop-types";
 import React from "react";
 import { translate } from "react-i18next";
+import { useCustomEvent } from "../../../helpers/CustomEvent";
 import FilterPopup from "./FilterPopup.jsx";
+
+export const OpenFilterEvent = "event/open-row-filter-popup";
 
 const FilterButton = ({
   langtag,
@@ -14,8 +17,19 @@ const FilterButton = ({
   t
 }) => {
   const [open, setOpen] = React.useState(false);
-  const togglePopup = React.useCallback(() => setOpen(!open));
-  const closePopup = React.useCallback(() => setOpen(false));
+  const [initialFilter, setInitialFilter] = React.useState(currentFilter);
+  const closePopup = React.useCallback(() => setOpen(false), []);
+  const openPopup = React.useCallback(filters => {
+    setInitialFilter(filters);
+    setOpen(true);
+  }, []);
+
+  const togglePopup = React.useCallback(
+    () => (open ? closePopup() : openPopup(currentFilter)),
+    [currentFilter, open]
+  );
+
+  useCustomEvent(OpenFilterEvent, openPopup, document.body);
 
   const buttonCssClass = classNames("filter-popup-button", {
     "ignore-react-onclickoutside": open
@@ -42,7 +56,7 @@ const FilterButton = ({
           langtag={langtag}
           onClickedOutside={closePopup}
           columns={columns}
-          currentFilter={currentFilter}
+          currentFilter={initialFilter}
           actions={actions}
           setRowFilter={setRowFilter}
         />

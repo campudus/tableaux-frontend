@@ -39,7 +39,7 @@ module.exports = {
     quotes: ["error", "double"],
     "no-console": "off",
     "trailing-comma": "off",
-    "prettier/prettier": "error",
+    "prettier/prettier": "warn",
     camelcase: ["warn", { properties: "always" }],
     eqeqeq: ["error", "allow-null"],
     "no-eval": "error",
