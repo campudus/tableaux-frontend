@@ -146,6 +146,12 @@ export function getKeyboardShortcuts() {
 
       if (hasActionKey && isKeyPressed("f")) {
         event.preventDefault();
+        if (selectedCell && selectedCellEditing) {
+          toggleCellEditing.call(this, {
+            editing: false,
+            event
+          });
+        }
         CustomEvent.emit(
           OpenFilterEvent,
           {
