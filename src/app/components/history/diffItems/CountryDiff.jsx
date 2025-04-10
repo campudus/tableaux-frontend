@@ -19,7 +19,7 @@ const CountryDiff = props => {
       <div key={country} className="country-diff-group">
         <div className="country-diff__sub-header">
           {getLanguageOrCountryIcon(country)}
-          {!noCurrency && (
+          {noCurrency ? null : (
             <div className="country-diff-sub-header__currency">{`[${getCurrencyCode(
               country
             )}]`}</div>
