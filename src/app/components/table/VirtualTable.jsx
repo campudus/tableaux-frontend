@@ -497,11 +497,6 @@ class VirtualTable extends PureComponent {
     this.settingsColumnIds = doto(this.props.columns, f.take(2), f.map("id"));
     this.divRef = document.getElementById("resize-bar");
     this.focusTable();
-
-    document.body.addEventListener("keydown", this.handleKeyDown);
-  }
-  componentWillUnmount() {
-    document.body.removeEventListener("keydown", this.handleKeyDown);
   }
 
   componentDidUpdate(prev) {
