@@ -7,6 +7,7 @@
 import f from "lodash/fp";
 import PropTypes from "prop-types";
 import React, { createRef, PureComponent } from "react";
+import { Rnd } from "react-rnd";
 import { AutoSizer, MultiGrid } from "react-virtualized";
 import {
   ColumnKinds,
@@ -24,7 +25,6 @@ import actions from "../../redux/actionCreators";
 import store from "../../redux/store";
 import Cell from "../cells/Cell";
 import MetaCell from "../cells/MetaCell";
-import MetaCellHeader from "../cells/MetaCellHeader";
 import ColumnHeader from "../columns/ColumnHeader";
 import * as tableNavigationWorker from "./tableNavigationWorker";
 import reduxActionHoc from "../../helpers/reduxActionHoc";
@@ -97,22 +97,6 @@ class VirtualTable extends PureComponent {
     }
   };
 
-  saveColWidths = index => {
-    this.columnStartSize = null;
-    if (index === this.getFixedColumnCount() - 1) {
-      window.removeEventListener("mousemove", this.setBarOffset);
-      this.setState({ showResizeBar: false });
-    }
-    if (!localStorage) {
-      return;
-    }
-    const storageKey = this.props.table.id.toString();
-    const { columnWidths = {} } = this.state;
-
-    saveColumnWidths(storageKey, columnWidths);
-    store.dispatch(actions.rerenderTable());
-  };
-
   calcRowHeight = ({ index }) => {
     if (index === 0) {
       return HEADER_HEIGHT;
@@ -145,12 +129,22 @@ class VirtualTable extends PureComponent {
       this.columnStartSize = this.calcColWidth({ index });
     }
     const columnId = this.props.visibleColumnOrdering[index - 1];
-    console.log("update", { index, columnId });
     const newWidth = Math.max(100, this.columnStartSize + dx);
     this.setState(f.update("columnWidths", f.assoc(columnId, newWidth)));
     maybe(this.multiGrid)
       .method("recomputeGridSize", { columnIndex: index })
       .method("invalidateCellSizeAfterRender");
+  };
+
+  saveColWidths = () => {
+    this.columnStartSize = null;
+    if (this.state.showResizeBar) {
+      window.removeEventListener("mousemove", this.setBarOffset);
+      this.setState({ showResizeBar: false });
+    }
+    const storageKey = this.props.table.id.toString();
+    saveColumnWidths(storageKey, this.state.columnWidths || {});
+    store.dispatch(actions.rerenderTable());
   };
 
   setOpenAnnotations = cell => {
@@ -211,33 +205,38 @@ class VirtualTable extends PureComponent {
   };
 
   renderColumnHeader = ({ columnIndex }) => {
-    const column = this.getVisibleElement(this.props.columns, columnIndex);
-    const { table, tables, actions, navigate } = this.props;
+    const { langtag, columns, table, actions, navigate } = this.props;
+    const gridColumnIndex = columnIndex + 1;
+    const column = this.getVisibleElement(columns, columnIndex);
+    const width = this.calcColWidth({ index: gridColumnIndex });
+    const fixedColCount = this.getFixedColumnCount();
+    const shouldMoveResizeBar = gridColumnIndex === fixedColCount - 1;
+
     return (
-      <ColumnHeader
-        column={column}
-        langtag={this.props.langtag}
-        tables={tables}
-        tableId={table.id}
-        resizeIdHandler={this.moveResizeBar}
-        resizeHandler={this.updateColWidth}
-        resizeFinishedHandler={this.saveColWidths}
-        index={columnIndex + 1}
-        width={this.calcColWidth({ index: columnIndex + 1 })}
-        actions={actions}
-        navigate={navigate}
-        fixedColumnCount={this.getFixedColumnCount()}
-      />
+      <Rnd
+        position={{ x: 0, y: 0 }}
+        size={{ width, height: 37 }}
+        minWidth={100}
+        enableResizing={{ right: column.kind !== ColumnKinds.status }}
+        disableDragging
+        onResizeStart={shouldMoveResizeBar ? this.moveResizeBar : null}
+        onResizeStop={() => this.saveColWidths(gridColumnIndex)}
+        onResize={(ev, dr, rf, { width }) =>
+          this.updateColWidth(gridColumnIndex, width)
+        }
+      >
+        <ColumnHeader
+          langtag={langtag}
+          column={column}
+          table={table}
+          actions={actions}
+          navigate={navigate}
+        />
+      </Rnd>
     );
   };
 
   renderMetaCell = ({ rowIndex, key }) => {
-    if (rowIndex < 0) {
-      return (
-        <MetaCellHeader key="id-cell" displayName="ID" column={RowIdColumn} />
-      );
-    }
-
     const {
       actions,
       actions: { deleteRow },
@@ -246,6 +245,19 @@ class VirtualTable extends PureComponent {
       expandedRowIds,
       table
     } = this.props;
+
+    if (rowIndex < 0) {
+      return (
+        <ColumnHeader
+          key="id-cell"
+          title="ID"
+          langtag={langtag}
+          column={RowIdColumn}
+          table={table}
+        />
+      );
+    }
+
     const row = rows[rowIndex] || {};
     const isRowExpanded = f.contains(row.id, expandedRowIds);
     const locked = isLocked(row);
