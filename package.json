@@ -59,7 +59,7 @@
     "keycloak-js": "^26.0.0",
     "localforage": "1.7.3",
     "lodash": "^4.17.21",
-    "markdown-draft-js": "1.7.1",
+    "markdown-draft-js": "2.4.0",
     "match-iz": "4.0.2",
     "moment": "2.29.4",
     "postcss": "^8.5.3",
