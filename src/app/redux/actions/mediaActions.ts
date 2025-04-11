@@ -68,7 +68,8 @@ export type FolderEditData = Partial<
 
 export const editMediaFolder = (
   folderId: string | number,
-  data: FolderEditData
+  data: FolderEditData,
+  onSuccess?: () => void
 ) => {
   return {
     promise: makeRequest({
@@ -80,7 +81,8 @@ export const editMediaFolder = (
       MEDIA_FOLDER_EDIT,
       MEDIA_FOLDER_EDIT_SUCCESS,
       MEDIA_FOLDER_EDIT_ERROR
-    ]
+    ],
+    onSuccess
   };
 };
 
@@ -120,7 +122,11 @@ export type FileEditData = Partial<
   >
 >;
 
-export const editMediaFile = (fileId: string | number, data: FileEditData) => {
+export const editMediaFile = (
+  fileId: string | number,
+  data: FileEditData,
+  onSuccess?: () => void
+) => {
   return {
     promise: makeRequest({
       apiRoute: toFile(fileId),
@@ -131,7 +137,8 @@ export const editMediaFile = (fileId: string | number, data: FileEditData) => {
       MEDIA_FILE_EDIT,
       MEDIA_FILE_EDIT_SUCCESS,
       MEDIA_FILE_EDIT_ERROR
-    ]
+    ],
+    onSuccess
   };
 };
 

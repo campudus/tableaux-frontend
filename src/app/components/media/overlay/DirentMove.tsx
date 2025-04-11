@@ -145,20 +145,32 @@ export function DirentMoveFooter(props: DirentMoveProps): ReactElement {
   const history = useHistory();
   const dispatch = useDispatch();
 
+  const handleNavigate = () => {
+    switchFolderHandler(history, langtag, targetFolder?.id);
+  };
+
   const handleSave = () => {
     if (sourceFile?.uuid) {
-      dispatch(editMediaFile(sourceFile?.uuid, { folder: targetFolder?.id }));
+      dispatch(
+        editMediaFile(
+          sourceFile?.uuid,
+          { folder: targetFolder?.id },
+          handleNavigate
+        )
+      );
     } else if (sourceFolder?.id) {
       dispatch(
-        editMediaFolder(sourceFolder?.id, {
-          name: sourceFolder.name,
-          description: sourceFolder.description,
-          parentId: targetFolder?.id
-        })
+        editMediaFolder(
+          sourceFolder?.id,
+          {
+            name: sourceFolder.name,
+            description: sourceFolder.description,
+            parentId: targetFolder?.id
+          },
+          handleNavigate
+        )
       );
     }
-
-    switchFolderHandler(history, langtag, targetFolder?.id);
   };
 
   return (
