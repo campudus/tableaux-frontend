@@ -33,7 +33,7 @@ export default function Folder({
   const dropzoneRef = useRef<Dropzone>(null);
   const dispatch = useDispatch();
   const [isNewFolder, setIsNewFolder] = useState(false);
-  const { parentId, parents, subfolders = [], files } = folder;
+  const { id, parents, subfolders = [], files } = folder;
   const isRoot = folder.id === null;
   const sortedFiles = f.orderBy(f.prop("updatedAt"), "desc", files);
   const breadcrumbsFolders = f.concat(parents ?? [], !isRoot ? [folder] : []);
@@ -46,7 +46,7 @@ export default function Folder({
 
   const handleSaveNewFolder = (name: string) => {
     if (name !== "" && name !== newFolderName) {
-      dispatch(createMediaFolder({ parentId, name, description: "" }));
+      dispatch(createMediaFolder({ parentId: id, name, description: "" }));
     }
     handleToggleNewFolder();
   };
