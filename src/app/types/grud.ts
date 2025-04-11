@@ -1,4 +1,4 @@
-import { CellValue } from "@grud/devtools/types";
+import { Attachment, CellValue, FolderID } from "@grud/devtools/types";
 
 export * from "@grud/devtools/types";
 
@@ -15,6 +15,25 @@ export type Row = {
   archived?: boolean;
   values: CellValue["value"][];
   annotations?: Annotation[][];
+};
+
+export type TableParams = {
+  tableId: string | number;
+  columnId: string | number;
+  rowId: string | number;
+};
+
+export type Folder = {
+  id: FolderID;
+  name: string;
+  description: string;
+  parentId: number | null; // id
+  parentIds: number[];
+  createdAt: string | null;
+  updatedAt: string | null;
+  parents: Folder[];
+  subfolders: Folder[];
+  files: Attachment[];
 };
 
 export type ColumnAttributeString = { type: "string"; value: string };

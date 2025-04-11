@@ -10,7 +10,7 @@ import store from "../redux/store";
 const keycloakInitOptions = {
   onLoad: "login-required",
   checkLoginIframe: true
-};
+} as const;
 
 // (state) => bool
 // react-redux@7 selector
@@ -20,15 +20,15 @@ export const noAuthNeeded = f.memoize(() => config?.disableAuth ?? false);
 
 // () => Keycloak
 // Side effects: Will login on first load and memoize the result
-export const getLogin = f.memoize(
+export const getLogin = f.memoize<() => Partial<Keycloak>>(
   noAuthNeeded()
     ? f.always({})
     : () => {
         const keycloakSettings = {
-          realm: config.authRealm,
-          url: config.authServerUrl,
+          realm: config.authRealm!,
+          url: config.authServerUrl!,
           resource: config.authClientId,
-          clientId: config.authClientId,
+          clientId: config.authClientId!,
           "ssl-required": "external",
           "public-client": true,
           "confidential-port": 0
@@ -59,7 +59,8 @@ export const getLogin = f.memoize(
 
 export const withUserAuthentication = noAuthNeeded()
   ? f.identity
-  : Component => props => {
+  : // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (Component: any) => (props: any) => {
       const keycloakRef = React.useRef(getLogin());
       const isLoggedIn = useSelector(authSelector);
 

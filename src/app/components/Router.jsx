@@ -271,7 +271,9 @@ export const switchTable = ({ tableId } = {}) => {
 };
 
 export const switchFolderHandler = (history, langtag, folderId) => {
-  history.push(`/${langtag}/media/${folderId}`);
+  const url = folderId ? `/${langtag}/media/${folderId}` : `/${langtag}/media`;
+
+  history.push(url);
 };
 
 // Changes UI- and content language

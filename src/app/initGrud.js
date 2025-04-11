@@ -15,6 +15,8 @@ import route from "./helpers/apiRoutes";
 import store from "./redux/store";
 
 export const initGrud = async setSuccess => {
+  console.log({ route, settingurl: route.toSetting("langtags") });
+
   try {
     const loadServices = promisifyAction(actions.queryFrontendServices)();
     const initLangs = makeRequest({

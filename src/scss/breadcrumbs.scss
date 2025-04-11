@@ -1,5 +1,6 @@
 .breadcrumbs {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 6px;
 
@@ -9,11 +10,15 @@
     font-weight: bold;
   }
 
-  &__link:not(.active) {
-    color: #9E9E9E;
-  }
+  &__link {
+    padding: 0;
 
-  &__link.active {
-    pointer-events: none;
+    &.active {
+      pointer-events: none;
+    }
+
+    &:not(.active) {
+      color: #9E9E9E;
+    }
   }
 }

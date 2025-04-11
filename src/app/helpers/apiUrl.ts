@@ -1,8 +1,17 @@
 import * as f from "lodash/fp";
+import { Column, Row, Table, TableParams } from "../types/grud";
+
+export type UrlProps = {
+  langtag?: string;
+  filter?: boolean;
+  table?: Table;
+  column?: Column;
+  row?: Row;
+} & Partial<TableParams>;
 
 // TODO: use apiRoutes here
 // Either prefix a string or create string from a target object; see urlToTableDestination function
-const apiUrl = destination => {
+const apiUrl = (destination: string | UrlProps): string => {
   if (f.isString(destination)) {
     return "/api" + destination;
   } else {
@@ -11,23 +20,16 @@ const apiUrl = destination => {
 };
 
 // Generate url from a target object; if langtag is given returns apiUrl, else url to table
-const urlToTableDestination = ({
-  tableId,
-  table,
-  column,
-  columnId,
-  row,
-  rowId,
-  filter = false,
-  langtag
-} = {}) => {
+const urlToTableDestination = (props: UrlProps = {}): string => {
+  const { langtag, filter = false } = props;
+  const { tableId, table, column, columnId, row, rowId } = props;
   const targetTable = tableId || f.get("id", table);
   const targetCol = columnId || f.get("id", column);
   const targetRow = rowId || f.get("id", row);
   const languagePart = langtag ? `/${langtag}` : null;
   const tablePart = `/tables/${targetTable}`;
   const columnPart = f.isNumber(targetCol) ? `/columns/${targetCol}` : "";
-  const rowPart = isFinite(targetRow) ? `/rows/${targetRow}` : "";
+  const rowPart = f.isNumber(targetRow) ? `/rows/${targetRow}` : "";
   const query = filter ? "?filter" : "";
   const url = languagePart
     ? languagePart + tablePart + columnPart + rowPart
@@ -36,7 +38,7 @@ const urlToTableDestination = ({
 };
 
 // Expects either a full Url or a target object
-const openInNewTab = destination => {
+const openInNewTab = (destination: UrlProps) => {
   window.open(urlToTableDestination(f.assoc("browserUrl", true, destination)));
 };
 
