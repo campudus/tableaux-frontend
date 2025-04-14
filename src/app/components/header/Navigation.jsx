@@ -14,10 +14,7 @@ const SelfClosingNavigationPopup = listensToClickOutside(NavigationPopup);
 
 const Navigation = ({ langtag }) => {
   const services = useSelector(
-    f.compose(
-      filterMainMenuServices,
-      getAllServices
-    )
+    f.compose(filterMainMenuServices, getAllServices)
   );
   const [popupOpen, setPopup] = React.useState(false);
   const closePopup = React.useCallback(() => setPopup(false));

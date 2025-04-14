@@ -139,9 +139,10 @@ class View extends PureComponent {
         "has-mouse-pointer": this.state.hovered
       }
     );
-    const description = unless(f.isNil, retrieveTranslation(langtag))(
-      column.description
-    );
+    const description = unless(
+      f.isNil,
+      retrieveTranslation(langtag)
+    )(column.description);
 
     const annotationItems = f.flow(
       f.filter(({ kind }) => kind === "flag"),

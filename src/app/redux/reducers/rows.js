@@ -124,9 +124,10 @@ const updateCellAnnotation = (state, action, completeState) => {
   const row = completeState.rows[cell.table.id].data[rowIdx];
 
   const newRow = f.first(
-    rowValuesToCells(cell.table, columns)([
-      f.assoc(["annotations", colIdx], newCellAnnotations, row)
-    ])
+    rowValuesToCells(
+      cell.table,
+      columns
+    )([f.assoc(["annotations", colIdx], newCellAnnotations, row)])
   );
 
   return f.assoc([cell.table.id, "data", rowIdx], newRow, completeState.rows);

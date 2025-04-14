@@ -239,10 +239,7 @@ const showDialog = ({
     wrapActionFn
   )(buttonActions);
 
-  const escKeyFn = f.flow(
-    f.get(["neutral", 1]),
-    wrapActionFn
-  )(buttonActions);
+  const escKeyFn = f.flow(f.get(["neutral", 1]), wrapActionFn)(buttonActions);
 
   const keyShortcuts = {
     enter: event => {

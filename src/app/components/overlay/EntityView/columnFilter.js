@@ -26,11 +26,7 @@ const joinAttachmentFileNames = langtag =>
     f.defaultTo("")
   );
 
-const cleanString = f.flow(
-  f.toString,
-  f.toLower,
-  f.trim
-);
+const cleanString = f.flow(f.toString, f.toLower, f.trim);
 
 const getSortableCellValue = langtag => cell => {
   const columnName =

@@ -24,9 +24,10 @@ const GreeterWidget = ({ userName, motd }) => {
 };
 
 // User name component dependent on feature flag
-const UserName = branch(() => !SHOW_DASHBOARD_USER_NAME, renderNothing)(
-  ({ userName }) => <span className="user-name">{userName}</span>
-);
+const UserName = branch(
+  () => !SHOW_DASHBOARD_USER_NAME,
+  renderNothing
+)(({ userName }) => <span className="user-name">{userName}</span>);
 
 const enhance = compose(
   pure,

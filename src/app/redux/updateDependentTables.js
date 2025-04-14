@@ -42,11 +42,7 @@ export const calcColumnDependencies = columnCollection => {
   );
 };
 
-const listOfTableIds = f.compose(
-  f.join(","),
-  f.sortBy(f.identity),
-  f.keys
-);
+const listOfTableIds = f.compose(f.join(","), f.sortBy(f.identity), f.keys);
 
 const getCachedDependencyMap = memoizeWith(
   listOfTableIds,

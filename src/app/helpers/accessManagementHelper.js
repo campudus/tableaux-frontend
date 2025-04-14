@@ -37,10 +37,7 @@ const _lookUpPermissions = params => {
     const lookUpTable = id => f.find(f.propEq(["data", "id"], id), tables);
     const missingColumnIds = id => f.isNil(id) || f.isNil(tblId);
     const lookUpColumns = id =>
-      f.compose(
-        f.prop("data"),
-        f.find(f.propEq("id", id))
-      )(columns);
+      f.compose(f.prop("data"), f.find(f.propEq("id", id)))(columns);
 
     const foundTable = table || unless(f.isNil, lookUpTable, tblId);
     const foundColumn =
@@ -63,10 +60,7 @@ const _lookUpPermissions = params => {
 };
 
 const getPermission = pathToPermission =>
-  f.compose(
-    f.propOr(false, pathToPermission),
-    lookUpPermissions
-  );
+  f.compose(f.propOr(false, pathToPermission), lookUpPermissions);
 
 // (cell | {tableId: number, columnId: number}) -> (langtag | nil) -> boolean
 export const canUserChangeCell = f.curry((cell, langtag) => {

@@ -11,10 +11,7 @@ import ServiceLink from "./ServiceLink";
 
 const ContextMenuServices = ({ cell, langtag }) => {
   const services = useSelector(
-    f.compose(
-      filterCellServices(cell),
-      getAllServices
-    )
+    f.compose(filterCellServices(cell), getAllServices)
   );
   const { table, column, row } = cell;
   return services.length > 0 ? (

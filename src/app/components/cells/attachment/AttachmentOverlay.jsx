@@ -35,11 +35,7 @@ const NewAttachmentOverlay = props => {
     value
   } = props;
 
-  const isLinked = file =>
-    f.flow(
-      f.map("uuid"),
-      f.contains(file.uuid)
-    )(value);
+  const isLinked = file => f.flow(f.map("uuid"), f.contains(file.uuid))(value);
 
   const filesKey =
     f.flow(

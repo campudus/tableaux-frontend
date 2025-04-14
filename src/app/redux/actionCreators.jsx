@@ -173,11 +173,7 @@ const checkIfSelectedCellExists = (dispatch, tableId, state) => {
   }
 
   const containsId = id =>
-    f.flow(
-      f.map("id"),
-      f.includes(id),
-      exists => (exists ? id : false)
-    );
+    f.flow(f.map("id"), f.includes(id), exists => (exists ? id : false));
 
   const validRowId = containsId(rowId)(rows) || f.get([0, "id"], rows);
   const validColumnId =

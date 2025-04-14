@@ -13,10 +13,7 @@ const TaggedFunction = (mode, displayName, fn, isValidColumn = () => true) => {
 
 const DEFAULT_FILTER_MODE = FilterModes.CONTAINS;
 
-const clean = f.flow(
-  f.toLower,
-  f.trim
-); // normalise string
+const clean = f.flow(f.toLower, f.trim); // normalise string
 
 const SearchFunctions = {
   [FilterModes.CONTAINS]: TaggedFunction(

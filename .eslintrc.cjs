@@ -39,7 +39,7 @@ module.exports = {
     quotes: ["error", "double"],
     "no-console": "off",
     "trailing-comma": "off",
-    "prettier/prettier": "warn",
+    "prettier/prettier": "error",
     camelcase: ["warn", { properties: "always" }],
     eqeqeq: ["error", "allow-null"],
     "no-eval": "error",
@@ -101,7 +101,7 @@ module.exports = {
       env: {
         node: true,
         browser: false
-      },
+      }
     }
   ]
 };

@@ -131,10 +131,7 @@ class TableView extends PureComponent {
         f.map(f.get("id")),
         f.toString
       )(rows);
-      const columnKeys = f.flow(
-        f.map(f.get("id")),
-        f.toString
-      )(columns);
+      const columnKeys = f.flow(f.map(f.get("id")), f.toString)(columns);
       return (
         <div className="wrapper">
           <Table
@@ -427,10 +424,7 @@ export default branch(
   renderComponent(EmptyTableView)
 )(
   reduxActionHoc(
-    f.flow(
-      applyFiltersAndVisibility,
-      withRouter
-    )(TableView),
+    f.flow(applyFiltersAndVisibility, withRouter)(TableView),
     mapStatetoProps
   )
 );

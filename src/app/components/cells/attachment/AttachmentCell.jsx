@@ -60,21 +60,22 @@ const AttachmentCell = props => {
     });
   };
 
-  const attachments = (editing && selected ? value : f.take(3)(value)).map(
-    (element, idx) => (
-      <AttachmentLabelCell
-        key={idx}
-        attachmentElement={element}
-        value={value}
-        langtag={langtag}
-        openOverlay={openOverlay}
-        selected={selected}
-        cell={cell}
-        editing={editing}
-        handleClick={handleAttachmentLabelClick}
-      />
-    )
-  );
+  const attachments = (editing && selected
+    ? value
+    : f.take(3)(value)
+  ).map((element, idx) => (
+    <AttachmentLabelCell
+      key={idx}
+      attachmentElement={element}
+      value={value}
+      langtag={langtag}
+      openOverlay={openOverlay}
+      selected={selected}
+      cell={cell}
+      editing={editing}
+      handleClick={handleAttachmentLabelClick}
+    />
+  ));
 
   const allAttachmentsHaveSameFolderId = attachments => {
     return f.compose(

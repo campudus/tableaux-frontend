@@ -134,12 +134,7 @@ const getStatusValue = column => value =>
     .join(",");
 
 const getLinkValue = column =>
-  f.map(
-    f.flow(
-      f.get("value"),
-      getDisplayValue(column.toColumn)
-    )
-  );
+  f.map(f.flow(f.get("value"), getDisplayValue(column.toColumn)));
 
 const getAttachmentFileName = () => links => {
   const getFileName = (lt, link) =>

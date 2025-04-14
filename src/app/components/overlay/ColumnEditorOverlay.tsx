@@ -173,25 +173,22 @@ export function ColumnEditorOverlayBody({
       updateSharedData(() => ({
         displayName: { ...column.displayName, [langtag]: displayName },
         description: { ...column.description, [langtag]: description },
-        attributes: attributes.reduce(
-          (acc, def) => {
-            const { originalIndex: index, key, type, value } = def;
-            const original = !f.isNil(index) ? columnAttributes[index] : null;
-            const isValidAttribute =
-              !f.isEmpty(type) && !f.isNil(value) && value !== "";
-            const isValidKey = !f.isEmpty(key) && f.isEmpty(acc[key]);
+        attributes: attributes.reduce((acc, def) => {
+          const { originalIndex: index, key, type, value } = def;
+          const original = !f.isNil(index) ? columnAttributes[index] : null;
+          const isValidAttribute =
+            !f.isEmpty(type) && !f.isNil(value) && value !== "";
+          const isValidKey = !f.isEmpty(key) && f.isEmpty(acc[key]);
 
-            if (isValidAttribute && isValidKey) {
-              acc[key] = { type, value } as ColumnAttribute;
-            } else if (!f.isEmpty(original)) {
-              const { key, type, value } = original;
-              acc[key] = { type, value } as ColumnAttribute;
-            }
+          if (isValidAttribute && isValidKey) {
+            acc[key] = { type, value } as ColumnAttribute;
+          } else if (!f.isEmpty(original)) {
+            const { key, type, value } = original;
+            acc[key] = { type, value } as ColumnAttribute;
+          }
 
-            return acc;
-          },
-          {} as ColumnAttributeMap
-        )
+          return acc;
+        }, {} as ColumnAttributeMap)
       }));
     }
   }, [displayName, description, attributes]);

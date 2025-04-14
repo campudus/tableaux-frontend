@@ -97,10 +97,7 @@ const translateDisplayValue = langtag => dv =>
     : retrieveTranslation(langtag, dv);
 
 const getFlatDisplayValue = langtag =>
-  f.compose(
-    translateDisplayValue(langtag),
-    f.first
-  );
+  f.compose(translateDisplayValue(langtag), f.first);
 
 const keyValuesById = (accum, next) => {
   accum[next.id] = next.values;

@@ -154,9 +154,10 @@ EntityViewHeader.propTypes = {
 
 const getDisplayLabel = (row, langtag) => {
   const firstCell = f.prop(["values", 0], row);
-  return unless(f.isEmpty, retrieveTranslation(langtag))(
-    f.prop("displayValue", firstCell)
-  );
+  return unless(
+    f.isEmpty,
+    retrieveTranslation(langtag)
+  )(f.prop("displayValue", firstCell));
 };
 
 export { getDisplayLabel };

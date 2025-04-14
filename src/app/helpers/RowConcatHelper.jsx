@@ -12,16 +12,10 @@ const rowConcatString = (idColumn, row, langtag) => {
   const firstCellValue = f.get(["values", 0], row);
   const translate = retrieveTranslation(langtag);
   // links/attachments in primary column create arrays, thus failing retrieveTranslation spec
-  const translateArray = f.compose(
-    f.join(", "),
-    f.map(translate)
-  );
+  const translateArray = f.compose(f.join(", "), f.map(translate));
   const applyTranslation = ifElse(f.isArray, translateArray, translate);
 
-  return f.compose(
-    applyTranslation,
-    getDisplayValue(idColumn)
-  )(firstCellValue);
+  return f.compose(applyTranslation, getDisplayValue(idColumn))(firstCellValue);
 };
 
 const RowConcat = props => {
