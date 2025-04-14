@@ -15,6 +15,7 @@ import { getDecimalDigits, isYearColumn } from "../../../helpers/columnHelper";
 import { maybe } from "../../../helpers/functools";
 import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
 import NumberInput from "../../helperComponents/NumberInput";
+import { getModifiers } from "../../../helpers/modifierState";
 
 const enhance = compose(
   pure,
@@ -29,7 +30,7 @@ const enhance = compose(
       };
     },
     {
-      registerInput: (state, { funcs }) => node => {
+      registerInput: (_, { funcs }) => node => {
         funcs.register(node);
       },
       handleChange: () => value => {
@@ -81,7 +82,10 @@ const enhance = compose(
         "ArrowUp",
         "ArrowDown"
       ];
-      if (!f.contains(event.key, allowedKeys)) {
+      const modifier = getModifiers(event);
+      const systemKeys = ["c", "v"];
+      const isSystemCombo = modifier.mod && systemKeys.includes(event.key);
+      if (!f.contains(event.key, allowedKeys) && !isSystemCombo) {
         event.preventDefault();
         event.stopPropagation();
         return false;
