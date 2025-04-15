@@ -64,7 +64,4 @@ const selfHiding = compose(
   })
 );
 
-export default compose(
-  selfHiding,
-  translate(["table"])
-)(Toast);
+export default compose(selfHiding, translate(["table"]))(Toast);

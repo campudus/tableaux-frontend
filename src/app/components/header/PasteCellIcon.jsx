@@ -29,7 +29,4 @@ PasteCellPopup.propTypes = {
   pasteOriginCellLang: PropTypes.string
 };
 
-export default compose(
-  pure,
-  onlyWhenPasteSourceExists
-)(PasteCellPopup);
+export default compose(pure, onlyWhenPasteSourceExists)(PasteCellPopup);

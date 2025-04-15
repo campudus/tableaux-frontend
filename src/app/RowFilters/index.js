@@ -270,10 +270,7 @@ export const sortRows = (
     const isEmpty = x => typeof x !== "number" && f.isEmpty(x);
     const comparator = (a, b) => {
       const [valA, valB] = [a, b].map(
-        f.compose(
-          v => (typeof v === "string" ? v.toLowerCase() : v),
-          getValue
-        )
+        f.compose(v => (typeof v === "string" ? v.toLowerCase() : v), getValue)
       );
 
       switch (true) {

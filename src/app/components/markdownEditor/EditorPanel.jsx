@@ -16,15 +16,9 @@ import PropTypes from "prop-types";
 import { stopPropagation } from "../../helpers/functools";
 import StyleControls from "./StyleControls";
 
-const markdownToState = f.compose(
-  convertFromRaw,
-  markdownToDraft
-);
+const markdownToState = f.compose(convertFromRaw, markdownToDraft);
 
-const stateToMarkdown = f.compose(
-  draftToMarkdown,
-  convertToRaw
-);
+const stateToMarkdown = f.compose(draftToMarkdown, convertToRaw);
 
 const Link = props => {
   const { url } = props.contentState.getEntity(props.entityKey).getData();

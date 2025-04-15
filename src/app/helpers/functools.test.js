@@ -25,20 +25,11 @@ describe("functools", () => {
       expect.assertions(2);
 
       await expect(
-        composeP(
-          f.prop("baz"),
-          f.prop("bar"),
-          f.prop("foo"),
-          p
-        )("my-val")
+        composeP(f.prop("baz"), f.prop("bar"), f.prop("foo"), p)("my-val")
       ).resolves.toEqual("my-val");
 
       await expect(
-        composeP(
-          f.join(""),
-          f.map(f.toUpper),
-          async a => a
-        )(["foo", "bar"])
+        composeP(f.join(""), f.map(f.toUpper), async a => a)(["foo", "bar"])
       ).resolves.toEqual("FOOBAR");
     });
 

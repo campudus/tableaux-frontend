@@ -35,10 +35,7 @@ const getCompletionValueUrl = withProps(({ column, table, langtag }) => {
   return { requestUrl };
 });
 
-const enhance = compose(
-  getCompletionValueUrl,
-  needsAPIData
-);
+const enhance = compose(getCompletionValueUrl, needsAPIData);
 
 const SelectableShortText = props => {
   const {

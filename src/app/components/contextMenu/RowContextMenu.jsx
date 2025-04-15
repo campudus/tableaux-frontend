@@ -231,12 +231,7 @@ class RowContextMenu extends React.Component {
 
   mkItem = (action, label, icon, classes = "") => {
     return (
-      <button
-        onClick={f.compose(
-          this.closeRowContextMenu,
-          action
-        )}
-      >
+      <button onClick={f.compose(this.closeRowContextMenu, action)}>
         <i className={`fa fa-${icon} ${classes}`} />
         <div className="item-label">{this.props.t(label)}</div>
       </button>
@@ -353,7 +348,4 @@ RowContextMenu.propTypes = {
   openAnnotations: PropTypes.func.isRequired
 };
 
-export default compose(
-  translate(["table"]),
-  withClickOutside
-)(RowContextMenu);
+export default compose(translate(["table"]), withClickOutside)(RowContextMenu);

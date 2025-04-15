@@ -44,10 +44,7 @@ const canConvert = (from, to) => {
 };
 
 // string -> string
-const cleanString = f.flow(
-  f.replace("\n", " "),
-  f.trim
-);
+const cleanString = f.flow(f.replace("\n", " "), f.trim);
 
 const momentFromString = str => {
   // this is more robust downstream than just Moment(str, [formats], true)
@@ -66,11 +63,7 @@ const momentFromString = str => {
   return f.first(f.compact, values);
 };
 
-const textToNumber = f.flow(
-  cleanString,
-  f.parseInt(10),
-  f.defaultTo(null)
-);
+const textToNumber = f.flow(cleanString, f.parseInt(10), f.defaultTo(null));
 // string -> value
 const fromText = {
   [shorttext]: cleanString,
@@ -110,10 +103,7 @@ const convertSingleValue = f.curry((from, to, value) => {
   } else if (from === text) {
     return fromText[to](value);
   } else {
-    return f.flow(
-      toText[from],
-      fromText[to]
-    )(value);
+    return f.flow(toText[from], fromText[to])(value);
   }
 });
 

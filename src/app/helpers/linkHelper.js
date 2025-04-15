@@ -66,7 +66,13 @@ const combineDisplayValuesWithLinks = (allDisplayValues, columns, tableId) => {
   const findCells = (tableId, rowIds) => {
     const rows = f.get([tableId], allDisplayValues);
     return f.map(
-      id => f.head(f.get("values", f.find(element => element.id === id, rows))),
+      id =>
+        f.head(
+          f.get(
+            "values",
+            f.find(element => element.id === id, rows)
+          )
+        ),
       rowIds
     );
   };

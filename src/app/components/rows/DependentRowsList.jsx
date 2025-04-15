@@ -57,10 +57,7 @@ const DependentRowsList = props => {
       const links = rows.map(row => {
         const displayNameObj = getDisplayName(column, row.value);
         const extractDisplayString = f.isArray(displayNameObj)
-          ? f.compose(
-              f.join(" "),
-              f.map(langtag)
-            )
+          ? f.compose(f.join(" "), f.map(langtag))
           : f.get(langtag);
         return {
           displayName: extractDisplayString(displayNameObj),

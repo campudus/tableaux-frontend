@@ -88,13 +88,7 @@ export default function AnnotationContextMenu({
         const hasAnnotation = !!annotation;
 
         return (
-          <button
-            key={title}
-            onClick={f.compose(
-              closeAction,
-              action
-            )}
-          >
+          <button key={title} onClick={f.compose(closeAction, action)}>
             <AnnotationDot
               className="item-dot"
               color={color}

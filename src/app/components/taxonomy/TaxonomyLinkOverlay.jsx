@@ -223,11 +223,7 @@ const combineStates = (...states) => {
 const isLoading = state => state.tag === StateTag.loading;
 const isDone = state => state.tag === StateTag.done;
 const isError = state => state.tag === StateTag.error;
-const storeToState = path =>
-  f.compose(
-    toState,
-    f.prop(path)
-  );
+const storeToState = path => f.compose(toState, f.prop(path));
 
 const selectLiveCell = ({ tableId, columnId, rowId }) => store => {
   const [rowIdx, colIdx] = idsToIndices({ tableId, columnId, rowId }, store);
