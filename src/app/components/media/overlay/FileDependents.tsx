@@ -105,14 +105,14 @@ function FileDependentsTable({
         </a>
 
         <a
-          className="file-dependents-table__header item-header"
+          className="file-dependents-table__header"
           href={rowUrl}
           target="_blank"
           rel="noopener noreferrer"
         >
           {rowCount > 1
-            ? i18n.t("media:show_dependent_rows", { count: rowCount })
-            : i18n.t("media:show_dependent_row", { count: rowCount })}
+            ? i18n.t("media:open_dependent_rows", { count: rowCount })
+            : i18n.t("media:open_dependent_row", { count: rowCount })}
         </a>
       </div>
 

@@ -35,6 +35,8 @@
   "load_dependent_rows": "Lade Verknüpfungen",
   "show_dependent_row": "{{count}} Verknüpfung",
   "show_dependent_rows": "{{count}} Verknüpfungen",
+  "open_dependent_row": "Öffne {{count}} verknüpften Datensatz",
+  "open_dependent_rows": "Öffne {{count}} verknüpfte Datensätze",
   "show_all": "Alle {{count}} anzeigen",
   "show_less": "Weniger anzeigen"
 }
