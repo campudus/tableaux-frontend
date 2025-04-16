@@ -136,6 +136,10 @@
   }
 }
 
+.content-diff--added, .content-diff--deleted {
+  padding: 0 1px;
+}
+
 .country-diff__group {
   display: flex;
 
@@ -187,11 +191,13 @@
 }
 
 .content-diff--added {
-  background-color: $color-revision-added;
+  color: $color-revision-added;
+  background-color: transparentize($color-revision-added, 0.9);
 }
 
 .content-diff--deleted {
-  background-color: $color-revision-deleted;
+  color: $color-revision-deleted;
+  background: transparentize($color-revision-deleted, 0.9);
   text-decoration: line-through;
 }
 
