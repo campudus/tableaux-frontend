@@ -111,10 +111,7 @@ const getCurrentAttachmentDisplayValue = langtag =>
     [uuid]: retrieveTranslation(langtag, title)
   }));
 
-const getIdsFromRevision = f.compose(
-  f.map("id"),
-  f.prop("value")
-);
+const getIdsFromRevision = f.compose(f.map("id"), f.prop("value"));
 
 const getCurrentLinkDisplayValue = ({ tableId, column, langtag }) => rowId => {
   const apiRoute = route.toCell({ tableId, columnId: column.id, rowId });
@@ -168,10 +165,7 @@ export const filterComments = filter => rev =>
 export const matchesUser = filter =>
   f.isEmpty(filter && filter.author)
     ? f.stubTrue
-    : f.compose(
-        f.contains(filter.author),
-        f.prop("author")
-      );
+    : f.compose(f.contains(filter.author), f.prop("author"));
 
 export const getSearchableValues = langtag => revision => {
   const candidates = [
@@ -181,12 +175,7 @@ export const getSearchableValues = langtag => revision => {
     revision.prevContent
   ];
   const getValueForLangtag = when(f.isObject, f.prop(langtag));
-  const getLinkValues = f.map(
-    f.compose(
-      getValueForLangtag,
-      f.prop("value")
-    )
-  );
+  const getLinkValues = f.map(f.compose(getValueForLangtag, f.prop("value")));
 
   const isAttachment = c =>
     f.any(f.isArray, c) && f.any(f.has("uuid"), f.flatten(c));
