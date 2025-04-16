@@ -1,10 +1,8 @@
-import React, { PureComponent } from "react";
-import * as f from "lodash/fp";
-import listensToClickOutside from "react-onclickoutside";
-
-import PropTypes from "prop-types";
 import classNames from "classnames";
-
+import * as f from "lodash/fp";
+import PropTypes from "prop-types";
+import React, { PureComponent } from "react";
+import listensToClickOutside from "react-onclickoutside";
 import { Directions } from "../../../constants/TableauxConstants";
 import { canUserChangeCell } from "../../../helpers/accessManagementHelper";
 import {
@@ -34,12 +32,20 @@ class CurrencyItem extends PureComponent {
   }
 
   getCellValue = (countryCode, cell) => {
+    const hasValue =
+      f.isNumber(cell.value[countryCode]) && !isNaN(cell.value[countryCode]);
     const cellValue = (
       getCurrencyWithCountry(cell.value, countryCode, "withFallback") || "0.0"
     ).toString();
-    const currencyValue = parseFloat(cellValue) || 0;
-    const preComma = cellValue.split(".")[0] || "0";
-    const postComma = cellValue.split(".")[1] || "00";
+    const currencyValue = parseFloat(cellValue) || null;
+    const preComma = hasValue ? cellValue.split(".")[0] || "" : "";
+    const postComma = hasValue ? cellValue.split(".")[1] || "" : "";
+    console.log({
+      value: cell.value[countryCode],
+      currencyValue,
+      preComma,
+      postComma
+    });
     return {
       preComma,
       postComma,
@@ -72,7 +78,7 @@ class CurrencyItem extends PureComponent {
           value={this.state.preComma}
           autoFocus
           onKeyDown={this.filterKeyEvents(PRE_COMMA)}
-          placeholder="0"
+          placeholder="-"
           onClick={e => e.stopPropagation()}
         />
         ,
@@ -81,7 +87,7 @@ class CurrencyItem extends PureComponent {
           onChange={this.handleChange(POST_COMMA)}
           value={this.state.postComma}
           onKeyDown={this.filterKeyEvents(POST_COMMA)}
-          placeholder="00"
+          placeholder="--"
           onClick={e => e.stopPropagation()}
         />
       </div>
@@ -156,10 +162,15 @@ class CurrencyItem extends PureComponent {
   };
 
   valueToString = (pre, post) => {
+    const hasValue = !f.every(f.isEmpty, [pre, post]);
+    console.log({ pre, post, hasValue });
     const postString = parseInt(post) ? post.toString() : "00";
-    return `${(pre || 0).toString()}${getLocaleDecimalSeparator()}${
-      postString.length === 2 ? postString : postString + "0"
-    }`;
+    const separator = getLocaleDecimalSeparator();
+    return hasValue
+      ? `${(pre || 0).toString()}${separator}${
+          postString.length === 2 ? postString : postString + "0"
+        }`
+      : `-${separator}--`;
   };
 
   render() {

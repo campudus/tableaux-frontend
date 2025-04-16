@@ -61,7 +61,7 @@ const CurrencyRow = ({
           disabled={isDisabled}
           onChange={handleChange(Pos.pre)}
           onKeyDown={filterKeys}
-          placeholder="0"
+          placeholder="-"
           value={value[Pos.pre] ?? ""}
         />
         <span className="delimiter">{getLocaleDecimalSeparator(langtag)}</span>
@@ -71,7 +71,7 @@ const CurrencyRow = ({
           maxLength={2}
           onChange={handleChange(Pos.post)}
           onKeyDown={filterKeys}
-          placeholder="00"
+          placeholder="--"
           value={value[Pos.post]}
         />
       </div>
