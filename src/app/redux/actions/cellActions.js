@@ -148,7 +148,7 @@ const shouldShowClearDialog = ({ cell, column, oldValue, newValue }) => {
     !isEmptyValue(column.kind, oldValue[primaryLanguage]) &&
     isEmptyValue(column.kind, newValue[primaryLanguage]);
   const hasValuesToClear =
-    Object.entries({ ...oldValue, newValue }).filter(
+    Object.entries({ ...oldValue, ...newValue }).filter(
       ([lt, val]) => lt !== primaryLanguage && !isEmptyValue(column.kind, val)
     ).length > 0;
   return (
@@ -167,7 +167,10 @@ const empty = cell => {
     cell.column.languageType === LanguageType.country
       ? cell.column.countryCodes
       : Langtags;
-  return Object.fromEntries(langtags.map(lt => [lt, mempty]), cell);
+  return Object.fromEntries(
+    langtags.map(lt => [lt, mempty]),
+    cell
+  );
 };
 
 export const clearSelectedCellValue = (cell, langtag) => {
@@ -361,12 +364,7 @@ const maybeUpdateStatusColumnValue = (tableId, columnId, rowId) => (
       (column, dependentColumnIds) => ({ column, dependentColumnIds }),
       statusColumns
     ),
-    f.map(
-      f.compose(
-        f.uniq,
-        f.flatten
-      )
-    ),
+    f.map(f.compose(f.uniq, f.flatten)),
     f.map(column =>
       f.map(rule => calcDependentColumnIds(rule.conditions), column.rules)
     )
