@@ -492,6 +492,7 @@
       border-radius: 2px;
     }
     .country-diff__full-value {
+      padding-top: 4px;
       width: 100%;
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax($min-item-width, 1fr));
@@ -513,15 +514,35 @@
         color: $color-text-medium-grey;
       }
     }
+
+    summary {
+      display: flex;
+      justify-content: space-between;
+      .toggle-indicator {
+        transition: rotate 200ms;
+        &__wrapper {
+          padding-top: 3px;
+        }
+      }
+    }
+    details[open] .toggle-indicator {
+      rotate: 90deg;
+    }
   }
 
   .revision__block--currency.revision__block--current-value {
+    .country-diff__full-value {
+      padding-top: 0;
+    }
     .revision-item__content {
       background: transparent;
       margin: 0px;
       margin-left: 30px;
       .country-diff__value-item > * {
         background: $color-white;
+      }
+      .value-item__currency {
+        background: lighten($color-border-grey, 2);
       }
     }
   }

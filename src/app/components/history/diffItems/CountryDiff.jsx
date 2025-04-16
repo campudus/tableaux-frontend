@@ -13,37 +13,46 @@ const Changes = props => {
   const { diff, noCurrency, langtag } = props;
 
   const countries = f.groupBy("country", diff);
-  return doto(
-    countries,
-    f.keys,
-    f.map(country => (
-      <div key={country} className="country-diff-group">
-        <div className="country-diff__sub-header">
-          {getLanguageOrCountryIcon(country)}
-          {noCurrency ? null : (
-            <div className="country-diff-sub-header__currency">{`[${getCurrencyCode(
-              country
-            )}]`}</div>
-          )}
-          {countries[country].map(({ add, del, value }, idx) => {
-            const cssClass = classNames("content-diff", {
-              "content-diff--added": add,
-              "content-diff--deleted": del
-            });
-            return (
-              <div key={idx} className={cssClass}>
-                {ifElse(
-                  f.isNil,
-                  () => "",
-                  () => formatNumber(langtag, value),
-                  value
+  return (
+    <>
+      <span>
+        {doto(
+          countries,
+          f.keys,
+          f.map(country => (
+            <div key={country} className="country-diff-group">
+              <div className="country-diff__sub-header">
+                {getLanguageOrCountryIcon(country)}
+                {noCurrency ? null : (
+                  <div className="country-diff-sub-header__currency">{`[${getCurrencyCode(
+                    country
+                  )}]`}</div>
                 )}
+                {countries[country].map(({ add, del, value }, idx) => {
+                  const cssClass = classNames("content-diff", {
+                    "content-diff--added": add,
+                    "content-diff--deleted": del
+                  });
+                  return (
+                    <div key={idx} className={cssClass}>
+                      {ifElse(
+                        f.isNil,
+                        () => "",
+                        () => formatNumber(langtag, value),
+                        value
+                      )}
+                    </div>
+                  );
+                }, countries)}
               </div>
-            );
-          }, countries)}
-        </div>
-      </div>
-    ))
+            </div>
+          ))
+        )}
+      </span>
+      <span className="toggle-indicator__wrapper">
+        <i className="toggle-indicator fa fa-angle-right" />
+      </span>
+    </>
   );
 };
 
