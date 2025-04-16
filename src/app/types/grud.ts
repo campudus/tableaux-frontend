@@ -1,4 +1,10 @@
-import { Attachment, CellValue, FolderID } from "@grud/devtools/types";
+import {
+  Attachment as _Attachment,
+  CellValue,
+  Column,
+  FolderID,
+  Table
+} from "@grud/devtools/types";
 
 export * from "@grud/devtools/types";
 
@@ -23,6 +29,9 @@ export type TableParams = {
   rowId: string | number;
 };
 
+// Fix in grud-devtools
+export type Attachment = _Attachment & { dependentRowCount: number };
+
 export type Folder = {
   id: FolderID;
   name: string;
@@ -34,4 +43,15 @@ export type Folder = {
   parents: Folder[];
   subfolders: Folder[];
   files: Attachment[];
+};
+
+export type FileDependentRowItem = {
+  row: Row;
+  toColumn: Column;
+};
+
+export type FileDependentRow = {
+  table: Table;
+  column: Column;
+  rows: FileDependentRowItem[];
 };
