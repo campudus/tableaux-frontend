@@ -345,7 +345,6 @@ class TableView extends PureComponent {
                 setRowFilter={this.props.actions.setFiltersAndSorting}
                 actions={actions}
               />
-              {this.renderNewRowButton()}
               {table && columns && columns.length > 1 ? (
                 <ColumnFilter
                   langtag={langtag}
@@ -362,6 +361,7 @@ class TableView extends PureComponent {
                 actions={actions}
                 tableView={tableView}
               />
+              {this.renderNewRowButton()}
               {showResetTableViewButton && (
                 <ResetTableViewButton
                   tableId={tableId}
