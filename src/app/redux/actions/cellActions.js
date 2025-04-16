@@ -113,7 +113,7 @@ export const isEmptyValue = (columnKind, value) => {
     on(ColumnKinds.datetime, f.always(f.negate(isValidDate))),
     on(ColumnKinds.integer, f.always(isEmptyNumberInputValue)),
     on(ColumnKinds.numeric, f.always(isEmptyNumberInputValue)),
-    on(ColumnKinds.currency, f.always(f.equals(0))),
+    on(ColumnKinds.currency, f.always(f.isNil)),
     otherwise(f.always(f.isEmpty))
   );
   return checkValue(value);
@@ -122,7 +122,6 @@ export const isEmptyValue = (columnKind, value) => {
 export const getEmptyValue = columnKind =>
   match(columnKind)(
     on(ColumnKinds.attachment, []),
-    on(ColumnKinds.currency, 0),
     on(ColumnKinds.link, []),
     otherwise(f.always(null))
   );
