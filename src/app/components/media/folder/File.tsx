@@ -1,3 +1,4 @@
+import f from "lodash/fp";
 import i18n from "i18next";
 import { ReactElement } from "react";
 import { useDispatch } from "react-redux";
@@ -18,6 +19,8 @@ import {
   DirentMoveFooter,
   DirentMoveHeader
 } from "../overlay/DirentMove";
+import { buildClassName as cn } from "../../../helpers/buildClassName";
+import FileDependentsBody from "../overlay/FileDependents";
 
 type FileProps = {
   langtag: string;
@@ -28,6 +31,13 @@ export default function File({ langtag, file }: FileProps): ReactElement {
   const dispatch = useDispatch();
   const title = retrieveTranslation(langtag)(file.title);
   const imageUrl = apiUrl(retrieveTranslation(langtag)(file.url));
+
+  const { dependentRowCount: depCount } = file;
+  const depLabel = f.cond([
+    [f.eq(0), () => null],
+    [f.eq(1), () => i18n.t("media:show_dependent_row", { count: depCount })],
+    [f.lt(1), () => i18n.t("media:show_dependent_rows", { count: depCount })]
+  ])(file.dependentRowCount);
 
   const handleRemove = () => {
     confirmDeleteFile(title, () => {
@@ -63,6 +73,17 @@ export default function File({ langtag, file }: FileProps): ReactElement {
     );
   };
 
+  const handleDependentRows = () => {
+    dispatch(
+      actions.openOverlay({
+        name: `show-file-dependents-for-${title}`,
+        head: <Header title={title} context={i18n.t("media:dependents")} />,
+        body: <FileDependentsBody langtag={langtag} file={file} />,
+        classes: "file-dependents"
+      })
+    );
+  };
+
   return (
     <div className="file">
       <a
@@ -76,6 +97,16 @@ export default function File({ langtag, file }: FileProps): ReactElement {
       </a>
 
       <div className="file__actions">
+        {depCount > 0 && depLabel && (
+          <button
+            className={cn("file__action", { link: true })}
+            onClick={handleDependentRows}
+            title={depLabel}
+          >
+            {depLabel}
+          </button>
+        )}
+
         {canUserEditFiles() && (
           <button
             className="file__action"
