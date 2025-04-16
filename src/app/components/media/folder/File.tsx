@@ -45,7 +45,7 @@ export default function File({ langtag, file }: FileProps): ReactElement {
     });
   };
 
-  const handleEdit = () => {
+  const handleOpenEditOverlay = () => {
     dispatch(
       actions.openOverlay({
         name: `change-file-${title}`,
@@ -56,7 +56,7 @@ export default function File({ langtag, file }: FileProps): ReactElement {
     );
   };
 
-  const handleMove = () => {
+  const handleOpenMoveOverlay = () => {
     dispatch(
       actions.openOverlay({
         name: `move-file-${title}`,
@@ -73,7 +73,7 @@ export default function File({ langtag, file }: FileProps): ReactElement {
     );
   };
 
-  const handleOpenFileDependents = () => {
+  const handleOpenDependentsOverlay = () => {
     dispatch(
       actions.openOverlay({
         name: `show-file-dependents-for-${title}`,
@@ -100,7 +100,7 @@ export default function File({ langtag, file }: FileProps): ReactElement {
         {depCount > 0 && depLabel && (
           <button
             className={cn("file__action", { link: true })}
-            onClick={handleOpenFileDependents}
+            onClick={handleOpenDependentsOverlay}
             title={depLabel}
           >
             {depLabel}
@@ -110,7 +110,7 @@ export default function File({ langtag, file }: FileProps): ReactElement {
         {canUserEditFiles() && (
           <button
             className="file__action"
-            onClick={handleMove}
+            onClick={handleOpenMoveOverlay}
             title={i18n.t("media:move_file")}
           >
             <SvgIcon icon="move" />
@@ -120,7 +120,7 @@ export default function File({ langtag, file }: FileProps): ReactElement {
         {canUserEditFiles() && (
           <button
             className="file__action"
-            onClick={handleEdit}
+            onClick={handleOpenEditOverlay}
             title={i18n.t("media:change_file")}
           >
             <i className="icon fa fa-cog" />
