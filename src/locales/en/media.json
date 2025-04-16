@@ -35,6 +35,8 @@
   "load_dependent_rows": "Load dependencies",
   "show_dependent_row": "{{count}} dependency",
   "show_dependent_rows": "{{count}} dependencies",
+  "open_dependent_row": "Open {{count}} linked dependency",
+  "open_dependent_rows": "Open {{count}} linked dependencies",
   "show_all": "Show all {{count}} items",
   "show_less": "Show less"
 }
