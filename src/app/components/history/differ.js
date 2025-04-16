@@ -128,7 +128,7 @@ const calcCountryDiff = ({ fullValue, prevContent }) => {
         equals: oldVal === newVal
       };
       return match(state)(
-        on({ equals: true }, { value: newVal, country }),
+        on({ equals: true }, null),
         on({ hadValue: true, hasValue: true }, [
           { del: true, value: oldVal, country },
           { add: true, value: newVal, country }

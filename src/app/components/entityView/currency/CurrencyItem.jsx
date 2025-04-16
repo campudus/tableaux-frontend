@@ -163,7 +163,6 @@ class CurrencyItem extends PureComponent {
 
   valueToString = (pre, post) => {
     const hasValue = !f.every(f.isEmpty, [pre, post]);
-    console.log({ pre, post, hasValue });
     const postString = parseInt(post) ? post.toString() : "00";
     const separator = getLocaleDecimalSeparator();
     return hasValue

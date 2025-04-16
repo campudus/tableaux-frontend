@@ -130,30 +130,17 @@
   display: flex;
   font-weight: bold;
   margin: 5px 0;
+  gap: 7px;
+  align-items: center;
 
   .langtag-label {
     margin: 0 5px;
   }
 }
 
-.content-diff--added, .content-diff--deleted {
+.content-diff--added,
+.content-diff--deleted {
   padding: 0 1px;
-}
-
-.country-diff__group {
-  display: flex;
-
-  .content-diff {
-    margin-right: 5px;
-  }
-}
-
-.country-diff-group {
-  padding: 5px;
-
-  &:nth-child(even) {
-    background-color: transparentize($color-text-light-grey, 0.7);
-  }
 }
 
 @mixin link-diff-color($basecolor) {
@@ -484,42 +471,48 @@
   margin: 0;
 }
 
-@media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
-  // ------ IE needs every grid item to be placed manually
-
-  .item__select-from {
-    -ms-grid-column: 1;
-    -ms-grid-row: 2;
+.revision__block--currency {
+  .current-value,
+  details {
+    width: 100%;
+  }
+  $min-cell-width: 65px;
+  $gap: 4px;
+  $min-item-width: calc(3 * $min-cell-width + 2 * $gap);
+  .content-diff {
+    padding: 2px 4px;
+    border-radius: 2px;
+  }
+  .country-diff__full-value {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax($min-item-width, 1fr));
+    grid-gap: $gap;
   }
 
-  .item__select-to {
-    -ms-grid-column: 2;
-    -ms-grid-row: 2;
+  .country-diff__value-item {
+    min-width: calc(3 * $min-cell-width);
+
+    display: grid;
+    grid-template-columns: $min-cell-width 1fr $min-cell-width;
+    grid-gap: $gap;
+    & > * {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 44px;
+      background: $color-border-grey;
+      color: $color-text-medium-grey;
+    }
   }
+}
 
-  .item__select-annotations {
-    -ms-grid-column: 1;
-    -ms-grid-row: 3;
-  }
-
-  .item__select-comments {
-    -ms-grid-column: 2;
-    -ms-grid-row: 3;
-  }
-
-  .confirm-revert-preview__left {
-    -ms-grid-column: 1;
-  }
-
-  .confirm-revert-preview__right {
-    -ms-grid-column: 2;
-  }
-
-  // ----- and IE places stuff wrong
-
-  .overlay
-    .revision-history-overlay.overlay-wrapper.full-height.is-right:not(.is-left) {
-    transition: none;
-    left: 55vw;
+.revision__block--currency.revision__block--current-value
+  .revision-item__content {
+  background: transparent;
+  margin: 0px;
+  margin-left: 30px;
+  .country-diff__value-item > * {
+    background: $color-white;
   }
 }

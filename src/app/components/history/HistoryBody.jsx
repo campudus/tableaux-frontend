@@ -71,13 +71,19 @@ const HistoryBody = props => {
       f.assoc(
         "displayValue",
         f.propEq("valueType", column.kind)
-          ? getDisplayValue(column, when(f.isNil, () => {}, rev.fullValue))
+          ? getDisplayValue(
+              column,
+              when(f.isNil, () => {}, rev.fullValue)
+            )
           : {}
       ),
       f.assoc(
         "prevDisplayValue",
         f.propEq("valueType", column.kind)
-          ? getDisplayValue(column, when(f.isNil, () => {}, rev.prevContent))
+          ? getDisplayValue(
+              column,
+              when(f.isNil, () => {}, rev.prevContent)
+            )
           : {}
       )
     );
@@ -113,9 +119,10 @@ const HistoryBody = props => {
             obj =>
               f
                 .reverse(f.keys(obj))
-                .map(timestamp => (
+                .map((timestamp, idx) => (
                   <RevisionItemBlock
                     key={timestamp}
+                    idx={idx}
                     cell={cell}
                     date={timestamp}
                     revisions={obj[timestamp]}
