@@ -73,7 +73,7 @@ export default function File({ langtag, file }: FileProps): ReactElement {
     );
   };
 
-  const handleDependentRows = () => {
+  const handleOpenFileDependents = () => {
     dispatch(
       actions.openOverlay({
         name: `show-file-dependents-for-${title}`,
@@ -100,7 +100,7 @@ export default function File({ langtag, file }: FileProps): ReactElement {
         {depCount > 0 && depLabel && (
           <button
             className={cn("file__action", { link: true })}
-            onClick={handleDependentRows}
+            onClick={handleOpenFileDependents}
             title={depLabel}
           >
             {depLabel}
