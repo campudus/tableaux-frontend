@@ -40,12 +40,6 @@ class CurrencyItem extends PureComponent {
     const currencyValue = parseFloat(cellValue) || null;
     const preComma = hasValue ? cellValue.split(".")[0] || "" : "";
     const postComma = hasValue ? cellValue.split(".")[1] || "" : "";
-    console.log({
-      value: cell.value[countryCode],
-      currencyValue,
-      preComma,
-      postComma
-    });
     return {
       preComma,
       postComma,
@@ -69,6 +63,12 @@ class CurrencyItem extends PureComponent {
     toggleEdit(false, updateObject);
   };
 
+  handleClear = () => {
+    const { countryCode, toggleEdit } = this.props;
+    this.setState({ preComma: "", postComma: "" });
+    toggleEdit(false, [countryCode, null]);
+  };
+
   renderEditFields = () => {
     return (
       <div className="currency-input ignore-react-onclickoutside">
@@ -81,7 +81,7 @@ class CurrencyItem extends PureComponent {
           placeholder="-"
           onClick={e => e.stopPropagation()}
         />
-        ,
+        {getLocaleDecimalSeparator(this.props.langtag)}
         <input
           className="right"
           onChange={this.handleChange(POST_COMMA)}
@@ -90,6 +90,9 @@ class CurrencyItem extends PureComponent {
           placeholder="--"
           onClick={e => e.stopPropagation()}
         />
+        <button onClick={this.handleClear}>
+          <i className="fa fa-trash" />
+        </button>
       </div>
     );
   };

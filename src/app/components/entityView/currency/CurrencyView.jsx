@@ -29,7 +29,7 @@ class CurrencyView extends Component {
     return countryCodes.map((countryCode, index) => {
       return (
         <CurrencyItem
-          key={index}
+          key={countryCode}
           cell={cell}
           countryCode={countryCode}
           editing={editing[index]}
@@ -48,7 +48,7 @@ class CurrencyView extends Component {
       to === true
         ? f.assoc(el, true, f.map(f.stubFalse, editing))
         : f.set(el, false, editing);
-    if (f.isString(country) && f.isNumber(editValue)) {
+    if (f.isString(country) && (f.isNumber(editValue) || editValue === null)) {
       const newValue = { ...value, [country]: editValue };
       actions.changeCellValue({ cell, oldValue: value, newValue });
     }

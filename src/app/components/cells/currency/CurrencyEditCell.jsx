@@ -70,11 +70,13 @@ const CurrencyEditCell = ({
     (country, inputValue) => {
       setInputvalues({
         ...inputValues,
-        [country]: toCurrencyInputValue(inputValue)
+        [country]: f.isNil(inputValue) ? null : toCurrencyInputValue(inputValue)
       });
       onChange({
         ...value,
-        [country]: fromCurrencyInputValue(inputValue)
+        [country]: f.isNil(inputValue)
+          ? null
+          : fromCurrencyInputValue(inputValue)
       });
     },
     [value]
