@@ -66,7 +66,13 @@ const RevisionItem = props => {
       )}
       <div className="revision-item__content">
         <div className="revision-item__content-box">
-          <Diff revision={revision} diff={diff} cell={cell} langtag={langtag} />
+          <Diff
+            idx={props.idx}
+            revision={revision}
+            diff={diff}
+            cell={cell}
+            langtag={langtag}
+          />
         </div>
       </div>
     </div>

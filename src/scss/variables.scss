@@ -75,9 +75,9 @@ $color-overlay-success: #6ec;
 $color-overlay-warning: #f55;
 
 $color-hover-dark: #4a4f53;
-$color-revision-added: #d1f2e7;
+$color-revision-added: darken($color-green, 15);
 $color-revision-link-added: #66d6b0;
-$color-revision-deleted: #dfdfdf;
+$color-revision-deleted: darken($color-text-medium-grey, 15);
 $color-revision-filter-background: #464b4f;
 $color-archived-bg: #999999;
 $color-archived-fg: $color-white;

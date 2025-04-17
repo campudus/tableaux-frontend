@@ -1,7 +1,7 @@
 import diff from "fast-diff";
-import f from "lodash/fp";
 import i18n from "i18next";
-
+import f from "lodash/fp";
+import { match, when as on, otherwise } from "match-iz";
 import { ColumnKinds } from "../../constants/TableauxConstants";
 import { retrieveTranslation } from "../../helpers/multiLanguage";
 
@@ -116,23 +116,33 @@ const calcCountryDiff = ({ fullValue, prevContent }) => {
   return f.flow(
     f.flatMap(country => {
       const valueFrom = f.propOr({}, country);
+      const isNotEmpty = f.complement(f.isEmpty);
+      const exists = f.anyPass([f.isNumber, isNotEmpty]);
 
       const oldVal = valueFrom(prevContent);
       const newVal = valueFrom(fullValue);
 
-      if (oldVal === newVal) {
-        // hide all changes except for the "current value" duplicate
-        return f.equals(fullValue, prevContent)
-          ? { value: oldVal, country }
-          : null;
-      }
-      return f.isNumber(oldVal) || !f.isEmpty(oldVal) // Number is empty. Don't ask me why
-        ? // We can do this because of flatMap
-          [
-            { del: true, value: oldVal, country },
-            { add: true, value: newVal, country }
-          ]
-        : { add: true, value: newVal, country };
+      const state = {
+        hadValue: exists(oldVal),
+        hasValue: exists(newVal),
+        equals: oldVal === newVal
+      };
+      return match(state)(
+        on({ equals: true }, null),
+        on({ hadValue: true, hasValue: true }, [
+          { del: true, value: oldVal, country },
+          { add: true, value: newVal, country }
+        ]),
+        on(
+          { hadValue: false, hasValue: true },
+          { add: true, value: newVal, country }
+        ),
+        on(
+          { hadValue: true, hasValue: false },
+          { del: true, value: oldVal, country }
+        ),
+        otherwise({ value: newVal, country })
+      );
     }),
     f.compact
   )(countries);

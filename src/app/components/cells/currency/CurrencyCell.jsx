@@ -1,4 +1,4 @@
-import f from "lodash/fp";
+import f, { isNumber } from "lodash/fp";
 import PropTypes from "prop-types";
 import React, { useCallback, useEffect, useState } from "react";
 import { translate } from "react-i18next";
@@ -33,16 +33,18 @@ const DisplayPrice = translate(["table"])(({ country, t, currencyValues }) => {
   );
   const valueStrings = toValueString(value);
   const currencyCode = getCurrencyCode(country);
+  const hasValue =
+    isNumber(currencyValues[country]) && !isNaN(currencyValues[country]);
 
-  const cssClass = `currency-wrapper${
-    currencyValues[country] ? "" : " grey-out"
-  }`;
+  const cssClass = `currency-wrapper${hasValue ? "" : " grey-out"}`;
   return currencyCode ? (
     <div className={cssClass}>
-      <span className="currency-valye">{formatNumber(valueStrings[0], 0)}</span>
+      <span className="currency-valye">
+        {hasValue ? formatNumber(valueStrings[0], 0) : "-"}
+      </span>
       <span className="currency-value-decimals">
         {getLocaleDecimalSeparator()}
-        {valueStrings[1]}
+        {hasValue ? valueStrings[1] : "-"}
       </span>
       <span className="currency-code">{currencyCode}</span>
       <i className="open-country fa fa-angle-down"></i>

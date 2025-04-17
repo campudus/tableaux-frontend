@@ -119,9 +119,10 @@ const HistoryBody = props => {
             obj =>
               f
                 .reverse(f.keys(obj))
-                .map(timestamp => (
+                .map((timestamp, idx) => (
                   <RevisionItemBlock
                     key={timestamp}
+                    idx={idx}
                     cell={cell}
                     date={timestamp}
                     revisions={obj[timestamp]}
