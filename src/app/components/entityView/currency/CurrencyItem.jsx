@@ -87,7 +87,7 @@ class CurrencyItem extends PureComponent {
           onChange={this.handleChange(POST_COMMA)}
           value={this.state.postComma}
           onKeyDown={this.filterKeyEvents(POST_COMMA)}
-          placeholder="--"
+          placeholder="-"
           onClick={e => e.stopPropagation()}
         />
         <button onClick={this.handleClear}>

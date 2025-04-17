@@ -81,7 +81,7 @@ const CurrentValue = ({ langtag, cell, revision, diff }) => {
           deleted: changes[cc]?.deleted
         });
         const ccValue = f.isNil(value[cc])
-          ? "-,--"
+          ? "-,-"
           : formatNumber(
               langtag,
               f.isString(value[cc]) ? parseFloat(value[cc]) : value[cc]

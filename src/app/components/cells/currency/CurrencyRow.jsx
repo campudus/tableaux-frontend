@@ -78,7 +78,7 @@ const CurrencyRow = ({
           maxLength={2}
           onChange={handleChange(Pos.post)}
           onKeyDown={filterKeys}
-          placeholder="--"
+          placeholder="-"
           value={value[Pos.post]}
         />
       </div>

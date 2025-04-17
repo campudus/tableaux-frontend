@@ -44,7 +44,7 @@ const DisplayPrice = translate(["table"])(({ country, t, currencyValues }) => {
       </span>
       <span className="currency-value-decimals">
         {getLocaleDecimalSeparator()}
-        {hasValue ? valueStrings[1] : "--"}
+        {hasValue ? valueStrings[1] : "-"}
       </span>
       <span className="currency-code">{currencyCode}</span>
       <i className="open-country fa fa-angle-down"></i>
