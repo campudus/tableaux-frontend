@@ -69,9 +69,6 @@ const CurrencyRow = ({
           value={value[Pos.pre] ?? ""}
         />
         <span className="delimiter">{getLocaleDecimalSeparator(langtag)}</span>
-        <button onClick={handleClear}>
-          <i className="clear-icon fa fa-trash" />
-        </button>
         <input
           className="currency-input decimals"
           disabled={isDisabled}
@@ -81,6 +78,9 @@ const CurrencyRow = ({
           placeholder="-"
           value={value[Pos.post]}
         />
+        <button className="clear-icon" onClick={handleClear}>
+          <i className="fa fa-trash" />
+        </button>
       </div>
       <div className="currency-code">{getCurrencyCode(country)}</div>
     </div>

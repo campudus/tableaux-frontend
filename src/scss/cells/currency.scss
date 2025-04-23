@@ -1,105 +1,118 @@
-$countryWidth: 50px;
-$currencyWidth: 50px;
+body {
+  $countryWidth: 50px;
+  $currencyWidth: 50px;
 
-.cell.cell-currency {
-  .open-country {
-    margin-left: 10px;
-    display: inline-block;
-  }
-
-  .currency-code {
-    display: inline-block;
-    margin-left: 5px;
-  }
-
-  .currency-no-country {
-    color: $color-text-medium-grey;
-  }
-
-  &.editing {
-    border: 0;
-    padding: 0;
-    align-items: flex-start;
-
-    .cell-content {
-      padding: 0;
-      background-color: white;
-      box-shadow: none;
-      border: 1px solid $color-primary;
-      z-index: 1;
-      height: auto;
-      min-height: $space-height-cell;
-      max-height: 170px;
-      overflow-y: visible;
-      overflow-x: hidden;
-    }
-  }
-  .disabled {
-    opacity: 0.5;
-  }
-
-  .currency-row {
-    position: relative;
-    height: $space-height-cell;
-    border-bottom: 1px solid $color-border-grey;
-    line-height: $space-height-cell;
-
-    .country-code,
-    .currency-value,
-    .currency-code {
-      position: absolute;
-      top: 0;
-      height: 100%;
-    }
-
-    .country-code {
-      width: $countryWidth;
-      text-align: center;
-
-      .langtag {
-        line-height: 1;
-        vertical-align: middle;
-        display: inline-block;
-      }
-
-      .langtag-label {
-        display: block;
-      }
-    }
-
-    .currency-value {
-      padding: 0 20px;
-      left: $countryWidth;
-      right: $currencyWidth;
-      border-left: 1px solid $color-border-grey;
-      border-right: 1px solid $color-border-grey;
-      white-space: nowrap;
-    }
-
-    .currency-code {
-      width: $currencyWidth;
-      right: 0;
-      text-align: center;
-      background-color: $color-background-very-light-grey;
-    }
-
-    .currency-input {
+  .cell.cell-currency {
+    .open-country {
+      margin-left: 10px;
       display: inline-block;
-      width: 70px;
-      font-size: $font-size-standard;
-
-      &:focus {
-        border-bottom: 1px solid $color-primary;
-      }
-
-      &.integer {
-        text-align: right;
-      }
     }
 
-    .delimiter {
-      display: inline;
+    .currency-code {
+      display: inline-block;
+      margin-left: 5px;
+    }
+
+    .currency-no-country {
       color: $color-text-medium-grey;
+    }
+
+    &.editing {
+      border: 0;
+      padding: 0;
+      align-items: flex-start;
+
+      .cell-content {
+        padding: 0;
+        background-color: white;
+        box-shadow: none;
+        border: 1px solid $color-primary;
+        z-index: 1;
+        height: auto;
+        min-height: $space-height-cell;
+        max-height: 170px;
+        overflow-y: visible;
+        overflow-x: hidden;
+      }
+    }
+    .disabled {
+      opacity: 0.5;
+    }
+
+    .currency-row {
+      position: relative;
+      height: $space-height-cell;
+      border-bottom: 1px solid $color-border-grey;
+      line-height: $space-height-cell;
+
+      .clear-icon {
+        opacity: 0;
+        padding: 8px;
+        color: $color-text-medium-grey;
+      }
+
+      .country-code,
+      .currency-value,
+      .currency-code {
+        position: absolute;
+        top: 0;
+        height: 100%;
+      }
+
+      .country-code {
+        width: $countryWidth;
+        text-align: center;
+
+        .langtag {
+          line-height: 1;
+          vertical-align: middle;
+          display: inline-block;
+        }
+
+        .langtag-label {
+          display: block;
+        }
+      }
+
+      .currency-value {
+        padding: 0 20px;
+        left: $countryWidth;
+        right: $currencyWidth;
+        border-left: 1px solid $color-border-grey;
+        border-right: 1px solid $color-border-grey;
+        white-space: nowrap;
+      }
+
+      .currency-code {
+        width: $currencyWidth;
+        right: 0;
+        text-align: center;
+        background-color: $color-background-very-light-grey;
+      }
+
+      .currency-input {
+        display: inline-block;
+        width: 70px;
+        font-size: $font-size-standard;
+
+        &:focus {
+          border-bottom: 1px solid $color-primary;
+        }
+
+        &.integer {
+          text-align: right;
+        }
+      }
+
+      .delimiter {
+        display: inline;
+        color: $color-text-medium-grey;
+      }
+      &:hover {
+        .clear-icon {
+          opacity: 1;
+        }
+      }
     }
   }
 }

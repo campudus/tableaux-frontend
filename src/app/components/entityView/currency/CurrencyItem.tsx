@@ -159,12 +159,17 @@ const CurrencyItem = ({
                 placeholder="-"
                 onClick={e => e.stopPropagation()}
               />
-              <button onClick={handleClear}>
+              <button className="clear-icon" onClick={handleClear}>
                 <i className="fa fa-trash" />
               </button>
             </div>
           ) : (
-            <div className="currency-string">{currencyString}</div>
+            <>
+              <div className="currency-string">{currencyString}</div>
+              <button className="clear-icon" onClick={handleClear}>
+                <i className="fa fa-trash" />
+              </button>
+            </>
           )}
         </div>
         <div className="currency-code">{currencyCode}</div>
