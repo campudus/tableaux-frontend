@@ -18,9 +18,7 @@ import {
 } from "../../types/grud";
 import { buildClassName as cn } from "../../helpers/buildClassName";
 
-type ColumnData = Pick<Column, "displayName" | "description"> & {
-  attributes: ColumnAttributeMap;
-};
+type ColumnData = Pick<Column, "displayName" | "description" | "attributes">;
 
 type ColumnAttributeDef = {
   originalIndex?: number;
@@ -79,9 +77,8 @@ export function ColumnEditorOverlayBody({
   column,
   updateSharedData
 }: ColumnEditorOverlayBodyProps): ReactElement {
-  const columnAttributesMap = (column.attributes as unknown) as ColumnAttributeMap;
   const columnAttributes = f
-    .entries(columnAttributesMap || {})
+    .entries(column.attributes || {})
     .map(([key, attr], originalIndex) => ({ originalIndex, key, ...attr }));
 
   const [displayName, setDisplayName] = useState(column.displayName[langtag]);
