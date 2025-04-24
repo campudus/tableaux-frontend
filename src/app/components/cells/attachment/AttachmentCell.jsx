@@ -81,7 +81,7 @@ const AttachmentCell = props => {
       selected={selected}
       cell={cell}
       editing={editing}
-      handleClick={handleAttachmentLabelClick}
+      handleClick={editing || selected ? handleAttachmentLabelClick : f.noop}
     />
   ));
 
@@ -95,7 +95,11 @@ const AttachmentCell = props => {
   };
 
   const handleClick = e => {
-    if (editing && selected) {
+    if (
+      !isLocked(cell.row) &&
+      canUserChangeCell(cell, langtag) &&
+      (editing || selected)
+    ) {
       if (allAttachmentsHaveSameFolderId(value)) {
         openOverlay(e, f.get("folder", f.head(value)));
       } else {
@@ -116,7 +120,7 @@ const AttachmentCell = props => {
             ]
           : attachments}
       </div>
-      {editing && selected ? (
+      {editing || selected ? (
         <button key={"add-btn"} className="edit" onClick={handleClick}>
           <span className="fa fa-pencil" />
         </button>
