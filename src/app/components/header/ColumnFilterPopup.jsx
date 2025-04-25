@@ -3,7 +3,7 @@ import i18n from "i18next";
 import f from "lodash/fp";
 import PropTypes from "prop-types";
 import React, { useEffect, useRef, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { FilterModes } from "../../constants/TableauxConstants";
 import { findGroupMemberIds } from "../../helpers/columnHelper";
 import { getColumnDisplayName } from "../../helpers/multiLanguage";
@@ -27,6 +27,8 @@ const ColumnFilterPopup = ({
   tableId,
   columnOrdering
 }) => {
+  const { selectedCell = {} } = useSelector(store => store.selectedCell ?? {});
+  const { rowId } = selectedCell;
   const allColumns = columnOrdering.map(({ idx }) => rawColumns[idx]);
   const groupMemberIds = findGroupMemberIds(allColumns);
   const idColumn = allColumns[0];
@@ -94,7 +96,12 @@ const ColumnFilterPopup = ({
     const handleFocusColumn = evt => {
       evt.stopPropagation();
       dispatch(
-        actions.toggleCellSelection({ columnId: column.id, tableId, langtag })
+        actions.toggleCellSelection({
+          rowId,
+          columnId: column.id,
+          tableId,
+          langtag
+        })
       );
       dispatch(actions.rerenderTable());
     };
