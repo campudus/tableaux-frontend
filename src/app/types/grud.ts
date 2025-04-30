@@ -70,7 +70,7 @@ export type GRUDStore = {
     number,
     { data: Array<Column>; error: boolean; finishedLoading: boolean }
   >;
-  frontendServices: Array<any>;
+  frontendServices: Array<Record<string, unknown>>;
   globalSettings: {
     annotationReset: boolean;
     columnsReset: boolean;
@@ -81,9 +81,9 @@ export type GRUDStore = {
   grudStatus: {
     connectedToBackend: boolean;
   };
-  media: Record<string, any>;
-  multiSelect: Array<any>;
-  overlays: { toast: any; overlays: Array<any> };
+  media: Record<string, unknown>;
+  multiSelect: Array<Cell>;
+  overlays: { toast: unknown; overlays: Array<OverlayEntry> };
   rows: Record<
     number,
     {
@@ -109,10 +109,10 @@ export type GRUDStore = {
     >;
     editing: boolean;
     expandedRowIds: Array<number>;
-    filters: Array<any>;
-    history: Array<any>;
+    filters: Array<Filter>;
+    history: { undoQueue: Array<UndoEntry> };
     showArchived: string;
-    sorting: Array<any>;
+    sorting: { direction: "asc" | "desc"; colName: string };
     startedGeneratingDisplayValues: boolean;
     visibleColumns: Array<number>;
     visibleRows: Array<number>;
@@ -123,4 +123,24 @@ export type GRUDStore = {
     error: boolean;
     finishedLoading: boolean;
   };
+};
+
+type Filter = Array<string | number | Filter>;
+type UndoEntry = {
+  type: string;
+  cell: Cell;
+  column: Column;
+  newValue: CellValue;
+  oldValue: CellValue;
+};
+type OverlayEntry = {
+  body: React.FC;
+  columns: Array<Column>;
+  head: React.FC;
+  id: number;
+  name: string;
+  preferRight?: boolean;
+  table: Table;
+  title: { column: Column; table: Table; row: Row };
+  type: string;
 };
