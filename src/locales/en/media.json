@@ -30,5 +30,13 @@
   "folder_back": "Back",
   "move_file": "Move file \"{{name}}\" to",
   "move_folder": "Move folder \"{{name}}\" to",
-  "move": "Move"
+  "move": "Move",
+  "dependents": "Dependencies",
+  "load_dependent_rows": "Load dependencies",
+  "show_dependent_row": "1 dependency",
+  "show_dependent_rows": "{{count}} dependencies",
+  "open_dependent_row": "Open 1 linked dependency",
+  "open_dependent_rows": "Open {{count}} linked dependencies",
+  "show_all": "Show all {{count}} items",
+  "show_less": "Show less"
 }
