@@ -35,7 +35,7 @@ export default function File({ langtag, file }: FileProps): ReactElement {
   const { dependentRowCount: depCount } = file;
   const depLabel = f.cond([
     [f.eq(0), () => null],
-    [f.eq(1), () => i18n.t("media:show_dependent_row", { count: depCount })],
+    [f.eq(1), () => i18n.t("media:show_dependent_row")],
     [f.lt(1), () => i18n.t("media:show_dependent_rows", { count: depCount })]
   ])(file.dependentRowCount);
 

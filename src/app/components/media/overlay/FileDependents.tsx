@@ -112,7 +112,7 @@ function FileDependentsTable({
         >
           {rowCount > 1
             ? i18n.t("media:open_dependent_rows", { count: rowCount })
-            : i18n.t("media:open_dependent_row", { count: rowCount })}
+            : i18n.t("media:open_dependent_row")}
         </a>
       </div>
 
