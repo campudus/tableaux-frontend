@@ -35,17 +35,3 @@ export type Folder = {
   subfolders: Folder[];
   files: Attachment[];
 };
-
-export type ColumnAttributeString = { type: "string"; value: string };
-export type ColumnAttributeNumber = { type: "number"; value: number };
-export type ColumnAttributeBoolean = { type: "boolean"; value: boolean };
-export type ColumnAttributeArray = { type: "array"; value: ColumnAttribute[] };
-export type ColumnAttribute =
-  | ColumnAttributeString
-  | ColumnAttributeBoolean
-  | ColumnAttributeNumber
-  | ColumnAttributeArray;
-
-export type ColumnAttributeMap = {
-  [key: string]: ColumnAttribute;
-};
