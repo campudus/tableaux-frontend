@@ -178,11 +178,20 @@
       flex: 2;
       background-color: $color-white;
       border-color: inherit;
+      flex-direction: row;
+      padding-left: 4px;
+
+      .clear-icon {
+        padding: 8px;
+        color: $color-text-medium-grey;
+        opacity: 0;
+      }
 
       .currency-string {
         border-bottom: 1px solid;
         border-color: inherit;
         height: $font-size-standard;
+        flex: 1;
         width: 80%;
       }
 
@@ -191,7 +200,7 @@
         flex-flow: row nowrap;
         padding: 0;
         margin: 0;
-        width: 100%;
+        flex: 1;
 
         input {
           border: none;
@@ -201,14 +210,14 @@
           &.left {
             text-align: right;
           }
-          &.right {
-            width: 20%;
-          }
           &:focus {
             border-bottom: 1px solid $color-primary-lighter;
             color: $color-primary-text;
           }
         }
+      }
+      &:hover .clear-icon {
+        opacity: 1;
       }
     }
 

@@ -47,6 +47,10 @@ const CurrencyRow = ({
     const updated = f.assoc(idx, event.target.value, value);
     updateValue(country, updated);
   };
+  const handleClear = () => {
+    console.log("clear", country);
+    updateValue(country, null);
+  };
   const rowClass = classNames("currency-row", {
     "grey-out": isFallbackValue,
     disabled: isDisabled
@@ -61,7 +65,7 @@ const CurrencyRow = ({
           disabled={isDisabled}
           onChange={handleChange(Pos.pre)}
           onKeyDown={filterKeys}
-          placeholder="0"
+          placeholder="-"
           value={value[Pos.pre] ?? ""}
         />
         <span className="delimiter">{getLocaleDecimalSeparator(langtag)}</span>
@@ -71,9 +75,12 @@ const CurrencyRow = ({
           maxLength={2}
           onChange={handleChange(Pos.post)}
           onKeyDown={filterKeys}
-          placeholder="00"
+          placeholder="-"
           value={value[Pos.post]}
         />
+        <button className="clear-icon" onClick={handleClear}>
+          <i className="fa fa-trash" />
+        </button>
       </div>
       <div className="currency-code">{getCurrencyCode(country)}</div>
     </div>

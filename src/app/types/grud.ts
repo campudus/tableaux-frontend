@@ -3,6 +3,7 @@ import {
   CellValue,
   Column,
   FolderID,
+  Locale,
   Table
 } from "@grud/devtools/types";
 
@@ -54,4 +55,92 @@ export type FileDependentRow = {
   table: Table;
   column: Column;
   rows: FileDependentRowItem[];
+};
+
+export type Cell = {
+  id: string;
+  row: Row;
+  column: Column;
+  value: CellValue;
+  table: Table;
+};
+
+export type GRUDStore = {
+  columns: Record<
+    number,
+    { data: Array<Column>; error: boolean; finishedLoading: boolean }
+  >;
+  frontendServices: Array<Record<string, unknown>>;
+  globalSettings: {
+    annotationReset: boolean;
+    columnsReset: boolean;
+    filterReset: boolean;
+    sortingDesc: boolean;
+    sortingReset: boolean;
+  };
+  grudStatus: {
+    connectedToBackend: boolean;
+  };
+  media: Record<string, unknown>;
+  multiSelect: Array<Cell>;
+  overlays: { toast: unknown; overlays: Array<OverlayEntry> };
+  rows: Record<
+    number,
+    {
+      data: Array<Row & { cells: Array<Cell> }>;
+      error: boolean;
+      finishedLoading: boolean;
+    }
+  >;
+  selectedCell: {
+    cell: Cell;
+    editing: boolean;
+    preventCellSelection: boolean;
+    selectedCell?: { rowId: number; columnId: number; langtag: Locale };
+  };
+  tableView: {
+    annotationHightlight?: string;
+    copySource?: Cell;
+    currentLanguage: Locale;
+    currentTable: number;
+    displayValues: Record<
+      number,
+      Array<{ id: number; values: Array<Record<string, string>> }>
+    >;
+    editing: boolean;
+    expandedRowIds: Array<number>;
+    filters: Array<Filter>;
+    history: { undoQueue: Array<UndoEntry> };
+    showArchived: string;
+    sorting: { direction: "asc" | "desc"; colName: string };
+    startedGeneratingDisplayValues: boolean;
+    visibleColumns: Array<number>;
+    visibleRows: Array<number>;
+    worker: Worker;
+  };
+  tables: {
+    data: Record<number, Table>;
+    error: boolean;
+    finishedLoading: boolean;
+  };
+};
+
+type Filter = Array<string | number | Filter>;
+type UndoEntry = {
+  type: string;
+  cell: Cell;
+  column: Column;
+  newValue: CellValue;
+  oldValue: CellValue;
+};
+type OverlayEntry = {
+  body: React.FC;
+  columns: Array<Column>;
+  head: React.FC;
+  id: number;
+  name: string;
+  preferRight?: boolean;
+  table: Table;
+  title: { column: Column; table: Table; row: Row };
+  type: string;
 };

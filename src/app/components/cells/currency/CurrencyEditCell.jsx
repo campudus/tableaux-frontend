@@ -2,6 +2,7 @@ import f from "lodash/fp";
 import PropTypes from "prop-types";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { canUserChangeCountryTypeCell } from "../../../helpers/accessManagementHelper";
+import { ifElse } from "../../../helpers/functools";
 import { outsideClickEffect } from "../../../helpers/useOutsideClick";
 import CurrencyRow from "./CurrencyRow";
 
@@ -16,10 +17,14 @@ const splitFloat = f.compose(
 const toCurrencyInputValue = splitFloat;
 
 // [string, string] -> number
-const fromCurrencyInputValue = f.compose(
-  f.toNumber,
-  f.join("."),
-  f.map(stringVal => (f.isEmpty(stringVal) ? "0" : stringVal))
+const fromCurrencyInputValue = ifElse(
+  x => f.equals(["", ""], x) || x === null,
+  () => null,
+  f.compose(
+    f.toNumber,
+    f.join("."),
+    f.map(stringVal => (f.isEmpty(stringVal) ? "" : stringVal))
+  )
 );
 
 const CurrencyEditCell = ({
@@ -70,11 +75,13 @@ const CurrencyEditCell = ({
     (country, inputValue) => {
       setInputvalues({
         ...inputValues,
-        [country]: toCurrencyInputValue(inputValue)
+        [country]: f.isNil(inputValue) ? null : toCurrencyInputValue(inputValue)
       });
       onChange({
         ...value,
-        [country]: fromCurrencyInputValue(inputValue)
+        [country]: f.isNil(inputValue)
+          ? null
+          : fromCurrencyInputValue(inputValue)
       });
     },
     [value]

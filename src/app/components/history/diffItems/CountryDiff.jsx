@@ -1,45 +1,105 @@
-import React from "react";
-import f from "lodash/fp";
-
 import classNames from "classnames";
-
-import { doto, unless } from "../../../helpers/functools";
+import f from "lodash/fp";
+import React from "react";
+import { doto, ifElse } from "../../../helpers/functools";
 import {
   getCurrencyCode,
   getLanguageOrCountryIcon
 } from "../../../helpers/multiLanguage";
+import { buildClassName } from "../../../helpers/buildClassName";
+import { formatNumber } from "@grud/devtools/intl";
+
+const Changes = props => {
+  const { diff, noCurrency, langtag } = props;
+
+  const countries = f.groupBy("country", diff);
+  return (
+    <>
+      <span>
+        {doto(
+          countries,
+          f.keys,
+          f.map(country => (
+            <div key={country} className="country-diff-group">
+              <div className="country-diff__sub-header">
+                {getLanguageOrCountryIcon(country)}
+                {noCurrency ? null : (
+                  <div className="country-diff-sub-header__currency">{`[${getCurrencyCode(
+                    country
+                  )}]`}</div>
+                )}
+                {countries[country].map(({ add, del, value }, idx) => {
+                  const cssClass = classNames("content-diff", {
+                    "content-diff--added": add,
+                    "content-diff--deleted": del
+                  });
+                  return (
+                    <div key={idx} className={cssClass}>
+                      {ifElse(
+                        f.isNil,
+                        () => "",
+                        () => formatNumber(langtag, value),
+                        value
+                      )}
+                    </div>
+                  );
+                }, countries)}
+              </div>
+            </div>
+          ))
+        )}
+      </span>
+      <span className="toggle-indicator__wrapper">
+        <i className="toggle-indicator fa fa-angle-right" />
+      </span>
+    </>
+  );
+};
 
 const CountryDiff = props => {
-  const { diff, noCurrency } = props;
-  const countries = f.groupBy("country", diff);
-  return doto(
-    countries,
-    f.keys,
-    f.map(country => (
-      <div key={country} className="country-diff-group">
-        <div className="country-diff__sub-header">
-          {getLanguageOrCountryIcon(country)}
-          {!noCurrency && (
-            <div className="country-diff-sub-header__currency">{`[${getCurrencyCode(
-              country
-            )}]`}</div>
-          )}
-        </div>
-        <div className="country-diff__group">
-          {countries[country].map(({ add, del, value }, idx) => {
-            const cssClass = classNames("content-diff", {
-              "content-diff--added": add,
-              "content-diff--deleted": del
-            });
-            return (
-              <div key={idx} className={cssClass}>
-                {unless(f.isNumber, () => "", value)}
-              </div>
+  return props.idx === 0 ? (
+    <CurrentValue {...props} />
+  ) : (
+    <details>
+      <summary>
+        <Changes {...props} />
+      </summary>
+      <CurrentValue {...props} />
+    </details>
+  );
+};
+
+const CurrentValue = ({ langtag, cell, revision, diff }) => {
+  const countryCodes = cell.column.countryCodes;
+  const changes = f.indexBy("country", diff);
+  const value = revision.fullValue;
+  return (
+    <div className="country-diff__full-value">
+      {countryCodes.map(cc => {
+        const contentClass = buildClassName("content-diff", {
+          added: changes[cc]?.add,
+          deleted: changes[cc]?.deleted
+        });
+        const ccValue = f.isNil(value[cc])
+          ? "-,-"
+          : formatNumber(
+              langtag,
+              f.isString(value[cc]) ? parseFloat(value[cc]) : value[cc]
             );
-          }, countries)}
-        </div>
-      </div>
-    ))
+
+        return (
+          <div key={cc} className="country-diff__value-item">
+            <div className="value-item__country">
+              {getLanguageOrCountryIcon(cc)}
+            </div>
+            <div className="value-item__content">
+              <span className={contentClass}>{ccValue}</span>
+            </div>
+            <div className="value-item__currency">{getCurrencyCode(cc)}</div>
+          </div>
+        );
+      })}
+    </div>
   );
 };
 

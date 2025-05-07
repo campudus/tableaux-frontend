@@ -17,7 +17,11 @@ import Empty from "../helperComponents/emptyEntry";
 import getDisplayValue from "../../helpers/getDisplayValue";
 import route from "../../helpers/apiRoutes";
 
-const NON_REVERTABLE_COLUMNS = [ColumnKinds.attachment, ColumnKinds.link];
+const NON_REVERTABLE_COLUMNS = [
+  ColumnKinds.attachment,
+  ColumnKinds.link,
+  ColumnKinds.currency
+];
 
 export const reduceRevisionHistory = column => revisions => {
   const getRelativeRevision = (previousRevision, rev, idx) => {
@@ -26,12 +30,18 @@ export const reduceRevisionHistory = column => revisions => {
       column.kind
     );
     const isMultiLanguage =
-      rev.languageType === ("language" || rev.languageType === "country") &&
+      (rev.languageType === "language" || rev.languageType === "country") &&
       !isLinked;
     const emptyValue = isLinked ? [] : {};
 
     const changedLangtags =
       cellContentChanged && isMultiLanguage ? f.keys(rev.value) : undefined;
+
+    const fullValue = cellContentChanged
+      ? isMultiLanguage
+        ? merge(previousRevision.fullValue || emptyValue, rev.value)
+        : rev.value
+      : previousRevision.fullValue;
 
     return {
       ...rev,
@@ -41,11 +51,7 @@ export const reduceRevisionHistory = column => revisions => {
         rev.valueType === column.kind && // when the column changed, the value is meaningless
         !f.contains(column.kind, NON_REVERTABLE_COLUMNS), // links or files may no longer exist
       prevContent: previousRevision.fullValue,
-      fullValue: cellContentChanged
-        ? isMultiLanguage
-          ? merge(previousRevision.fullValue || emptyValue, rev.value)
-          : rev.value
-        : previousRevision.fullValue,
+      fullValue,
       idx
     };
   };
