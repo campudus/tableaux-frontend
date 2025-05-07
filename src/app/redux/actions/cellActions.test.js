@@ -26,7 +26,7 @@ describe("getEmptyValue()", () => {
   test.each`
     kind                      | expected
     ${ColumnKinds.attachment} | ${[]}
-    ${ColumnKinds.currency}   | ${0}
+    ${ColumnKinds.currency}   | ${null}
     ${ColumnKinds.date}       | ${null}
     ${ColumnKinds.datetime}   | ${null}
     ${ColumnKinds.integer}    | ${null}
