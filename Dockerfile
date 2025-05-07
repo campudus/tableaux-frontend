@@ -3,7 +3,6 @@ FROM node:22.14-alpine AS build
 RUN apk update && apk upgrade && \
     apk add --no-cache bash git openssh
 
-ENV NODE_ENV=production
 ENV TZ=Europe/Berlin
 ENV LANG=de_DE.UTF-8
 ENV LANGUAGE=de_DE:de
@@ -32,7 +31,6 @@ RUN npm run lint && \
 
 FROM node:22.14-alpine
 
-ENV NODE_ENV=production
 ENV TZ=Europe/Berlin
 ENV LANG=de_DE.UTF-8
 ENV LANGUAGE=de_DE:de
