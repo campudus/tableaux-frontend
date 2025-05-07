@@ -3,6 +3,12 @@ FROM node:22.14-alpine AS build
 RUN apk update && apk upgrade && \
     apk add --no-cache bash git openssh
 
+ENV NODE_ENV=production
+ENV TZ=Europe/Berlin
+ENV LANG=de_DE.UTF-8
+ENV LANGUAGE=de_DE:de
+ENV LC_ALL=de_DE.UTF-8
+
 WORKDIR /usr/app
 
 COPY package*.json vite.config* tsconfig.* ./
@@ -25,6 +31,12 @@ RUN npm run lint && \
     npm prune --omit=dev
 
 FROM node:22.14-alpine
+
+ENV NODE_ENV=production
+ENV TZ=Europe/Berlin
+ENV LANG=de_DE.UTF-8
+ENV LANGUAGE=de_DE:de
+ENV LC_ALL=de_DE.UTF-8
 
 WORKDIR /usr/app
 
