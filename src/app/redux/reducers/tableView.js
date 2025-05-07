@@ -374,10 +374,7 @@ export default (state = initialState, action, completeState) => {
       const { rows } = f.get(["rows", currentTable, "data"]);
       return {
         ...state,
-        visibleRows: f.flow(
-          f.keys,
-          f.map(f.toInteger)
-        )(rows)
+        visibleRows: f.flow(f.keys, f.map(f.toInteger))(rows)
       };
     }
     case SET_ANNOTATION_HIGHLIGHT:

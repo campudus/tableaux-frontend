@@ -29,7 +29,6 @@ import Tableaux from "./Tableaux";
 
 const tablesSelector = state => state.tables;
 const currentTableSelector = state => state.tableView.currentTable;
-const currentFolderSelector = state => state.media.currentFolderId;
 const currentLanguageSelector = state => state.tableView.currentLanguage;
 
 const GRUDRouter = React.memo(() => {
@@ -88,14 +87,8 @@ const GRUDRouter = React.memo(() => {
   );
 
   const renderMediaView = React.useCallback(routeProps => {
-    const currentFolderId = currentFolderSelector(store.getState());
     const { folderId, langtag } = validateRouteParams(routeProps.match.params);
-
-    // avoid infinite rerouting loop
-    const folderToLoad = f.isNil(folderId) ? "root-folder" : folderId;
-    if (folderToLoad !== currentFolderId) {
-      store.dispatch(actionCreators.getMediaFolder(folderId, langtag));
-    }
+    store.dispatch(actionCreators.getMediaFolder(folderId, langtag));
 
     return renderView(ViewNames.MEDIA_VIEW)(routeProps);
   });

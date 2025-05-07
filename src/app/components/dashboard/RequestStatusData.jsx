@@ -52,9 +52,6 @@ const extractTableProp = f.prop("tables");
 
 const extractTotalTranslationStatus = f.prop("translationStatus");
 
-const buildIdLookupMap = f.compose(
-  usePropAsKey("id"),
-  extractTableProp
-);
+const buildIdLookupMap = f.compose(usePropAsKey("id"), extractTableProp);
 
 export default withDashboardStatusData;

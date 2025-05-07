@@ -329,7 +329,7 @@ class SwitcherPopup extends React.PureComponent {
       </div>
     ) : (
       <div className="separator">
-        {!hasGroupResults && (isSearchEntered && groupId > 0) ? (
+        {!hasGroupResults && isSearchEntered && groupId > 0 ? (
           <div className="no-results">
             {t("tableSwitcher.no-group-results", {
               query: this.state.filterTableName,

@@ -332,12 +332,7 @@ class EntityViewBody extends Component {
       allCells,
       f.map("column"),
       f.filter(f.prop("groups")),
-      f.map(
-        f.flow(
-          f.prop("groups"),
-          f.map("id")
-        )
-      ),
+      f.map(f.flow(f.prop("groups"), f.map("id"))),
       f.flatten
     );
 

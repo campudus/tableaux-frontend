@@ -131,10 +131,7 @@ class TableView extends PureComponent {
         f.map(f.get("id")),
         f.toString
       )(rows);
-      const columnKeys = f.flow(
-        f.map(f.get("id")),
-        f.toString
-      )(columns);
+      const columnKeys = f.flow(f.map(f.get("id")), f.toString)(columns);
       return (
         <div className="wrapper">
           <Table
@@ -348,7 +345,6 @@ class TableView extends PureComponent {
                 setRowFilter={this.props.actions.setFiltersAndSorting}
                 actions={actions}
               />
-              {this.renderNewRowButton()}
               {table && columns && columns.length > 1 ? (
                 <ColumnFilter
                   langtag={langtag}
@@ -365,6 +361,7 @@ class TableView extends PureComponent {
                 actions={actions}
                 tableView={tableView}
               />
+              {this.renderNewRowButton()}
               {showResetTableViewButton && (
                 <ResetTableViewButton
                   tableId={tableId}
@@ -427,10 +424,7 @@ export default branch(
   renderComponent(EmptyTableView)
 )(
   reduxActionHoc(
-    f.flow(
-      applyFiltersAndVisibility,
-      withRouter
-    )(TableView),
+    f.flow(applyFiltersAndVisibility, withRouter)(TableView),
     mapStatetoProps
   )
 );

@@ -134,10 +134,7 @@ const withCachedLinks = Component => props => {
     ? {}
     : f.update(
         "unlinked",
-        f.flow(
-          f.filter(filterFn),
-          f.sortBy(sortValue)
-        ),
+        f.flow(f.filter(filterFn), f.sortBy(sortValue)),
         f.groupBy(
           link => (linkedIds.has(link.id) ? "linked" : "unlinked"),
           rowsWithDisplayValues

@@ -104,7 +104,7 @@ const ValueInput = ({ column, mode, value, onChange }) => {
     otherwise("text")
   );
   const disabled = !column || !mode;
-  const filterMode = RowFilters.ModesForKind[(column?.kind)];
+  const filterMode = RowFilters.ModesForKind[column?.kind];
   const handleSetEventValue = evt => {
     const input = evt.target.value;
     const endChar = input.length > 1 && input.endsWith("|") ? "|" : "";

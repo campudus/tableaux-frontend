@@ -1,28 +1,37 @@
-import React, { useState } from "react";
-import withClickOutside from "react-onclickoutside";
-
-import PropTypes from "prop-types";
 import classNames from "classnames";
-
+import PropTypes from "prop-types";
+import React, { useEffect, useRef, useState } from "react";
 import { Langtags } from "../../constants/TableauxConstants";
 import { getLanguageOrCountryIcon } from "../../helpers/multiLanguage";
+import { outsideClickEffect } from "../../helpers/useOutsideClick";
 
-const Popup = ({ langtag, handleLangtagSwitch }) => (
-  <div className="language-switcher__dropdown">
-    {Langtags.filter(lt => lt !== langtag).map(lt => {
-      return (
-        <div key={lt} className="language-switcher__menu-item">
-          <button
-            className="language-switcher__switch-language-button"
-            onClick={handleLangtagSwitch(lt)}
-          >
-            {getLanguageOrCountryIcon(lt, "language")}
-          </button>
-        </div>
-      );
-    })}
-  </div>
-);
+const Popup = ({ langtag, handleLangtagSwitch, onClose }) => {
+  const container = useRef();
+  useEffect(
+    outsideClickEffect({
+      shouldListen: true,
+      containerRef: container,
+      onOutsideClick: onClose
+    }),
+    [container.current, onClose]
+  );
+  return (
+    <div ref={container} className="language-switcher__dropdown">
+      {Langtags.filter(lt => lt !== langtag).map(lt => {
+        return (
+          <div key={lt} className="language-switcher__menu-item">
+            <button
+              className="language-switcher__switch-language-button"
+              onClick={handleLangtagSwitch(lt)}
+            >
+              {getLanguageOrCountryIcon(lt, "language")}
+            </button>
+          </div>
+        );
+      })}
+    </div>
+  );
+};
 
 const OverlayHeaderLanguageSwitcher = props => {
   const { contentLangtag, handleChange, classes } = props;
@@ -38,8 +47,6 @@ const OverlayHeaderLanguageSwitcher = props => {
     closePopup();
   };
 
-  const SelfClosingPopup = withClickOutside(Popup);
-
   return (
     <div className={`overlay-header-language-switcher__wrapper ${classes}`}>
       <div className={cssClass} onClick={togglePopup}>
@@ -54,10 +61,11 @@ const OverlayHeaderLanguageSwitcher = props => {
           />
         </div>
         {open ? (
-          <SelfClosingPopup
+          <Popup
             handleClickOutside={closePopup}
             langtag={contentLangtag}
             handleLangtagSwitch={handleLangtagSwitch}
+            onClose={closePopup}
           />
         ) : null}
       </div>

@@ -1,5 +1,5 @@
 import {
-  Attachment,
+  Attachment as _Attachment,
   CellValue,
   Column,
   FolderID,
@@ -30,6 +30,9 @@ export type TableParams = {
   rowId: string | number;
 };
 
+// Fix in grud-devtools
+export type Attachment = _Attachment & { dependentRowCount: number };
+
 export type Folder = {
   id: FolderID;
   name: string;
@@ -43,18 +46,15 @@ export type Folder = {
   files: Attachment[];
 };
 
-export type ColumnAttributeString = { type: "string"; value: string };
-export type ColumnAttributeNumber = { type: "number"; value: number };
-export type ColumnAttributeBoolean = { type: "boolean"; value: boolean };
-export type ColumnAttributeArray = { type: "array"; value: ColumnAttribute[] };
-export type ColumnAttribute =
-  | ColumnAttributeString
-  | ColumnAttributeBoolean
-  | ColumnAttributeNumber
-  | ColumnAttributeArray;
+export type FileDependentRowItem = {
+  row: Row;
+  toColumn: Column;
+};
 
-export type ColumnAttributeMap = {
-  [key: string]: ColumnAttribute;
+export type FileDependentRow = {
+  table: Table;
+  column: Column;
+  rows: FileDependentRowItem[];
 };
 
 export type Cell = {

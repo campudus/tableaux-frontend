@@ -64,6 +64,9 @@ export const toFile = (fileId?: string | number, langtag?: string) =>
   (fileId ? `/files/${fileId}` : "/files") +
   (langtag ? "?langtag=" + langtag : "");
 
+export const toFileDependents = (fileId: string | number) =>
+  `/files/${fileId}/dependent`;
+
 export const toFileUpload = (fileId: string | number, langtag: string) =>
   `/files/${fileId}/${langtag}`;
 

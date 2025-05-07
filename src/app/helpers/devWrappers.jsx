@@ -24,12 +24,14 @@ export const reportUpdateReasons = title =>
     this.renderCount = (this.renderCount || 0) + 1;
     const getChanges = (keys, a, b) => keys.filter(k => !f.equals(a[k], b[k]));
     const changes = {
-      props: when(f.isEmpty, () => "unchanged")(
-        getChanges(f.keys(nextProps), this.props, nextProps)
-      ),
-      state: when(f.isEmpty, () => "unchanged")(
-        getChanges(f.keys(nextState), this.state, nextState)
-      )
+      props: when(
+        f.isEmpty,
+        () => "unchanged"
+      )(getChanges(f.keys(nextProps), this.props, nextProps)),
+      state: when(
+        f.isEmpty,
+        () => "unchanged"
+      )(getChanges(f.keys(nextState), this.state, nextState))
     };
 
     console.log(

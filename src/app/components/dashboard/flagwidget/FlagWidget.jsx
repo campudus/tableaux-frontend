@@ -51,21 +51,8 @@ const pickTables = props => {
   const tables = doto(
     requestedData,
     f.get("tables"),
-    f.map(
-      f.update(
-        "annotationCount",
-        f.flow(
-          f.filter(selector),
-          f.first
-        )
-      )
-    ),
-    f.filter(
-      f.flow(
-        f.get(["annotationCount", "count"]),
-        f.lt(0)
-      )
-    )
+    f.map(f.update("annotationCount", f.flow(f.filter(selector), f.first))),
+    f.filter(f.flow(f.get(["annotationCount", "count"]), f.lt(0)))
   );
 
   return f.assoc("tables", tables, props);
@@ -83,10 +70,7 @@ const sortEntries = props => {
   return f.update(
     "tables",
     props.flag === "comments"
-      ? f.flow(
-          f.sortBy(latestObjOrFallback),
-          f.reverse
-        )
+      ? f.flow(f.sortBy(latestObjOrFallback), f.reverse)
       : f.sortBy(table => -f.getOr(0, ["annotationCount", "count"], table)), // reverse in one step
     props
   );

@@ -1,3 +1,4 @@
+import f from "lodash/fp";
 import i18n from "i18next";
 import { ReactElement } from "react";
 import { useDispatch } from "react-redux";
@@ -18,6 +19,8 @@ import {
   DirentMoveFooter,
   DirentMoveHeader
 } from "../overlay/DirentMove";
+import { buildClassName as cn } from "../../../helpers/buildClassName";
+import FileDependentsBody from "../overlay/FileDependents";
 
 type FileProps = {
   langtag: string;
@@ -29,13 +32,20 @@ export default function File({ langtag, file }: FileProps): ReactElement {
   const title = retrieveTranslation(langtag)(file.title);
   const imageUrl = apiUrl(retrieveTranslation(langtag)(file.url));
 
+  const { dependentRowCount: depCount } = file;
+  const depLabel = f.cond([
+    [f.eq(0), () => null],
+    [f.eq(1), () => i18n.t("media:show_dependent_row")],
+    [f.lt(1), () => i18n.t("media:show_dependent_rows", { count: depCount })]
+  ])(file.dependentRowCount);
+
   const handleRemove = () => {
     confirmDeleteFile(title, () => {
       dispatch(actions.deleteMediaFile(file.uuid));
     });
   };
 
-  const handleEdit = () => {
+  const handleOpenEditOverlay = () => {
     dispatch(
       actions.openOverlay({
         name: `change-file-${title}`,
@@ -46,7 +56,7 @@ export default function File({ langtag, file }: FileProps): ReactElement {
     );
   };
 
-  const handleMove = () => {
+  const handleOpenMoveOverlay = () => {
     dispatch(
       actions.openOverlay({
         name: `move-file-${title}`,
@@ -59,6 +69,17 @@ export default function File({ langtag, file }: FileProps): ReactElement {
         body: <DirentMoveBody langtag={langtag} sourceFile={file} />,
         footer: <DirentMoveFooter langtag={langtag} sourceFile={file} />,
         classes: "dirent-move"
+      })
+    );
+  };
+
+  const handleOpenDependentsOverlay = () => {
+    dispatch(
+      actions.openOverlay({
+        name: `show-file-dependents-for-${title}`,
+        head: <Header title={title} context={i18n.t("media:dependents")} />,
+        body: <FileDependentsBody langtag={langtag} file={file} />,
+        classes: "file-dependents"
       })
     );
   };
@@ -76,10 +97,20 @@ export default function File({ langtag, file }: FileProps): ReactElement {
       </a>
 
       <div className="file__actions">
+        {depCount > 0 && depLabel && (
+          <button
+            className={cn("file__action", { link: true })}
+            onClick={handleOpenDependentsOverlay}
+            title={depLabel}
+          >
+            {depLabel}
+          </button>
+        )}
+
         {canUserEditFiles() && (
           <button
             className="file__action"
-            onClick={handleMove}
+            onClick={handleOpenMoveOverlay}
             title={i18n.t("media:move_file")}
           >
             <SvgIcon icon="move" />
@@ -89,7 +120,7 @@ export default function File({ langtag, file }: FileProps): ReactElement {
         {canUserEditFiles() && (
           <button
             className="file__action"
-            onClick={handleEdit}
+            onClick={handleOpenEditOverlay}
             title={i18n.t("media:change_file")}
           >
             <i className="icon fa fa-cog" />

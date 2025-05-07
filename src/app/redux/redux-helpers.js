@@ -62,12 +62,7 @@ export const isGroupMember = memoizeWith(
     const columns = completeState.columns[tableId].data;
     const groupMemberIds = doto(
       columns,
-      f.map(
-        f.flow(
-          f.prop("groups"),
-          f.map("id")
-        )
-      ),
+      f.map(f.flow(f.prop("groups"), f.map("id"))),
       f.reject(f.isEmpty),
       f.flatten
     );
@@ -84,13 +79,7 @@ export const getLookupMap = memoizeWith(
     const groups = doto(
       columns,
       f.groupBy("id"),
-      f.mapValues(
-        f.flow(
-          f.first,
-          f.prop("groups"),
-          f.map("id")
-        )
-      ),
+      f.mapValues(f.flow(f.first, f.prop("groups"), f.map("id"))),
       f.pickBy(f.complement(f.isEmpty))
     );
 

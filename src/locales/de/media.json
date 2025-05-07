@@ -30,5 +30,13 @@
   "folder_back": "Zurück",
   "move_file": "Datei \"{{name}}\" verschieben nach",
   "move_folder": "Ordner \"{{name}}\" verschieben nach",
-  "move": "Verschieben"
+  "move": "Verschieben",
+  "dependents": "Verknüpfungen",
+  "load_dependent_rows": "Lade Verknüpfungen",
+  "show_dependent_row": "1 Verknüpfung",
+  "show_dependent_rows": "{{count}} Verknüpfungen",
+  "open_dependent_row": "Öffne 1 verknüpften Datensatz",
+  "open_dependent_rows": "Öffne {{count}} verknüpfte Datensätze",
+  "show_all": "Alle {{count}} anzeigen",
+  "show_less": "Weniger anzeigen"
 }
