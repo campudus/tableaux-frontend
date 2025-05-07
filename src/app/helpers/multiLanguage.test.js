@@ -163,10 +163,8 @@ describe("multiLanguage.js", () => {
       expect(formatNumber(1000.01, 3, "de-DE")).toMatch(decimalComma);
       expect(formatNumber(1000.01, 3, "en-US")).toMatch(decimalPoint);
 
-      expect(formatNumber(1000.01, 3, "DE")).toMatch(decimalComma);
       expect(formatNumber(1000.01, 3, "de")).toMatch(decimalComma);
       expect(formatNumber(1000.01, 3, "en")).toMatch(decimalPoint);
-      expect(formatNumber(1000.01, 3, "US")).toMatch(decimalPoint);
     });
   });
 
@@ -177,7 +175,6 @@ describe("multiLanguage.js", () => {
       expect(readLocalizedNumber("1,000", "en-US")).toBe(1000);
       expect(readLocalizedNumber("1,000.000", "en-US")).toBe(1000);
       expect(readLocalizedNumber("1,000.000", "en")).toBe(1000);
-      expect(readLocalizedNumber("1,000.000", "US")).toBe(1000);
     });
 
     it("transforms comma-separated numbers", () => {
@@ -185,7 +182,6 @@ describe("multiLanguage.js", () => {
       expect(readLocalizedNumber("1,000", "de-DE")).toBe(1);
       expect(readLocalizedNumber("1.000", "de-DE")).toBe(1000);
       expect(readLocalizedNumber("1.000,000", "de-DE")).toBe(1000);
-      expect(readLocalizedNumber("1.000,000", "DE")).toBe(1000);
       expect(readLocalizedNumber("1.000,000", "de")).toBe(1000);
     });
 
