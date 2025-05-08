@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import PropTypes from "prop-types";
 import AttachmentLabelCell from "./AttachmentLabelCell.jsx";
 import * as f from "lodash/fp";
@@ -10,6 +10,7 @@ import { maybe } from "../../../helpers/functools";
 import { retrieveTranslation } from "../../../helpers/multiLanguage";
 import apiUrl from "../../../helpers/apiUrl";
 import { canUserChangeCell } from "../../../helpers/accessManagementHelper";
+import { getVisibleLinkCount } from "../link/getVisibleLinkCount";
 
 const AttachmentCell = props => {
   const {
@@ -18,12 +19,19 @@ const AttachmentCell = props => {
     editing,
     selected,
     cell: { value },
-    langtag
+    langtag,
+    width
   } = props;
   const cellClass = classNames("cell-content", {
     editing: editing,
     selected: selected
   });
+  const previewAttachmentCount = useMemo(() => {
+    const currentLangDisplayValues = f.map(f.get(["title", langtag]), value);
+    return getVisibleLinkCount(currentLangDisplayValues, width);
+  }, [width]);
+
+  const tooManyAttachments = f.size(value) > previewAttachmentCount;
 
   const viewAttachment = attachment =>
     f.flow(
@@ -60,9 +68,9 @@ const AttachmentCell = props => {
     });
   };
 
-  const attachments = (editing && selected
+  const attachments = (editing || selected
     ? value
-    : f.take(3)(value)
+    : f.take(previewAttachmentCount)(value)
   ).map((element, idx) => (
     <AttachmentLabelCell
       key={idx}
@@ -73,7 +81,7 @@ const AttachmentCell = props => {
       selected={selected}
       cell={cell}
       editing={editing}
-      handleClick={handleAttachmentLabelClick}
+      handleClick={editing || selected ? handleAttachmentLabelClick : f.noop}
     />
   ));
 
@@ -87,7 +95,11 @@ const AttachmentCell = props => {
   };
 
   const handleClick = e => {
-    if (editing && selected) {
+    if (
+      !isLocked(cell.row) &&
+      canUserChangeCell(cell, langtag) &&
+      (editing || selected)
+    ) {
       if (allAttachmentsHaveSameFolderId(value)) {
         openOverlay(e, f.get("folder", f.head(value)));
       } else {
@@ -99,16 +111,16 @@ const AttachmentCell = props => {
   return (
     <>
       <div className={cellClass} onClick={handleClick}>
-        {f.size(attachments) === f.size(value)
-          ? attachments
-          : [
+        {tooManyAttachments && !selected && !editing
+          ? [
               ...attachments,
               <span key={"more"} className="more">
                 &hellip;
               </span>
-            ]}
+            ]
+          : attachments}
       </div>
-      {editing && selected ? (
+      {editing || selected ? (
         <button key={"add-btn"} className="edit" onClick={handleClick}>
           <span className="fa fa-pencil" />
         </button>

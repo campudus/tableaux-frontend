@@ -80,7 +80,7 @@ class Cell extends React.Component {
     ]);
 
     return (
-      (this.props.cell.kind === ColumnKinds.link &&
+      (f.contains(cell.kind, [ColumnKinds.link, ColumnKinds.attachment]) &&
         this.props.width !== nextProps.width) ||
       this.props.langtag !== nextProps.langtag ||
       cell.id !== nextCell.id ||

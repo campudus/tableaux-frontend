@@ -36,4 +36,16 @@
       }
     }
   }
+
+  &.selected,
+  &.editing {
+    .cell-content {
+      flex-flow: row wrap;
+      padding-bottom: 3px;
+
+      .link-label {
+        margin-bottom: 6px;
+      }
+    }
+  }
 }
