@@ -21,7 +21,7 @@ type AttachmentCellProps = {
   editing: boolean;
   selected: boolean;
   langtag: string;
-  width: number;
+  width?: number;
 };
 
 export default function AttachmentCell({
@@ -107,7 +107,7 @@ export default function AttachmentCell({
                       }}
                       fallbackLabel={
                         <LabelTruncated
-                          width={Math.min(220, width - 50)}
+                          width={width ? Math.min(220, width - 50) : 220}
                           label={title}
                         />
                       }

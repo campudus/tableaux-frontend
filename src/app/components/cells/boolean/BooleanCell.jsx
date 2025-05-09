@@ -1,4 +1,3 @@
-import PropTypes from "prop-types";
 import { canUserChangeCell } from "../../../helpers/accessManagementHelper";
 import { isLocked } from "../../../helpers/rowUnlock";
 
@@ -39,16 +38,6 @@ const BooleanCell = props => {
       />
     </div>
   );
-};
-
-BooleanCell.propTypes = {
-  actions: PropTypes.object.isRequired,
-  value: PropTypes.any.isRequired,
-  table: PropTypes.object.isRequired,
-  row: PropTypes.object.isRequired,
-  column: PropTypes.object.isRequired,
-  langtag: PropTypes.string.isRequired,
-  selected: PropTypes.bool.isRequired
 };
 
 export default BooleanCell;

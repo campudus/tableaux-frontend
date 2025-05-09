@@ -1,11 +1,10 @@
 import f from "lodash/fp";
 import PropTypes from "prop-types";
 import React, { useEffect, useRef, useState } from "react";
-import { compose, withProps } from "recompose";
 import { FilterModes } from "../../../constants/TableauxConstants";
 import { stopPropagation } from "../../../helpers/functools";
 import SearchFunctions from "../../../helpers/searchFunctions";
-import needsAPIData from "../../helperComponents/needsAPIData";
+import { makeRequest } from "../../../helpers/apiHelper";
 import SelectableCompletionList, {
   ROW_HEIGHT
 } from "./SelectableCompletionList";
@@ -27,28 +26,28 @@ const extractAndFilterCompletions = (searchValue, list) =>
     f.filter(SearchFunctions[FilterModes.CONTAINS](searchValue))
   )(list);
 
-const getCompletionValueUrl = withProps(({ column, table, langtag }) => {
+const buildRequestUrl = ({ column, table, langtag }) => {
   const colId = column.id;
   const langPostfix = column.multilanguage ? `/${langtag}` : "";
   const requestUrl =
     `/api/tables/${table.id}/columns/${colId}/values` + langPostfix;
   return { requestUrl };
-});
-
-const enhance = compose(getCompletionValueUrl, needsAPIData);
+};
 
 const SelectableShortText = props => {
   const {
     focusTable,
     onChange,
     onFinish,
-    requestedData,
     setCellKeyboardShortcuts,
     value,
     column,
+    table,
+    langtag,
     actions: { setPreventCellDeselection }
   } = props;
   const shorttextRef = useRef(null);
+  const [requestedData, setRequestedData] = useState();
   const [completions, setCompletions] = useState([]);
   const [isCompletionSelected, setIsCompletionSelected] = useState(false);
   const [selectedIdx, setSelectedIdx] = useState(0);
@@ -58,6 +57,7 @@ const SelectableShortText = props => {
     shouldShowErrorState && isTextTooShort(column, value)
       ? "selectable-shorttext_error"
       : "";
+  const { requestUrl } = buildRequestUrl({ column, table, langtag });
 
   useEffect(() => setCellKeyboardShortcuts({}));
   useOutsideAlerter(() => {
@@ -155,9 +155,11 @@ const SelectableShortText = props => {
   };
 
   useEffect(() => {
-    requestedData &&
-      setCompletions(extractAndFilterCompletions("", requestedData));
-  }, [requestedData]);
+    makeRequest({ url: requestUrl }).then(data => {
+      setRequestedData(data);
+      setCompletions(extractAndFilterCompletions("", data));
+    });
+  }, []);
 
   useEffect(() => {
     placeCompletionList(shorttextRef.current);
@@ -236,4 +238,4 @@ SelectableShortText.propTypes = {
   displayValue: PropTypes.object
 };
 
-export default enhance(SelectableShortText);
+export default SelectableShortText;

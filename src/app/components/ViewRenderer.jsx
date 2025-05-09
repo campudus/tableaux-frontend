@@ -7,6 +7,7 @@ import FrontendServiceView from "./frontendService/FrontendServiceView";
 import MediaView from "../components/media/MediaView";
 import PreviewView from "../components/preview/PreviewView";
 import TableView from "./tableView/TableView.jsx";
+import EmptyTableView from "./tableView/EmptyTableView";
 import reduxActionHoc from "../helpers/reduxActionHoc";
 import TaxonomyDashboard from "./taxonomy/TaxonomyDashboard";
 import ProfileView from "./profile/ProfileView";
@@ -15,7 +16,12 @@ const viewNameIs = name => f.matchesProperty("viewName", name);
 
 const renderTableView = props => {
   const { params } = props;
-  return <TableView {...params} overlayOpen={!!props.overlayOpen} />;
+
+  return f.isNil(params.tableId) ? (
+    <EmptyTableView {...params} overlayOpen={!!props.overlayOpen} />
+  ) : (
+    <TableView {...params} overlayOpen={!!props.overlayOpen} />
+  );
 };
 
 const renderMediaView = ({ params }) => (

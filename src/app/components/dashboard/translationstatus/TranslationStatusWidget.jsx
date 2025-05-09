@@ -2,7 +2,6 @@ import React from "react";
 import PropTypes from "prop-types";
 import i18n from "i18next";
 import { Langtags } from "../../../constants/TableauxConstants";
-import { pure } from "recompose";
 import f from "lodash/fp";
 import { doto } from "../../../helpers/functools";
 import CircleGraph from "./CircleGraph";
@@ -41,4 +40,4 @@ TranslationStatusWidget.propTypes = {
   langtag: PropTypes.string.isRequired
 };
 
-export default pure(TranslationStatusWidget);
+export default TranslationStatusWidget;

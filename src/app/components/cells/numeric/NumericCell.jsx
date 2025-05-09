@@ -1,5 +1,4 @@
 import f from "lodash/fp";
-import PropTypes from "prop-types";
 import React from "react";
 import { getDecimalDigits, isYearColumn } from "../../../helpers/columnHelper";
 import { unless, when } from "../../../helpers/functools";
@@ -70,13 +69,6 @@ const NumericCell = props => {
       />
     );
   }
-};
-
-NumericCell.propTypes = {
-  cell: PropTypes.object.isRequired,
-  langtag: PropTypes.string.isRequired,
-  editing: PropTypes.bool.isRequired,
-  setCellKeyboardShortcuts: PropTypes.func
 };
 
 export default NumericCell;

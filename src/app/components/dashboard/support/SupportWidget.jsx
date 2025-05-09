@@ -1,5 +1,4 @@
-import { compose, pure, withProps, withStateHandlers } from "recompose";
-import React from "react";
+import React, { useState } from "react";
 import f from "lodash/fp";
 import i18n from "i18next";
 
@@ -14,42 +13,32 @@ export const supportDetails = {
   email: "support@grud.de"
 };
 
-const enhance = compose(
-  pure,
-  withProps({
-    details: supportDetails
-  }),
-  withStateHandlers(() => ({ feedback: "" }), {
-    handleChange: ({ feedback }) => event => ({
-      feedback: f.getOr(feedback, ["target", "value"], event)
-    }),
-    handleSubmit: ({ feedback }) => () => {
-      fetch(config.webhookUrl, {
-        method: "POST",
-        body: JSON.stringify({
-          text: "Feedback",
-          attachments: [
-            {
-              text: feedback,
-              title: location.href, //   contains GRUD instance and user langtag
-              author_name: getUserName() //   eslint-disable-line camelcase
-            }
-          ]
-        })
-      });
-
-      return { feedback: "" };
-    }
-  })
-);
-
-const SupportWidget = ({
-  handleSubmit,
-  handleChange,
-  feedback = "",
-  details: { title, phone, email }
-}) => {
+const SupportWidget = () => {
+  const [feedback, setFeedback] = useState("");
+  const { title, phone, email } = supportDetails;
   const { webhookUrl } = config;
+
+  const handleChange = event => {
+    setFeedback(f.getOr(feedback, ["target", "value"], event));
+  };
+
+  const handleSubmit = () => {
+    fetch(config.webhookUrl, {
+      method: "POST",
+      body: JSON.stringify({
+        text: "Feedback",
+        attachments: [
+          {
+            text: feedback,
+            title: location.href, //   contains GRUD instance and user langtag
+            author_name: getUserName() //   eslint-disable-line camelcase
+          }
+        ]
+      })
+    });
+    setFeedback("");
+  };
+
   return (
     <div className="support">
       <div className="header">
@@ -106,4 +95,4 @@ SupportWidget.propTypes = {
   langtag: PropTypes.string.isRequired
 };
 
-export default enhance(SupportWidget);
+export default SupportWidget;

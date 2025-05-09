@@ -2,8 +2,10 @@ import {
   Attachment as _Attachment,
   CellValue,
   Column,
+  ColumnKind,
   FolderID,
   Locale,
+  MultilangValue,
   Table
 } from "@grud/devtools/types";
 import { UserSettingsState } from "../redux/reducers/userSettings";
@@ -79,6 +81,8 @@ export type Cell = {
   column: Column;
   value: CellValue;
   table: Table;
+  kind: ColumnKind;
+  displayValue?: MultilangValue<string>;
 };
 
 export type GRUDStore = {
@@ -116,7 +120,7 @@ export type GRUDStore = {
   };
   tableView: {
     annotationHightlight?: string;
-    copySource?: Cell;
+    copySource?: { cell: Cell };
     currentLanguage: Locale;
     currentTable: number;
     displayValues: Record<
@@ -126,7 +130,10 @@ export type GRUDStore = {
     editing: boolean;
     expandedRowIds: Array<number>;
     filters: Array<Filter>;
-    history: { undoQueue: Array<UndoEntry> };
+    history: {
+      undoQueue: Array<HistoryEntry>;
+      redoQueue: Array<HistoryEntry>;
+    };
     showArchived: string;
     sorting: { direction: "asc" | "desc"; colName: string };
     startedGeneratingDisplayValues: boolean;
@@ -144,7 +151,7 @@ export type GRUDStore = {
 
 export type Filter = Array<string | number | Filter>;
 
-type UndoEntry = {
+type HistoryEntry = {
   type: string;
   cell: Cell;
   column: Column;
