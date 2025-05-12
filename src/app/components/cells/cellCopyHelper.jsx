@@ -73,7 +73,7 @@ export const getSaveableRowDuplicate = ({ columns, row }) => {
   // We can't check cardinality without loading and parsing all linked tables recursively,
   // so we don't copy links with cardinality
   const duplicatedValues = row.values.filter(
-    (value, idx) => !canNotCopy(columns[idx])
+    (_, idx) => !canNotCopy(columns[idx])
   );
   return {
     columns: f.reject(canNotCopy, columns),
@@ -163,19 +163,15 @@ const copyLinks = (src, dst) => {
 };
 
 // optionally curried function
-export function createRowDuplicatesRequest(
-  tableId,
-  dataToPost // Result of getSaveableRowDuplicate({columns, row})
-) {
-  if (arguments.length === 1) {
-    return dataToPost_ => createRowDuplicatesRequest(tableId, dataToPost_);
-  }
-
-  return makeRequest({
-    apiRoute: route.toRows(tableId),
-    data: f.pick(["columns", "rows"], dataToPost),
-    method: "POST"
-  });
+export function createRowDuplicatesRequest(tableId, rowId) {
+  return arguments.length === 1
+    ? rowId_ => createRowDuplicatesRequest(tableId, rowId_)
+    : makeRequest({
+        apiRoute:
+          route.toRow({ tableId, rowId }) +
+          "/duplicate?skipConstrainedLinks=true&annotateSkipped=true",
+        method: "POST"
+      });
 }
 
 const maybeChangeBacklink = ({ src, dst }) => saveableRowDuplicate => {

@@ -1,15 +1,9 @@
 import f from "lodash/fp";
-import {
-  createRowDuplicatesRequest,
-  getSaveableRowDuplicate
-} from "../../components/cells/cellCopyHelper";
-import { getAnnotationConfig } from "../../helpers/annotationHelper";
+import { createRowDuplicatesRequest } from "../../components/cells/cellCopyHelper";
 import { makeRequest } from "../../helpers/apiHelper";
 import route from "../../helpers/apiRoutes.js";
-import { doto } from "../../helpers/functools";
 import P from "../../helpers/promise";
 import ActionTypes from "../actionTypes";
-import { toggleAnnotationFlag } from "./annotationActions";
 
 const {
   ADDITIONAL_ROWS_DATA_LOADED,
@@ -32,9 +26,6 @@ export const addEmptyRow = tableId => ({
   tableId
 });
 
-// TODO: Let the backend handle this once /safelyDuplicate is implemented
-// When duplicating rows, we must make sure that link constraints are not
-// broken, else the backend will reject.
 export const safelyDuplicateRow = ({
   tableId,
   rowId,
@@ -42,56 +33,36 @@ export const safelyDuplicateRow = ({
   cell,
   onSuccess,
   onError
-}) => async (dispatch, getState) => {
-  const state = getState();
-  const columns = f.prop(["columns", tableId, "data"], state);
-  const row = doto(
-    state,
-    f.prop(["rows", tableId, "data"]),
-    f.find(f.propEq("id", rowId))
-  );
-
-  const saveableRowDuplicate = getSaveableRowDuplicate({ columns, row });
-
+}) => async dispatch => {
   try {
-    const duplicatedRow = await createRowDuplicatesRequest(
-      tableId,
-      saveableRowDuplicate
-    ).then(f.prop("rows"));
+    const duplicatedRow = await createRowDuplicatesRequest(tableId, rowId);
     dispatch({
       type: ADDITIONAL_ROWS_DATA_LOADED,
       tableId,
-      rows: duplicatedRow
+      rows: [duplicatedRow]
     });
 
-    dispatch({
-      type: TOGGLE_CELL_SELECTION,
-      tableId,
-      rowId: duplicatedRow[0].id,
-      columnId: cell.column.id,
-      langtag
-    });
+    if (cell?.column) {
+      dispatch({
+        type: TOGGLE_CELL_SELECTION,
+        tableId,
+        rowId: duplicatedRow.id,
+        columnId: cell.column.id,
+        langtag
+      });
+    }
 
-    const hasCheckMeAnnotationConfig = !!getAnnotationConfig("check-me");
-    // Set a flag when we deleted values during copy
-    const checkMeAnnotation = { type: "flag", value: "check-me" };
-    saveableRowDuplicate.constrainedLinkIds.forEach(columnId =>
-      dispatch(
-        toggleAnnotationFlag({
-          cell: {
-            table: { id: tableId },
-            row: { id: duplicatedRow[0].id },
-            column: { id: columnId }
-          },
-          ...(hasCheckMeAnnotationConfig && { annotation: checkMeAnnotation })
-        })
+    if (onSuccess) onSuccess();
+    return duplicatedRow;
+  } catch (err) {
+    if (onError) onError(err);
+    console.error("While duplicating row:", err);
+    return Promise.reject(
+      new Error(
+        `Could not duplicate row ${rowId} of table ${tableId}: ${err.message ??
+          err}`
       )
     );
-
-    onSuccess && onSuccess();
-  } catch (err) {
-    onError && onError(err);
-    console.error("While duplicating row:", err);
   }
 };
 
