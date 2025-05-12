@@ -17,13 +17,13 @@ import { isTextInRange } from "../../helpers/limitTextLength";
 import { getTableDisplayName } from "../../helpers/multiLanguage";
 import P from "../../helpers/promise";
 import actions from "../../redux/actionCreators";
+import { createNewRows } from "../../redux/actions/rowActions";
 import { idsToIndices } from "../../redux/redux-helpers";
 import store from "../../redux/store";
 import askForSessionUnlock from "../helperComponents/SessionUnlockDialog";
 import Footer from "../overlay/Footer";
 import Header from "../overlay/Header";
 import PasteMultilanguageCellInfo from "../overlay/PasteMultilanguageCellInfo";
-import { createNewRows } from "src/app/redux/actions/rowActions";
 
 const showErrorToast = (msg, data = {}) => {
   store.dispatch(
