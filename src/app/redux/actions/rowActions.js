@@ -116,3 +116,21 @@ const addRows = (tableId, rows) => {
     rows
   };
 };
+
+export const createNewRows = ({ tableId, columns, rows }) => async dispatch => {
+  try {
+    const result = await makeRequest({
+      apiRoute: route.toTable({ tableId }),
+      data: { columns, rows },
+      method: "post"
+    });
+    dispatch({
+      type: ADDITIONAL_ROWS_DATA_LOADED,
+      tableId,
+      rows: result.rows
+    });
+    return result.rows;
+  } catch (err) {
+    return Promise.reject(new Error(`Could not create rows: ${err.message}`));
+  }
+};

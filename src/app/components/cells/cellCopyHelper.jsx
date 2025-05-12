@@ -23,6 +23,7 @@ import askForSessionUnlock from "../helperComponents/SessionUnlockDialog";
 import Footer from "../overlay/Footer";
 import Header from "../overlay/Header";
 import PasteMultilanguageCellInfo from "../overlay/PasteMultilanguageCellInfo";
+import { createNewRows } from "src/app/redux/actions/rowActions";
 
 const showErrorToast = (msg, data = {}) => {
   store.dispatch(
@@ -225,7 +226,7 @@ const createEntriesAndCopy = async (src, dst, constrainedValue) => {
         )({ columns, row })
       )
     )
-    // Reduce all saveable rows into an array so we need only one POST to duplicate them
+    // Create all new links including backlinks in a single request (instead of 2N via duplicate, then changeBacklink)
     .then(
       f.reduce(
         (accum, nextRow) => ({
@@ -235,8 +236,7 @@ const createEntriesAndCopy = async (src, dst, constrainedValue) => {
         []
       )
     )
-    .then(createRowDuplicatesRequest(toTable))
-    .then(f.prop("rows"))
+    .then(cfg => createNewRows({ ...cfg, tableId: toTable.id }))
     .then(f.map(row => ({ id: row.id, value: f.first(row.values) })));
 
   changeCellValue(dst, copiedLinkValues);
