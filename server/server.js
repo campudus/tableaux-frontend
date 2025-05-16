@@ -64,7 +64,7 @@ proxy.on("proxyReq", (proxyReq, req) => {
   }
 });
 
-if (true || config.injectPermisions) {
+if (config.injectPermisions) {
   void tsImport.load("server/dev/mockAuth.ts").then(async mockAuth => {
     const permissionConfig = await mockAuth.loadPermissionConfig(
       config.injectPermissions

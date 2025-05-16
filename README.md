@@ -67,7 +67,8 @@ Default project configuration can be overwritten via a `config.json` in the base
   "authServerUrl": "http://localhost:8081/auth",  // Keycloak
   "authRealm": "GRUD",                            // Keycloak realm
   "authClientId": "grud-frontend",                // Keycloak clientId
-  "disableAuth": true                             // disable authentication for frontends behind old proxy (default: false)
+  "disableAuth": true                             // disable authentication for frontends behind old proxy (default: false),
+  "injectPermissions": "path/to/perm.json"        // in dev mode, add permissions as if given by authentication and user role
 }
 ```
 
