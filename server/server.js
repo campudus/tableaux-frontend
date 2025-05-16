@@ -1,12 +1,13 @@
-import path from "path";
-import { fileURLToPath } from "url";
-import { parseArgs } from "util";
+import connectLoki from "connect-loki";
 import express from "express";
 import session from "express-session";
-import connectLoki from "connect-loki";
-import serveStatic from "serve-static";
 import finalhandler from "finalhandler";
 import httpProxy from "http-proxy";
+import path from "path";
+import serveStatic from "serve-static";
+import * as tsImport from "ts-import";
+import { fileURLToPath } from "url";
+import { parseArgs } from "util";
 import uuid from "uuid";
 import loadConfig from "./config.js";
 
@@ -62,6 +63,22 @@ proxy.on("proxyReq", (proxyReq, req) => {
     proxyReq.path = cleanPath;
   }
 });
+
+if (true || config.injectPermisions) {
+  void tsImport.load("server/dev/mockAuth.ts").then(async mockAuth => {
+    const permissionConfig = await mockAuth.loadPermissionConfig(
+      config.injectPermissions
+    );
+    if (permissionConfig.isRight()) {
+      fs.proxy.on(
+        "proxyRes",
+        mockAuth.injectPermissions(permissionConfig.getValue())
+      );
+    } else {
+      console.error(permissionConfig.getReason());
+    }
+  });
+}
 
 proxy.on("error", (err, req, res) => {
   console.error("Proxy error:", err);

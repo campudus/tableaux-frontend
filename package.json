@@ -62,6 +62,7 @@
     "markdown-draft-js": "2.4.0",
     "match-iz": "4.0.2",
     "moment": "2.29.4",
+    "node-http-proxy-json": "0.1.9",
     "postcss": "^8.5.3",
     "pragmatic-fp-ts": "^1.7.0",
     "prettier": "1.19.1",
@@ -92,10 +93,12 @@
     "rxjs": "^6.5.2",
     "sass-embedded": "1.85.1",
     "superagent": "^4.0.0",
+    "ts-import": "5.0.0-beta.1",
     "typescript": "^5.8.2",
     "vite": "6.3.5",
     "vite-plugin-checker": "0.9.0",
-    "vitest": "3.0.7"
+    "vitest": "3.0.7",
+    "zod": "3.24.4"
   },
   "dependencies": {
     "connect-loki": "1.1.0",
