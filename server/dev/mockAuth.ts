@@ -73,7 +73,7 @@ const permissionSchema = z
 
 export const parsePermissionObject = (x: unknown): Either<PermissionObject> => {
   const result = permissionSchema.safeParse(x);
-  return result.success ? right(result.data) : left(result.error);
+  return result.success ? right(result.data) : left(result.error as Error);
 };
 type PermissionObject = z.infer<typeof permissionSchema>;
 
@@ -130,7 +130,7 @@ export const injectPermissions = (permissions: PermissionObject) => {
     ) => {
       const permission = findInSearchable(permAtPath, req.url);
       if (permission && jsonBody && typeof jsonBody === "object") {
-        jsonBody.permission = permission(req.url);
+        jsonBody.permission = permission;
       }
       return jsonBody;
     };

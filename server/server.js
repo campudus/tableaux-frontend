@@ -64,13 +64,18 @@ proxy.on("proxyReq", (proxyReq, req) => {
   }
 });
 
-if (config.injectPermisions) {
+if (config.injectPermissions) {
+  console.log(
+    "Skipping auth and injecting permissions from",
+    config.injectPermissions
+  );
   void tsImport.load("server/dev/mockAuth.ts").then(async mockAuth => {
     const permissionConfig = await mockAuth.loadPermissionConfig(
       config.injectPermissions
     );
     if (permissionConfig.isRight()) {
-      fs.proxy.on(
+      console.log("Valid permission config found");
+      proxy.on(
         "proxyRes",
         mockAuth.injectPermissions(permissionConfig.getValue())
       );
