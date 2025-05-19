@@ -64,7 +64,7 @@ proxy.on("proxyReq", (proxyReq, req) => {
   }
 });
 
-if (config.injectPermissions) {
+if (dev && config.injectPermissions) {
   console.log(
     "Skipping auth and injecting permissions from",
     config.injectPermissions
