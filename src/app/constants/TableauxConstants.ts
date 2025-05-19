@@ -1,13 +1,14 @@
 import { Column, ColumnID, MultilangValue } from "../types/grud";
 
 type Config = {
-  disableAuth?: boolean;
+  authClientId?: string;
   authRealm?: string;
   authServerUrl?: string;
-  authClientId?: string;
-  webhookUrl: string;
-  showTableDropdown?: boolean;
+  disableAuth?: boolean;
   enableHistory?: boolean;
+  injectPermissions?: string;
+  showTableDropdown?: boolean;
+  webhookUrl: string;
 };
 
 export let config: Config;
