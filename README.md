@@ -101,7 +101,7 @@ PORT=3001 npm run start
 {[key]: {[regex-template]: PermissionObject}}
 ```
 
-Where `key` is one of `[columns, rows, tables ]` and `PermissionObject` is a subset of possible permissions as boolean values.  
+Where `key` is one of `[columns, rows, tables, media, tables, tableGroup]` and `PermissionObject` is a subset of possible permissions for the respective entities as boolean values.  
 Routing will call `new RegExp(...)` on each `regex-template` and apply the
 permissions found at the first match when running it against the API path.
 

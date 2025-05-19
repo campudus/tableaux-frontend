@@ -16,7 +16,6 @@ describe("auth mocking", () => {
         table: { ".*": { createColumn: true, createHouse: true } }
       });
       expect(parsed.isLeft()).toBe(true);
-      //    console.log(parsed.getReason());
       expect(JSON.parse(parsed.getReason().message)).toEqual(
         expect.arrayContaining([
           expect.objectContaining({ code: "unrecognized_keys" })
@@ -40,7 +39,6 @@ describe("auth mocking", () => {
         expect(result).toEqual(canDeleteColumn);
       });
       it("should match specific columns", () => {
-        console.log(new RegExp("columns/11/?$"));
         const result = findPermission("/tables/321/columns/11");
         expect(result).toEqual(canEdit);
       });
