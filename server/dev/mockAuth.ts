@@ -93,23 +93,13 @@ export const toSearchable = (
 ): Array<(_: string) => Record<string, boolean>> =>
   Object.entries(permissions).flatMap(([kind, ps]) => {
     const base: RegExp = basePath[kind];
-    return Object.entries((ps as unknown) as Record<string, Function>).map(
-      ([reTemplate, p]) => {
-        const exact = new RegExp(reTemplate);
-        return (path: string) => {
-          const result = base.test(path) && exact.test(path) ? p : undefined;
-          console.log({
-            path,
-            reTemplate,
-            exactRe: exact,
-            base: base.test(path),
-            exact: exact.test(path),
-            result
-          });
-          return result;
-        };
-      }
-    );
+    return Object.entries(
+      (ps as unknown) as Record<string, (_: string) => Record<string, boolean>>
+    ).map(([reTemplate, p]) => {
+      const exact = new RegExp(reTemplate);
+      return (path: string) =>
+        base.test(path) && exact.test(path) ? p : undefined;
+    });
   });
 
 export const findInSearchable = (
