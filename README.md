@@ -89,10 +89,29 @@ Following variable names can be used:
 - SHOW_TABLE_DROPDOWN=[true,false] # Show confusing table settings dropdown. Default: true
 - AUTH_SERVER_URL
 - AUTH_REALM
+- INJECT_PERMISSIONS # path to a permission JSON to mock auth results in dev mode
 
 ```sh
 PORT=3001 npm run start
 ```
+
+**Permissions JSON:**
+
+``` json
+{[key]: {[regex-template]: PermissionObject}}
+```
+
+Where `key` is one of `[columns, rows, tables ]` and `PermissionObject` is a subset of possible permissions as boolean values.  
+Routing will call `new RegExp(...)` on each `regex-template` and apply the
+permissions found at the first match when running it against the API path.
+
+**Example:**
+
+``` json
+{ columns: {".*": {changeCell: true}} }
+```
+
+Will allow editing all cells.
 
 ## Troubleshooting
 
