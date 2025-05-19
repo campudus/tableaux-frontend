@@ -1,12 +1,6 @@
-/**
- * @tsImport
- * { "mode": "compile" }
- */
-
 import fs from "fs/promises";
-import { ServerResponse } from "http";
 import modifyResponse from "node-http-proxy-json";
-import { Either, left, right } from "pragmatic-fp-ts";
+import { left, right } from "pragmatic-fp-ts";
 import z from "zod";
 
 const optionalBoolean = z.boolean().optional();
@@ -71,14 +65,13 @@ const permissionSchema = z
   })
   .strict();
 
-export const parsePermissionObject = (x: unknown): Either<PermissionObject> => {
+export const parsePermissionObject = x => {
   const result = permissionSchema.safeParse(x);
-  return result.success ? right(result.data) : left(result.error as Error);
+  return result.success ? right(result.data) : left(result.error);
 };
-type PermissionObject = z.infer<typeof permissionSchema>;
 
 const tableBaseRE = /\/tables\/\d+\/?$/;
-const basePath: { [obj in keyof PermissionObject]: RegExp } = {
+const basePath = {
   columns: /tables\/\d+\/columns(\/\d+\/?)?$/,
   media: /media/,
   row: /\/tables\/.*\/rows(\d+\/?)?$/,
@@ -86,50 +79,37 @@ const basePath: { [obj in keyof PermissionObject]: RegExp } = {
   table: tableBaseRE,
   tableGroup: tableBaseRE,
   tables: /\/tables\/$/
-} as const;
+};
 
-export const toSearchable = (
-  permissions: PermissionObject
-): Array<(_: string) => Record<string, boolean>> =>
+export const toSearchable = permissions =>
   Object.entries(permissions).flatMap(([kind, ps]) => {
-    const base: RegExp = basePath[kind];
-    return Object.entries(
-      (ps as unknown) as Record<string, (_: string) => Record<string, boolean>>
-    ).map(([reTemplate, p]) => {
+    const base = basePath[kind];
+    return Object.entries(ps).map(([reTemplate, p]) => {
       const exact = new RegExp(reTemplate);
-      return (path: string) =>
-        base.test(path) && exact.test(path) ? p : undefined;
+      return path => (base.test(path) && exact.test(path) ? p : undefined);
     });
   });
 
-export const findInSearchable = (
-  lookup: ReturnType<typeof toSearchable>,
-  path: string
-) =>
-  lookup.reduce(
-    (result, matches) => result || matches(path),
-    undefined as ReturnType<typeof lookup[number]> | undefined
-  );
+export const findInSearchable = (lookup, path) =>
+  lookup.reduce((result, matches) => result || matches(path), undefined);
 
-export const injectPermissions = (permissions: PermissionObject) => {
+export const injectPermissions = permissions => {
   {
     const permAtPath = toSearchable(permissions);
 
-    const injectPermissionsM = (req: Request) => (
-      jsonBody?: Record<string, unknown>
-    ) => {
+    const injectPermissionsM = req => jsonBody => {
       const permission = findInSearchable(permAtPath, req.url);
       if (permission && jsonBody && typeof jsonBody === "object") {
         jsonBody.permission = permission;
       }
       return jsonBody;
     };
-    return (proxyRes: ServerResponse, req: Request, res: Response) =>
+    return (proxyRes, req, res) =>
       modifyResponse(res, proxyRes, injectPermissionsM(req));
   }
 };
 
-export const loadPermissionConfig = (path: string): Either<PermissionObject> =>
+export const loadPermissionConfig = path =>
   fs
     .readFile(path)
     .then(file => file.toString())

@@ -93,7 +93,6 @@
     "rxjs": "^6.5.2",
     "sass-embedded": "1.85.1",
     "superagent": "^4.0.0",
-    "ts-import": "5.0.0-beta.1",
     "typescript": "^5.8.2",
     "vite": "6.3.5",
     "vite-plugin-checker": "0.9.0",

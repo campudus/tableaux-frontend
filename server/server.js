@@ -5,11 +5,11 @@ import finalhandler from "finalhandler";
 import httpProxy from "http-proxy";
 import path from "path";
 import serveStatic from "serve-static";
-import * as tsImport from "ts-import";
 import { fileURLToPath } from "url";
 import { parseArgs } from "util";
 import uuid from "uuid";
 import loadConfig from "./config.js";
+import * as mockAuth from "./dev/mockAuth.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const baseDir = path.join(__dirname, "..");
@@ -69,20 +69,18 @@ if (dev && config.injectPermissions) {
     "Skipping auth and injecting permissions from",
     config.injectPermissions
   );
-  void tsImport.load("server/dev/mockAuth.ts").then(async mockAuth => {
-    const permissionConfig = await mockAuth.loadPermissionConfig(
-      config.injectPermissions
+  const permissionConfig = await mockAuth.loadPermissionConfig(
+    config.injectPermissions
+  );
+  if (permissionConfig.isRight()) {
+    console.log("Valid permission config found");
+    proxy.on(
+      "proxyRes",
+      mockAuth.injectPermissions(permissionConfig.getValue())
     );
-    if (permissionConfig.isRight()) {
-      console.log("Valid permission config found");
-      proxy.on(
-        "proxyRes",
-        mockAuth.injectPermissions(permissionConfig.getValue())
-      );
-    } else {
-      console.error(permissionConfig.getReason());
-    }
-  });
+  } else {
+    console.error(permissionConfig.getReason());
+  }
 }
 
 proxy.on("error", (err, req, res) => {
