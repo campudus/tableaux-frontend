@@ -17,6 +17,8 @@ const keycloakInitOptions = {
 export const authSelector = f.propOr(false, ["grudStatus", "authenticated"]);
 
 export const noAuthNeeded = f.memoize(() => config?.disableAuth ?? false);
+export const shouldCheckPermissions =
+  !noAuthNeeded() || Boolean(config.injectPermissions);
 
 // () => Keycloak
 // Side effects: Will login on first load and memoize the result

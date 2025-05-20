@@ -6,7 +6,7 @@ import {
   LanguageType
 } from "../constants/TableauxConstants";
 import store from "../redux/store";
-import { noAuthNeeded } from "./authenticate";
+import { shouldCheckPermissions } from "./authenticate";
 import { doto, memoizeWith, unless } from "./functools";
 import { getCountryOfLangtag } from "./multiLanguage";
 
@@ -17,7 +17,7 @@ const lookupKey = (columnId, tableId, rowId) =>
 
 // we need to dispatch that on runtime
 const lookUpPermissions = params =>
-  noAuthNeeded() ? ALLOW_ANYTHING : _lookUpPermissions(params);
+  shouldCheckPermissions ? _lookUpPermissions(params) : ALLOW_ANYTHING;
 const _lookUpPermissions = params => {
   const { columnId, tableId, column = {}, table = {}, row = {}, rowId } =
     params || {};
@@ -54,9 +54,9 @@ const _lookUpPermissions = params => {
   });
 
   // assumption: table structure & permissions won't change during session
-  return noAuthNeeded()
-    ? ALLOW_ANYTHING
-    : lookupStructureCached(_tableId, _columnId, _rowId);
+  return shouldCheckPermissions
+    ? lookupStructureCached(_tableId, _columnId, _rowId)
+    : ALLOW_ANYTHING;
 };
 
 const getPermission = pathToPermission =>
@@ -77,7 +77,7 @@ export const canUserChangeCell = f.curry((cell, langtag) => {
   return (
     !isRowArchived(row) &&
     !f.contains(kind, ImmutableColumnKinds) &&
-    (allowed || noAuthNeeded())
+    (allowed || !shouldCheckPermissions)
   ); // this special case is not caught by ALLOW_ANYTHING
 });
 
@@ -96,7 +96,7 @@ export const canUserChangeAnyCountryTypeCell = cellInfo => {
     f.values,
     f.any(f.identity)
   );
-  return allowed || noAuthNeeded();
+  return allowed || !shouldCheckPermissions;
 };
 
 export const canUserChangeCountryTypeCell = canUserChangeCell;
@@ -138,7 +138,7 @@ export const canUserSeeTable = memoizeWith(f.identity, tableData => {
 
 // must be dispatched at runtime
 const lookupMediaPermissions = () =>
-  noAuthNeeded() ? alwaysTrue : _lookupMediaPermissions();
+  shouldCheckPermissions ? _lookupMediaPermissions() : alwaysTrue;
 const _lookupMediaPermissions = () => {
   const state = store.getState();
   const permissions = f.propOr({}, ["media", "data", "permission"], state);

@@ -1,14 +1,15 @@
-import path from "path";
-import { fileURLToPath } from "url";
-import { parseArgs } from "util";
+import connectLoki from "connect-loki";
 import express from "express";
 import session from "express-session";
-import connectLoki from "connect-loki";
-import serveStatic from "serve-static";
 import finalhandler from "finalhandler";
 import httpProxy from "http-proxy";
+import path from "path";
+import serveStatic from "serve-static";
+import { fileURLToPath } from "url";
+import { parseArgs } from "util";
 import uuid from "uuid";
 import loadConfig from "./config.js";
+import * as mockAuth from "./dev/mockAuth.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const baseDir = path.join(__dirname, "..");
@@ -62,6 +63,25 @@ proxy.on("proxyReq", (proxyReq, req) => {
     proxyReq.path = cleanPath;
   }
 });
+
+if (dev && config.injectPermissions) {
+  console.log(
+    "Skipping auth and injecting permissions from",
+    config.injectPermissions
+  );
+  const permissionConfig = await mockAuth.loadPermissionConfig(
+    config.injectPermissions
+  );
+  if (permissionConfig.isRight()) {
+    console.log("Valid permission config found");
+    proxy.on(
+      "proxyRes",
+      mockAuth.injectPermissions(permissionConfig.getValue())
+    );
+  } else {
+    console.error(permissionConfig.getReason());
+  }
+}
 
 proxy.on("error", (err, req, res) => {
   console.error("Proxy error:", err);
