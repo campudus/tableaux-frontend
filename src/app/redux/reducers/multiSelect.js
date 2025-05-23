@@ -69,11 +69,22 @@ const getCellRectangle = (columns, rows, selectedCell, cell) => {
     cell.row.id
   );
 
-  const cells = [];
-  for (let y = startY; y <= endY; y++)
-    for (let x = startX; x <= endX; x++)
-      cells.push(rows[y].cells[columns[x].idx]);
-  return cells;
+  const selectedCells = [];
+
+  for (let y = startY; y <= endY; y++) {
+    for (let x = startX; x <= endX; x++) {
+      const selectedRow = rows[y];
+      const selectedColumn = columns[x];
+      const selectedCell = f.find(
+        f.propEq("column.id", selectedColumn.id),
+        selectedRow.cells
+      );
+
+      selectedCells.push(selectedCell);
+    }
+  }
+
+  return selectedCells;
 };
 
 const clearMultiSelect = () => initialState;
