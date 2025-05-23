@@ -127,7 +127,7 @@ class Cell extends React.Component {
       isExpandedCell,
       rows,
       selected,
-      visibleColumns: visibleColumnIdces
+      visibleColumns: visibleColumnIds
     } = this.props;
     if (!editing) {
       event.stopPropagation();
@@ -144,8 +144,8 @@ class Cell extends React.Component {
       event.preventDefault();
       actions.toggleMultiselectArea({
         cell,
-        columns: visibleColumnIdces.map(idx => ({
-          ...columns[idx],
+        columns: visibleColumnIds.map((id, idx) => ({
+          ...f.find(col => col.id === id, columns),
           idx
         })),
         rows
