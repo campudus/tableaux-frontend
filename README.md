@@ -67,7 +67,8 @@ Default project configuration can be overwritten via a `config.json` in the base
   "authServerUrl": "http://localhost:8081/auth",  // Keycloak
   "authRealm": "GRUD",                            // Keycloak realm
   "authClientId": "grud-frontend",                // Keycloak clientId
-  "disableAuth": true                             // disable authentication for frontends behind old proxy (default: false)
+  "disableAuth": true                             // disable authentication for frontends behind old proxy (default: false),
+  "injectPermissions": "path/to/perm.json"        // in dev mode, add permissions as if given by authentication and user role
 }
 ```
 
@@ -88,10 +89,29 @@ Following variable names can be used:
 - SHOW_TABLE_DROPDOWN=[true,false] # Show confusing table settings dropdown. Default: true
 - AUTH_SERVER_URL
 - AUTH_REALM
+- INJECT_PERMISSIONS # path to a permission JSON to mock auth results in dev mode
 
 ```sh
 PORT=3001 npm run start
 ```
+
+**Permissions JSON:**
+
+``` json
+{[key]: {[regex-template]: PermissionObject}}
+```
+
+Where `key` is one of `[columns, rows, tables, media, tables, tableGroup]` and `PermissionObject` is a subset of possible permissions for the respective entities as boolean values.  
+Routing will call `new RegExp(...)` on each `regex-template` and apply the
+permissions found at the first match when running it against the API path.
+
+**Example:**
+
+```json
+{ "columns": { ".*": { "editCellValue": true } } }
+```
+
+Will allow editing all cells.
 
 ## Troubleshooting
 

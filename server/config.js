@@ -18,7 +18,8 @@ const envParams = [
   "authRealm",
   "enableHistory",
   "showTableDropdown",
-  "disableAuth"
+  "disableAuth",
+  "injectPermissions"
 ];
 
 const configDefault = {
