@@ -107,8 +107,8 @@ permissions found at the first match when running it against the API path.
 
 **Example:**
 
-``` json
-{ columns: {".*": {changeCell: true}} }
+```json
+{ "columns": { ".*": { "editCellValue": true } } }
 ```
 
 Will allow editing all cells.
