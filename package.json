@@ -62,9 +62,7 @@
     "markdown-draft-js": "2.4.0",
     "match-iz": "4.0.2",
     "moment": "2.29.4",
-    "node-http-proxy-json": "0.1.9",
     "postcss": "^8.5.3",
-    "pragmatic-fp-ts": "^1.7.0",
     "prettier": "1.19.1",
     "react": "16.14.0",
     "react-datetime": "3.2.0",
@@ -96,8 +94,7 @@
     "typescript": "^5.8.2",
     "vite": "6.3.5",
     "vite-plugin-checker": "0.9.0",
-    "vitest": "3.0.7",
-    "zod": "3.24.4"
+    "vitest": "3.0.7"
   },
   "dependencies": {
     "connect-loki": "1.1.0",
@@ -105,7 +102,10 @@
     "express-session": "1.18.1",
     "finalhandler": "^1.1.2",
     "http-proxy": "^1.18.1",
+    "node-http-proxy-json": "0.1.9",
+    "pragmatic-fp-ts": "^1.7.0",
     "serve-static": "^1.14.1",
-    "uuid": "3.3.3"
+    "uuid": "3.3.3",
+    "zod": "3.24.4"
   }
 }
