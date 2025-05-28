@@ -103,7 +103,7 @@ export default function Subfolder({
                 <button
                   className="subfolder__action"
                   onClick={handleMove}
-                  title={i18n.t("media:move_folder")}
+                  title={i18n.t("media:move_folder", { name: folder.name })}
                 >
                   <SvgIcon icon="move" />
                 </button>

@@ -93,6 +93,7 @@
       width: 100%;
       height: 56px;
       border-bottom: 1px solid #dedede;
+      display: flex;
 
       &--modified {
         background-color: $color-selected-row;
@@ -133,6 +134,7 @@
     }
   }
 
+  .nav,
   .file,
   .subfolder {
     width: 100%;
@@ -397,12 +399,14 @@
       height: 56px;
       padding-left: 40px;
       border-bottom: 1px solid #dedede;
+      display: flex;
 
       &:hover {
         background-color: #0000000A;
       }
     }
 
+    .nav,
     .subfolder {
       width: 100%;
       height: 100%;
