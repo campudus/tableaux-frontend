@@ -37,8 +37,8 @@ export type Folder = {
   id: FolderID;
   name: string;
   description: string;
-  parentId: number | null; // id
-  parentIds: number[];
+  parentId: FolderID | null; // id
+  parentIds: FolderID[];
   createdAt: string | null;
   updatedAt: string | null;
   parents: Folder[];

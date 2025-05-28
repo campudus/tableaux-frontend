@@ -56,7 +56,7 @@ export const toCell = ({ tableId, rowId, columnId }: TableParams) =>
 
 export const toSetting = (setting: string) => `/system/settings/${setting}`;
 
-export const toFolder = (folderId?: string | number, langtag?: string) =>
+export const toFolder = (folderId?: string | number | null, langtag?: string) =>
   (folderId ? `/folders/${folderId}` : "/folders") +
   (langtag ? "?langtag=" + langtag : "");
 
