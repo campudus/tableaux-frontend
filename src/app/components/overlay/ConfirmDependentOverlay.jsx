@@ -6,7 +6,7 @@ import { useDispatch } from "react-redux";
 import DependentRowsList from "../../components/rows/DependentRowsList";
 import { buildClassName } from "../../helpers/buildClassName";
 import { retrieveTranslation } from "../../helpers/multiLanguage";
-import RowConcat from "../../helpers/RowConcatHelper";
+import OverlayHeadRowIdentificator from "./OverlayHeadRowIdentificator";
 import actions from "../../redux/actionCreators";
 import store from "../../redux/store";
 import Button from "../Button/Button";
@@ -345,17 +345,20 @@ ViewDependentRowsOverlay.propTypes = {
   deleteInfo: PropTypes.bool
 };
 
-const getRowConcat = (table, row, langtag) => {
-  const idColumn = f.prop(["columns", table.id, "data", 0], store.getState());
-  return <RowConcat row={row} idColumn={idColumn} langtag={langtag} />;
-};
-
 export function confirmDeleteRow({ row, table, langtag }) {
-  const itemName = getRowConcat(table, row, langtag);
-
   store.dispatch(
     actions.openOverlay({
-      head: <Header context={i18n.t("table:delete_row")} title={itemName} />,
+      head: (
+        <Header
+          context={i18n.t("table:delete_row")}
+          title={
+            <OverlayHeadRowIdentificator
+              langtag={langtag}
+              cell={{ table, row }}
+            />
+          }
+        />
+      ),
       body: (
         <DeleteRowOverlay
           row={row}
@@ -370,11 +373,14 @@ export function confirmDeleteRow({ row, table, langtag }) {
 }
 
 export function openShowDependency({ table, row, langtag, cell }) {
-  const itemName = getRowConcat(table, row, langtag);
-
   store.dispatch(
     actions.openOverlay({
-      head: <Header context={i18n.t("table:dependencies")} title={itemName} />,
+      head: (
+        <Header
+          context={i18n.t("table:dependencies")}
+          title={<OverlayHeadRowIdentificator langtag={langtag} cell={cell} />}
+        />
+      ),
       body: (
         <ViewDependentRowsOverlay
           row={row}
