@@ -160,10 +160,16 @@ const getAttachmentFileName = () => links => {
 // recursively concatenate string values
 const getConcatValue = selector => column => value => {
   const concats = f.zip(f.get(selector, column), value);
-  const displayValues = f.flatten(
-    // flatten so link values get concatenated, too
-    f.map(([col, val]) => getDisplayValue(col)(val), concats)
-  );
+  const displayValues = f.map(([col, val]) => {
+    const displayValue = getDisplayValue(col)(val);
+    // 1. merge all link displayValues to a single displayValue:
+    // [{ de-DE: "Stahl", en-GB: "steel" }, { de-DE: "Aluminium", en-GB: "aluminium" }] -> { de-DE: "Stahl Aluminium", en-GB: "steel aluminium" }
+    // 2. ensure that empty links have a displayValue:
+    // [] -> { de-DE: "", en-GB: "" }
+    return f.isArray(displayValue)
+      ? applyToAllLangs(lt => f.map(f.get(lt), displayValue).join(" "))
+      : displayValue;
+  }, concats);
 
   return applyToAllLangs(lt => format(column, f.map(f.get(lt), displayValues)));
 };
