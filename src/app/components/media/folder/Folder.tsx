@@ -135,7 +135,7 @@ export default function Folder({
               overscanRowCount={10}
               rowHeight={56}
               rowRenderer={({ index, style }) => {
-                const dirent = dirents[index];
+                const dirent = dirents[index]!;
                 const isFile = isAttachment(dirent);
                 const isMod = isFile && f.contains(dirent.uuid, fileIdsDiff);
 

@@ -143,9 +143,9 @@ export function ColumnEditorOverlayBody({
     const attributeIndex = getAttributeIndex(event.target.name);
     const attribute = attributes[attributeIndex];
     const value =
-      attribute.type === "boolean"
+      attribute?.type === "boolean"
         ? event.target.checked
-        : attribute.type === "number"
+        : attribute?.type === "number"
         ? parseInt(event.target.value)
         : event.target.value;
 

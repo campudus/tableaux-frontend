@@ -123,7 +123,7 @@ function FileDependentsTable({
             langtag={langtag}
             table={table}
             column={idColumn}
-            rows={rowItemsByColId[toColumn.id]}
+            rows={rowItemsByColId[toColumn.id] ?? []}
             toColumn={toColumn}
           />
         ))}
@@ -162,7 +162,7 @@ function FileDependentsTableColumn({
               rowHeight={44}
               rowCount={rowCount}
               rowRenderer={({ index, style }) => {
-                const { row, toColumn } = rows[index];
+                const { row, toColumn } = rows[index]!;
 
                 return (
                   <div key={row.id} style={style}>
