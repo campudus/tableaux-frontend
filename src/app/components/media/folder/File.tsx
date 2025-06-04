@@ -111,7 +111,7 @@ export default function File({ langtag, file }: FileProps): ReactElement {
           <button
             className="file__action"
             onClick={handleOpenMoveOverlay}
-            title={i18n.t("media:move_file")}
+            title={i18n.t("media:move_file", { name: title })}
           >
             <SvgIcon icon="move" />
           </button>

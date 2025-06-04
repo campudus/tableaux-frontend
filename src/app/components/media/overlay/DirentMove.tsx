@@ -91,8 +91,9 @@ export function DirentMoveBody(props: DirentMoveProps): ReactElement {
     folder => folder.id !== sourceFolder?.id,
     targetFolder?.subfolders ?? []
   );
+  const isTargetRoot = targetFolder?.id === null;
 
-  const handleNavigate = async (folderId?: FolderID) => {
+  const handleNavigate = async (folderId?: FolderID | null) => {
     const folder: Folder = await makeRequest({
       apiRoute: toFolder(folderId, langtag),
       method: "GET"
@@ -107,6 +108,17 @@ export function DirentMoveBody(props: DirentMoveProps): ReactElement {
 
   return (
     <div className="dirent-move__list">
+      {!isTargetRoot && (
+        <div className="dirent-move__list-item">
+          <button
+            className="nav__link"
+            onClick={() => handleNavigate(targetFolder?.parentId)}
+          >
+            <i className="icon fa fa-folder" />
+            <span>{".."}</span>
+          </button>
+        </div>
+      )}
       <AutoSizer>
         {({ height, width }) => (
           <List

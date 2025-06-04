@@ -2,7 +2,8 @@ import f from "lodash/fp";
 import i18n from "i18next";
 import Dropzone from "react-dropzone";
 import { useDispatch } from "react-redux";
-import { ReactElement, useRef, useState } from "react";
+import { MouseEvent, ReactElement, useRef, useState } from "react";
+import { useHistory } from "react-router-dom";
 import { List, AutoSizer } from "react-virtualized";
 
 import {
@@ -18,6 +19,7 @@ import Breadcrumbs from "../../helperComponents/Breadcrumbs";
 import SubfolderEdit from "./SubfolderEdit";
 import { createMediaFolder } from "../../../redux/actions/mediaActions";
 import { buildClassName as cn } from "../../../helpers/buildClassName";
+import { switchFolderHandler } from "../../Router";
 
 type FolderProps = {
   langtag: string;
@@ -31,6 +33,7 @@ export default function Folder({
   fileIdsDiff
 }: FolderProps): ReactElement {
   const dropzoneRef = useRef<Dropzone>(null);
+  const history = useHistory();
   const dispatch = useDispatch();
   const [isNewFolder, setIsNewFolder] = useState(false);
   const { id, parents, subfolders = [], files } = folder;
@@ -39,6 +42,11 @@ export default function Folder({
   const breadcrumbsFolders = f.concat(parents ?? [], !isRoot ? [folder] : []);
   const newFolderName = i18n.t("media:new_folder");
   const dirents = [...subfolders, ...sortedFiles];
+
+  const handleNavigateToParent = (event: MouseEvent<HTMLButtonElement>) => {
+    switchFolderHandler(history, langtag, folder?.parentId);
+    event.preventDefault();
+  };
 
   const handleToggleNewFolder = () => {
     setIsNewFolder(isNew => !isNew);
@@ -101,6 +109,14 @@ export default function Folder({
       </div>
 
       <div className="folder__list">
+        {!isRoot && (
+          <div className="folder__list-item">
+            <button className="nav__link" onClick={handleNavigateToParent}>
+              <i className="icon fa fa-folder" />
+              <span>{".."}</span>
+            </button>
+          </div>
+        )}
         {isNewFolder && (
           <div className="folder__list-item">
             <SubfolderEdit
