@@ -20,13 +20,13 @@ function OverlayHeadRowIdentificator({
 
   const firstColumn = useSelector<GRUDStore, Column | undefined>(state => {
     const columns = state.columns[cell.table.id]?.data;
-    return columns.at(0);
+    return columns?.at(0);
   });
   const firstCellValue = useSelector<GRUDStore, CellValue["value"] | undefined>(
     state => {
       const rows = state.rows[cell.table.id]?.data;
-      const row = rows.find(r => r.id === cell.row.id) ?? cell.row;
-      return row.values.at(0);
+      const row = rows?.find(r => r.id === cell.row.id) ?? cell.row;
+      return row?.values.at(0);
     }
   );
   const displayValue = getDisplayValue(firstColumn)(firstCellValue);
