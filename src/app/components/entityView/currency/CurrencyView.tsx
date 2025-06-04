@@ -34,7 +34,7 @@ const CurrencyView = ({
   thisUserCantEdit
 }: Props) => {
   const value: CurrencyCellValue = useSelector((store: GRUDStore) => {
-    const row = store.rows[cell.table.id].data.find(r => r.id === cell.row.id);
+    const row = store.rows[cell.table.id]?.data.find(r => r.id === cell.row.id);
     const idx = row?.cells.findIndex(c => c.id === cell.id);
     return f.isNil(idx) || f.isNil(row)
       ? cell.value
@@ -47,7 +47,7 @@ const CurrencyView = ({
   const [activeCountry, setActiveCountry] = useState<Country>();
   const handleChange = (country: string) => (value: number | null) => {
     const newValue = { ...cell.value, [country]: value };
-    actions.changeCellValue({ cell, oldValue: cell.value, newValue });
+    actions.changeCellValue?.({ cell, oldValue: cell.value, newValue });
     setActiveCountry(undefined);
   };
 
@@ -89,7 +89,7 @@ const CurrencyView = ({
       <div
         className="item-content currency"
         ref={el => {
-          funcs.register(el);
+          funcs.register?.(el);
         }}
         tabIndex={1}
         onKeyDown={handleKeyDown}

@@ -128,7 +128,7 @@ export function DirentMoveBody(props: DirentMoveProps): ReactElement {
             overscanRowCount={10}
             rowHeight={56}
             rowRenderer={({ index, style }) => {
-              const subfolder = subfolders[index];
+              const subfolder = subfolders[index]!;
 
               return (
                 <div
