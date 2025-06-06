@@ -42,7 +42,7 @@ export const ColumnKinds = {
   text: "text"
 } as const;
 
-export const ImmutableColumnKinds = ["status", "concat", "group"] as const;
+export const ImmutableColumnKinds = ["status", "concat"] as const;
 
 export const LanguageType = {
   country: "country",
