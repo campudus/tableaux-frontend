@@ -17,6 +17,7 @@ import { isTextInRange } from "../../helpers/limitTextLength";
 import { getTableDisplayName } from "../../helpers/multiLanguage";
 import P from "../../helpers/promise";
 import actions from "../../redux/actionCreators";
+import { createNewRows } from "../../redux/actions/rowActions";
 import { idsToIndices } from "../../redux/redux-helpers";
 import store from "../../redux/store";
 import askForSessionUnlock from "../helperComponents/SessionUnlockDialog";
@@ -73,7 +74,7 @@ export const getSaveableRowDuplicate = ({ columns, row }) => {
   // We can't check cardinality without loading and parsing all linked tables recursively,
   // so we don't copy links with cardinality
   const duplicatedValues = row.values.filter(
-    (value, idx) => !canNotCopy(columns[idx])
+    (_, idx) => !canNotCopy(columns[idx])
   );
   return {
     columns: f.reject(canNotCopy, columns),
@@ -163,19 +164,15 @@ const copyLinks = (src, dst) => {
 };
 
 // optionally curried function
-export function createRowDuplicatesRequest(
-  tableId,
-  dataToPost // Result of getSaveableRowDuplicate({columns, row})
-) {
-  if (arguments.length === 1) {
-    return dataToPost_ => createRowDuplicatesRequest(tableId, dataToPost_);
-  }
-
-  return makeRequest({
-    apiRoute: route.toRows(tableId),
-    data: f.pick(["columns", "rows"], dataToPost),
-    method: "POST"
-  });
+export function createRowDuplicatesRequest(tableId, rowId) {
+  return arguments.length === 1
+    ? rowId_ => createRowDuplicatesRequest(tableId, rowId_)
+    : makeRequest({
+        apiRoute:
+          route.toRow({ tableId, rowId }) +
+          "/duplicate?skipConstrainedLinks=true&annotateSkipped=true",
+        method: "POST"
+      });
 }
 
 const maybeChangeBacklink = ({ src, dst }) => saveableRowDuplicate => {
@@ -229,7 +226,7 @@ const createEntriesAndCopy = async (src, dst, constrainedValue) => {
         )({ columns, row })
       )
     )
-    // Reduce all saveable rows into an array so we need only one POST to duplicate them
+    // Create all new links including backlinks in a single request (instead of 2N via duplicate, then changeBacklink)
     .then(
       f.reduce(
         (accum, nextRow) => ({
@@ -239,8 +236,7 @@ const createEntriesAndCopy = async (src, dst, constrainedValue) => {
         []
       )
     )
-    .then(createRowDuplicatesRequest(toTable))
-    .then(f.prop("rows"))
+    .then(cfg => createNewRows({ ...cfg, tableId: toTable.id }))
     .then(f.map(row => ({ id: row.id, value: f.first(row.values) })));
 
   changeCellValue(dst, copiedLinkValues);
