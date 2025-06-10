@@ -530,6 +530,8 @@ body {
       min-height: 27px;
       display: flex;
       justify-content: space-between;
+      align-items: flex-start;
+
       .toggle-indicator {
         width: min-content;
         height: min-content;
