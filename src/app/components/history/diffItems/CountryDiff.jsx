@@ -15,7 +15,7 @@ const Changes = props => {
   const countries = f.groupBy("country", diff);
   return (
     <>
-      <span>
+      <div className="country-diff">
         {doto(
           countries,
           f.keys,
@@ -23,11 +23,9 @@ const Changes = props => {
             <div key={country} className="country-diff-group">
               <div className="country-diff__sub-header">
                 {getLanguageOrCountryIcon(country)}
-                {noCurrency ? null : (
-                  <div className="country-diff-sub-header__currency">{`[${getCurrencyCode(
-                    country
-                  )}]`}</div>
-                )}
+                <div className="country-diff-sub-header__currency">
+                  {noCurrency ? null : `[${getCurrencyCode(country)}]`}
+                </div>
                 {countries[country].map(({ add, del, value }, idx) => {
                   const cssClass = classNames("content-diff", {
                     "content-diff--added": add,
@@ -48,7 +46,7 @@ const Changes = props => {
             </div>
           ))
         )}
-      </span>
+      </div>
       <span className="toggle-indicator__wrapper">
         <i className="toggle-indicator fa fa-angle-right" />
       </span>

@@ -134,15 +134,20 @@ body {
     flex-wrap: wrap;
   }
 
+  .country-diff {
+    width: 100%;
+  }
+
   .country-diff__sub-header {
-    display: flex;
+    display: grid;
+    grid-template-columns: 40px 40px min-content min-content;
+    gap: 5px;
     font-weight: bold;
     margin: 5px 0;
-    gap: 7px;
     align-items: center;
 
     .langtag-label {
-      margin: 0 5px;
+      margin-left: 5px;
     }
   }
 
