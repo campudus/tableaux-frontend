@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
 import React, { useEffect } from "react";
 import { canUserChangeCell } from "../../../helpers/accessManagementHelper";
-import { isLocked } from "../../../helpers/annotationHelper";
+import { isLocked } from "../../../helpers/rowUnlock";
 
 const BooleanCell = props => {
   const {

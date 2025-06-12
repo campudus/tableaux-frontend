@@ -5,7 +5,7 @@ import { useSelector } from "react-redux";
 import { isRowArchived } from "../../archivedRows/helpers";
 import { Langtags } from "../../constants/TableauxConstants";
 import { canUserDeleteRow } from "../../helpers/accessManagementHelper";
-import { isLocked } from "../../helpers/annotationHelper";
+import { isLocked } from "../../helpers/rowUnlock";
 import { getLanguageOrCountryIcon } from "../../helpers/multiLanguage";
 import { initiateDeleteRow } from "../../helpers/rowHelper";
 

@@ -16,7 +16,7 @@ import {
   RowIdColumn
 } from "../../constants/TableauxConstants";
 import { canUserCreateRow } from "../../helpers/accessManagementHelper";
-import { isLocked } from "../../helpers/annotationHelper";
+import { isLocked } from "../../helpers/rowUnlock";
 import { doto, either, maybe } from "../../helpers/functools";
 import getDisplayValue from "../../helpers/getDisplayValue";
 import KeyboardShortcutsHelper from "../../helpers/KeyboardShortcutsHelper";

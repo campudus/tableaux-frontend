@@ -4,7 +4,8 @@ import * as f from "lodash/fp";
 import PropTypes from "prop-types";
 import React, { Component } from "react";
 import listenToClickOutside from "react-onclickoutside";
-import { isLocked, setRowAnnotation } from "../../../helpers/annotationHelper";
+import { setRowAnnotation } from "../../../helpers/annotationHelper";
+import { isLocked } from "../../../helpers/rowUnlock";
 import { openInNewTab } from "../../../helpers/apiUrl";
 import { addCellId } from "../../../helpers/getCellId";
 import {

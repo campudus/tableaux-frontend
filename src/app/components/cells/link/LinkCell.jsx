@@ -5,9 +5,11 @@ import PropTypes from "prop-types";
 import { compose, lifecycle } from "recompose";
 
 import { withForeignDisplayValues } from "../../helperComponents/withForeignDisplayValues";
-import LinkEditCell from "./LinkEditCell.jsx";
 import LinkLabelCell from "./LinkLabelCell.jsx";
 import { getVisibleLinkCount } from "./getVisibleLinkCount";
+import { isLocked } from "../../../helpers/rowUnlock";
+import { canUserChangeCell } from "../../../helpers/accessManagementHelper";
+import { openLinkOverlay } from "./LinkOverlay";
 
 const LinkCell = props => {
   const {
@@ -17,7 +19,8 @@ const LinkCell = props => {
     selected,
     editing,
     foreignDisplayValues,
-    width
+    width,
+    actions
   } = props;
 
   const displayValue = foreignDisplayValues || props.displayValue;
@@ -41,19 +44,34 @@ const LinkCell = props => {
       />
     ));
 
-  return selected || editing ? (
-    <LinkEditCell {...props} />
-  ) : (
-    <div className={"cell-content"}>
-      {tooManyLinks
-        ? [
-            ...links,
-            <span key={"more"} className="more">
-              &hellip;
-            </span>
-          ]
-        : links}
-    </div>
+  const handleClick = e => {
+    if (
+      !isLocked(cell.row) &&
+      canUserChangeCell(cell, langtag) &&
+      (editing || selected)
+    ) {
+      openLinkOverlay({ cell, langtag, actions });
+    }
+  };
+
+  return (
+    <>
+      <div className={"cell-content"} onClick={handleClick}>
+        {tooManyLinks
+          ? [
+              ...links,
+              <span key={"more"} className="more">
+                &hellip;
+              </span>
+            ]
+          : links}
+      </div>
+      {(selected || editing) && (
+        <button key={"add-btn"} className="edit" onClick={handleClick}>
+          <span className="fa fa-pencil" />
+        </button>
+      )}
+    </>
   );
 };
 

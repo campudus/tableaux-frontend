@@ -5,8 +5,7 @@ import { ColumnKinds } from "../../constants/TableauxConstants";
 import { canUserChangeCell } from "../../helpers/accessManagementHelper";
 import {
   addTranslationNeeded,
-  deleteCellAnnotation,
-  isLocked
+  deleteCellAnnotation
 } from "../../helpers/annotationHelper";
 import { makeRequest } from "../../helpers/apiHelper";
 import route from "../../helpers/apiRoutes";
@@ -20,10 +19,10 @@ import actions from "../../redux/actionCreators";
 import { createNewRows } from "../../redux/actions/rowActions";
 import { idsToIndices } from "../../redux/redux-helpers";
 import store from "../../redux/store";
-import askForSessionUnlock from "../helperComponents/SessionUnlockDialog";
 import Footer from "../overlay/Footer";
 import Header from "../overlay/Header";
 import PasteMultilanguageCellInfo from "../overlay/PasteMultilanguageCellInfo";
+import { isLocked, requestRowUnlock } from "../../helpers/rowUnlock";
 
 const showErrorToast = (msg, data = {}) => {
   store.dispatch(
@@ -409,9 +408,19 @@ const pasteCellValue = function(
   }
 
   if (isLocked(dst.row) && !canOverrideLock()) {
-    const toastContent = askForSessionUnlock(dst.row);
-    if (toastContent) {
-      store.dispatch(actions.showToast(toastContent));
+    requestRowUnlock(dst.row);
+
+    if (isLocked(dst.row)) {
+      store.dispatch(
+        actions.showToast({
+          content: (
+            <div id="cell-jump-toast">
+              <h1>{i18n.t("table:final.unlock_header")}</h1>
+              <p>{i18n.t("table:final.unlock_toast")}</p>
+            </div>
+          )
+        })
+      );
     }
     return;
   }

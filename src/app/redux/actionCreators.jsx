@@ -2,10 +2,8 @@ import i18n from "i18next";
 import f from "lodash/fp";
 import React from "react";
 import { ShowArchived } from "../archivedRows/helpers";
-import askForSessionUnlock from "../components/helperComponents/SessionUnlockDialog";
 import { loadAndOpenEntityView } from "../components/overlay/EntityViewOverlay";
 import { Langtags, SortValue } from "../constants/TableauxConstants";
-import { isLocked } from "../helpers/annotationHelper";
 import { makeRequest } from "../helpers/apiHelper";
 import API_ROUTES from "../helpers/apiRoutes";
 import { urlToTableDestination } from "../helpers/apiUrl";
@@ -451,12 +449,7 @@ const toggleCellSelection = action => {
 };
 
 const toggleCellEditingOrUnlockCell = action => {
-  // when triggered from keyboard, event.key should be passed to
-  // prevent editing while still locked
-  const { row, eventKey } = action;
-  return isLocked(row)
-    ? showToast(askForSessionUnlock(row, eventKey))
-    : dispatchParamsFor(TOGGLE_CELL_EDITING)(action);
+  return dispatchParamsFor(TOGGLE_CELL_EDITING)(action);
 };
 
 const appendFilters = filter => (dispatch, getState) => {

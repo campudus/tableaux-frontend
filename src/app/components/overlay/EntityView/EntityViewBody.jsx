@@ -14,7 +14,7 @@ import {
 import { addCellId } from "../../../helpers/getCellId";
 import { doto, ifElse, maybe, merge } from "../../../helpers/functools";
 import { getLanguageOrCountryIcon } from "../../../helpers/multiLanguage";
-import { isLocked, unlockRow } from "../../../helpers/annotationHelper";
+import { isLocked, unlockRow } from "../../../helpers/rowUnlock";
 import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
 import TranslationPopup from "../../entityView/TranslationPopup";
 
@@ -289,7 +289,7 @@ class EntityViewBody extends Component {
   };
 
   unlockRowTemporary = () => {
-    unlockRow(this.props.row, true);
+    unlockRow(this.props.row);
     this.forceUpdate();
   };
 

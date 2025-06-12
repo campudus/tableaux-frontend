@@ -5,7 +5,7 @@ import classNames from "classnames";
 import PropTypes from "prop-types";
 
 import { ColumnKinds } from "../../../constants/TableauxConstants";
-import { isLocked } from "../../../helpers/annotationHelper";
+import { isLocked } from "../../../helpers/rowUnlock";
 import { openEntityView } from "../../overlay/EntityViewOverlay";
 import { withForeignDisplayValues } from "../../helperComponents/withForeignDisplayValues";
 import { format } from "../../../helpers/getDisplayValue";

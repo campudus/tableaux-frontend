@@ -5,7 +5,7 @@ import * as f from "lodash/fp";
 import classNames from "classnames";
 import Header from "../../overlay/Header";
 import AttachmentOverlay from "./AttachmentOverlay.jsx";
-import { isLocked } from "../../../helpers/annotationHelper";
+import { isLocked } from "../../../helpers/rowUnlock";
 import { maybe } from "../../../helpers/functools";
 import { retrieveTranslation } from "../../../helpers/multiLanguage";
 import apiUrl from "../../../helpers/apiUrl";
