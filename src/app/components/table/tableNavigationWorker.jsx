@@ -211,7 +211,7 @@ export function getKeyboardShortcuts() {
           cellKind === ColumnKinds.richtext ||
           cellKind === ColumnKinds.numeric)
       ) {
-        toggleCellEditing.call(this);
+        toggleCellEditing.call(this, { event });
       }
     }
   };
@@ -257,6 +257,7 @@ export function toggleCellSelection({ cell, langtag }) {
 }
 
 export function toggleCellEditing(params = {}) {
+  const eventKey = f.get(["event", "key"], params);
   const editVal = f.isBoolean(params.editing) ? params.editing : true;
   const { columns, rows, tableView, actions } = this.props;
   const visibleColumns = f.filter(col => col.visible || col.id === 0, columns);
@@ -281,7 +282,7 @@ export function toggleCellEditing(params = {}) {
     const selectedCellKind = selectedCellObject.kind;
     const table = selectedCellObject.table;
 
-    actions.toggleCellEditing({ editing: editVal, row: selectedRow });
+    actions.toggleCellEditing({ editing: editVal, row: selectedRow, eventKey });
 
     if (!isLocked(selectedRow) && editVal) {
       switch (selectedCellKind) {
