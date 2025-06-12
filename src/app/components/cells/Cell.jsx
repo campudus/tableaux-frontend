@@ -1,5 +1,6 @@
 import classNames from "classnames";
 import f from "lodash/fp";
+import i18n from "i18next";
 import PropTypes from "prop-types";
 import React, { createRef } from "react";
 import {
@@ -34,6 +35,7 @@ import NumericCell from "./numeric/NumericCell.jsx";
 import StatusCell from "./status/StatusCell.jsx";
 import ShortTextCell from "./text/ShortTextCell.jsx";
 import TextCell from "./text/TextCell.jsx";
+import { isLocked } from "../../helpers/rowUnlock";
 
 const mapStateToProps = (state, props) => {
   const { cell, langtag } = props;
@@ -174,6 +176,17 @@ class Cell extends React.Component {
       langtag
     });
     setSelectedCellExpandedRow?.(langtag);
+
+    if (isLocked(row)) {
+      actions.showToast({
+        content: (
+          <div id="cell-jump-toast">
+            <h1>{i18n.t("table:final.unlock_header")}</h1>
+            <p>{i18n.t("table:final.unlock_toast")}</p>
+          </div>
+        )
+      });
+    }
   };
 
   rightClicked = event => {

@@ -120,11 +120,11 @@ const AttachmentCell = props => {
             ]
           : attachments}
       </div>
-      {editing || selected ? (
+      {(editing || selected) && !isLocked(cell.row) && (
         <button key={"add-btn"} className="edit" onClick={handleClick}>
           <span className="fa fa-pencil" />
         </button>
-      ) : null}
+      )}
     </>
   );
 };

@@ -66,7 +66,7 @@ const LinkCell = props => {
             ]
           : links}
       </div>
-      {(selected || editing) && (
+      {(selected || editing) && !isLocked(cell.row) && (
         <button key={"add-btn"} className="edit" onClick={handleClick}>
           <span className="fa fa-pencil" />
         </button>
