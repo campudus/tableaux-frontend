@@ -371,11 +371,10 @@ const pasteCellValue = function(
 ) {
   // The lock can be overridden, if a user has access to the langtag and it is flagged as "needs translation"
   const canOverrideLock = () => {
-    const untranslated = f.prop([
-      "annotations",
-      "translationNeeded",
-      "langtags"
-    ]);
+    const untranslated = f.prop(
+      ["annotations", "translationNeeded", "langtags"],
+      dst
+    );
     const translatableLangtags = f.filter(
       lt => canUserChangeCell(dst, lt),
       untranslated
