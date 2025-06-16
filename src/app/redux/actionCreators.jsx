@@ -448,7 +448,7 @@ const toggleCellSelection = action => {
   return dispatchParamsFor(TOGGLE_CELL_SELECTION)(action);
 };
 
-const toggleCellEditingOrUnlockCell = action => {
+const toggleCellEditing = action => {
   return dispatchParamsFor(TOGGLE_CELL_EDITING)(action);
 };
 
@@ -616,7 +616,7 @@ const actionCreators = {
   addSkeletonColumns: dispatchParamsFor(COLUMNS_DATA_LOADED),
   addSkeletonRow: dispatchParamsFor(ADDITIONAL_ROWS_DATA_LOADED),
   toggleCellSelection,
-  toggleCellEditing: toggleCellEditingOrUnlockCell,
+  toggleCellEditing,
   setPreventCellDeselection: dispatchParamsFor(SET_PREVENT_CELL_DESELECTION),
   toggleExpandedRow: dispatchParamsFor(TOGGLE_EXPANDED_ROW),
   copyCellValue: dispatchParamsFor(COPY_CELL_VALUE_TO_CLIPBOARD),
