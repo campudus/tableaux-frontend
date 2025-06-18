@@ -363,6 +363,7 @@ export function toggleCellEditing(params = {}) {
           });
           break;
       }
+      this.forceUpdate();
     }
   }
 }

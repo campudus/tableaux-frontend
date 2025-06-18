@@ -44,3 +44,9 @@ export const resetRowUnlock = () => {
   RowUnlock.requestId = null;
   RowUnlock.requestedAt = null;
 };
+
+export const hasPendingUnlockRequest = (row: Row) => {
+  const requestId = RowUnlock.requestId;
+
+  return requestId === row.id;
+};
