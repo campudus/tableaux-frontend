@@ -2,8 +2,7 @@ import React, { useState, KeyboardEventHandler } from "react";
 import CurrencyItem from "./CurrencyItem";
 import * as f from "lodash/fp";
 import { canUserChangeCountryTypeCell } from "../../../helpers/accessManagementHelper";
-import { isLocked } from "../../../helpers/annotationHelper";
-import askForSessionUnlock from "../../helperComponents/SessionUnlockDialog";
+import { requestRowUnlock, isLocked } from "../../../helpers/rowUnlock";
 import {
   Cell,
   CurrencyCellValue,
@@ -64,7 +63,7 @@ const CurrencyView = ({
         f.eq("enter"),
         () => {
           if (isLocked(row)) {
-            askForSessionUnlock(row);
+            requestRowUnlock(row);
             return;
           }
           if (activeCountry) {

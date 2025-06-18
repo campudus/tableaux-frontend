@@ -5,11 +5,17 @@ import { useSelector } from "react-redux";
 import { isRowArchived } from "../../archivedRows/helpers";
 import { Langtags } from "../../constants/TableauxConstants";
 import { canUserDeleteRow } from "../../helpers/accessManagementHelper";
-import { isLocked } from "../../helpers/annotationHelper";
 import { getLanguageOrCountryIcon } from "../../helpers/multiLanguage";
 import { initiateDeleteRow } from "../../helpers/rowHelper";
 
-const MetaCell = ({ expanded, langtag, row, table, toggleExpandedRow }) => {
+const MetaCell = ({
+  expanded,
+  langtag,
+  row,
+  table,
+  toggleExpandedRow,
+  isLocked
+}) => {
   const { selectedCell = {} } = useSelector(store => store.selectedCell ?? {});
   const isInSelectedRow =
     row.id === selectedCell.rowId &&
@@ -41,7 +47,7 @@ const MetaCell = ({ expanded, langtag, row, table, toggleExpandedRow }) => {
   const Icon = isRowArchived(row) ? (
     <ArchivedIcon />
   ) : isFinal ? (
-    <LockStatusIcon locked={isLocked(row)} />
+    <LockStatusIcon locked={isLocked} />
   ) : userCanDeleteRow ? (
     <DeleteRowButton onClick={handleDeleteRow} />
   ) : null;

@@ -7,7 +7,7 @@ import { Directions } from "../../../constants/TableauxConstants";
 import { connectOverlayToCellValue } from "../../helperComponents/connectOverlayToCellHOC";
 import { retrieveTranslation } from "../../../helpers/multiLanguage";
 import { unless } from "../../../helpers/functools";
-import { unlockRow } from "../../../helpers/annotationHelper";
+import { resetRowUnlock } from "../../../helpers/rowUnlock";
 import FilterBar from "./FilterBar";
 import Header from "../../overlay/Header";
 import HeaderPopupMenu from "./HeaderPopupMenu";
@@ -37,7 +37,7 @@ class RowSwitcher extends PureComponent {
   switchRow = dir => () => {
     const nextRow = this.getNextRow(dir);
     if (nextRow) {
-      unlockRow({}, false);
+      resetRowUnlock();
       this.props.updateSharedData(f.assoc("row", nextRow));
       this.changeEntityViewRow(nextRow);
     }

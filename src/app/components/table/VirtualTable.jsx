@@ -16,7 +16,7 @@ import {
   RowIdColumn
 } from "../../constants/TableauxConstants";
 import { canUserCreateRow } from "../../helpers/accessManagementHelper";
-import { isLocked } from "../../helpers/annotationHelper";
+import { isLocked } from "../../helpers/rowUnlock";
 import { doto, either, maybe } from "../../helpers/functools";
 import getDisplayValue from "../../helpers/getDisplayValue";
 import KeyboardShortcutsHelper from "../../helpers/KeyboardShortcutsHelper";
@@ -161,6 +161,10 @@ class VirtualTable extends PureComponent {
     return null;
   };
 
+  forceTableUpdate = () => {
+    this.forceUpdate();
+  };
+
   cellRenderer = gridData => {
     return (
       <div style={gridData.style} key={gridData.key}>
@@ -302,15 +306,20 @@ class VirtualTable extends PureComponent {
       : this.renderSingleCell(gridData);
   };
 
-  renderSingleCell = ({ columnIndex, rowIndex, style }) => {
+  renderSingleCell = ({ columnIndex, rowIndex, style, key }) => {
     const { actions, langtag, columns, tableView } = this.props;
     const { openAnnotations } = this.state;
     const cell = this.getCell(rowIndex, columnIndex);
     const { value } = cell;
     const { width } = style;
+    // force update of cell component if locked state changes
+    const cellKey = isLocked(cell.row)
+      ? `${langtag}-${key}-locked`
+      : `${langtag}-${key}`;
 
     return (
       <Cell
+        key={cellKey}
         actions={actions}
         allDisplayValues={tableView.displayValues}
         annotationsOpen={
@@ -321,6 +330,7 @@ class VirtualTable extends PureComponent {
         columns={columns}
         displayValue={cell.displayValue}
         focusTable={this.focusTable}
+        forceTableUpdate={this.forceTableUpdate}
         isExpandedCell={false}
         langtag={langtag}
         userLangtag={langtag}
@@ -377,6 +387,7 @@ class VirtualTable extends PureComponent {
               column={column}
               displayValue={displayValue}
               focusTable={this.focusTable}
+              forceTableUpdate={this.forceTableUpdate}
               isExpandedCell={!isPrimaryLang}
               key={`${userLangtag}-${langtag}-${key}`}
               langtag={langtag}

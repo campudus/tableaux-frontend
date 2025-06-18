@@ -1,19 +1,9 @@
 import PropTypes from "prop-types";
-import React, { useEffect } from "react";
 import { canUserChangeCell } from "../../../helpers/accessManagementHelper";
-import { isLocked } from "../../../helpers/annotationHelper";
+import { isLocked } from "../../../helpers/rowUnlock";
 
 const BooleanCell = props => {
-  const {
-    actions,
-    selected,
-    editing,
-    value,
-    row,
-    column,
-    langtag,
-    cell
-  } = props;
+  const { actions, selected, value, row, column, langtag, cell } = props;
 
   const handleEditDone = newValue => {
     const valueToSave = column.multilanguage
@@ -27,19 +17,12 @@ const BooleanCell = props => {
     });
   };
 
-  useEffect(() => {
-    if (selected && !editing) {
-      actions.toggleCellEditing({ editing: true });
-    }
-  }, [selected]);
-
   const getCheckboxValue = () => {
     return !!(column.multilanguage ? value[langtag] : value);
   };
 
   const handleClick = event => {
-    if (editing) {
-      event.stopPropagation();
+    if (selected) {
       if (!isLocked(row) && canUserChangeCell(cell, langtag)) {
         handleEditDone(!getCheckboxValue());
       }

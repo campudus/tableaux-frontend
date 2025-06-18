@@ -7,7 +7,7 @@ import {
   isMultilangAnnotation,
   isTextAnnotation
 } from "../redux/actions/annotation-specs";
-import { maybe, unless } from "./functools";
+import { unless } from "./functools";
 import { setRowFlag } from "../redux/actions/annotationActions";
 import actions from "../redux/actionCreators";
 import store from "../redux/store";
@@ -97,31 +97,6 @@ const setRowAnnotation = ({ table, row, flagName, flagValue }) => {
   store.dispatch(setRowFlag({ table, row, flagName, flagValue }));
 };
 
-// Singleton
-class UnlockedRowManager {
-  static unlockedRow = null;
-
-  static getUnlocked() {
-    return UnlockedRowManager.unlockedRow;
-  }
-
-  static unlock(row) {
-    UnlockedRowManager.unlockedRow = row;
-  }
-
-  static relock() {
-    UnlockedRowManager.unlockedRow = null;
-  }
-}
-
-const unlockRow = (row, unlockState = true) => {
-  if (!unlockState) {
-    UnlockedRowManager.relock();
-  } else {
-    UnlockedRowManager.unlock(row);
-  }
-};
-
 const isTranslationNeeded = langtag => cell => {
   const langtags = f.prop(
     ["annotations", "translationNeeded", "langtags"],
@@ -132,13 +107,6 @@ const isTranslationNeeded = langtag => cell => {
     ? f.contains(langtag, langtags)
     : !f.isEmpty(langtags);
 };
-
-const isLocked = row =>
-  row &&
-  row.final &&
-  maybe(UnlockedRowManager.getUnlocked())
-    .map(f.get("id"))
-    .getOrElse(null) !== row.id;
 
 const getAnnotationConfig = annotationKey => {
   const configsByName = f.indexBy("name", AnnotationConfigs);
@@ -207,8 +175,6 @@ export {
   setRowAnnotation,
   setCellAnnotation,
   setRowFinal,
-  unlockRow,
-  isLocked,
   isTranslationNeeded,
   getAnnotationTitle,
   getAnnotationColor,

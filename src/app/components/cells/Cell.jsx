@@ -1,5 +1,6 @@
 import classNames from "classnames";
 import f from "lodash/fp";
+import i18n from "i18next";
 import PropTypes from "prop-types";
 import React, { createRef } from "react";
 import {
@@ -34,6 +35,7 @@ import NumericCell from "./numeric/NumericCell.jsx";
 import StatusCell from "./status/StatusCell.jsx";
 import ShortTextCell from "./text/ShortTextCell.jsx";
 import TextCell from "./text/TextCell.jsx";
+import { hasPendingUnlockRequest, isLocked } from "../../helpers/rowUnlock";
 
 const mapStateToProps = (state, props) => {
   const { cell, langtag } = props;
@@ -157,8 +159,32 @@ class Cell extends React.Component {
       this.setSelfAsSelected();
     } else if (this.userCanEditValue() && modifiers.none) {
       actions.toggleCellEditing({ editing: true });
+
+      if (!isLocked(cell.row)) {
+        this.props.forceTableUpdate();
+      }
+
+      // only display hint if row isn't unlocked after 600ms
+      // cancel hint if row is unlocked within 600ms
+      this.unlockTimeoutId = window.setTimeout(() => {
+        if (isLocked(cell.row) && hasPendingUnlockRequest(cell.row)) {
+          actions.showToast({
+            content: (
+              <div id="cell-jump-toast">
+                <h1>{i18n.t("table:final.unlock_header")}</h1>
+                <p>{i18n.t("table:final.unlock_toast")}</p>
+              </div>
+            ),
+            duration: 2000
+          });
+        } else {
+          window.clearTimeout(this.unlockTimeoutId);
+        }
+      }, 600);
     }
   };
+
+  unlockTimeoutId = null;
 
   setSelfAsSelected = () => {
     const {
