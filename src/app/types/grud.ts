@@ -125,7 +125,8 @@ export type GRUDStore = {
   };
 };
 
-type Filter = Array<string | number | Filter>;
+export type Filter = Array<string | number | Filter>;
+
 type UndoEntry = {
   type: string;
   cell: Cell;
@@ -133,6 +134,7 @@ type UndoEntry = {
   newValue: CellValue;
   oldValue: CellValue;
 };
+
 type OverlayEntry = {
   body: React.FC;
   columns: Array<Column>;
