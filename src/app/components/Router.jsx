@@ -19,7 +19,7 @@ import {
 } from "../constants/TableauxConstants";
 import { withUserAuthentication } from "../helpers/authenticate";
 import { unless } from "../helpers/functools";
-import { initGrud } from "../initGrud";
+import { useGrudInit } from "../helpers/useGrudInit";
 import actionCreators from "../redux/actionCreators";
 import store from "../redux/store";
 import parseOptions from "../router/urlOptionParser";
@@ -32,12 +32,8 @@ const currentTableSelector = state => state.tableView.currentTable;
 const currentLanguageSelector = state => state.tableView.currentLanguage;
 
 const GRUDRouter = React.memo(() => {
-  const [isInitialized, setInitSuccess] = React.useState(false);
+  const isInitialized = useGrudInit();
   const tables = useSelector(tablesSelector);
-
-  React.useEffect(() => {
-    initGrud(setInitSuccess);
-  }, []);
 
   const renderView = viewName => routeProps =>
     renderComponent(routerProps, routeProps, viewName);
