@@ -72,7 +72,8 @@ const {
   TABLE_NAME_EDIT_ERROR,
   TABLE_NAME_EDIT_SUCCESS,
   TOGGLE_COLUMN_VISIBILITY,
-  SET_ANNOTATION_HIGHLIGHT
+  SET_ANNOTATION_HIGHLIGHT,
+  SET_USER_SETTINGS
 } = actionTypes;
 
 const {
@@ -599,6 +600,10 @@ const setGlobalSettings = settings => dispatch => {
   dispatch({ type: SET_GLOBAL_SETTINGS, settings });
 };
 
+const setUserSettings = settings => dispatch => {
+  dispatch({ type: SET_USER_SETTINGS, settings });
+};
+
 const actionCreators = {
   loadTables: loadTables,
   loadColumns: loadColumns,
@@ -668,7 +673,8 @@ const actionCreators = {
   clearMultiselect: dispatchParamsFor(MultiSelect.CLEAR_MULTISELECT),
   setShowArchivedRows,
   fetchSingleRow,
-  setAnnotationHighlight
+  setAnnotationHighlight,
+  setUserSettings
 };
 
 export default actionCreators;

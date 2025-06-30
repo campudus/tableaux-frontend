@@ -17,9 +17,14 @@ export type UserSettingKeyTable =
 
 export type UserSettingKeyFilter = "presetFilter";
 
+export type UserSettingKey =
+  | UserSettingKeyGlobal
+  | UserSettingKeyTable
+  | UserSettingKeyFilter;
+
 export type UserSettingKind = "global" | "table" | "filter";
 
-export type UserSetting<
+export type UserSettingBase<
   Key extends string,
   Kind extends UserSettingKind,
   Value = unknown
@@ -31,22 +36,22 @@ export type UserSetting<
   updatedAt?: string; // ISO
 };
 
-type UserSettingGlobal<
-  Key extends UserSettingKeyGlobal,
+export type UserSettingGlobal<
+  Key extends UserSettingKeyGlobal = UserSettingKeyGlobal,
   Value = unknown
-> = UserSetting<Key, "global", Value>;
+> = UserSettingBase<Key, "global", Value>;
 
-type UserSettingTable<
-  Key extends UserSettingKeyTable,
+export type UserSettingTable<
+  Key extends UserSettingKeyTable = UserSettingKeyTable,
   Value = unknown
-> = UserSetting<Key, "table", Value> & {
+> = UserSettingBase<Key, "table", Value> & {
   tableId: number;
 };
 
-type UserSettingFilter<
-  Key extends UserSettingKeyFilter,
+export type UserSettingFilter<
+  Key extends UserSettingKeyFilter = UserSettingKeyFilter,
   Value = unknown
-> = UserSetting<Key, "filter", Value> & {
+> = UserSettingBase<Key, "filter", Value> & {
   id: number;
   name: string;
 };
@@ -116,7 +121,7 @@ export type UserSettingPresetFilter = UserSettingFilter<
   }
 >;
 
-export type UserSettings = Array<
+export type UserSetting =
   | UserSettingFilterReset
   | UserSettingSortingReset
   | UserSettingSortingDesc
@@ -128,5 +133,4 @@ export type UserSettings = Array<
   | UserSettingColumnWidths
   | UserSettingVisibleColumns
   | UserSettingRowsFilter
-  | UserSettingPresetFilter
->;
+  | UserSettingPresetFilter;
