@@ -32,6 +32,12 @@ export const useGrudInit = () => {
       store.dispatch(actions.loadGlobalSettings());
       store.dispatch(actions.createDisplayValueWorker());
 
+      const settingsRoute = route.toUserSettings();
+      const settingsResponse = await makeRequest({ apiRoute: settingsRoute });
+      const settings = settingsResponse.settings;
+
+      store.dispatch(actions.setUserSettings(settings));
+
       setInitialized(true);
     } catch (err) {
       console.error("Could not init GRUD!", err);
