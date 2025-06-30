@@ -110,16 +110,14 @@ export const getMediaFile = (fileId?: string | number, langtag?: string) => {
   };
 };
 
-export type FileEditData = Partial<
-  Pick<
-    Attachment,
-    | "title"
-    | "description"
-    | "externalName"
-    | "internalName"
-    | "mimeType"
-    | "folder"
-  >
+export type FileEditData = Pick<
+  Attachment,
+  | "title"
+  | "description"
+  | "externalName"
+  | "internalName"
+  | "mimeType"
+  | "folder"
 >;
 
 export const editMediaFile = (

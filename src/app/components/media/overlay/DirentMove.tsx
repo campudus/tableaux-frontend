@@ -162,18 +162,25 @@ export function DirentMoveFooter(props: DirentMoveProps): ReactElement {
   };
 
   const handleSave = () => {
-    if (sourceFile?.uuid) {
+    if (sourceFile) {
       dispatch(
         editMediaFile(
-          sourceFile?.uuid,
-          { folder: targetFolder?.id },
+          sourceFile.uuid,
+          {
+            title: sourceFile.title,
+            description: sourceFile.description,
+            externalName: sourceFile.externalName,
+            internalName: sourceFile.internalName,
+            mimeType: sourceFile.mimeType,
+            folder: targetFolder?.id ?? null
+          },
           handleNavigate
         )
       );
-    } else if (sourceFolder?.id) {
+    } else if (sourceFolder) {
       dispatch(
         editMediaFolder(
-          sourceFolder?.id,
+          sourceFolder.id,
           {
             name: sourceFolder.name,
             description: sourceFolder.description,
