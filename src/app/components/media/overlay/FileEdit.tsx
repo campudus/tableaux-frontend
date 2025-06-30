@@ -16,8 +16,9 @@ import LanguageSwitcher from "../../header/LanguageSwitcher";
 
 type ReduxState = { media: MediaState };
 
-export type FileMeta = Partial<
-  Pick<Attachment, "title" | "description" | "externalName">
+export type FileMeta = Pick<
+  Attachment,
+  "title" | "description" | "externalName"
 >;
 
 export type FileMetaKey = keyof FileMeta;
@@ -27,7 +28,7 @@ type FileEditProps = {
   fileId: string;
   // provided through hoc
   sharedData?: FileMeta;
-  updateSharedData?: (updateFn: (data?: FileMeta) => FileMeta) => void;
+  updateSharedData?: (updateFn: (data: FileMeta) => FileMeta) => void;
 };
 
 export function FileEditBody({
@@ -38,7 +39,7 @@ export function FileEditBody({
   const file = useSelector<ReduxState, Attachment | undefined>(state =>
     state.media.data?.files?.find(f.propEq("uuid", fileId))
   );
-  const { title, description, externalName } = file ?? {};
+  const { title = {}, description = {}, externalName = {} } = file ?? {};
   const initialFileMeta = { title, description, externalName };
   const [fileMeta, setFileMeta] = useState(initialFileMeta);
   const oldFile = useRef(file);
@@ -124,12 +125,24 @@ export function FileEditBody({
 
 export function FileEditFooter(props: FileEditProps): ReactElement {
   const { fileId, sharedData: fileMeta } = props;
+  const file = useSelector<ReduxState, Attachment | undefined>(state =>
+    state.media.data?.files?.find(f.propEq("uuid", fileId))
+  );
   const canEdit = canUserEditFiles();
   const dispatch = useDispatch();
 
   const handleSave = () => {
-    if (fileMeta) {
-      dispatch(editMediaFile(fileId, fileMeta));
+    if (file && fileMeta) {
+      dispatch(
+        editMediaFile(fileId, {
+          folder: file.folder,
+          internalName: file.internalName,
+          mimeType: file.mimeType,
+          title: fileMeta.title,
+          description: fileMeta.description,
+          externalName: fileMeta.externalName
+        })
+      );
     }
   };
 
