@@ -134,3 +134,15 @@ export type UserSetting =
   | UserSettingVisibleColumns
   | UserSettingRowsFilter
   | UserSettingPresetFilter;
+
+export type UserSettingParams<
+  Kind extends UserSettingKind = UserSettingKind
+> = {
+  kind: Kind;
+} & (Kind extends "global"
+  ? { key: UserSettingKeyGlobal; tableId?: never }
+  : Kind extends "table"
+  ? { key: UserSettingKeyTable; tableId: number }
+  : Kind extends "filter"
+  ? { key: UserSettingKeyFilter; tableId?: never }
+  : never);

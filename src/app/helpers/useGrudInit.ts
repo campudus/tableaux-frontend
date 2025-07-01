@@ -29,7 +29,6 @@ export const useGrudInit = () => {
       await promisifyAction(actions.loadTables)();
       await promisifyAction(actions.queryFrontendServices)();
 
-      store.dispatch(actions.loadGlobalSettings());
       store.dispatch(actions.createDisplayValueWorker());
 
       const settingsRoute = route.toUserSettings();

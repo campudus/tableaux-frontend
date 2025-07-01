@@ -6,6 +6,7 @@ import {
   Locale,
   Table
 } from "@grud/devtools/types";
+import { UserSettingsState } from "../redux/reducers/userSettings";
 
 export * from "@grud/devtools/types";
 
@@ -123,6 +124,7 @@ export type GRUDStore = {
     error: boolean;
     finishedLoading: boolean;
   };
+  userSettings: UserSettingsState;
 };
 
 export type Filter = Array<string | number | Filter>;

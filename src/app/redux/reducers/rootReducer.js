@@ -8,7 +8,6 @@ import rows from "./rows";
 import tableView from "./tableView";
 import tables from "./table";
 import selectedCell from "./selectedCell";
-import globalSettings from "./globalSettings";
 import multiSelect from "./multiSelect";
 import userSettings from "./userSettings";
 
@@ -22,7 +21,6 @@ const rootReducer = omniscentReducer({
   grudStatus,
   frontendServices,
   selectedCell,
-  globalSettings,
   multiSelect,
   userSettings
 });

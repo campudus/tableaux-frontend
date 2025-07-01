@@ -1,6 +1,5 @@
 import { either } from "./functools";
 import f from "lodash/fp";
-import { GLOBAL_SETTINGS_DEFAULT } from "../redux/reducers/globalSettings";
 
 const getStoredViewObject = (tableId = null, name = "default") => {
   if (tableId) {
@@ -69,31 +68,11 @@ const saveAnnotationHighlight = (tableId, highlight = "", name = "default") => {
   );
 };
 
-const readGlobalSettings = () => {
-  return either(localStorage)
-    .map(f.get("globalSettings"))
-    .map(JSON.parse)
-    .getOrElse(GLOBAL_SETTINGS_DEFAULT);
-};
-
-const storeGlobalSettings = globalSettingsUpdate => {
-  if (!localStorage) {
-    return;
-  }
-  const globalSettings = readGlobalSettings();
-  localStorage["globalSettings"] = JSON.stringify({
-    ...globalSettings,
-    ...globalSettingsUpdate
-  });
-};
-
 export {
   getStoredViewObject,
   saveFilterSettings,
   saveColumnVisibility,
   saveColumnOrdering,
   saveColumnWidths,
-  saveAnnotationHighlight,
-  readGlobalSettings,
-  storeGlobalSettings
+  saveAnnotationHighlight
 };

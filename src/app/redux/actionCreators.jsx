@@ -10,12 +10,10 @@ import { urlToTableDestination } from "../helpers/apiUrl";
 import { doto, mapIndexed } from "../helpers/functools";
 import {
   getStoredViewObject,
-  readGlobalSettings,
   saveColumnOrdering,
   saveColumnVisibility,
   saveColumnWidths,
   saveFilterSettings,
-  storeGlobalSettings,
   saveAnnotationHighlight
 } from "../helpers/localStorage";
 import { checkOrThrow } from "../specs/type";
@@ -61,7 +59,6 @@ const {
   SET_CURRENT_TABLE,
   SET_DISPLAY_VALUE_WORKER,
   SET_FILTERS_AND_SORTING,
-  SET_GLOBAL_SETTINGS,
   SET_STATUS_INFO,
   SET_USER_AUTHENTICATED,
   START_GENERATING_DISPLAY_VALUES,
@@ -294,14 +291,14 @@ const loadCompleteTable = ({ tableId, selectedRowId }) => async dispatch => {
 };
 
 const loadTableView = (tableId, customFilters) => (dispatch, getState) => {
-  const { globalSettings, columns } = getState();
+  const { userSettings, columns } = getState();
   const {
     filterReset,
     columnsReset,
     sortingReset,
     sortingDesc,
     annotationReset
-  } = globalSettings;
+  } = userSettings.global;
   const storedView = getStoredViewObject(tableId);
   const {
     visibleColumns,
@@ -590,16 +587,6 @@ const rerenderTable = () => ({
   type: RERENDER_TABLE
 });
 
-const loadGlobalSettings = () => dispatch => {
-  const settings = readGlobalSettings();
-  dispatch({ type: SET_GLOBAL_SETTINGS, settings });
-};
-
-const setGlobalSettings = settings => dispatch => {
-  storeGlobalSettings(settings);
-  dispatch({ type: SET_GLOBAL_SETTINGS, settings });
-};
-
 const setUserSettings = settings => dispatch => {
   dispatch({ type: SET_USER_SETTINGS, settings });
 };
@@ -660,8 +647,6 @@ const actionCreators = {
   setUserAuthenticated: dispatchParamsFor(SET_USER_AUTHENTICATED),
   setColumnOrdering,
   rerenderTable,
-  loadGlobalSettings,
-  setGlobalSettings,
   toggleMultiselectArea: dispatchParamsSafelyFor(
     ["cell", "columns", "rows"],
     MultiSelect.TOGGLE_MULTISELECT_AREA
