@@ -6,7 +6,8 @@ import {
   UserSettingKeyFilter,
   UserSettingKeyGlobal,
   UserSettingKeyTable,
-  UserSettingTable
+  UserSettingTable,
+  UserSettingValue
 } from "../../types/userSettings";
 import ActionTypes from "../actionTypes";
 import { isUserSettingOfKind } from "../../types/guards";
@@ -15,11 +16,11 @@ const { SET_USER_SETTINGS } = ActionTypes;
 
 export type UserSettingsState = {
   global: {
-    [Key in UserSettingKeyGlobal]: Extract<UserSetting, { key: Key }>["value"];
+    [Key in UserSettingKeyGlobal]: UserSettingValue<Key>;
   };
   table: {
     [tableId: number]: {
-      [Key in UserSettingKeyTable]: Extract<UserSetting, { key: Key }>["value"];
+      [Key in UserSettingKeyTable]: UserSettingValue<Key>;
     };
   };
   filter: {

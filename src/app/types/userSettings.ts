@@ -22,6 +22,11 @@ export type UserSettingKey =
   | UserSettingKeyTable
   | UserSettingKeyFilter;
 
+export type UserSettingValue<Key extends UserSettingKey> = Extract<
+  UserSetting,
+  { key: Key }
+>["value"];
+
 export type UserSettingKind = "global" | "table" | "filter";
 
 export type UserSettingBase<

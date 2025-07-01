@@ -1,3 +1,4 @@
+import f from "lodash/fp";
 import { useEffect, useState } from "react";
 import { makeRequest } from "./apiHelper";
 import route from "./apiRoutes";
@@ -8,6 +9,7 @@ import {
 } from "../constants/TableauxConstants";
 import actions from "../redux/actionCreators";
 import store from "../redux/store";
+import sendUserSettingsToBackend from "./sendUserSettingsToBackend";
 
 export const useGrudInit = () => {
   const [isInitialized, setInitialized] = useState(false);
@@ -35,7 +37,11 @@ export const useGrudInit = () => {
       const settingsResponse = await makeRequest({ apiRoute: settingsRoute });
       const settings = settingsResponse.settings;
 
-      store.dispatch(actions.setUserSettings(settings));
+      if (f.isEmpty(settings)) {
+        await sendUserSettingsToBackend();
+      } else {
+        store.dispatch(actions.setUserSettings(settings));
+      }
 
       setInitialized(true);
     } catch (err) {
