@@ -1,6 +1,5 @@
 import i18n from "i18next";
 import f from "lodash/fp";
-import React from "react";
 import { ShowArchived } from "../archivedRows/helpers";
 import { loadAndOpenEntityView } from "../components/overlay/EntityViewOverlay";
 import { Langtags, SortValue } from "../constants/TableauxConstants";
@@ -8,14 +7,6 @@ import { makeRequest } from "../helpers/apiHelper";
 import API_ROUTES from "../helpers/apiRoutes";
 import { urlToTableDestination } from "../helpers/apiUrl";
 import { doto, mapIndexed } from "../helpers/functools";
-import {
-  getStoredViewObject,
-  saveColumnOrdering,
-  saveColumnVisibility,
-  saveColumnWidths,
-  saveFilterSettings,
-  saveAnnotationHighlight
-} from "../helpers/localStorage";
 import { checkOrThrow } from "../specs/type";
 import {
   addAnnotationLangtags,
@@ -29,7 +20,10 @@ import { changeCellValue, modifyHistory } from "./actions/cellActions";
 import { queryFrontendServices } from "./actions/frontendServices";
 import * as Row from "./actions/rowActions";
 import * as MediaActions from "./actions/mediaActions";
-import * as UserSettingActions from "./actions/userSettingActions";
+import {
+  getUserSettings,
+  upsertUserSetting
+} from "./actions/userSettingActions";
 import actionTypes from "./actionTypes";
 import { overlayParamsSpec } from "./reducers/overlays";
 
@@ -56,6 +50,7 @@ const {
   HIDE_ALL_COLUMNS,
   SET_COLUMNS_VISIBLE,
   SET_COLUMN_ORDERING,
+  SET_COLUMN_WIDTHS,
   SET_CURRENT_LANGUAGE,
   SET_CURRENT_TABLE,
   SET_DISPLAY_VALUE_WORKER,
@@ -70,8 +65,7 @@ const {
   TABLE_NAME_EDIT_ERROR,
   TABLE_NAME_EDIT_SUCCESS,
   TOGGLE_COLUMN_VISIBILITY,
-  SET_ANNOTATION_HIGHLIGHT,
-  SET_USER_SETTINGS
+  SET_ANNOTATION_HIGHLIGHT
 } = actionTypes;
 
 const {
@@ -213,7 +207,12 @@ const toggleColumnVisibility = columnId => (dispatch, getState) => {
   };
   const { currentTable } = state.tableView;
   const updated = toggleSingleColumn(columnId);
-  saveColumnVisibility(currentTable, updated);
+  dispatch(
+    upsertUserSetting(
+      { key: "visibleColumns", kind: "table", tableId: currentTable },
+      { value: updated }
+    )
+  );
   dispatch({
     type: TOGGLE_COLUMN_VISIBILITY,
     visibleColumns: updated
@@ -235,22 +234,46 @@ const setColumnsVisible = columnIds => (dispatch, getState) => {
   });
   const state = getState();
   const tableId = f.get(["tableView", "currentTable"], state);
-  saveColumnVisibility(tableId, columnIds);
+  dispatch(
+    upsertUserSetting(
+      { key: "visibleColumns", kind: "table", tableId },
+      { value: columnIds }
+    )
+  );
 };
 
 const setColumnOrdering = columnIds => (dispatch, getState) => {
   dispatch({ type: SET_COLUMN_ORDERING, columnIds });
   const tableId = f.get(["tableView", "currentTable"], getState());
-  saveColumnOrdering(tableId, columnIds);
+  dispatch(
+    upsertUserSetting(
+      { key: "columnOrdering", kind: "table", tableId },
+      { value: columnIds }
+    )
+  );
 };
 
-const hideAllColumns = (tableId, columns) => {
+const setColumnWidths = columnWidths => (dispatch, getState) => {
+  dispatch({ type: SET_COLUMN_WIDTHS, columnWidths });
+  const tableId = f.get(["tableView", "currentTable"], getState());
+  dispatch(
+    upsertUserSetting(
+      { key: "columnWidths", kind: "table", tableId },
+      { value: columnWidths }
+    )
+  );
+};
+
+const hideAllColumns = (tableId, columns) => dispatch => {
+  dispatch({ type: HIDE_ALL_COLUMNS, tableId });
   // first/one column has to be always visible
-  saveColumnVisibility(tableId, [f.get("id", f.head(columns))]);
-  return {
-    type: HIDE_ALL_COLUMNS,
-    tableId
-  };
+  const columnIds = [f.get("id", f.head(columns))];
+  dispatch(
+    upsertUserSetting(
+      { key: "visibleColumns", kind: "table", tableId },
+      { value: columnIds }
+    )
+  );
 };
 
 const setCurrentTable = tableId => {
@@ -293,20 +316,22 @@ const loadCompleteTable = ({ tableId, selectedRowId }) => async dispatch => {
 
 const loadTableView = (tableId, customFilters) => (dispatch, getState) => {
   const { userSettings, columns } = getState();
+  const userSettingsGlobal = f.get(["global"], userSettings);
+  const userSettingsTable = f.get(["table", tableId], userSettings);
   const {
     filterReset,
     columnsReset,
     sortingReset,
     sortingDesc,
     annotationReset
-  } = userSettings.global;
-  const storedView = getStoredViewObject(tableId);
+  } = userSettingsGlobal;
   const {
     visibleColumns,
     rowsFilter,
     columnOrdering,
+    columnWidths,
     annotationHighlight
-  } = storedView;
+  } = userSettingsTable;
   const storedFilters = f.get(["filters"], rowsFilter) ?? [];
   const storedSortColumnName = f.get(["sortColumnName"], rowsFilter);
   const storedSortDirection = f.get(["sortDirection"], rowsFilter);
@@ -338,15 +363,26 @@ const loadTableView = (tableId, customFilters) => (dispatch, getState) => {
     dispatch(setFiltersAndSorting(tempFilters, tempSorting, false));
 
     // persist permanent filters
-    saveFilterSettings(tableId, {
-      sortColumnId: permanentSortColumnName,
-      sortValue: permanentSortDirection,
-      filters: permanentFilters
-    });
+    dispatch(
+      upsertUserSetting(
+        { key: "rowsFilter", kind: "table", tableId },
+        {
+          value: {
+            sortColumnId: permanentSortColumnName,
+            sortValue: permanentSortDirection,
+            filters: permanentFilters
+          }
+        }
+      )
+    );
   }
 
   if (!f.isEmpty(columnOrdering)) {
     dispatch(setColumnOrdering(columnOrdering));
+  }
+
+  if (!f.isEmpty(columnWidths)) {
+    dispatch(setColumnWidths(columnWidths));
   }
 
   if (!f.isEmpty(visibleColumns)) {
@@ -366,7 +402,7 @@ const loadTableView = (tableId, customFilters) => (dispatch, getState) => {
 
     dispatch(setColumnsVisible(columnIds));
     dispatch(setColumnOrdering(columnOrdering));
-    saveColumnWidths(tableId, {});
+    dispatch(setColumnWidths({}));
   }
 };
 
@@ -479,7 +515,12 @@ const setFiltersAndSorting = (filters, sorting, shouldSave) => (
   };
   if (shouldSave) {
     const currentTable = f.get(["tableView", "currentTable"], getState());
-    saveFilterSettings(currentTable, rowsFilter);
+    dispatch(
+      upsertUserSetting(
+        { key: "rowsFilter", kind: "table", tableId: currentTable },
+        { value: rowsFilter }
+      )
+    );
   }
 };
 
@@ -496,7 +537,12 @@ const setAnnotationHighlight = (annotationHighlight = "") => (
 ) => {
   dispatch({ type: SET_ANNOTATION_HIGHLIGHT, annotationHighlight });
   const tableId = f.get(["tableView", "currentTable"], getState());
-  saveAnnotationHighlight(tableId, annotationHighlight);
+  dispatch(
+    upsertUserSetting(
+      { key: "annotationHighlight", kind: "table", tableId },
+      { value: annotationHighlight }
+    )
+  );
 };
 
 const deleteRow = action => {
@@ -643,6 +689,7 @@ const actionCreators = {
   queryFrontendServices,
   setUserAuthenticated: dispatchParamsFor(SET_USER_AUTHENTICATED),
   setColumnOrdering,
+  setColumnWidths,
   rerenderTable,
   toggleMultiselectArea: dispatchParamsSafelyFor(
     ["cell", "columns", "rows"],
@@ -656,8 +703,8 @@ const actionCreators = {
   setShowArchivedRows,
   fetchSingleRow,
   setAnnotationHighlight,
-  getUserSettings: UserSettingActions.getUserSettings,
-  upsertUserSetting: UserSettingActions.upsertUserSetting
+  getUserSettings,
+  upsertUserSetting
 };
 
 export default actionCreators;

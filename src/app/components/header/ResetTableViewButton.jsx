@@ -6,14 +6,8 @@ import { PROFILE_TAB } from "../profile/constants";
 import store from "../../redux/store";
 import actions from "../../redux/actionCreators";
 import { mapIndexed } from "../../helpers/functools";
-import { saveColumnWidths } from "../../helpers/localStorage";
 
-export default function ResetTableViewButton({
-  tableId,
-  langtag,
-  columns,
-  navigate
-}) {
+export default function ResetTableViewButton({ langtag, columns, navigate }) {
   const resetTableView = () => {
     const columnIds = f.map("id", columns);
     const columnOrdering = mapIndexed(({ id }, idx) => ({ id, idx }))(columns);
@@ -22,7 +16,7 @@ export default function ResetTableViewButton({
     store.dispatch(actions.setColumnsVisible(columnIds));
     store.dispatch(actions.setColumnOrdering(columnOrdering));
     store.dispatch(actions.setAnnotationHighlight(""));
-    saveColumnWidths(tableId, {});
+    store.dispatch(actions.setColumnWidths({}));
     store.dispatch(actions.rerenderTable());
   };
 

@@ -42,6 +42,7 @@ const {
   SET_FILTERS_AND_SORTING,
   CLEAN_UP,
   SET_COLUMN_ORDERING,
+  SET_COLUMN_WIDTHS,
   SET_ANNOTATION_HIGHLIGHT
 } = ActionTypes;
 
@@ -51,6 +52,7 @@ const initialState = {
   editing: false,
   visibleColumns: [],
   columnOrdering: [],
+  columnWidths: {},
   currentTable: null,
   displayValues: {},
   expandedRowIds: [],
@@ -322,6 +324,8 @@ export default (state = initialState, action, completeState) => {
       return { ...state, visibleColumns: action.columnIds };
     case SET_COLUMN_ORDERING:
       return { ...state, columnOrdering: action.columnIds };
+    case SET_COLUMN_WIDTHS:
+      return { ...state, columnWidths: action.columnWidths };
     case SET_CURRENT_TABLE:
       return { ...state, currentTable: action.tableId };
     case COLUMNS_DATA_LOADED:

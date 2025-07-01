@@ -142,13 +142,17 @@ export type UserSetting =
 
 export type UserSettingParams<
   Kind extends UserSettingKind
-> = Kind extends "table"
+> = Kind extends "global"
+  ? Pick<UserSettingGlobal, "kind" | "key"> & { tableId?: never }
+  : Kind extends "table"
   ? Pick<UserSettingTable, "kind" | "key" | "tableId">
-  : Pick<UserSetting, "kind" | "key"> & { tableId?: never };
+  : Kind extends "filter"
+  ? Pick<UserSettingFilter, "kind" | "key"> & { tableId?: never }
+  : never;
 
 export type UserSettingBody<
   Kind extends UserSettingKind,
   Key extends UserSettingKey
 > = Kind extends "filter"
-  ? Pick<Extract<UserSettingFilter, { key: Key }>, "value" | "name">
-  : Pick<Extract<UserSetting, { key: Key }>, "value"> & { name?: never };
+  ? { value: UserSettingValue<Key>; name: string }
+  : { value: UserSettingValue<Key>; name?: never };
