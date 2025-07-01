@@ -12,7 +12,10 @@ import {
 import ActionTypes from "../actionTypes";
 import { isUserSettingOfKind } from "../../types/guards";
 
-const { SET_USER_SETTINGS } = ActionTypes;
+const {
+  USER_SETTINGS_GET_SUCCESS,
+  USER_SETTING_UPSERT_SUCCESS
+} = ActionTypes.userSettings;
 
 export type UserSettingsState = {
   global: {
@@ -27,6 +30,16 @@ export type UserSettingsState = {
     [Key in UserSettingKeyFilter]: Array<Extract<UserSetting, { key: Key }>>;
   };
 };
+
+type UserSettingAction =
+  | {
+      type: typeof USER_SETTINGS_GET_SUCCESS;
+      result: { settings: Array<UserSetting> };
+    }
+  | {
+      type: typeof USER_SETTING_UPSERT_SUCCESS;
+      result: UserSetting;
+    };
 
 export const initialState: UserSettingsState = {
   global: {
@@ -43,13 +56,30 @@ export const initialState: UserSettingsState = {
   }
 };
 
-export default (
-  state = initialState,
-  action: { type: string; settings: Array<UserSetting> }
-) => {
+export default (state = initialState, action: UserSettingAction) => {
   switch (action.type) {
-    case SET_USER_SETTINGS: {
-      const { settings } = action;
+    case USER_SETTING_UPSERT_SUCCESS: {
+      const setting = action.result;
+
+      if (setting.kind === "global") {
+        const { kind, key, value } = setting;
+        return f.assoc([kind, key], value, state);
+      }
+
+      if (setting.kind === "table") {
+        const { kind, tableId, key, value } = setting;
+        return f.assoc([kind, tableId, key], value, state);
+      }
+
+      if (setting.kind === "filter") {
+        const { kind, key, value } = setting;
+        return f.update([kind, key], settings => [...settings, value], state);
+      }
+
+      return state;
+    }
+    case USER_SETTINGS_GET_SUCCESS: {
+      const { settings } = action.result;
 
       return {
         ...state,

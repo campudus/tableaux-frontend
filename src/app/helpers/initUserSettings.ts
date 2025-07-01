@@ -6,8 +6,8 @@ import {
   UserSettingKeyTable,
   UserSettingValue
 } from "../types/userSettings";
-import route from "./apiRoutes";
-import { makeRequest } from "./apiHelper";
+import actions from "../redux/actionCreators";
+import store from "../redux/store";
 
 /** LocalStorage -> "globalSettings" */
 type GlobalSettings = {
@@ -44,9 +44,9 @@ function readLocalStorage(key: string) {
 }
 
 /**
- * Send user settings from localStorage to backend
+ * initialize user settings from localStorage
  */
-async function sendUserSettingsToBackend() {
+async function initUserSettings() {
   const globalSettings: GlobalSettings = readLocalStorage("globalSettings");
   const tableViews: TableViews = readLocalStorage("tableViews");
 
@@ -55,14 +55,12 @@ async function sendUserSettingsToBackend() {
     const settingKey = key as keyof GlobalSettings;
     const settingValue = value as GlobalSettings[typeof settingKey];
 
-    await makeRequest({
-      method: "PUT",
-      apiRoute: route.toUserSettings({
-        kind: "global",
-        key: settingKey
-      }),
-      data: { value: settingValue }
-    });
+    store.dispatch(
+      actions.upsertUserSetting(
+        { kind: "global", key: settingKey },
+        { value: settingValue }
+      )
+    );
   }
 
   // filter/table settings
@@ -75,14 +73,12 @@ async function sendUserSettingsToBackend() {
         const settingKey: UserSettingKeyFilter = "presetFilter";
         const settingValue = filterSettings.rowsFilter;
 
-        await makeRequest({
-          method: "PUT",
-          apiRoute: route.toUserSettings({
-            kind: "filter",
-            key: settingKey
-          }),
-          data: { name: settingName, value: settingValue }
-        });
+        store.dispatch(
+          actions.upsertUserSetting(
+            { kind: "filter", key: settingKey },
+            { name: settingName, value: settingValue }
+          )
+        );
       }
     } else {
       // table settings
@@ -94,18 +90,15 @@ async function sendUserSettingsToBackend() {
         const settingKey = key as keyof TableSettings;
         const settingValue = value as TableSettings[typeof settingKey];
 
-        await makeRequest({
-          method: "PUT",
-          apiRoute: route.toUserSettings({
-            kind: "table",
-            tableId,
-            key: settingKey
-          }),
-          data: { value: settingValue }
-        });
+        store.dispatch(
+          actions.upsertUserSetting(
+            { kind: "table", tableId, key: settingKey },
+            { value: settingValue }
+          )
+        );
       }
     }
   }
 }
 
-export default sendUserSettingsToBackend;
+export default initUserSettings;

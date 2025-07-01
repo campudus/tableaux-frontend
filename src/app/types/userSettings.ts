@@ -141,13 +141,14 @@ export type UserSetting =
   | UserSettingPresetFilter;
 
 export type UserSettingParams<
-  Kind extends UserSettingKind = UserSettingKind
-> = {
-  kind: Kind;
-} & (Kind extends "global"
-  ? { key: UserSettingKeyGlobal; tableId?: never }
-  : Kind extends "table"
-  ? { key: UserSettingKeyTable; tableId: number }
-  : Kind extends "filter"
-  ? { key: UserSettingKeyFilter; tableId?: never }
-  : never);
+  Kind extends UserSettingKind
+> = Kind extends "table"
+  ? Pick<UserSettingTable, "kind" | "key" | "tableId">
+  : Pick<UserSetting, "kind" | "key"> & { tableId?: never };
+
+export type UserSettingBody<
+  Kind extends UserSettingKind,
+  Key extends UserSettingKey
+> = Kind extends "filter"
+  ? Pick<Extract<UserSettingFilter, { key: Key }>, "value" | "name">
+  : Pick<Extract<UserSetting, { key: Key }>, "value"> & { name?: never };

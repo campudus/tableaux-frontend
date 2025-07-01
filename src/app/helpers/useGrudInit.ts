@@ -9,7 +9,7 @@ import {
 } from "../constants/TableauxConstants";
 import actions from "../redux/actionCreators";
 import store from "../redux/store";
-import sendUserSettingsToBackend from "./sendUserSettingsToBackend";
+import initUserSettings from "./initUserSettings";
 
 export const useGrudInit = () => {
   const [isInitialized, setInitialized] = useState(false);
@@ -33,14 +33,11 @@ export const useGrudInit = () => {
 
       store.dispatch(actions.createDisplayValueWorker());
 
-      const settingsRoute = route.toUserSettings();
-      const settingsResponse = await makeRequest({ apiRoute: settingsRoute });
+      const settingsResponse = await promisifyAction(actions.getUserSettings)();
       const settings = settingsResponse.settings;
 
       if (f.isEmpty(settings)) {
-        await sendUserSettingsToBackend();
-      } else {
-        store.dispatch(actions.setUserSettings(settings));
+        await initUserSettings();
       }
 
       setInitialized(true);

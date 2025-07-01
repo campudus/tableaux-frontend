@@ -1,13 +1,11 @@
-import { ChangeEvent } from "react";
 import { t } from "i18next";
+import { ChangeEvent } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { buildClassName as cn } from "../../helpers/buildClassName";
 import Breadcrumbs from "../helperComponents/Breadcrumbs";
 import { PROFILE_TAB } from "./constants";
 import Toggle from "../helperComponents/Toggle";
-import { useDispatch, useSelector } from "react-redux";
 import action from "../../redux/actionCreators";
-import { makeRequest } from "../../helpers/apiHelper";
-import route from "../../helpers/apiRoutes";
 import { UserSettingKeyGlobal } from "../../types/userSettings";
 import { GRUDStore } from "../../types/grud";
 import { UserSettingsState } from "../../redux/reducers/userSettings";
@@ -24,13 +22,12 @@ export default function ProfileSettings({ langtag }: ProfileSettingsProps) {
 
   const buildOnChange = (key: UserSettingKeyGlobal) => {
     return async (event: ChangeEvent<HTMLInputElement>) => {
-      await makeRequest({
-        method: "PUT",
-        apiRoute: route.toUserSettings({ kind: "global", key }),
-        data: { value: event.target.checked }
-      })
-        .then(setting => dispatch(action.setUserSettings([setting])))
-        .catch(console.error);
+      dispatch(
+        action.upsertUserSetting(
+          { kind: "global", key },
+          { value: event.target.checked }
+        )
+      );
     };
   };
 

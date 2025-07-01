@@ -29,6 +29,7 @@ import { changeCellValue, modifyHistory } from "./actions/cellActions";
 import { queryFrontendServices } from "./actions/frontendServices";
 import * as Row from "./actions/rowActions";
 import * as MediaActions from "./actions/mediaActions";
+import * as UserSettingActions from "./actions/userSettingActions";
 import actionTypes from "./actionTypes";
 import { overlayParamsSpec } from "./reducers/overlays";
 
@@ -587,10 +588,6 @@ const rerenderTable = () => ({
   type: RERENDER_TABLE
 });
 
-const setUserSettings = settings => dispatch => {
-  dispatch({ type: SET_USER_SETTINGS, settings });
-};
-
 const actionCreators = {
   loadTables: loadTables,
   loadColumns: loadColumns,
@@ -659,7 +656,8 @@ const actionCreators = {
   setShowArchivedRows,
   fetchSingleRow,
   setAnnotationHighlight,
-  setUserSettings
+  getUserSettings: UserSettingActions.getUserSettings,
+  upsertUserSetting: UserSettingActions.upsertUserSetting
 };
 
 export default actionCreators;
