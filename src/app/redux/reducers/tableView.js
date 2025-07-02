@@ -169,7 +169,10 @@ const toggleExpandedRow = (state, action) => {
 
 const setInitialVisibleColumns = (action, completeState) => state => {
   const isCurrentTable = state.currentTable === action.tableId;
-  const isReset = f.get(["globalSettings", "columnsReset"], completeState);
+  const isReset = f.get(
+    ["userSettings", "global", "columnsReset"],
+    completeState
+  );
   const isVisibleColumnsEmpty = f.isEmpty(f.get("visibleColumns", state));
 
   if ((isReset || isVisibleColumnsEmpty) && isCurrentTable) {
@@ -184,7 +187,10 @@ const setInitialVisibleColumns = (action, completeState) => state => {
 
 const setInitialColumnOrdering = (action, completeState) => state => {
   const isCurrentTable = state.currentTable === action.tableId;
-  const isReset = f.get(["globalSettings", "columnsReset"], completeState);
+  const isReset = f.get(
+    ["userSettings", "global", "columnsReset"],
+    completeState
+  );
   const isColumnOrderingEmpty = f.isEmpty(f.get("columnOrdering", state));
 
   if ((isReset || isColumnOrderingEmpty) && isCurrentTable) {

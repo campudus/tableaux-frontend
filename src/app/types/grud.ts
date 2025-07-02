@@ -72,13 +72,6 @@ export type GRUDStore = {
     { data: Array<Column>; error: boolean; finishedLoading: boolean }
   >;
   frontendServices: Array<Record<string, unknown>>;
-  globalSettings: {
-    annotationReset: boolean;
-    columnsReset: boolean;
-    filterReset: boolean;
-    sortingDesc: boolean;
-    sortingReset: boolean;
-  };
   grudStatus: {
     connectedToBackend: boolean;
   };
