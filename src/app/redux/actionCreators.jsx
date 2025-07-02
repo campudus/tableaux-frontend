@@ -21,6 +21,7 @@ import { queryFrontendServices } from "./actions/frontendServices";
 import * as Row from "./actions/rowActions";
 import * as MediaActions from "./actions/mediaActions";
 import {
+  deleteUserSettings,
   getUserSettings,
   upsertUserSetting
 } from "./actions/userSettingActions";
@@ -317,7 +318,7 @@ const loadCompleteTable = ({ tableId, selectedRowId }) => async dispatch => {
 const loadTableView = (tableId, customFilters) => (dispatch, getState) => {
   const { userSettings, columns } = getState();
   const userSettingsGlobal = f.get(["global"], userSettings);
-  const userSettingsTable = f.get(["table", tableId], userSettings);
+  const userSettingsTable = f.getOr({}, ["table", tableId], userSettings);
   const {
     filterReset,
     columnsReset,
@@ -704,7 +705,8 @@ const actionCreators = {
   fetchSingleRow,
   setAnnotationHighlight,
   getUserSettings,
-  upsertUserSetting
+  upsertUserSetting,
+  deleteUserSettings
 };
 
 export default actionCreators;

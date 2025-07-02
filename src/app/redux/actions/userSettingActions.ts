@@ -14,7 +14,10 @@ const {
   USER_SETTINGS_GET_ERROR,
   USER_SETTING_UPSERT,
   USER_SETTING_UPSERT_SUCCESS,
-  USER_SETTING_UPSERT_ERROR
+  USER_SETTING_UPSERT_ERROR,
+  USER_SETTINGS_DELETE,
+  USER_SETTINGS_DELETE_SUCCESS,
+  USER_SETTINGS_DELETE_ERROR
 } = actionTypes.userSettings;
 
 export const getUserSettings = <Kind extends UserSettingKind>(
@@ -53,5 +56,24 @@ export const upsertUserSetting = <
     ],
     params,
     body
+  };
+};
+
+export const deleteUserSettings = <
+  Kind extends Extract<UserSettingKind, "table" | "filter">
+>(
+  params: UserSettingParams<Kind>
+) => {
+  return {
+    promise: makeRequest({
+      method: "DELETE",
+      apiRoute: toUserSettings(params)
+    }),
+    actionTypes: [
+      USER_SETTINGS_DELETE,
+      USER_SETTINGS_DELETE_SUCCESS,
+      USER_SETTINGS_DELETE_ERROR
+    ],
+    params
   };
 };

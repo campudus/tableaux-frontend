@@ -634,8 +634,7 @@ VirtualTable.propTypes = {
   visibleColumns: PropTypes.string.isRequired
 };
 
-const mapStateToProps = (state, props) => {
-  console.log({ props });
+const mapStateToProps = state => {
   return {
     columnWidths: f.propOr({}, "tableView.columnWidths", state),
     selectedCell: f.propOr({}, "selectedCell.selectedCell", state)

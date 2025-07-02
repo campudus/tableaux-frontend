@@ -143,11 +143,19 @@ export type UserSetting =
 export type UserSettingParams<
   Kind extends UserSettingKind
 > = Kind extends "global"
-  ? Pick<UserSettingGlobal, "kind" | "key"> & { tableId?: never }
+  ?
+      | (Pick<UserSettingGlobal, "kind"> & { key?: never }) // GET
+      | Pick<UserSettingGlobal, "kind" | "key"> // PUT
   : Kind extends "table"
-  ? Pick<UserSettingTable, "kind" | "key" | "tableId">
+  ?
+      | (Pick<UserSettingTable, "kind"> & { tableId?: never; key?: never }) // GET
+      | (Pick<UserSettingTable, "kind" | "tableId"> & { key?: never }) // GET or DELETE
+      | Pick<UserSettingTable, "kind" | "tableId" | "key"> // PUT or DELETE
   : Kind extends "filter"
-  ? Pick<UserSettingFilter, "kind" | "key"> & { tableId?: never }
+  ?
+      | (Pick<UserSettingFilter, "kind"> & { key?: never; id?: never }) // GET
+      | (Pick<UserSettingFilter, "kind" | "key"> & { id?: never }) // PUT
+      | (Pick<UserSettingFilter, "kind" | "id"> & { key?: never }) // DELETE
   : never;
 
 export type UserSettingBody<

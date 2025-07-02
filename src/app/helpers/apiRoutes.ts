@@ -102,8 +102,9 @@ export function toUserSettings<Kind extends UserSettingKind>(
   const urlParts = [
     "/user/settings",
     params?.kind,
-    params?.tableId,
-    params?.key
+    (params as UserSettingParams<"table">)?.tableId,
+    params?.key,
+    (params as UserSettingParams<"filter">)?.id
   ];
 
   return f.compact(urlParts).join("/");

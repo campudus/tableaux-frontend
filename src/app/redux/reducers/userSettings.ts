@@ -1,11 +1,15 @@
 import f from "lodash/fp";
 import {
   UserSetting,
+  UserSettingBody,
   UserSettingFilter,
   UserSettingGlobal,
+  UserSettingKey,
   UserSettingKeyFilter,
   UserSettingKeyGlobal,
   UserSettingKeyTable,
+  UserSettingKind,
+  UserSettingParams,
   UserSettingTable,
   UserSettingValue
 } from "../../types/userSettings";
@@ -14,7 +18,8 @@ import { isUserSettingOfKind } from "../../types/guards";
 
 const {
   USER_SETTINGS_GET_SUCCESS,
-  USER_SETTING_UPSERT_SUCCESS
+  USER_SETTING_UPSERT_SUCCESS,
+  USER_SETTINGS_DELETE_SUCCESS
 } = ActionTypes.userSettings;
 
 export type UserSettingsState = {
@@ -35,10 +40,17 @@ type UserSettingAction =
   | {
       type: typeof USER_SETTINGS_GET_SUCCESS;
       result: { settings: Array<UserSetting> };
+      params: UserSettingParams<UserSettingKind>;
     }
   | {
       type: typeof USER_SETTING_UPSERT_SUCCESS;
       result: UserSetting;
+      params: UserSettingParams<UserSettingKind>;
+      body: UserSettingBody<UserSettingKind, UserSettingKey>;
+    }
+  | {
+      type: typeof USER_SETTINGS_DELETE_SUCCESS;
+      params: UserSettingParams<UserSettingKind>;
     };
 
 export const initialState: UserSettingsState = {
@@ -72,8 +84,8 @@ export default (state = initialState, action: UserSettingAction) => {
       }
 
       if (setting.kind === "filter") {
-        const { kind, key, value } = setting;
-        return f.update([kind, key], settings => [...settings, value], state);
+        const { kind, key } = setting;
+        return f.update([kind, key], settings => [...settings, setting], state);
       }
 
       return state;
@@ -112,6 +124,34 @@ export default (state = initialState, action: UserSettingAction) => {
           )(settings)
         }
       };
+    }
+    case USER_SETTINGS_DELETE_SUCCESS: {
+      const { params } = action;
+
+      if (params.kind === "global") {
+        return state;
+      }
+
+      if (params.kind === "table" && params.tableId) {
+        return f.dissoc([params.kind, params.tableId], state);
+      }
+
+      if (params.kind === "filter" && params.id) {
+        return f.update(
+          [params.kind],
+          f.flow(
+            Object.entries,
+            f.map(([settingKey, settingList]) => [
+              settingKey,
+              f.reject(f.propEq("id", params.id), settingList)
+            ]),
+            Object.fromEntries
+          ),
+          state
+        );
+      }
+
+      return state;
     }
     default:
       return state;
