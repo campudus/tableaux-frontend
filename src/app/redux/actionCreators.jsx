@@ -2,7 +2,11 @@ import i18n from "i18next";
 import f from "lodash/fp";
 import { ShowArchived } from "../archivedRows/helpers";
 import { loadAndOpenEntityView } from "../components/overlay/EntityViewOverlay";
-import { Langtags, SortValue } from "../constants/TableauxConstants";
+import {
+  Langtags,
+  RowIdColumn,
+  SortValue
+} from "../constants/TableauxConstants";
 import { makeRequest } from "../helpers/apiHelper";
 import API_ROUTES from "../helpers/apiRoutes";
 import { urlToTableDestination } from "../helpers/apiUrl";
@@ -335,37 +339,43 @@ const applyUserSettings = tableId => (dispatch, getState) => {
     annotationHighlight = ""
   } = userSettingsTable;
   const { filters, sortColumnName, sortDirection } = rowsFilter;
+  const hasEmptyFilters = f.isEmpty(filters);
+  const hasEmptySorting = f.isNil(sortColumnName) && f.isNil(sortDirection);
+  const hasOnlyFilters = !hasEmptyFilters && hasEmptySorting;
+  const hasOnlySorting = hasEmptyFilters && !hasEmptySorting;
+
+  if (filterReset && hasOnlyFilters) {
+    dispatch(deleteUserSettings({ kind, tableId, key: "rowsFilter" }));
+  } else if (filterReset && !hasEmptyFilters) {
+    upsertUserSetting(
+      { kind, tableId, key: "rowsFilter" },
+      { value: { filters: [], sortColumnName, sortDirection } }
+    );
+  }
+
+  if (sortingReset && hasOnlySorting) {
+    dispatch(deleteUserSettings({ kind, tableId, key: "rowsFilter" }));
+  } else if (sortingReset && !hasEmptySorting) {
+    upsertUserSetting(
+      { kind, tableId, key: "rowsFilter" },
+      { value: { filters, sortColumnName: null, sortDirection: null } }
+    );
+  }
 
   if (
-    (filterReset && sortingReset && !f.isEmpty(rowsFilter)) ||
-    (filterReset && f.isNil(sortColumnName) && f.isNil(sortDirection)) ||
-    (sortingReset && f.isEmpty(filters))
-  ) {
-    dispatch(deleteUserSettings({ kind, tableId, key: "rowsFilter" }));
-  } else if (
-    (filterReset && !f.isEmpty(filters)) ||
-    (sortingReset && (!f.isNil(sortColumnName) || !f.isNil(sortDirection)))
+    sortingDesc &&
+    (sortColumnName !== RowIdColumn.name || sortDirection !== SortValue.desc)
   ) {
     dispatch(
       upsertUserSetting(
         { kind, tableId, key: "rowsFilter" },
         {
           value: {
-            ...rowsFilter,
-            ...(filterReset && { filters: [] }),
-            ...(sortingReset && { sortColumnName: null }),
-            ...(sortingReset && { sortDirection: null })
+            filters,
+            sortColumnName: RowIdColumn.name,
+            sortDirection: SortValue.desc
           }
         }
-      )
-    );
-  }
-
-  if (sortingDesc && (sortColumnName !== "rowId" || sortDirection !== "desc")) {
-    dispatch(
-      upsertUserSetting(
-        { kind, tableId, key: "rowsFilter" },
-        { value: { filters, sortColumnName: "rowId", sortDirection: "desc" } }
       )
     );
   }
@@ -415,14 +425,17 @@ const loadTableView = (tableId, customFilters) => (dispatch, getState) => {
     type: SET_COLUMN_ORDERING,
     columnIds: f.isEmpty(columnOrdering) ? initColumnOrdering : columnOrdering
   });
+
   dispatch({
     type: SET_COLUMNS_VISIBLE,
     columnIds: f.isEmpty(visibleColumns) ? initVisibleColumns : visibleColumns
   });
+
   dispatch({
     type: SET_COLUMN_WIDTHS,
     columnWidths: columnWidths
   });
+
   dispatch({
     type: SET_ANNOTATION_HIGHLIGHT,
     annotationHighlight: annotationHighlight
