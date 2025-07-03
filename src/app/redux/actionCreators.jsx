@@ -328,8 +328,8 @@ const applyUserSettings = tableId => (dispatch, getState) => {
     filterReset,
     columnsReset,
     sortingReset,
-    sortingDesc,
     annotationReset
+    // sortingDesc is applied directly in applyFiltersAndVisibility
   } = userSettingsGlobal;
   const {
     visibleColumns = [],
@@ -344,40 +344,26 @@ const applyUserSettings = tableId => (dispatch, getState) => {
   const hasOnlyFilters = !hasEmptyFilters && hasEmptySorting;
   const hasOnlySorting = hasEmptyFilters && !hasEmptySorting;
 
-  if (filterReset && hasOnlyFilters) {
-    dispatch(deleteUserSettings({ kind, tableId, key: "rowsFilter" }));
-  } else if (filterReset && !hasEmptyFilters) {
-    dispatch(
-      upsertUserSetting(
-        { kind, tableId, key: "rowsFilter" },
-        { value: { filters: [], sortColumnName, sortDirection } }
-      )
-    );
-  }
-
   if (
-    sortingDesc &&
-    (sortColumnName !== RowIdColumn.name || sortDirection !== SortValue.desc)
+    (filterReset && hasOnlyFilters) ||
+    (sortingReset && hasOnlySorting) ||
+    (filterReset && sortingReset && !f.isEmpty(rowsFilter))
+  ) {
+    dispatch(deleteUserSettings({ kind, tableId, key: "rowsFilter" }));
+  } else if (
+    (filterReset && !hasEmptyFilters) ||
+    (sortingReset && !hasEmptySorting)
   ) {
     dispatch(
       upsertUserSetting(
         { kind, tableId, key: "rowsFilter" },
         {
           value: {
-            filters,
-            sortColumnName: RowIdColumn.name,
-            sortDirection: SortValue.desc
+            filters: filterReset ? [] : filters,
+            sortColumnName: sortingReset ? null : sortColumnName,
+            sortDirection: sortingReset ? null : sortDirection
           }
         }
-      )
-    );
-  } else if (sortingReset && hasOnlySorting) {
-    dispatch(deleteUserSettings({ kind, tableId, key: "rowsFilter" }));
-  } else if (sortingReset && !hasEmptySorting) {
-    dispatch(
-      upsertUserSetting(
-        { kind, tableId, key: "rowsFilter" },
-        { value: { filters, sortColumnName: null, sortDirection: null } }
       )
     );
   }

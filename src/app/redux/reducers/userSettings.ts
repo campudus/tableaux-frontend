@@ -18,6 +18,7 @@ import { isUserSettingOfKind } from "../../types/guards";
 
 const {
   USER_SETTINGS_GET_SUCCESS,
+  USER_SETTING_UPSERT,
   USER_SETTING_UPSERT_SUCCESS,
   USER_SETTINGS_DELETE,
   USER_SETTINGS_DELETE_SUCCESS
@@ -44,7 +45,7 @@ type UserSettingAction =
       params: UserSettingParams<UserSettingKind>;
     }
   | {
-      type: typeof USER_SETTING_UPSERT_SUCCESS;
+      type: typeof USER_SETTING_UPSERT | typeof USER_SETTING_UPSERT_SUCCESS;
       result: UserSetting;
       params: UserSettingParams<UserSettingKind>;
       body: UserSettingBody<UserSettingKind, UserSettingKey>;
@@ -69,10 +70,18 @@ export const initialState: UserSettingsState = {
   }
 };
 
+// we need optimistic updates/deletes here,
+// because we have synchronous redux code,
+// where it is expected that the store is updated immediatly after the event is fired.
+//
+// for example:
+// dispatch(deleteUserSettings({ kind, tableId, key: "rowsFilter" }));
+// const { rowsFilter } = getState().userSettings.table;
 export default (state = initialState, action: UserSettingAction) => {
   switch (action.type) {
+    case USER_SETTING_UPSERT:
     case USER_SETTING_UPSERT_SUCCESS: {
-      const setting = action.result;
+      const setting = action.result ?? { ...action.params, ...action.body };
 
       if (setting.kind === "global") {
         const { kind, key, value } = setting;
