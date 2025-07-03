@@ -15,9 +15,9 @@ import {
   getAnnotationByName,
   getAnnotationColor,
   getAnnotationTitle,
-  isLocked,
   isTranslationNeeded
 } from "../../helpers/annotationHelper";
+import { isLocked } from "../../helpers/rowUnlock";
 import { unless } from "../../helpers/functools";
 import { retrieveTranslation } from "../../helpers/multiLanguage";
 import AnnotationBadge from "../annotation/AnnotationBadge";

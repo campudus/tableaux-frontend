@@ -1,4 +1,5 @@
 import f from "lodash/fp";
+import i18n from "i18next";
 import React from "react";
 import {
   ColumnKinds,
@@ -8,7 +9,7 @@ import {
 } from "../../constants/TableauxConstants";
 import { KEYBOARD_TABLE_HISTORY } from "../../FeatureFlags";
 import { canUserChangeCell } from "../../helpers/accessManagementHelper";
-import { isLocked } from "../../helpers/annotationHelper";
+import { isLocked } from "../../helpers/rowUnlock";
 import CustomEvent from "../../helpers/CustomEvent";
 import { doto, maybe, memoizeWith, unless } from "../../helpers/functools";
 import { getModifiers } from "../../helpers/modifierState";
@@ -209,9 +210,10 @@ export function getKeyboardShortcuts() {
         (cellKind === ColumnKinds.text ||
           cellKind === ColumnKinds.shorttext ||
           cellKind === ColumnKinds.richtext ||
-          cellKind === ColumnKinds.numeric)
+          cellKind === ColumnKinds.numeric ||
+          cellKind === ColumnKinds.currency)
       ) {
-        toggleCellEditing.call(this);
+        toggleCellEditing.call(this, { event });
       }
     }
   };
@@ -257,6 +259,7 @@ export function toggleCellSelection({ cell, langtag }) {
 }
 
 export function toggleCellEditing(params = {}) {
+  const eventKey = f.get(["event", "key"], params);
   const editVal = f.isBoolean(params.editing) ? params.editing : true;
   const { columns, rows, tableView, actions } = this.props;
   const visibleColumns = f.filter(col => col.visible || col.id === 0, columns);
@@ -275,13 +278,25 @@ export function toggleCellEditing(params = {}) {
 
   const selectedCellObject = this.getCell(rowIndex, columnIndex);
   const canEdit = canUserChangeCell(selectedCellObject, langtag);
+
   if (canEdit && selectedCellObject) {
     const selectedCellDisplayValues = selectedCellObject.displayValue;
     const selectedCellRawValue = selectedCellObject.value;
     const selectedCellKind = selectedCellObject.kind;
     const table = selectedCellObject.table;
 
-    actions.toggleCellEditing({ editing: editVal, row: selectedRow });
+    if (isLocked(selectedRow)) {
+      actions.showToast({
+        content: (
+          <div id="cell-jump-toast">
+            <h1>{i18n.t("table:final.unlock_header")}</h1>
+            <p>{i18n.t("table:final.unlock_toast")}</p>
+          </div>
+        )
+      });
+    }
+
+    actions.toggleCellEditing({ editing: editVal, row: selectedRow, eventKey });
 
     if (!isLocked(selectedRow) && editVal) {
       switch (selectedCellKind) {
@@ -348,6 +363,7 @@ export function toggleCellEditing(params = {}) {
           });
           break;
       }
+      this.forceUpdate();
     }
   }
 }
