@@ -135,7 +135,10 @@ export default (state = initialState, action: UserSettingAction) => {
       }
 
       if (params.kind === "table" && params.tableId) {
-        return f.dissoc([params.kind, params.tableId], state);
+        return f.dissoc(
+          f.compact([params.kind, params.tableId, params.key]),
+          state
+        );
       }
 
       if (params.kind === "filter" && params.id) {

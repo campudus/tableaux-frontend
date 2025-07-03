@@ -347,18 +347,11 @@ const applyUserSettings = tableId => (dispatch, getState) => {
   if (filterReset && hasOnlyFilters) {
     dispatch(deleteUserSettings({ kind, tableId, key: "rowsFilter" }));
   } else if (filterReset && !hasEmptyFilters) {
-    upsertUserSetting(
-      { kind, tableId, key: "rowsFilter" },
-      { value: { filters: [], sortColumnName, sortDirection } }
-    );
-  }
-
-  if (sortingReset && hasOnlySorting) {
-    dispatch(deleteUserSettings({ kind, tableId, key: "rowsFilter" }));
-  } else if (sortingReset && !hasEmptySorting) {
-    upsertUserSetting(
-      { kind, tableId, key: "rowsFilter" },
-      { value: { filters, sortColumnName: null, sortDirection: null } }
+    dispatch(
+      upsertUserSetting(
+        { kind, tableId, key: "rowsFilter" },
+        { value: { filters: [], sortColumnName, sortDirection } }
+      )
     );
   }
 
@@ -376,6 +369,15 @@ const applyUserSettings = tableId => (dispatch, getState) => {
             sortDirection: SortValue.desc
           }
         }
+      )
+    );
+  } else if (sortingReset && hasOnlySorting) {
+    dispatch(deleteUserSettings({ kind, tableId, key: "rowsFilter" }));
+  } else if (sortingReset && !hasEmptySorting) {
+    dispatch(
+      upsertUserSetting(
+        { kind, tableId, key: "rowsFilter" },
+        { value: { filters, sortColumnName: null, sortDirection: null } }
       )
     );
   }
