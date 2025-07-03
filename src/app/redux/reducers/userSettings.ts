@@ -19,6 +19,7 @@ import { isUserSettingOfKind } from "../../types/guards";
 const {
   USER_SETTINGS_GET_SUCCESS,
   USER_SETTING_UPSERT_SUCCESS,
+  USER_SETTINGS_DELETE,
   USER_SETTINGS_DELETE_SUCCESS
 } = ActionTypes.userSettings;
 
@@ -49,7 +50,7 @@ type UserSettingAction =
       body: UserSettingBody<UserSettingKind, UserSettingKey>;
     }
   | {
-      type: typeof USER_SETTINGS_DELETE_SUCCESS;
+      type: typeof USER_SETTINGS_DELETE | typeof USER_SETTINGS_DELETE_SUCCESS;
       params: UserSettingParams<UserSettingKind>;
     };
 
@@ -125,6 +126,7 @@ export default (state = initialState, action: UserSettingAction) => {
         }
       };
     }
+    case USER_SETTINGS_DELETE:
     case USER_SETTINGS_DELETE_SUCCESS: {
       const { params } = action;
 

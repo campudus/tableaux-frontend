@@ -315,8 +315,9 @@ const loadCompleteTable = ({ tableId, selectedRowId }) => async dispatch => {
   dispatch(loadAllRows(tableId));
 };
 
-const loadTableView = (tableId, customFilters) => (dispatch, getState) => {
-  const { userSettings, columns } = getState();
+const applyUserSettings = tableId => (dispatch, getState) => {
+  const kind = "table";
+  const { userSettings } = getState();
   const userSettingsGlobal = f.get(["global"], userSettings);
   const userSettingsTable = f.getOr({}, ["table", tableId], userSettings);
   const {
@@ -327,84 +328,105 @@ const loadTableView = (tableId, customFilters) => (dispatch, getState) => {
     annotationReset
   } = userSettingsGlobal;
   const {
-    visibleColumns,
-    rowsFilter,
-    columnOrdering,
-    columnWidths,
-    annotationHighlight
+    visibleColumns = [],
+    rowsFilter = {},
+    columnOrdering = [],
+    columnWidths = {},
+    annotationHighlight = ""
   } = userSettingsTable;
-  const storedFilters = f.get(["filters"], rowsFilter) ?? [];
-  const storedSortColumnName = f.get(["sortColumnName"], rowsFilter);
-  const storedSortDirection = f.get(["sortDirection"], rowsFilter);
-  const hasCustomFilters = !f.isEmpty(customFilters);
-  const hasStoredSorting = Boolean(storedSortColumnName);
-
-  const hasStoredFilters = !f.isEmpty(storedFilters);
+  const { filters, sortColumnName, sortDirection } = rowsFilter;
 
   if (
-    hasCustomFilters ||
-    hasStoredSorting ||
-    hasStoredFilters ||
-    filterReset ||
-    sortingReset ||
-    sortingDesc
+    (filterReset && sortingReset && !f.isEmpty(rowsFilter)) ||
+    (filterReset && f.isNil(sortColumnName) && f.isNil(sortDirection)) ||
+    (sortingReset && f.isEmpty(filters))
   ) {
-    const permanentFilters = filterReset ? [] : storedFilters;
-    const permanentSortColumnName = sortingReset ? null : storedSortColumnName;
-    const permanentSortDirection = sortingReset ? null : storedSortDirection;
-    const tempFilters = hasCustomFilters ? customFilters : permanentFilters;
-    const tempSorting = permanentSortColumnName
-      ? {
-          colName: permanentSortColumnName,
-          direction: permanentSortDirection || SortValue.asc
-        }
-      : {};
-
-    // apply temporary filters
-    dispatch(setFiltersAndSorting(tempFilters, tempSorting, false));
-
-    // persist permanent filters
+    dispatch(deleteUserSettings({ kind, tableId, key: "rowsFilter" }));
+  } else if (
+    (filterReset && !f.isEmpty(filters)) ||
+    (sortingReset && (!f.isNil(sortColumnName) || !f.isNil(sortDirection)))
+  ) {
     dispatch(
       upsertUserSetting(
-        { key: "rowsFilter", kind: "table", tableId },
+        { kind, tableId, key: "rowsFilter" },
         {
           value: {
-            sortColumnId: permanentSortColumnName,
-            sortValue: permanentSortDirection,
-            filters: permanentFilters
+            ...rowsFilter,
+            ...(filterReset && { filters: [] }),
+            ...(sortingReset && { sortColumnName: null }),
+            ...(sortingReset && { sortDirection: null })
           }
         }
       )
     );
   }
 
-  if (!f.isEmpty(columnOrdering)) {
-    dispatch(setColumnOrdering(columnOrdering));
+  if (sortingDesc && (sortColumnName !== "rowId" || sortDirection !== "desc")) {
+    dispatch(
+      upsertUserSetting(
+        { kind, tableId, key: "rowsFilter" },
+        { value: { filters, sortColumnName: "rowId", sortDirection: "desc" } }
+      )
+    );
   }
 
-  if (!f.isEmpty(columnWidths)) {
-    dispatch(setColumnWidths(columnWidths));
+  if (columnsReset && !f.isEmpty(columnOrdering)) {
+    dispatch(deleteUserSettings({ kind, tableId, key: "columnOrdering" }));
   }
 
-  if (!f.isEmpty(visibleColumns)) {
-    dispatch(setColumnsVisible(visibleColumns));
+  if (columnsReset && !f.isEmpty(columnWidths)) {
+    dispatch(deleteUserSettings({ kind, tableId, key: "columnWidths" }));
   }
 
-  if (!f.isEmpty(annotationHighlight) || annotationReset) {
-    const updateValue = annotationReset ? "" : annotationHighlight;
-
-    dispatch(setAnnotationHighlight(updateValue));
+  if (columnsReset && !f.isEmpty(visibleColumns)) {
+    dispatch(deleteUserSettings({ kind, tableId, key: "visibleColumns" }));
   }
 
-  if (columnsReset) {
-    const cols = f.get([tableId, "data"], columns) ?? [];
-    const columnIds = f.map("id", cols);
-    const columnOrdering = mapIndexed(({ id }, idx) => ({ id, idx }))(cols);
-
-    dispatch(setColumnsVisible(columnIds));
-    dispatch(setColumnOrdering(columnOrdering));
-    dispatch(setColumnWidths({}));
+  if (annotationReset && !f.isEmpty(annotationHighlight)) {
+    dispatch(deleteUserSettings({ kind, tableId, key: "annotationHighlight" }));
   }
+};
+
+const loadTableView = (tableId, customFilters) => (dispatch, getState) => {
+  const { userSettings, columns } = getState();
+  const userSettingsTable = f.getOr({}, ["table", tableId], userSettings);
+  const {
+    visibleColumns = [],
+    rowsFilter = {},
+    columnOrdering = [],
+    columnWidths = {},
+    annotationHighlight = ""
+  } = userSettingsTable;
+  const { filters = [], sortColumnName, sortDirection } = rowsFilter;
+  const colName = sortColumnName;
+  const direction = sortDirection || SortValue.asc;
+  const sorting = { colName, direction };
+  const cols = f.get([tableId, "data"], columns) ?? [];
+  const initVisibleColumns = f.map("id", cols);
+  const initColumnOrdering = mapIndexed(({ id }, idx) => ({ id, idx }))(cols);
+
+  dispatch({
+    type: SET_FILTERS_AND_SORTING,
+    filters: !f.isEmpty(customFilters) ? customFilters : filters,
+    sorting: !f.isEmpty(colName) ? sorting : {}
+  });
+
+  dispatch({
+    type: SET_COLUMN_ORDERING,
+    columnIds: f.isEmpty(columnOrdering) ? initColumnOrdering : columnOrdering
+  });
+  dispatch({
+    type: SET_COLUMNS_VISIBLE,
+    columnIds: f.isEmpty(visibleColumns) ? initVisibleColumns : visibleColumns
+  });
+  dispatch({
+    type: SET_COLUMN_WIDTHS,
+    columnWidths: columnWidths
+  });
+  dispatch({
+    type: SET_ANNOTATION_HIGHLIGHT,
+    annotationHighlight: annotationHighlight
+  });
 };
 
 const setCurrentLanguage = lang => {
@@ -647,6 +669,7 @@ const actionCreators = {
   generateDisplayValues: generateDisplayValues,
   addDisplayValues: dispatchParamsFor(GENERATED_DISPLAY_VALUES),
   loadCompleteTable,
+  applyUserSettings,
   loadTableView,
   setCurrentLanguage: setCurrentLanguage,
   addSkeletonColumns: dispatchParamsFor(COLUMNS_DATA_LOADED),

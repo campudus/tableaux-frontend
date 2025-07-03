@@ -63,11 +63,13 @@ const GRUDRouter = React.memo(() => {
         store.dispatch(
           actionCreators.loadCompleteTable({ tableId, selectedRowId: rowId })
         );
+        store.dispatch(actionCreators.applyUserSettings(tableId));
         store.dispatch(actionCreators.loadTableView(tableId, filter));
       });
     }
 
     if (tableId && tableId === currentTable && langtag === currentLanguage) {
+      store.dispatch(actionCreators.applyUserSettings(tableId));
       store.dispatch(actionCreators.loadTableView(tableId));
     }
 
