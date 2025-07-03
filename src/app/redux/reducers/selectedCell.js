@@ -45,7 +45,7 @@ const toggleCellEditing = (state, action, completeState) => {
   }
 
   if (!action.editing || isLocked(row)) {
-    return state;
+    return f.assoc("editing", false, state);
   }
 
   return f.assoc("editing", true, state);
