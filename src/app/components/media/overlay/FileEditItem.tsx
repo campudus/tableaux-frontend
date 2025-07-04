@@ -4,9 +4,9 @@ import { Attachment } from "../../../types/grud";
 import MediaLink from "../MediaLink";
 import { FileMeta, FileMetaKey } from "./FileEdit";
 import FileDropzone from "./FileDropzone";
-import FileIcon from "../folder/FileIcon";
 import FileEditMeta from "./FileEditMeta";
 import { canUserEditFiles } from "../../../helpers/accessManagementHelper";
+import FileThumbnail from "../folder/FileThumbnail";
 
 type FileEditItemProps = PropsWithChildren<{
   langtag: string;
@@ -45,7 +45,7 @@ export default function FileEditItem({
         >
           {fileInternalName ? (
             <div className="file-edit-item__replace">
-              <FileIcon name={fileInternalName} />
+              <FileThumbnail langtag={langtag} file={file} width={200} />
               {canUserEditFiles() && (
                 <span className="file-edit-item__replace-note">
                   {i18n.t("media:replace_existing_file")}
