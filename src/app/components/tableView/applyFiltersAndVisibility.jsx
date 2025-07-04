@@ -38,7 +38,10 @@ const withFiltersAndVisibility = Component => props => {
   }, [shouldLaunchDisplayValueWorker]);
 
   const ctx = RowFilters.buildContext(table.id, langtag, store);
-  const sorting = getSorting(props.sorting, store.globalSettings?.sortingDesc);
+  const sorting = getSorting(
+    props.sorting,
+    store.userSettings?.global?.sortingDesc
+  );
   const workerStillRunning = store.tableView?.startedGeneratingDisplayValues;
 
   const selectedCell = store.selectedCell?.selectedCell;

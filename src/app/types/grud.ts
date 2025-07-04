@@ -6,6 +6,7 @@ import {
   Locale,
   Table
 } from "@grud/devtools/types";
+import { UserSettingsState } from "../redux/reducers/userSettings";
 
 export * from "@grud/devtools/types";
 
@@ -71,13 +72,6 @@ export type GRUDStore = {
     { data: Array<Column>; error: boolean; finishedLoading: boolean }
   >;
   frontendServices: Array<Record<string, unknown>>;
-  globalSettings: {
-    annotationReset: boolean;
-    columnsReset: boolean;
-    filterReset: boolean;
-    sortingDesc: boolean;
-    sortingReset: boolean;
-  };
   grudStatus: {
     connectedToBackend: boolean;
   };
@@ -123,9 +117,11 @@ export type GRUDStore = {
     error: boolean;
     finishedLoading: boolean;
   };
+  userSettings: UserSettingsState;
 };
 
-type Filter = Array<string | number | Filter>;
+export type Filter = Array<string | number | Filter>;
+
 type UndoEntry = {
   type: string;
   cell: Cell;
@@ -133,6 +129,7 @@ type UndoEntry = {
   newValue: CellValue;
   oldValue: CellValue;
 };
+
 type OverlayEntry = {
   body: React.FC;
   columns: Array<Column>;
