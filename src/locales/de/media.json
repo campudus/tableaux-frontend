@@ -38,5 +38,7 @@
   "open_dependent_row": "Öffne 1 verknüpften Datensatz",
   "open_dependent_rows": "Öffne {{count}} verknüpfte Datensätze",
   "show_all": "Alle {{count}} anzeigen",
-  "show_less": "Weniger anzeigen"
+  "show_less": "Weniger anzeigen",
+  "layout_list": "Liste mit Bildvorschau",
+  "layout_tiles": "Kachelansicht"
 }

@@ -38,5 +38,7 @@
   "open_dependent_row": "Open 1 linked dependency",
   "open_dependent_rows": "Open {{count}} linked dependencies",
   "show_all": "Show all {{count}} items",
-  "show_less": "Show less"
+  "show_less": "Show less",
+  "layout_list": "List with thumbnails",
+  "layout_tiles": "Tiles"
 }

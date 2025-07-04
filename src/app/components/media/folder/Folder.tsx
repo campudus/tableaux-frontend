@@ -2,7 +2,7 @@ import f from "lodash/fp";
 import i18n from "i18next";
 import Dropzone from "react-dropzone";
 import { useDispatch } from "react-redux";
-import { MouseEvent, ReactElement, useRef, useState } from "react";
+import { MouseEvent, ReactElement, useEffect, useRef, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { List, AutoSizer } from "react-virtualized";
 
@@ -20,6 +20,15 @@ import SubfolderEdit from "./SubfolderEdit";
 import { createMediaFolder } from "../../../redux/actions/mediaActions";
 import { buildClassName as cn } from "../../../helpers/buildClassName";
 import { switchFolderHandler } from "../../Router";
+import SvgIcon from "../../helperComponents/SvgIcon";
+import { outsideClickEffect } from "../../../helpers/useOutsideClick";
+
+const LAYOUT = {
+  LIST: "list",
+  TILES: "tiles"
+} as const;
+
+type Layout = typeof LAYOUT[keyof typeof LAYOUT];
 
 type FolderProps = {
   langtag: string;
@@ -33,8 +42,11 @@ export default function Folder({
   fileIdsDiff
 }: FolderProps): ReactElement {
   const dropzoneRef = useRef<Dropzone>(null);
+  const layoutMenuRef = useRef<HTMLUListElement>(null);
   const history = useHistory();
   const dispatch = useDispatch();
+  const [layout, setLayout] = useState<Layout>(LAYOUT.LIST);
+  const [showLayoutMenu, setShowLayoutMenu] = useState(false);
   const [isNewFolder, setIsNewFolder] = useState(false);
   const { id, parents, subfolders = [], files } = folder;
   const isRoot = folder.id === null;
@@ -63,6 +75,28 @@ export default function Folder({
     dropzoneRef.current?.open();
   };
 
+  const handleToggleLayoutMenu = () => {
+    setShowLayoutMenu(isOpen => !isOpen);
+  };
+
+  const handleCloseLayoutMenu = () => {
+    setShowLayoutMenu(false);
+  };
+
+  const handleSelectLayout = (layout: Layout) => {
+    setLayout(layout);
+    setShowLayoutMenu(false);
+  };
+
+  useEffect(
+    outsideClickEffect({
+      shouldListen: showLayoutMenu,
+      containerRef: layoutMenuRef,
+      onOutsideClick: handleCloseLayoutMenu
+    }),
+    [showLayoutMenu, layoutMenuRef.current]
+  );
+
   return (
     <div className="folder">
       <div className="folder__toolbar">
@@ -86,6 +120,49 @@ export default function Folder({
         />
 
         <div className="folder__actions">
+          <button
+            className={cn("folder__action", { secondary: true, menu: true })}
+            onClick={handleToggleLayoutMenu}
+          >
+            <SvgIcon
+              containerClasses={cn("folder__action-menu-icon", {
+                selected: showLayoutMenu
+              })}
+              icon={layout}
+            />
+
+            {showLayoutMenu && (
+              <ul className="folder__action-menu" ref={layoutMenuRef}>
+                <li
+                  className="folder__action-menu-item"
+                  onClick={e => {
+                    handleSelectLayout(LAYOUT.LIST);
+                    e.stopPropagation();
+                  }}
+                >
+                  <SvgIcon
+                    containerClasses="folder__action-menu-icon"
+                    icon={LAYOUT.LIST}
+                  />
+                  {i18n.t("media:layout_list")}
+                </li>
+                <li
+                  className="folder__action-menu-item"
+                  onClick={e => {
+                    handleSelectLayout(LAYOUT.TILES);
+                    e.stopPropagation();
+                  }}
+                >
+                  <SvgIcon
+                    containerClasses="folder__action-menu-icon"
+                    icon={LAYOUT.TILES}
+                  />
+                  {i18n.t("media:layout_tiles")}
+                </li>
+              </ul>
+            )}
+          </button>
+
           {canUserCreateFolders() && (
             <button
               className={cn("folder__action", { secondary: true })}

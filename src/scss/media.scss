@@ -37,6 +37,11 @@
       padding: 0 8px;
       display: flex;
       justify-content: space-between;
+
+      .svg-icon svg {
+        width: 16px;
+        height: 16px;
+      }
     }
 
     &__breadcrumbs {
@@ -55,6 +60,7 @@
     }
 
     &__action {
+      position: relative;
       height: 30px;
       border: 1px solid #dedede;
       line-height: 30px;
@@ -76,6 +82,50 @@
       &--secondary {
         border: 1px solid #dedede;
         background: #ffffff;
+      }
+
+      &--menu {
+        padding: 0;
+        width: 30px;
+        height: 30px;
+      }
+
+      &-menu-icon {
+        width: 30px;
+        height: 30px;
+        max-width: 30px;
+        padding: 0;
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        &--selected {
+          background: #333333;
+          fill: white;
+        }
+      }
+
+      &-menu {
+        position: absolute;
+        top: calc(100% + 4px);
+        left: 0;
+        z-index: 999999;
+        box-shadow: 0px 4px 20px 0px #00000026;
+        border-radius: 4px;
+        overflow: hidden;
+      }
+
+      &-menu-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 4px 12px 4px 0;
+        background: white;
+
+        &:hover {
+          background-color: #f5f5f5;
+        }
       }
     }
 
