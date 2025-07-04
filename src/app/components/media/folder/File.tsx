@@ -21,6 +21,7 @@ import {
 } from "../overlay/DirentMove";
 import { buildClassName as cn } from "../../../helpers/buildClassName";
 import FileDependentsBody from "../overlay/FileDependents";
+import FileThumbnail from "./FileThumbnail";
 
 type FileProps = {
   langtag: string;
@@ -92,8 +93,8 @@ export default function File({ langtag, file }: FileProps): ReactElement {
         target="_blank"
         rel="noopener noreferrer"
       >
+        <FileThumbnail langtag={langtag} file={file} />
         <span>{title}</span>
-        <i className="icon fa fa-external-link" />
       </a>
 
       <div className="file__actions">
