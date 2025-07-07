@@ -427,6 +427,31 @@ const loadTableView = (tableId, customFilters) => (dispatch, getState) => {
   });
 };
 
+const loadPreviewView = (tableId, rowId, columnId) => async (
+  dispatch,
+  getState
+) => {
+  const { columns, rows } = getState();
+  const columnsData = f.get([tableId, "data"], columns) || [];
+  const rowsData = f.get([tableId, "data"], rows) || [];
+  const row = f.find(f.propEq("id", rowId), rowsData);
+
+  dispatch({
+    type: actionTypes.SET_PREVIEW_VIEW,
+    currentTable: tableId,
+    currentColumn: columnId,
+    currentRow: rowId
+  });
+
+  if (f.isEmpty(columnsData)) {
+    dispatch(loadColumns(tableId));
+  }
+
+  if (!row) {
+    dispatch(fetchSingleRow({ tableId, selectedRowId: rowId }));
+  }
+};
+
 const setCurrentLanguage = lang => {
   return {
     type: SET_CURRENT_LANGUAGE,
@@ -671,6 +696,7 @@ const actionCreators = {
   loadCompleteTable,
   applyUserSettings,
   loadTableView,
+  loadPreviewView,
   setCurrentLanguage: setCurrentLanguage,
   addSkeletonColumns: dispatchParamsFor(COLUMNS_DATA_LOADED),
   addSkeletonRow: dispatchParamsFor(ADDITIONAL_ROWS_DATA_LOADED),
