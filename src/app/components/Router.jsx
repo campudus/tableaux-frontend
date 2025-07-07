@@ -99,6 +99,12 @@ const GRUDRouter = React.memo(() => {
       tables
     );
 
+    if (!tableId || !rowId) {
+      return <Redirect to={`/${langtag}/dashboard`} />;
+    }
+
+    store.dispatch(actionCreators.loadPreviewView(tableId, rowId, columnId));
+
     return renderView(ViewNames.PREVIEW_VIEW)(routeProps);
   });
 
@@ -179,6 +185,10 @@ const GRUDRouter = React.memo(() => {
         <Route path="/media/*" render={() => <Redirect to={withLangtag} />} />
         <Route path="/media" render={() => <Redirect to={withLangtag} />} />
 
+        <CompatRoute
+          path="/:langtag/preview/:tableId/rows/:rowId"
+          render={renderPreviewView}
+        />
         <CompatRoute
           path="/:langtag/preview/:tableId/columns/:columnId/rows/:rowId"
           render={renderPreviewView}
