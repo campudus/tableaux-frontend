@@ -45,7 +45,7 @@
     }
 
     &__breadcrumbs {
-      font-size: 16px;
+      font-size: 13px;
       font-weight: 400;
 
       .breadcrumbs__link {
@@ -183,13 +183,13 @@
   .subfolder-edit {
     width: min-content;
     height: 100%;
-    font-size: 16px;
+    font-size: 13px;
     display: flex;
     align-items: center;
-    gap: 4px;
+    gap: 12px;
 
     input {
-      font-size: 16px;
+      font-size: 13px;
     }
   }
 
@@ -262,7 +262,7 @@
     }
 
     &__link {
-      font-size: 16px;
+      font-size: 13px;
       display: flex;
       align-items: center;
       gap: 12px;
@@ -272,7 +272,7 @@
       overflow-wrap: anywhere;
 
       &:hover {
-        color: $color-primary;
+        font-weight: 500;
       }
     }
 
@@ -294,7 +294,7 @@
 
       &--link {
         width: auto;
-        font-size: 14px;
+        font-size: 13px;
         color: #3296dc99;
       }
 
@@ -518,6 +518,15 @@
       border-bottom: 1px solid #dedede;
       display: flex;
 
+      & .icon.fa-folder {
+        width: 40px;
+        height: 40px;
+        font-size: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
       &:hover {
         background-color: #0000000A;
       }
@@ -532,7 +541,7 @@
       justify-content: space-between;
 
       &__link {
-        font-size: 16px;
+        font-size: 13px;
         display: flex;
         align-items: center;
         gap: 8px;
