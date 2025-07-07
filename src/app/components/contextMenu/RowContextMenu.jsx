@@ -29,6 +29,7 @@ import SvgIcon from "../helperComponents/SvgIcon";
 import { openHistoryOverlay } from "../history/HistoryOverlay";
 import AnnotationContextMenu from "./AnnotationContextMenu";
 import GenericContextMenu from "./GenericContextMenu";
+import { Link } from "react-router-dom";
 
 // Distance between clicked coordinate and the left upper corner of the context menu
 const CLICK_OFFSET = 3;
@@ -256,6 +257,8 @@ class RowContextMenu extends React.Component {
       closeRowContextMenu
     } = this;
 
+    const previewUrl = `/${this.props.langtag}/preview/${table.id}/rows/${cell.row.id}`;
+
     const isSettingsTable = table.type === "settings";
 
     const isDeletingRowAllowed =
@@ -318,6 +321,10 @@ class RowContextMenu extends React.Component {
             : this.mkItem(showEntityView, "show_entity_view", "server")}
           {this.mkItem(showDependency, "show_dependency", "code-fork")}
           {this.mkItem(showTranslations, "show_translation", "flag")}
+          <Link to={previewUrl}>
+            <i className="fa fa-eye" />
+            <div className="item-label">{"Überprüfen"}</div>
+          </Link>
           {this.setFinalItem()}
           {this.setArchivedItem()}
           {isDeletingRowAllowed || isDuplicatingRowAllowed ? (
