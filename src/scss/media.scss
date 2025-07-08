@@ -207,6 +207,30 @@
       display: none;
     }
 
+    &__skeleton {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        50deg,
+        #EFEFEF 40%,
+        #f7f7f7 50%,
+        #EFEFEF 60%
+      );
+      background-size: 400% 400%;
+      animation: diagonalPulse 1.5s ease-in-out infinite;
+      will-change: background-position;
+      z-index: 1;
+    }
+
+    @keyframes diagonalPulse {
+      0% {
+        background-position: top right;
+      }
+      100% {
+        background-position: bottom left;
+      }
+    }
+
     &__image {
       width: 40px;
       height: 40px;
