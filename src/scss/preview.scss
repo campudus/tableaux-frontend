@@ -1,5 +1,32 @@
 .preview-view {
   box-sizing: border-box;
+  background-color: white;
   height: 100%;
-  padding: ($space-height-header + 16px) 0 16px;
+  padding-top: ($space-height-header);
+  display: flex;
+  flex-direction: row;
+  
+  &__resizeable-right {
+    position: relative;
+    background-color: #efefef;
+  }
+
+  &__resizer {
+    position: absolute;
+    top: 20%;
+    left: -8px;
+    width: 18px;
+    height: 18px;
+    background-color: blue;
+    cursor: col-resize;
+    z-index: 10;
+  }
+}
+
+.preview-row-view {
+  padding: 16px;
+}
+
+.preview-detail-view {
+  padding: 16px 0 16px 16px;
 }

@@ -1,4 +1,4 @@
-import { ReactElement } from "react";
+import { ReactElement, useRef, useState } from "react";
 import f from "lodash/fp";
 import GrudHeader from "../GrudHeader";
 import { switchLanguageHandler } from "../Router";
@@ -6,22 +6,25 @@ import { useSelector } from "react-redux";
 import { Column, GRUDStore } from "../../types/grud";
 import store from "../../redux/store";
 import actions from "../../redux/actionCreators";
-import getDisplayValue from "../../helpers/getDisplayValue";
-import Spinner from "../header/Spinner";
+import PreviewRowView from "./PreviewRowView";
+import PreviewDetailView from "./PreviewDetailView";
 
 type PreviewViewProps = {
-  tableId: number | undefined;
-  columnId: number | undefined;
-  rowId: number | undefined;
   langtag: string;
+  tableId: number;
+  rowId: number;
+  columnId: number | undefined;
 };
 
 export default function PreviewView({
+  langtag,
   tableId,
-  columnId,
   rowId,
-  langtag
+  columnId
 }: PreviewViewProps): ReactElement {
+  const [leftWidth, setLeftWidth] = useState(50);
+  const isDragging = useRef(false);
+
   const columns = useSelector(
     tableId !== undefined
       ? f.prop(["columns", tableId, "data"])
@@ -49,6 +52,31 @@ export default function PreviewView({
     switchLanguageHandler(history, newLangtag);
   };
 
+  const handleMouseDown = () => {
+    isDragging.current = true;
+    document.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("mouseup", handleMouseUp);
+  };
+
+  const handleMouseMove = (e: MouseEvent) => {
+    if (!isDragging.current) return;
+
+    const container = document.getElementById("resizable-container");
+    if (!container) return;
+    const containerWidth = container.offsetWidth;
+    const newLeftWidth = (e.clientX / containerWidth) * 100;
+
+    if (newLeftWidth < 20 || newLeftWidth > 80) return;
+
+    setLeftWidth(newLeftWidth);
+  };
+
+  const handleMouseUp = () => {
+    isDragging.current = false;
+    document.removeEventListener("mousemove", handleMouseMove);
+    document.removeEventListener("mouseup", handleMouseUp);
+  };
+
   return (
     <>
       <GrudHeader
@@ -56,40 +84,34 @@ export default function PreviewView({
         handleLanguageSwitch={handleLanguageSwitch}
       />
 
-      <div className="preview-view">
-        <h4 className="preview-view__title">PreviewCenter</h4>
-        {columns && row ? (
-          <table>
-            <tbody>
-              {columns
-                ?.filter(column => column.id !== 0)
-                .map(column => {
-                  let value = getDisplayValue(column)(
-                    row?.values.at(column.id)
-                  );
+      <div
+        id="resizable-container"
+        className="preview-view"
+        style={{ userSelect: "none" }}
+      >
+        <div
+          className="preview-view__resizeable-left"
+          style={{ width: `${leftWidth}%` }}
+        >
+          <PreviewRowView
+            langtag={langtag}
+            tableId={tableId}
+            columns={columns}
+            row={row}
+          />
+        </div>
 
-                  if (Array.isArray(value))
-                    value = value.map(v => v[langtag]).join(", ");
-                  else {
-                    value = value[langtag];
-                  }
+        <div
+          className="preview-view__resizeable-right"
+          style={{ width: `${100 - leftWidth}%` }}
+        >
+          <div
+            onMouseDown={handleMouseDown}
+            className="preview-view__resizer"
+          />
 
-                  return (
-                    <tr key={column.id}>
-                      <td className="preview-view__column-name">
-                        {column.displayName[langtag]}
-                      </td>
-                      <td className="preview-view__column-value">
-                        {value || "n/a"}
-                      </td>
-                    </tr>
-                  );
-                })}
-            </tbody>
-          </table>
-        ) : (
-          <Spinner isLoading />
-        )}
+          <PreviewDetailView />
+        </div>
       </div>
     </>
   );
