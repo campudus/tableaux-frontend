@@ -36,11 +36,16 @@ export default function PreviewRowView({
 
                 return (
                   <tr key={column.id}>
-                    <td className="preview-view__column-name">
+                    <td className="preview-row-view__column-name">
                       <a href={columnLink}>{column.displayName[langtag]}</a>
                     </td>
-                    <td className="preview-view__column-value">
-                      <a href={cellLink}>{value || "n/a"}</a>
+                    <td className="preview-row-view__column-value">
+                      <a
+                        className={value ? undefined : "empty"}
+                        href={cellLink}
+                      >
+                        {value || "Leer"}
+                      </a>
                     </td>
                   </tr>
                 );

@@ -25,6 +25,10 @@
 
 .preview-row-view {
   padding: 16px;
+
+  &__column-value .empty {
+    color: #D86357;
+  }
 }
 
 .preview-detail-view {
