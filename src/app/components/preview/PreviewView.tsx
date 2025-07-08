@@ -96,6 +96,8 @@ export default function PreviewView({
           <PreviewRowView
             langtag={langtag}
             tableId={tableId}
+            columnId={columnId}
+            rowId={rowId}
             columns={columns}
             row={row}
           />
