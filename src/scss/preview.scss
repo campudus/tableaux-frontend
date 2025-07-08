@@ -26,9 +26,40 @@
 .preview-row-view {
   padding: 16px;
 
-  &__column-value .empty {
-    color: #D86357;
+  table {
+    width: 100%;
   }
+
+  &__row {
+    width: 100%;
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+  }
+
+  &__column {
+    padding: 6px 8px;
+  }
+
+  &__column-selection {
+    width: 40px;
+    
+    input {
+      cursor: pointer;
+    }
+  }  
+
+  &__column-name {
+    width: 300px;
+  }
+
+  &__column-value {
+    width: 100%;
+
+    .empty {
+      color: #D86357;
+    }
+  } 
 }
 
 .preview-detail-view {
