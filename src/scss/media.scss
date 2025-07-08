@@ -235,14 +235,12 @@
       width: 40px;
       height: 40px;
       object-fit: contain;
+      background: url(/img/bg-tile.png);
 
       &--fallback {
+        background: transparent;
         width: 36px;
         height: 36px;
-      }
-
-      &:not(&--fallback) {
-        background: #F5F5F5;
       }
     }
   }
@@ -631,14 +629,12 @@
           width: 180px;
           height: 180px;
           object-fit: contain;
+          background: url(/img/bg-tile.png);
     
           &--fallback {
+            background: transparent;
             width: 150px;
             height: 150px;
-          }
-    
-          &:not(&--fallback) {
-            background: #F5F5F5;
           }
         }
       }
