@@ -46,19 +46,18 @@ export default function MediaView({ langtag }: MediaViewProps): ReactElement {
         langtag={langtag}
         handleLanguageSwitch={handleLanguageSwitch}
       />
+
+      {!media.finishedLoading && <Spinner isLoading />}
+
       <div className="media-view">
         <div className="media-view__card">
           <h4 className="media-view__title">{i18n.t("media:title")}</h4>
 
-          {media.finishedLoading ? (
-            <Folder
-              langtag={langtag}
-              folder={media.data}
-              fileIdsDiff={fileIdsDiff}
-            />
-          ) : (
-            <Spinner isLoading />
-          )}
+          <Folder
+            langtag={langtag}
+            folder={media.data}
+            fileIdsDiff={fileIdsDiff}
+          />
         </div>
       </div>
     </>
