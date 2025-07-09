@@ -471,11 +471,11 @@ const loadPreviewView = (tableId, rowId, columnId) => async (
     currentRow: rowId
   });
 
-  if (f.isEmpty(columnsData)) {
+  if (tableId && f.isEmpty(columnsData)) {
     dispatch(loadColumns(tableId));
   }
 
-  if (!row) {
+  if (tableId && rowId && f.isEmpty(row)) {
     dispatch(fetchSingleRow({ tableId, selectedRowId: rowId }));
   }
 };
