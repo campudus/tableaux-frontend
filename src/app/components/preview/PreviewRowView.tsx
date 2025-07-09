@@ -38,7 +38,11 @@ export default function PreviewRowView({
           {columns.map(column => {
             const columnLink = `/${langtag}/tables/${tableId}/columns/${column.id}`;
             const cellLink = `/${langtag}/tables/${tableId}/columns/${column.id}/rows/${row.id}`;
-            let value = getDisplayValue(column)(row?.values.at(column.id));
+            const rowValue =
+              row.values.length > 1
+                ? row?.values.at(column.id)
+                : row?.values.at(0);
+            let value = getDisplayValue(column)(rowValue);
 
             if (Array.isArray(value))
               value = value.map(v => v[langtag]).join(", ");
