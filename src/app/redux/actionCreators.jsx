@@ -465,7 +465,7 @@ const loadPreviewView = (tableId, rowId, columnId) => async (
   const row = f.find(f.propEq("id", rowId), rowsData);
 
   dispatch({
-    type: actionTypes.SET_PREVIEW_VIEW,
+    type: actionTypes.preview.PREVIEW_SET_VIEW,
     currentTable: tableId,
     currentColumn: columnId,
     currentRow: rowId
