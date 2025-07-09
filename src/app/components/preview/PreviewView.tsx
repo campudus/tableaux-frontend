@@ -1,4 +1,4 @@
-import { ReactElement, useRef, useState } from "react";
+import { ReactElement, useRef, useState, useEffect } from "react";
 import f from "lodash/fp";
 import GrudHeader from "../GrudHeader";
 import { switchLanguageHandler } from "../Router";
@@ -42,19 +42,24 @@ export default function PreviewView({
     useSelector((store: GRUDStore) => store.preview.currentColumn) ??
     filteredColumns?.find(c => c.kind === "link")?.id;
 
-  if (currentColumn) {
-    const column = columns?.find(c => c.id === currentColumn);
+  const currentDetailTable = useSelector(
+    (store: GRUDStore) => store.preview.currentDetailTable
+  );
 
-    if (column?.kind === "link") {
-      console.log(" loading link column data", column.toTable);
-      dispatch(actions.loadColumns(column.toTable));
-      dispatch(loadAllRows(column.toTable));
-      dispatch({
-        type: actionTypes.preview.PREVIEW_SET_CURRENT_DETAIL_TABLE,
-        currentDetailTable: column.toTable
-      });
+  useEffect(() => {
+    if (currentColumn) {
+      const column = columns?.find(c => c.id === currentColumn);
+
+      if (column?.kind === "link") {
+        dispatch(actions.loadColumns(column.toTable));
+        dispatch(loadAllRows(column.toTable));
+        dispatch({
+          type: actionTypes.preview.PREVIEW_SET_CURRENT_DETAIL_TABLE,
+          currentDetailTable: column.toTable
+        });
+      }
     }
-  }
+  }, [currentColumn, columns]);
 
   const handleLanguageSwitch = (newLangtag: string) => {
     switchLanguageHandler(history, newLangtag);
@@ -123,7 +128,17 @@ export default function PreviewView({
             className="preview-view__resizer"
           />
 
-          <PreviewDetailView />
+          {!currentDetailTable || !row || !currentColumn ? (
+            <Spinner isLoading />
+          ) : (
+            <PreviewDetailView
+              langtag={langtag}
+              currentTable={tableId}
+              currentColumn={currentColumn}
+              currentRow={row}
+              currentDetailTable={currentDetailTable}
+            />
+          )}
         </div>
       </div>
     </>
