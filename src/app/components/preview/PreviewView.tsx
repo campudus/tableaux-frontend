@@ -2,26 +2,27 @@ import { ReactElement, useRef, useState } from "react";
 import f from "lodash/fp";
 import GrudHeader from "../GrudHeader";
 import { switchLanguageHandler } from "../Router";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { Column, GRUDStore } from "../../types/grud";
-import store from "../../redux/store";
 import actions from "../../redux/actionCreators";
 import PreviewRowView from "./PreviewRowView";
 import PreviewDetailView from "./PreviewDetailView";
+import Spinner from "../header/Spinner";
+import actionTypes from "../../redux/actionTypes";
+import { loadAllRows } from "../../redux/actions/rowActions";
 
 type PreviewViewProps = {
   langtag: string;
   tableId: number;
   rowId: number;
-  columnId: number | undefined;
 };
 
 export default function PreviewView({
   langtag,
   tableId,
-  rowId,
-  columnId
+  rowId
 }: PreviewViewProps): ReactElement {
+  const dispatch = useDispatch();
   const [leftWidth, setLeftWidth] = useState(50);
   const isDragging = useRef(false);
 
@@ -30,23 +31,30 @@ export default function PreviewView({
       ? f.prop(["columns", tableId, "data"])
       : () => undefined
   ) as Column[] | undefined;
+  const filteredColumns = columns?.filter(column => column.id !== 0);
 
   const row = useSelector((store: GRUDStore) => {
     if (f.isNil(tableId) || f.isNil(rowId)) return undefined;
     return store.rows[tableId]?.data.find(row => row.id === rowId);
   });
 
-  // if (columnId) {
-  //   const column = columns?.find(c => c.id === columnId);
+  const currentColumn =
+    useSelector((store: GRUDStore) => store.preview.currentColumn) ??
+    filteredColumns?.find(c => c.kind === "link")?.id;
 
-  //   if (column?.kind === "link") {
-  //     console.log(" loading link column data", column.toTable);
-  //     store.dispatch(actions.loadColumns(column.toTable));
-  //     store.dispatch(actions.loadAllRows(column.toTable));
-  //   }
-  // }
+  if (currentColumn) {
+    const column = columns?.find(c => c.id === currentColumn);
 
-  console.log({ columns, row });
+    if (column?.kind === "link") {
+      console.log(" loading link column data", column.toTable);
+      dispatch(actions.loadColumns(column.toTable));
+      dispatch(loadAllRows(column.toTable));
+      dispatch({
+        type: actionTypes.preview.PREVIEW_SET_CURRENT_DETAIL_TABLE,
+        currentDetailTable: column.toTable
+      });
+    }
+  }
 
   const handleLanguageSwitch = (newLangtag: string) => {
     switchLanguageHandler(history, newLangtag);
@@ -93,14 +101,17 @@ export default function PreviewView({
           className="preview-view__resizeable-left"
           style={{ width: `${leftWidth}%` }}
         >
-          <PreviewRowView
-            langtag={langtag}
-            tableId={tableId}
-            columnId={columnId}
-            rowId={rowId}
-            columns={columns}
-            row={row}
-          />
+          {filteredColumns && row ? (
+            <PreviewRowView
+              langtag={langtag}
+              tableId={tableId}
+              currentColumn={currentColumn}
+              columns={filteredColumns}
+              row={row}
+            />
+          ) : (
+            <Spinner isLoading />
+          )}
         </div>
 
         <div
