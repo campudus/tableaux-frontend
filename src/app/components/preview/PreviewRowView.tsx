@@ -1,83 +1,76 @@
-import { ReactElement, useState } from "react";
+import { ReactElement } from "react";
 import { Column, Row } from "../../types/grud";
-import Spinner from "../header/Spinner";
 import getDisplayValue from "../../helpers/getDisplayValue";
+import actionTypes from "../../redux/actionTypes";
+import { useDispatch } from "react-redux";
 
 type PreviewRowViewProps = {
   langtag: string;
   tableId: number;
-  rowId: number;
-  columnId: number | undefined;
-  columns: Column[] | undefined;
-  row: Row | undefined;
+  currentColumn: number | undefined;
+  columns: Column[];
+  row: Row;
 };
 
 export default function PreviewRowView({
   langtag,
   tableId,
-  rowId,
-  columnId,
+  currentColumn,
   columns,
   row
 }: PreviewRowViewProps): ReactElement {
-  const [selectedColumn, setSelectedColumn] = useState<number | null>(
-    columnId || null
-  );
+  const dispatch = useDispatch();
 
   const handleColumnSelection = (columnId: number) => {
-    setSelectedColumn(columnId);
-
-    const newUrl = `/${langtag}/preview/${tableId}/columns/${columnId}/rows/${rowId}`;
+    const newUrl = `/${langtag}/preview/${tableId}/columns/${columnId}/rows/${row.id}`;
     window.history.replaceState({}, "", newUrl);
+
+    dispatch({
+      type: actionTypes.preview.PREVIEW_SET_CURRENT_COLUMN,
+      currentColumn: columnId
+    });
   };
 
   return (
     <div className="preview-row-view">
-      {columns && row ? (
-        <table>
-          <tbody>
-            {columns
-              ?.filter(column => column.id !== 0)
-              .map(column => {
-                const columnLink = `/${langtag}/tables/${tableId}/columns/${column.id}`;
-                const cellLink = `/${langtag}/tables/${tableId}/columns/${column.id}/rows/${rowId}`;
-                let value = getDisplayValue(column)(row?.values.at(column.id));
+      <table>
+        <tbody>
+          {columns.map(column => {
+            const columnLink = `/${langtag}/tables/${tableId}/columns/${column.id}`;
+            const cellLink = `/${langtag}/tables/${tableId}/columns/${column.id}/rows/${row.id}`;
+            let value = getDisplayValue(column)(row?.values.at(column.id));
 
-                if (Array.isArray(value))
-                  value = value.map(v => v[langtag]).join(", ");
-                else {
-                  value = value[langtag];
-                }
+            if (Array.isArray(value))
+              value = value.map(v => v[langtag]).join(", ");
+            else {
+              value = value[langtag];
+            }
 
-                return (
-                  <tr key={column.id} className="preview-row-view__row">
-                    <td className="preview-row-view__column preview-row-view__column-selection">
-                      <input
-                        type="radio"
-                        name="column-selection"
-                        checked={selectedColumn === column.id}
-                        onChange={() => handleColumnSelection(column.id)}
-                      />
-                    </td>
-                    <td className="preview-row-view__column preview-row-view__column-name">
-                      <a href={columnLink}>{column.displayName[langtag]}</a>
-                    </td>
-                    <td className="preview-row-view__column preview-row-view__column-value">
-                      <a
-                        className={value ? undefined : "empty"}
-                        href={cellLink}
-                      >
-                        {value || "Leer"}
-                      </a>
-                    </td>
-                  </tr>
-                );
-              })}
-          </tbody>
-        </table>
-      ) : (
-        <Spinner isLoading />
-      )}
+            return (
+              <tr key={column.id} className="preview-row-view__row">
+                <td className="preview-row-view__column preview-row-view__column-selection">
+                  {column.kind === "link" && (
+                    <input
+                      type="radio"
+                      name="column-selection"
+                      checked={currentColumn === column.id}
+                      onChange={() => handleColumnSelection(column.id)}
+                    />
+                  )}
+                </td>
+                <td className="preview-row-view__column preview-row-view__column-name">
+                  <a href={columnLink}>{column.displayName[langtag]}</a>
+                </td>
+                <td className="preview-row-view__column preview-row-view__column-value">
+                  <a className={value ? undefined : "empty"} href={cellLink}>
+                    {value || "Leer"}
+                  </a>
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
     </div>
   );
 }
