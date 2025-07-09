@@ -3,6 +3,7 @@ import i18n from "i18next";
 import { useDispatch } from "react-redux";
 import { ForwardedRef, forwardRef, ReactElement, useState } from "react";
 import Dropzone, { DropFilesEventHandler } from "react-dropzone";
+import { buildClassName as cn } from "../../../helpers/buildClassName";
 import { Attachment, Folder } from "../../../types/grud";
 import { DefaultLangtag } from "../../../constants/TableauxConstants";
 import { toFile, toFileUpload } from "../../../helpers/apiRoutes";
@@ -18,12 +19,13 @@ type UploadState = {
 type UploadMap = Record<string, UploadState>;
 
 type FileUploadProps = {
+  className?: string;
   langtag: string;
   folder: Partial<Folder>;
 };
 
 function FileUpload(
-  { langtag, folder }: FileUploadProps,
+  { className, langtag, folder }: FileUploadProps,
   ref: ForwardedRef<Dropzone>
 ): ReactElement {
   const dispatch = useDispatch();
@@ -67,7 +69,7 @@ function FileUpload(
   };
 
   return (
-    <div className="file-upload">
+    <div className={cn("file-upload", {}, className)}>
       {uploads.length >= 1 && (
         <div className="file-upload__info">
           <span className="file-upload__info-title">
