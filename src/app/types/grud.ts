@@ -84,6 +84,12 @@ export type GRUDStore = {
   media: Record<string, unknown>;
   multiSelect: Array<Cell>;
   overlays: { toast: unknown; overlays: Array<OverlayEntry> };
+  preview: {
+    currentTable: number;
+    currentColumn: number | null;
+    currentRow: number;
+    currentDetailTable: number | null;
+  };
   rows: Record<
     number,
     {
