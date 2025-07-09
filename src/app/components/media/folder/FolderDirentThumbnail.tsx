@@ -26,7 +26,7 @@ const FALLBACK_EXTENSIONS = [
 type FolderDirentThumbnailProps = {
   className?: string;
   langtag: string;
-  dirent: Attachment | Folder;
+  dirent?: Attachment | Folder;
   layout: Layout;
 };
 
