@@ -92,14 +92,10 @@ const GRUDRouter = React.memo(() => {
   });
 
   const renderPreviewView = React.useCallback(routeProps => {
-    const { tableId, columnId, rowId, langtag } = validateRouteParams(
+    const { tableId, columnId, rowId } = validateRouteParams(
       routeProps.match.params,
       tables
     );
-
-    if (!tableId || !rowId) {
-      return <Redirect to={`/${langtag}/dashboard`} />;
-    }
 
     store.dispatch(actionCreators.loadPreviewView(tableId, rowId, columnId));
 
