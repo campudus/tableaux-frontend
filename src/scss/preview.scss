@@ -8,7 +8,7 @@
   
   &__resizeable-right {
     position: relative;
-    background-color: #efefef;
+    background-color: #F8F8F8;
   }
 
   &__resizer {
@@ -64,4 +64,37 @@
 
 .preview-detail-view {
   padding: 16px 0 16px 16px;
+
+  table {
+    width: 100%;
+  }
+
+  &__row {
+    width: 100%;
+    min-height: 40px;
+    display: flex;
+    align-items: center;
+
+    &--uneven {
+      background-color: #EFEFEF;
+    }
+  }
+
+  &__column {
+    padding: 6px 8px;
+  } 
+
+  &__column-name {
+    width: 250px;
+  }
+
+  &__column-value {
+    min-width: 275px;
+    width: 325px;
+    max-width: 325px;
+
+    .empty {
+      color: #D86357;
+    }
+  } 
 }
