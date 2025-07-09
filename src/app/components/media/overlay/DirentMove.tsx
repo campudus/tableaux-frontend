@@ -16,16 +16,18 @@ import Breadcrumbs from "../../helperComponents/Breadcrumbs";
 import { makeRequest } from "../../../helpers/apiHelper";
 import { toFolder } from "../../../helpers/apiRoutes";
 import { MediaState } from "../../../redux/reducers/media";
-import Subfolder from "../folder/Subfolder";
+// import Subfolder from "../folder/Subfolder";
 import { switchFolderHandler } from "../../Router";
+import { isAttachment } from "../../../types/guards";
+import FolderAction from "../folder/FolderAction";
+import FolderDirentThumbnail from "../folder/FolderDirentThumbnail";
 
 type ReduxState = { media: MediaState };
 
 type DirentMoveProps = {
   langtag?: string;
   context?: string;
-  sourceFile?: Attachment;
-  sourceFolder?: Folder;
+  dirent?: Attachment | Folder;
   // provided through hoc
   sharedData?: Folder; // targetFolder
   updateSharedData?: (updateFn: (data?: Folder) => Folder) => void;
@@ -80,17 +82,18 @@ export function DirentMoveHeader(props: DirentMoveProps): ReactElement {
 export function DirentMoveBody(props: DirentMoveProps): ReactElement {
   const {
     langtag,
-    sourceFolder,
+    dirent,
     sharedData: targetFolder,
     updateSharedData: updateTargetFolder
   } = props;
+  const isFile = isAttachment(dirent);
   const currentFolder = useSelector<ReduxState, Partial<Folder>>(
     state => state.media.data
   );
-  const subfolders = f.filter(
-    folder => folder.id !== sourceFolder?.id,
-    targetFolder?.subfolders ?? []
-  );
+  const targetSubfolders = targetFolder?.subfolders ?? [];
+  const subfolders = isFile
+    ? targetSubfolders
+    : f.filter(folder => folder.id !== dirent?.id, targetSubfolders);
   const isTargetRoot = targetFolder?.id === null;
 
   const handleNavigate = async (folderId?: FolderID | null) => {
@@ -109,15 +112,11 @@ export function DirentMoveBody(props: DirentMoveProps): ReactElement {
   return (
     <div className="dirent-move__list">
       {!isTargetRoot && (
-        <div className="dirent-move__list-item">
-          <button
-            className="nav__link"
-            onClick={() => handleNavigate(targetFolder?.parentId)}
-          >
-            <i className="icon fa fa-folder" />
-            <span>{".."}</span>
-          </button>
-        </div>
+        <FolderAction
+          icon={<FolderDirentThumbnail langtag={langtag!} layout={"list"} />}
+          label={".."}
+          onClick={() => handleNavigate(targetFolder?.parentId)}
+        />
       )}
       <AutoSizer>
         {({ height, width }) => (
@@ -126,19 +125,21 @@ export function DirentMoveBody(props: DirentMoveProps): ReactElement {
             width={width}
             rowCount={subfolders.length}
             overscanRowCount={10}
-            rowHeight={56}
+            rowHeight={40}
             rowRenderer={({ index, style }) => {
               const subfolder = subfolders[index]!;
 
               return (
-                <div
-                  key={subfolder?.id}
-                  style={style}
-                  className="dirent-move__list-item"
-                >
-                  <Subfolder
-                    langtag={langtag!}
-                    folder={subfolder}
+                <div key={subfolder.id} style={style}>
+                  <FolderAction
+                    icon={
+                      <FolderDirentThumbnail
+                        langtag={langtag!}
+                        dirent={subfolder}
+                        layout={"list"}
+                      />
+                    }
+                    label={subfolder.name}
                     onClick={() => handleNavigate(subfolder.id)}
                   />
                 </div>
@@ -152,7 +153,8 @@ export function DirentMoveBody(props: DirentMoveProps): ReactElement {
 }
 
 export function DirentMoveFooter(props: DirentMoveProps): ReactElement {
-  const { langtag, sourceFile, sourceFolder, sharedData: targetFolder } = props;
+  const { langtag, dirent, sharedData: targetFolder } = props;
+  const isFile = isAttachment(dirent);
   const canEdit = canUserEditFiles();
   const history = useHistory();
   const dispatch = useDispatch();
@@ -162,28 +164,28 @@ export function DirentMoveFooter(props: DirentMoveProps): ReactElement {
   };
 
   const handleSave = () => {
-    if (sourceFile) {
+    if (isFile) {
       dispatch(
         editMediaFile(
-          sourceFile.uuid,
+          dirent.uuid,
           {
-            title: sourceFile.title,
-            description: sourceFile.description,
-            externalName: sourceFile.externalName,
-            internalName: sourceFile.internalName,
-            mimeType: sourceFile.mimeType,
+            title: dirent.title,
+            description: dirent.description,
+            externalName: dirent.externalName,
+            internalName: dirent.internalName,
+            mimeType: dirent.mimeType,
             folder: targetFolder?.id ?? null
           },
           handleNavigate
         )
       );
-    } else if (sourceFolder) {
+    } else if (dirent) {
       dispatch(
         editMediaFolder(
-          sourceFolder.id,
+          dirent.id,
           {
-            name: sourceFolder.name,
-            description: sourceFolder.description,
+            name: dirent.name,
+            description: dirent.description,
             parentId: targetFolder?.id
           },
           handleNavigate

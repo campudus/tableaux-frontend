@@ -33,7 +33,7 @@ export default function FolderDirents({
   const sortedFiles = f.orderBy(f.prop("updatedAt"), "desc", files);
   const dirents = [...subfolders, ...sortedFiles];
 
-  const cellHeight = layout === "list" ? 56 : 190;
+  const cellHeight = layout === "list" ? 50 : 190;
   const cellWidth = layout === "list" ? dimensions.width : 215;
   const gutterSize = layout === "list" ? 0 : 10;
 
@@ -66,13 +66,13 @@ export default function FolderDirents({
     });
     masonryRef.current?.clearCellPositions();
     masonryRef.current?.recomputeCellPositions();
-  }, [layout, dimensions]);
+  }, [dirents.length, layout, dimensions]);
 
   return (
     <div className={cn("folder-dirents", {}, className)}>
       <AutoSizer
         onResize={({ height, width }) => {
-          setDimensions({ width, height });
+          setDimensions({ width: width - 15, height });
         }}
       >
         {({ height, width }) => {
@@ -87,8 +87,6 @@ export default function FolderDirents({
               cellPositioner={cellPositioner}
               cellRenderer={({ index, key, parent, style }) => {
                 const dirent = dirents[index];
-
-                // console.log({ index, dirent, dimensions });
 
                 return (
                   <CellMeasurer

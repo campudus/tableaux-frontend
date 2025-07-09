@@ -31,6 +31,7 @@ const iconUrls = {
   edit: "/img/icons/edit.svg",
   addTranslation: "/img/icons/translation-add.svg",
   compareTranslation: "/img/icons/translation-compare.svg",
+  hdots: "/img/icons/horizontal-dots.svg",
   vdots: "/img/icons/vertical-dots.svg",
   deletedFile: "/img/icons/icon-deleted-file.svg",
   layoutV: "/img/icons/layout-vertical.svg",
