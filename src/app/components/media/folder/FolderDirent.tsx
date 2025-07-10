@@ -1,6 +1,6 @@
 import f from "lodash/fp";
 import i18n from "i18next";
-import { CSSProperties, ReactElement } from "react";
+import { CSSProperties, ForwardedRef, forwardRef, ReactElement } from "react";
 import { isAttachment } from "../../../types/guards";
 import { Attachment, Folder } from "../../../types/grud";
 import { buildClassName as cn } from "../../../helpers/buildClassName";
@@ -43,14 +43,10 @@ type FolderDirentProps = {
   fileIdsDiff: string[];
 };
 
-export default function FolderDirent({
-  className,
-  style,
-  langtag,
-  dirent,
-  layout,
-  fileIdsDiff
-}: FolderDirentProps): ReactElement {
+function FolderDirent(
+  { className, style, langtag, dirent, layout, fileIdsDiff }: FolderDirentProps,
+  ref: ForwardedRef<HTMLDivElement>
+): ReactElement {
   const dispatch = useDispatch();
   const history = useHistory();
 
@@ -138,6 +134,7 @@ export default function FolderDirent({
 
   return (
     <div
+      ref={ref}
       style={style}
       className={cn(
         "folder-dirent",
@@ -231,3 +228,5 @@ export default function FolderDirent({
     </div>
   );
 }
+
+export default forwardRef(FolderDirent);

@@ -32,7 +32,7 @@ export default function FolderDirents({
   layout
 }: FolderDirentsProps): ReactElement {
   const history = useHistory();
-  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+  const [dimensions, setDimensions] = useState({ width: 100, height: 100 });
   const masonryRef = useRef<Masonry>(null);
   const isRoot = folder.id === null;
   const hasBack = !isRoot;
