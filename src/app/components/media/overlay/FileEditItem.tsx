@@ -6,7 +6,7 @@ import { FileMeta, FileMetaKey } from "./FileEdit";
 import FileDropzone from "./FileDropzone";
 import FileEditMeta from "./FileEditMeta";
 import { canUserEditFiles } from "../../../helpers/accessManagementHelper";
-import FolderDirentThumbnail from "../folder/FolderDirentThumbnail";
+import MediaThumbnail from "../MediaThumbnail";
 
 type FileEditItemProps = PropsWithChildren<{
   langtag: string;
@@ -45,7 +45,7 @@ export default function FileEditItem({
         >
           {fileInternalName ? (
             <div className="file-edit-item__replace">
-              <FolderDirentThumbnail
+              <MediaThumbnail
                 langtag={langtag}
                 dirent={file}
                 width={200}

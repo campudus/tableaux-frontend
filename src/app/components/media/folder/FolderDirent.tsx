@@ -9,7 +9,7 @@ import { retrieveTranslation } from "../../../helpers/multiLanguage";
 import apiUrl from "../../../helpers/apiUrl";
 import { useHistory } from "react-router-dom";
 import { switchFolderHandler } from "../../Router";
-import FolderDirentThumbnail from "./FolderDirentThumbnail";
+import MediaThumbnail from "../MediaThumbnail";
 import { Layout } from "./FolderToolbar";
 import FolderAction from "./FolderAction";
 import SvgIcon from "../../helperComponents/SvgIcon";
@@ -148,7 +148,7 @@ export default function FolderDirent({
       <FolderAction
         className={cn("folder-dirent__action", { main: true })}
         icon={
-          <FolderDirentThumbnail
+          <MediaThumbnail
             className="folder-dirent__thumbnail"
             langtag={langtag}
             dirent={dirent}

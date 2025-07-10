@@ -1,10 +1,10 @@
 import { ReactElement, useState } from "react";
-import { Attachment, Folder } from "../../../types/grud";
-import { isAttachment } from "../../../types/guards";
-import { retrieveTranslation } from "../../../helpers/multiLanguage";
-import { buildClassName as cn } from "../../../helpers/buildClassName";
-import apiUrl from "../../../helpers/apiUrl";
-import { Layout } from "./FolderToolbar";
+import { Attachment, Folder } from "../../types/grud";
+import { isAttachment } from "../../types/guards";
+import { retrieveTranslation } from "../../helpers/multiLanguage";
+import { buildClassName as cn } from "../../helpers/buildClassName";
+import apiUrl from "../../helpers/apiUrl";
+import { Layout } from "./folder/FolderToolbar";
 
 const VALID_MIME_TYPES = [
   "image/jpeg",
@@ -27,7 +27,7 @@ type FolderDirentThumbnailProps = {
   className?: string;
   langtag: string;
   dirent?: Attachment | Folder;
-  layout: Layout;
+  layout?: Layout;
   width?: number;
 };
 
@@ -35,7 +35,7 @@ export default function FolderDirentThumbnail({
   className,
   langtag,
   dirent,
-  layout,
+  layout = "list",
   width = 40
 }: FolderDirentThumbnailProps): ReactElement {
   const isFile = isAttachment(dirent);
@@ -44,12 +44,10 @@ export default function FolderDirentThumbnail({
 
   if (!isFile) {
     return (
-      <div
-        className={cn("folder-dirent-thumbnail", { [layout]: true }, className)}
-      >
+      <div className={cn("media-thumbnail", { [layout]: true }, className)}>
         <i
           className={cn(
-            "folder-dirent-thumbnail__image",
+            "media-thumbnail__image",
             { icon: true },
             "icon fa fa-folder"
           )}
@@ -70,18 +68,16 @@ export default function FolderDirentThumbnail({
   const canShowImage = !isError && isValidMimeType;
 
   return (
-    <div
-      className={cn("folder-dirent-thumbnail", { [layout]: true }, className)}
-    >
-      <span className="folder-dirent-thumbnail__overlay">
+    <div className={cn("media-thumbnail", { [layout]: true }, className)}>
+      <span className="media-thumbnail__overlay">
         <i className="icon fa fa-external-link" />
       </span>
 
-      {isLoading && <div className="folder-dirent-thumbnail__skeleton"></div>}
+      {isLoading && <div className="media-thumbnail__skeleton"></div>}
 
       {canShowImage && (
         <img
-          className="folder-dirent-thumbnail__image"
+          className="media-thumbnail__image"
           src={thumbnailUrl}
           onLoad={() => setIsLoading(false)}
           onError={() => setIsError(true)}
@@ -90,14 +86,14 @@ export default function FolderDirentThumbnail({
 
       {!canShowImage && hasFallback && (
         <img
-          className={cn("folder-dirent-thumbnail__image", { icon: true })}
+          className={cn("media-thumbnail__image", { icon: true })}
           src={fallbackUrl}
         />
       )}
 
       {!canShowImage && !hasFallback && (
         <svg
-          className={cn("folder-dirent-thumbnail__image", { icon: true })}
+          className={cn("media-thumbnail__image", { icon: true })}
           width="48"
           height="67"
           viewBox="0 0 48 67"
