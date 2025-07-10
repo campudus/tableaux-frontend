@@ -1,4 +1,5 @@
 import f from "lodash/fp";
+import i18n from "i18next";
 import { ReactElement, useEffect, useMemo, useRef, useState } from "react";
 import { Folder } from "../../../types/grud";
 import { buildClassName as cn } from "../../../helpers/buildClassName";
@@ -31,7 +32,13 @@ export default function FolderDirents({
   const masonryRef = useRef<Masonry>(null);
   const { subfolders = [], files } = folder;
   const sortedFiles = f.orderBy(f.prop("updatedAt"), "desc", files);
-  const dirents = [...subfolders, ...sortedFiles];
+  // sort new folder to top
+  const sortedSubfolders = f.orderBy(
+    folder => folder.name === i18n.t("media:new_folder"),
+    "desc",
+    subfolders
+  );
+  const dirents = [...sortedSubfolders, ...sortedFiles];
 
   const cellHeight = layout === "list" ? 50 : 190;
   const cellWidth = layout === "list" ? dimensions.width : 215;
