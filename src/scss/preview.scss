@@ -5,6 +5,12 @@
   padding-top: ($space-height-header);
   display: flex;
   flex-direction: row;
+
+  &__resizeable-left {
+    overflow-y: auto;
+    // to move the scrollbar to the left side
+    direction: rtl;   
+  }
   
   &__resizeable-right {
     position: relative;
@@ -25,6 +31,9 @@
 
 .preview-row-view {
   padding: 16px;
+  // to move the scrollbar to the left side
+  // but show the content from left to right
+  direction: ltr;
 
   table {
     width: 100%;
@@ -42,7 +51,7 @@
   }
 
   &__column-selection {
-    width: 40px;
+    width: 30px;
     
     input {
       cursor: pointer;
@@ -64,6 +73,21 @@
 
 .preview-detail-view {
   padding: 16px 0 16px 16px;
+  overflow-y: auto;
+  height: 100%;
+  box-sizing: border-box;
+
+  &__title {
+    font-size: 24px;
+    margin-bottom: 16px;
+  }
+
+  &__table-wrapper {
+    width: 100%;
+    max-width: 100%;
+    overflow-y: auto;
+    overflow-x: auto;
+  }
 
   table {
     width: 100%;
@@ -85,7 +109,17 @@
   } 
 
   &__column-name {
+    position: sticky;
+    left: 0;
+    z-index: 2;
+    background: #F8F8F8;
     width: 250px;
+  }
+
+  &__row--uneven {
+    .preview-detail-view__column-name {
+      background: #EFEFEF;
+    }
   }
 
   &__column-value {
