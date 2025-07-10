@@ -13,12 +13,12 @@ import {
 import Footer from "../../overlay/Footer";
 import { canUserEditFiles } from "../../../helpers/accessManagementHelper";
 import Breadcrumbs from "../../helperComponents/Breadcrumbs";
+import ButtonAction from "../../helperComponents/ButtonAction";
 import { makeRequest } from "../../../helpers/apiHelper";
 import { toFolder } from "../../../helpers/apiRoutes";
 import { MediaState } from "../../../redux/reducers/media";
 import { switchFolderHandler } from "../../Router";
 import { isAttachment } from "../../../types/guards";
-import FolderAction from "../folder/FolderAction";
 import MediaThumbnail from "../MediaThumbnail";
 
 type ReduxState = { media: MediaState };
@@ -111,7 +111,7 @@ export function DirentMoveBody(props: DirentMoveProps): ReactElement {
   return (
     <div className="dirent-move__list">
       {!isTargetRoot && (
-        <FolderAction
+        <ButtonAction
           icon={<MediaThumbnail langtag={langtag!} layout={"list"} />}
           label={".."}
           onClick={() => handleNavigate(targetFolder?.parentId)}
@@ -130,7 +130,7 @@ export function DirentMoveBody(props: DirentMoveProps): ReactElement {
 
               return (
                 <div key={subfolder.id} style={style}>
-                  <FolderAction
+                  <ButtonAction
                     icon={
                       <MediaThumbnail
                         langtag={langtag!}

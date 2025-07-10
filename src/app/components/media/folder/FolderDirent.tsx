@@ -11,7 +11,7 @@ import { useHistory } from "react-router-dom";
 import { switchFolderHandler } from "../../Router";
 import MediaThumbnail from "../MediaThumbnail";
 import { Layout } from "./FolderToolbar";
-import FolderAction from "./FolderAction";
+import ButtonAction from "../../helperComponents/ButtonAction";
 import SvgIcon from "../../helperComponents/SvgIcon";
 import actions from "../../../redux/actionCreators";
 import {
@@ -145,7 +145,7 @@ export default function FolderDirent({
         className
       )}
     >
-      <FolderAction
+      <ButtonAction
         className={cn("folder-dirent__action", { main: true })}
         icon={
           <MediaThumbnail
@@ -165,7 +165,7 @@ export default function FolderDirent({
       />
 
       {depCount > 0 && (
-        <FolderAction
+        <ButtonAction
           className={cn("folder-dirent__action", { dependents: true })}
           variant="link"
           label={depLabel}
@@ -176,7 +176,7 @@ export default function FolderDirent({
       {layout === "list" && (
         <>
           {canEdit && (
-            <FolderAction
+            <ButtonAction
               className={cn("folder-dirent__action", { move: true })}
               icon={<SvgIcon icon="move" />}
               alt={i18n.t(`media:move_${direntKey}`)}
@@ -184,7 +184,7 @@ export default function FolderDirent({
             />
           )}
           {canEdit && (
-            <FolderAction
+            <ButtonAction
               className={cn("folder-dirent__action", { edit: true })}
               icon={<SvgIcon icon="edit" />}
               alt={i18n.t(`media:change_${direntKey}`)}
@@ -192,7 +192,7 @@ export default function FolderDirent({
             />
           )}
           {canDelete && (
-            <FolderAction
+            <ButtonAction
               className={cn("folder-dirent__action", { remove: true })}
               icon={<SvgIcon icon="trash" />}
               alt={i18n.t(`media:delete_${direntKey}`)}
@@ -203,7 +203,7 @@ export default function FolderDirent({
       )}
 
       {layout === "tiles" && (canEdit || canDelete) && (
-        <FolderAction
+        <ButtonAction
           className={cn("folder-dirent__action", { menu: true })}
           icon={<SvgIcon icon="hdots" />}
           options={f.compact([

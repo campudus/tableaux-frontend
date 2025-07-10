@@ -6,7 +6,7 @@ import {
   canUserCreateFolders
 } from "../../../helpers/accessManagementHelper";
 import SvgIcon from "../../helperComponents/SvgIcon";
-import FolderAction from "./FolderAction";
+import ButtonAction from "../../helperComponents/ButtonAction";
 
 export type Layout = "list" | "tiles";
 
@@ -32,7 +32,7 @@ export default function FolderToolbar({
 
   return (
     <div className={cn("folder-toolbar", {}, className)}>
-      <FolderAction
+      <ButtonAction
         variant="outlined"
         icon={<SvgIcon icon={layout} />}
         options={[
@@ -50,7 +50,7 @@ export default function FolderToolbar({
       />
 
       {canUserCreateFolders() && (
-        <FolderAction
+        <ButtonAction
           variant="outlined"
           icon={<i className="icon fa fa-plus" />}
           label={i18n.t("media:new_folder")}
@@ -63,7 +63,7 @@ export default function FolderToolbar({
       )}
 
       {canUserCreateFiles() && (
-        <FolderAction
+        <ButtonAction
           variant="contained"
           icon={<i className="icon fa fa-upload" />}
           label={i18n.t("media:upload_file")}
