@@ -13,13 +13,11 @@ import {
 import Footer from "../../overlay/Footer";
 import { canUserEditFiles } from "../../../helpers/accessManagementHelper";
 import Breadcrumbs from "../../helperComponents/Breadcrumbs";
-import ButtonAction from "../../helperComponents/ButtonAction";
 import { makeRequest } from "../../../helpers/apiHelper";
 import { toFolder } from "../../../helpers/apiRoutes";
 import { MediaState } from "../../../redux/reducers/media";
 import { switchFolderHandler } from "../../Router";
 import { isAttachment } from "../../../types/guards";
-import MediaThumbnail from "../MediaThumbnail";
 import FolderDirentNav from "../folder/FolderDirentNav";
 
 type ReduxState = { media: MediaState };
