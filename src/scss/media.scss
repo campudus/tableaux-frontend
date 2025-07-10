@@ -178,7 +178,7 @@
 
   .folder-action {
     &:hover {
-      .folder-dirent-thumbnail__overlay {
+      .media-thumbnail__overlay {
         background: rgba(0, 0, 0, 0.3);
         width: 100%;
         height: 100%;
@@ -251,7 +251,7 @@
   }
 }
 
-.folder-dirent-thumbnail {
+.media-thumbnail {
   position: relative;
 
   &__overlay {
@@ -267,11 +267,11 @@
     align-items: center;
     justify-content: center;
 
-    .folder-dirent-thumbnail__image {
+    .media-thumbnail__image {
       width: 100%;
       height: 100%;
 
-      &:not(.folder-dirent-thumbnail__image--icon) {
+      &:not(.media-thumbnail__image--icon) {
         object-fit: contain;
         background: url(/img/bg-tile.png);
       }
@@ -297,11 +297,11 @@
     align-items: center;
     justify-content: center;
 
-    .folder-dirent-thumbnail__image {
+    .media-thumbnail__image {
       width: 100%;
       height: 100%;
 
-      &:not(.folder-dirent-thumbnail__image--icon) {
+      &:not(.media-thumbnail__image--icon) {
         object-fit: contain;
         background: url(/img/bg-tile.png);
       }
