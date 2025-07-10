@@ -16,11 +16,10 @@ import Breadcrumbs from "../../helperComponents/Breadcrumbs";
 import { makeRequest } from "../../../helpers/apiHelper";
 import { toFolder } from "../../../helpers/apiRoutes";
 import { MediaState } from "../../../redux/reducers/media";
-// import Subfolder from "../folder/Subfolder";
 import { switchFolderHandler } from "../../Router";
 import { isAttachment } from "../../../types/guards";
 import FolderAction from "../folder/FolderAction";
-import FolderDirentThumbnail from "../folder/FolderDirentThumbnail";
+import MediaThumbnail from "../MediaThumbnail";
 
 type ReduxState = { media: MediaState };
 
@@ -113,7 +112,7 @@ export function DirentMoveBody(props: DirentMoveProps): ReactElement {
     <div className="dirent-move__list">
       {!isTargetRoot && (
         <FolderAction
-          icon={<FolderDirentThumbnail langtag={langtag!} layout={"list"} />}
+          icon={<MediaThumbnail langtag={langtag!} layout={"list"} />}
           label={".."}
           onClick={() => handleNavigate(targetFolder?.parentId)}
         />
@@ -133,7 +132,7 @@ export function DirentMoveBody(props: DirentMoveProps): ReactElement {
                 <div key={subfolder.id} style={style}>
                   <FolderAction
                     icon={
-                      <FolderDirentThumbnail
+                      <MediaThumbnail
                         langtag={langtag!}
                         dirent={subfolder}
                         layout={"list"}
