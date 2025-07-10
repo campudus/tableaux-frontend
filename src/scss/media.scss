@@ -86,18 +86,41 @@
     }
 
     &--list {
-      display: flex;
-      align-items: center;
       border-bottom: 1px solid #dedede;
+      display: grid;
+      grid-template-columns: 1fr auto auto auto auto;
+      grid-template-rows: auto;
 
       .folder-dirent__action--main {
-        flex: 1;
+        grid-row: 1;
+        grid-column: 1/-1;
         display: flex;
         align-items: center;
         gap: 8px;
       }
 
+      .folder-dirent__action--dependents {
+        grid-row: 1;
+        grid-column: 2;
+      }
+
+      .folder-dirent__action--move {
+        grid-row: 1;
+        grid-column: 3;
+      }
+
+      .folder-dirent__action--edit {
+        grid-row: 1;
+        grid-column: 4;
+      }
+
+      .folder-dirent__action--remove {
+        grid-row: 1;
+        grid-column: 5;
+      }
+
       &:not(:hover) {
+
         .folder-dirent__action--move,
         .folder-dirent__action--edit,
         .folder-dirent__action--remove {
@@ -108,6 +131,7 @@
       .folder-dirent__action--move,
       .folder-dirent__action--edit,
       .folder-dirent__action--remove {
+
         .folder-action__button {
           padding: 0 12px;
         }
@@ -121,10 +145,14 @@
       grid-template-columns: 1fr auto;
       grid-template-rows: 1fr 30px;
 
+      &:hover {
+        border: 1px solid #333333;
+      }
+
       .folder-dirent__action--main {
         width: 100%;
-        grid-row: 1;
         grid-column: 1/-1;
+        grid-row: 1/4;
 
         .folder-action__button {
           padding: 0;
@@ -136,8 +164,13 @@
       }
 
       .folder-dirent__action--menu {
-        grid-row: 2;
+        grid-row: 3;
         grid-column: 2;
+      }
+
+      .folder-dirent__action--dependents {
+        grid-row: 3;
+        grid-column: 1;
       }
 
       .folder-dirent__label {
