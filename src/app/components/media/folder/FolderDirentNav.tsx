@@ -1,4 +1,11 @@
-import { CSSProperties, MouseEvent, ReactElement, ReactNode } from "react";
+import {
+  CSSProperties,
+  ForwardedRef,
+  forwardRef,
+  MouseEvent,
+  ReactElement,
+  ReactNode
+} from "react";
 import { buildClassName as cn } from "../../../helpers/buildClassName";
 import ButtonAction from "../../helperComponents/ButtonAction";
 import MediaThumbnail from "../MediaThumbnail";
@@ -13,16 +20,13 @@ type FolderDirentNavProps = {
   onClick: (event: MouseEvent<HTMLButtonElement>) => void;
 };
 
-export default function FolderDirentNav({
-  className,
-  style,
-  langtag,
-  label,
-  layout,
-  onClick
-}: FolderDirentNavProps): ReactElement {
+function FolderDirentNav(
+  { className, style, langtag, label, layout, onClick }: FolderDirentNavProps,
+  ref: ForwardedRef<HTMLDivElement>
+): ReactElement {
   return (
     <div
+      ref={ref}
       style={style}
       className={cn("folder-dirent", { [layout]: true }, className)}
     >
@@ -41,3 +45,5 @@ export default function FolderDirentNav({
     </div>
   );
 }
+
+export default forwardRef(FolderDirentNav);
