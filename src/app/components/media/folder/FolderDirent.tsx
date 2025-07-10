@@ -153,6 +153,7 @@ export default function FolderDirent({
             langtag={langtag}
             dirent={dirent}
             layout={layout}
+            width={layout === "list" ? 40 : 200}
           />
         }
         label={
