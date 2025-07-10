@@ -1,16 +1,16 @@
 import { Portal } from "react-portal";
 import { MouseEvent, ReactNode, useEffect, useRef, useState } from "react";
-import { buildClassName as cn } from "../../../helpers/buildClassName";
-import { outsideClickEffect } from "../../../helpers/useOutsideClick";
+import { buildClassName as cn } from "../../helpers/buildClassName";
+import { outsideClickEffect } from "../../helpers/useOutsideClick";
 
-type FolderActionOption = {
+type ButtonActionOption = {
   className?: string;
   icon?: ReactNode;
   label?: ReactNode;
   onClick: (event: MouseEvent<HTMLButtonElement>) => void;
 };
 
-type FolderActionProps = {
+type ButtonActionProps = {
   className?: string;
   variant?: "link" | "icon" | "text" | "contained" | "outlined";
   icon?: ReactNode;
@@ -18,14 +18,14 @@ type FolderActionProps = {
   alt?: string;
   disabled?: boolean;
 } & (
-  | { options: FolderActionOption[]; onClick?: never }
+  | { options: ButtonActionOption[]; onClick?: never }
   | {
       options?: never;
       onClick?: (event: MouseEvent<HTMLButtonElement>) => void;
     }
 );
 
-export default function FolderAction({
+export default function ButtonAction({
   className,
   variant = "text",
   icon,
@@ -34,7 +34,7 @@ export default function FolderAction({
   options,
   onClick,
   disabled
-}: FolderActionProps) {
+}: ButtonActionProps) {
   const buttonRef = useRef<HTMLButtonElement>(null);
   const buttonPosition = buttonRef.current?.getBoundingClientRect();
   const menuRef = useRef<HTMLDivElement>(null);
@@ -62,10 +62,10 @@ export default function FolderAction({
   );
 
   return (
-    <div className={cn("folder-action", {}, className)}>
+    <div className={cn("button-action", {}, className)}>
       <button
         ref={buttonRef}
-        className={cn("folder-action__button", {
+        className={cn("button-action__button", {
           [variant]: true,
           active: showMenu
         })}
@@ -85,10 +85,10 @@ export default function FolderAction({
               left: buttonPosition?.left,
               top: buttonPosition?.bottom
             }}
-            className="folder-action__menu"
+            className="button-action__menu"
           >
             {options.map(option => (
-              <FolderAction
+              <ButtonAction
                 key={option.label?.toString()}
                 className={option.className}
                 label={option.label}
