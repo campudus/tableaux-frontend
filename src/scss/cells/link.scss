@@ -3,6 +3,7 @@
 
 .cell.cell-link,
 .cell.cell-attachment {
+
   //Overwrite editing styling because editing mode is with overlay
   &.cell-link.editing .cell-content {
     @include box-shadow(none);
@@ -29,6 +30,7 @@
     &--archived {
       background: $color-archived-bg;
       color: $color-archived-fg;
+
       ::before {
         content: "\f187";
         font-family: FontAwesome;
@@ -46,6 +48,55 @@
       .link-label {
         margin-bottom: 6px;
       }
+    }
+  }
+}
+
+.cell.cell-attachment {
+
+  .cell-content {
+    display: flex;
+    gap: 8px;
+  }
+
+  &:not(&.selected, &.editing) {
+    .button-action {
+      height: 25px;
+      width: 40px;
+    }
+
+    .button-action__button {
+      min-height: 25px;
+    }
+
+    .media-thumbnail {
+      max-height: 25px;
+    }
+
+    .media-thumbnail__image--icon {
+      width: 20px;
+      height: 20px;
+
+      &.icon {
+        font-size: 20px;
+      }
+    }
+  }
+
+  .button-action {
+    overflow: hidden;
+    border: 1px solid #dedede;
+
+    &:hover {
+      border: 1px solid #333333;
+
+      .media-thumbnail__overlay .icon {
+        font-size: 12px;
+      }
+    }
+
+    &__button {
+      padding: 0;
     }
   }
 }
