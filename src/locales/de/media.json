@@ -20,6 +20,7 @@
   "file_link_name_label": "Linkname",
   "file_title_label": "Titel",
   "new_folder": "Neuer Ordner",
+  "new_folder_exists": "Neuer Ordner existiert bereits",
   "upload_file": "Datei hochladen",
   "open_file": "Datei ansehen",
   "rename_folder": "Ordner umbenennen",
