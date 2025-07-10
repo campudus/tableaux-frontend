@@ -20,6 +20,7 @@ import { MediaState } from "../../../redux/reducers/media";
 import { switchFolderHandler } from "../../Router";
 import { isAttachment } from "../../../types/guards";
 import MediaThumbnail from "../MediaThumbnail";
+import FolderDirentNav from "../folder/FolderDirentNav";
 
 type ReduxState = { media: MediaState };
 
@@ -111,12 +112,14 @@ export function DirentMoveBody(props: DirentMoveProps): ReactElement {
   return (
     <div className="dirent-move__list">
       {!isTargetRoot && (
-        <ButtonAction
-          icon={<MediaThumbnail langtag={langtag!} layout={"list"} />}
-          label={".."}
+        <FolderDirentNav
+          langtag={langtag!}
+          label=".."
+          layout="list"
           onClick={() => handleNavigate(targetFolder?.parentId)}
         />
       )}
+
       <AutoSizer>
         {({ height, width }) => (
           <List
@@ -129,19 +132,14 @@ export function DirentMoveBody(props: DirentMoveProps): ReactElement {
               const subfolder = subfolders[index]!;
 
               return (
-                <div key={subfolder.id} style={style}>
-                  <ButtonAction
-                    icon={
-                      <MediaThumbnail
-                        langtag={langtag!}
-                        dirent={subfolder}
-                        layout={"list"}
-                      />
-                    }
-                    label={subfolder.name}
-                    onClick={() => handleNavigate(subfolder.id)}
-                  />
-                </div>
+                <FolderDirentNav
+                  key={subfolder.id}
+                  style={style}
+                  langtag={langtag!}
+                  label={subfolder.name}
+                  layout="list"
+                  onClick={() => handleNavigate(subfolder.id)}
+                />
               );
             }}
           />
