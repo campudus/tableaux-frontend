@@ -14,7 +14,7 @@ type FolderToolbarProps = {
   className?: string;
   onLayoutChange: (layout: Layout) => void;
   onUploadClick: () => void;
-  onNewFolderClick: () => void;
+  onNewFolderClick?: () => void;
 };
 
 export default function FolderToolbar({
@@ -55,6 +55,10 @@ export default function FolderToolbar({
           icon={<i className="icon fa fa-plus" />}
           label={i18n.t("media:new_folder")}
           onClick={onNewFolderClick}
+          alt={
+            !onNewFolderClick ? i18n.t("media:new_folder_exists") : undefined
+          }
+          disabled={!onNewFolderClick}
         />
       )}
 

@@ -16,9 +16,13 @@ type FolderActionProps = {
   icon?: ReactNode;
   label?: ReactNode;
   alt?: string;
+  disabled?: boolean;
 } & (
   | { options: FolderActionOption[]; onClick?: never }
-  | { options?: never; onClick: (event: MouseEvent<HTMLButtonElement>) => void }
+  | {
+      options?: never;
+      onClick?: (event: MouseEvent<HTMLButtonElement>) => void;
+    }
 );
 
 export default function FolderAction({
@@ -28,7 +32,8 @@ export default function FolderAction({
   label,
   alt,
   options,
-  onClick
+  onClick,
+  disabled
 }: FolderActionProps) {
   const buttonRef = useRef<HTMLButtonElement>(null);
   const buttonPosition = buttonRef.current?.getBoundingClientRect();
@@ -66,6 +71,7 @@ export default function FolderAction({
         })}
         onClick={handleClick}
         title={alt}
+        disabled={disabled}
       >
         {icon}
         {label}

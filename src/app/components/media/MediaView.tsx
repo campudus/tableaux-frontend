@@ -30,6 +30,10 @@ export default function MediaView({ langtag }: MediaViewProps): ReactElement {
   const dispatch = useDispatch();
   const media = useSelector<ReduxState, MediaState>(state => state.media);
   const folder = media.data;
+  const hasNewFolder = f.some(
+    f.propEq("name", i18n.t("media:new_folder")),
+    folder.subfolders
+  );
   const folderPrev = useRef(folder);
   const folderIdPrev = folderPrev.current.id;
   const fileIds = media.data.files?.map(({ uuid }) => uuid) ?? [];
@@ -84,7 +88,7 @@ export default function MediaView({ langtag }: MediaViewProps): ReactElement {
             className="media-view__toolbar"
             onLayoutChange={handleSelectLayout}
             onUploadClick={handleClickUpload}
-            onNewFolderClick={handleClickNewFolder}
+            onNewFolderClick={!hasNewFolder ? handleClickNewFolder : undefined}
           />
 
           <FolderBreadcrumbs

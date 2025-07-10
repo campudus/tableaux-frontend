@@ -20,6 +20,7 @@
   "file_link_name_label": "Link name",
   "file_title_label": "Title",
   "new_folder": "New folder",
+  "new_folder_exists": "New folder already exists",
   "upload_file": "Upload file",
   "open_file": "Open file",
   "rename_folder": "Rename folder",
