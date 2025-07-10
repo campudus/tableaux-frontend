@@ -28,13 +28,15 @@ type FolderDirentThumbnailProps = {
   langtag: string;
   dirent?: Attachment | Folder;
   layout: Layout;
+  width?: number;
 };
 
 export default function FolderDirentThumbnail({
   className,
   langtag,
   dirent,
-  layout
+  layout,
+  width = 40
 }: FolderDirentThumbnailProps): ReactElement {
   const isFile = isAttachment(dirent);
   const [isLoading, setIsLoading] = useState(isFile);
@@ -62,6 +64,7 @@ export default function FolderDirentThumbnail({
   const extension = internalName?.split(".")[1]?.toLowerCase();
   const isValidMimeType = VALID_MIME_TYPES.includes(mimeType);
   const imageUrl = apiUrl(translate(dirent.url));
+  const thumbnailUrl = `${imageUrl}?width=${width}`;
   const hasFallback = FALLBACK_EXTENSIONS.includes(extension);
   const fallbackUrl = `/img/fileicons/${extension}.svg`;
   const canShowImage = !isError && isValidMimeType;
@@ -79,7 +82,7 @@ export default function FolderDirentThumbnail({
       {canShowImage && (
         <img
           className="folder-dirent-thumbnail__image"
-          src={imageUrl}
+          src={thumbnailUrl}
           onLoad={() => setIsLoading(false)}
           onError={() => setIsError(true)}
         />
