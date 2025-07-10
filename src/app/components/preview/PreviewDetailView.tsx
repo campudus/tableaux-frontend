@@ -50,53 +50,55 @@ export default function PreviewDetailView({
     <div className="preview-detail-view">
       <h2 className="preview-detail-view__title">{title}</h2>
 
-      <table>
-        <tbody>
-          {filteredColumns.map((column, index) => {
-            const columnLink = `/${langtag}/tables/${currentDetailTable}/columns/${column.id}`;
-            return (
-              <tr
-                key={column.id}
-                className={buildClassName("preview-detail-view__row", {
-                  uneven: index % 2 === 0
-                })}
-              >
-                <td className="preview-detail-view__column preview-detail-view__column-name">
-                  <a href={columnLink}>{column.displayName[langtag]}</a>
-                </td>
-                {filteredRows?.map(row => {
-                  const cellLink = `/${langtag}/tables/${currentDetailTable}/columns/${column.id}/rows/${row.id}`;
-                  const rowValue =
-                    row.values.length > 1
-                      ? row?.values.at(column.id)
-                      : row?.values.at(0);
-                  let value = getDisplayValue(column)(rowValue);
+      <div className="preview-detail-view__table-wrapper">
+        <table>
+          <tbody>
+            {filteredColumns.map((column, index) => {
+              const columnLink = `/${langtag}/tables/${currentDetailTable}/columns/${column.id}`;
+              return (
+                <tr
+                  key={column.id}
+                  className={buildClassName("preview-detail-view__row", {
+                    uneven: index % 2 === 0
+                  })}
+                >
+                  <td className="preview-detail-view__column preview-detail-view__column-name">
+                    <a href={columnLink}>{column.displayName[langtag]}</a>
+                  </td>
+                  {filteredRows?.map(row => {
+                    const cellLink = `/${langtag}/tables/${currentDetailTable}/columns/${column.id}/rows/${row.id}`;
+                    const rowValue =
+                      row.values.length > 1
+                        ? row?.values.at(column.id)
+                        : row?.values.at(0);
+                    let value = getDisplayValue(column)(rowValue);
 
-                  if (Array.isArray(value))
-                    value = value.map(v => v[langtag]).join(", ");
-                  else {
-                    value = value[langtag];
-                  }
+                    if (Array.isArray(value))
+                      value = value.map(v => v[langtag]).join(", ");
+                    else {
+                      value = value[langtag];
+                    }
 
-                  return (
-                    <td
-                      key={row.id}
-                      className="preview-detail-view__column preview-detail-view__column-value"
-                    >
-                      <a
-                        className={value ? undefined : "empty"}
-                        href={cellLink}
+                    return (
+                      <td
+                        key={row.id}
+                        className="preview-detail-view__column preview-detail-view__column-value"
                       >
-                        {value || "Leer"}
-                      </a>
-                    </td>
-                  );
-                })}
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+                        <a
+                          className={value ? undefined : "empty"}
+                          href={cellLink}
+                        >
+                          {value || "Leer"}
+                        </a>
+                      </td>
+                    );
+                  })}
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
