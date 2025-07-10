@@ -1,9 +1,7 @@
 import f from "lodash/fp";
 import i18n from "i18next";
+import { useHistory } from "react-router-dom";
 import { ReactElement, useEffect, useMemo, useRef, useState } from "react";
-import { Folder } from "../../../types/grud";
-import { buildClassName as cn } from "../../../helpers/buildClassName";
-import { Layout } from "./FolderToolbar";
 import {
   AutoSizer,
   CellMeasurer,
@@ -11,7 +9,12 @@ import {
   Masonry
 } from "react-virtualized";
 import { createCellPositioner } from "react-virtualized/dist/es/Masonry";
+import { Folder } from "../../../types/grud";
+import { buildClassName as cn } from "../../../helpers/buildClassName";
+import { Layout } from "./FolderToolbar";
 import FolderDirent from "./FolderDirent";
+import { switchFolderHandler } from "../../Router";
+import FolderDirentNav from "./FolderDirentNav";
 
 type FolderDirentsProps = {
   className?: string;
@@ -28,17 +31,20 @@ export default function FolderDirents({
   fileIdsDiff,
   layout
 }: FolderDirentsProps): ReactElement {
+  const history = useHistory();
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
   const masonryRef = useRef<Masonry>(null);
-  const { subfolders = [], files } = folder;
-  const sortedFiles = f.orderBy(f.prop("updatedAt"), "desc", files);
+  const isRoot = folder.id === null;
+  const hasBack = !isRoot;
+  const files = f.orderBy(f.prop("updatedAt"), "desc", folder.files);
   // sort new folder to top
-  const sortedSubfolders = f.orderBy(
+  const subfolders = f.orderBy(
     folder => folder.name === i18n.t("media:new_folder"),
     "desc",
-    subfolders
+    folder.subfolders ?? []
   );
-  const dirents = [...sortedSubfolders, ...sortedFiles];
+  // add dummy folder for back action
+  const dirents = [...(hasBack ? [{} as Folder] : []), ...subfolders, ...files];
 
   const cellHeight = layout === "list" ? 50 : 190;
   const cellWidth = layout === "list" ? dimensions.width : 215;
@@ -62,6 +68,10 @@ export default function FolderDirents({
 
   const calculateColumnCount = () => {
     return Math.floor(dimensions.width / (cellWidth + gutterSize));
+  };
+
+  const handleNavigateBack = () => {
+    switchFolderHandler(history, langtag, folder.parentId);
   };
 
   useEffect(() => {
@@ -102,7 +112,15 @@ export default function FolderDirents({
                     parent={parent}
                     cache={cellMeasurerCache}
                   >
-                    {dirent ? (
+                    {hasBack && index === 0 ? (
+                      <FolderDirentNav
+                        style={{ ...style, width: cellWidth }}
+                        langtag={langtag}
+                        label=".."
+                        layout={layout}
+                        onClick={handleNavigateBack}
+                      />
+                    ) : dirent ? (
                       <FolderDirent
                         style={{ ...style, width: cellWidth }}
                         langtag={langtag}
