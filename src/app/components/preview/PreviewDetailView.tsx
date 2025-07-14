@@ -4,6 +4,7 @@ import { CellValue, GRUDStore, Row } from "../../types/grud";
 import Spinner from "../header/Spinner";
 import getDisplayValue from "../../helpers/getDisplayValue";
 import { buildClassName } from "../../helpers/buildClassName";
+import { getColumnDisplayName } from "../../helpers/multiLanguage";
 
 type PreviewDetailViewProps = {
   langtag: string;
@@ -73,7 +74,9 @@ export default function PreviewDetailView({
                   })}
                 >
                   <td className="preview-detail-view__column preview-detail-view__column-name">
-                    <a href={columnLink}>{column.displayName[langtag]}</a>
+                    <a href={columnLink}>
+                      {getColumnDisplayName(column, langtag)}
+                    </a>
                   </td>
                   {filteredLinkedRows?.map(row => {
                     const cellLink = `/${langtag}/tables/${currentDetailTable}/columns/${column.id}/rows/${row.id}`;
