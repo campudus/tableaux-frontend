@@ -20,10 +20,14 @@ export default function PreviewDetailView({
   currentRow,
   currentDetailTable
 }: PreviewDetailViewProps): ReactElement {
-  const linkedRows = currentRow.values[currentColumn] as (CellValue & {
+  const indexOfCurrentColumn =
+    currentRow.cells?.findIndex(cell => cell.column.id === currentColumn) ||
+    currentColumn;
+
+  const linkedCells = currentRow.values[indexOfCurrentColumn] as (CellValue & {
     id: number;
   })[];
-  const linkedRowIds = linkedRows.map(row => row.id);
+  const linkedCellIds = linkedCells.map(row => row.id);
 
   const columns = useSelector(
     (store: GRUDStore) => store.columns[currentDetailTable]?.data
@@ -33,7 +37,13 @@ export default function PreviewDetailView({
   const rows = useSelector(
     (store: GRUDStore) => store.rows[currentDetailTable]?.data
   );
-  const filteredRows = rows?.filter(row => linkedRowIds.includes(row.id));
+  const linkedRows = rows?.filter(row => linkedCellIds.includes(row.id));
+  const filteredLinkedRows = columns?.some(column => column.id === 0)
+    ? linkedRows?.map(row => ({
+        ...row,
+        values: row.values.filter((_, index) => index !== 0)
+      }))
+    : linkedRows;
 
   const title = useSelector(
     (store: GRUDStore) =>
@@ -42,7 +52,7 @@ export default function PreviewDetailView({
       )?.displayName[langtag]
   );
 
-  if (!filteredColumns || !rows || !title) {
+  if (!filteredColumns || !filteredLinkedRows || !title) {
     return <Spinner isLoading />;
   }
 
@@ -65,11 +75,11 @@ export default function PreviewDetailView({
                   <td className="preview-detail-view__column preview-detail-view__column-name">
                     <a href={columnLink}>{column.displayName[langtag]}</a>
                   </td>
-                  {filteredRows?.map(row => {
+                  {filteredLinkedRows?.map(row => {
                     const cellLink = `/${langtag}/tables/${currentDetailTable}/columns/${column.id}/rows/${row.id}`;
                     const rowValue =
                       row.values.length > 1
-                        ? row?.values.at(column.id)
+                        ? row?.values.at(index)
                         : row?.values.at(0);
                     let value = getDisplayValue(column)(rowValue);
 
