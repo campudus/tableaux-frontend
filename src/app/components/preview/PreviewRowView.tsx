@@ -3,6 +3,7 @@ import { Column, Row } from "../../types/grud";
 import getDisplayValue from "../../helpers/getDisplayValue";
 import actionTypes from "../../redux/actionTypes";
 import { useDispatch } from "react-redux";
+import { getColumnDisplayName } from "../../helpers/multiLanguage";
 
 type PreviewRowViewProps = {
   langtag: string;
@@ -61,7 +62,9 @@ export default function PreviewRowView({
                   )}
                 </td>
                 <td className="preview-row-view__column preview-row-view__column-name">
-                  <a href={columnLink}>{column.displayName[langtag]}</a>
+                  <a href={columnLink}>
+                    {getColumnDisplayName(column, langtag)}
+                  </a>
                 </td>
                 <td className="preview-row-view__column preview-row-view__column-value">
                   <a className={value ? undefined : "empty"} href={cellLink}>
