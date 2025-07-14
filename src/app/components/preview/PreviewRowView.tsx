@@ -35,13 +35,11 @@ export default function PreviewRowView({
     <div className="preview-row-view">
       <table>
         <tbody>
-          {columns.map(column => {
+          {columns.map((column, index) => {
             const columnLink = `/${langtag}/tables/${tableId}/columns/${column.id}`;
             const cellLink = `/${langtag}/tables/${tableId}/columns/${column.id}/rows/${row.id}`;
             const rowValue =
-              row.values.length > 1
-                ? row?.values.at(column.id)
-                : row?.values.at(0);
+              row.values.length > 1 ? row?.values.at(index) : row?.values.at(0);
             let value = getDisplayValue(column)(rowValue);
 
             if (Array.isArray(value))

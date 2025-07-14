@@ -37,6 +37,10 @@ export default function PreviewView({
     if (f.isNil(tableId) || f.isNil(rowId)) return undefined;
     return store.rows[tableId]?.data.find(row => row.id === rowId);
   });
+  const filteredRow =
+    columns?.some(column => column.id === 0) && row
+      ? { ...row, values: row.values.filter((_, index) => index !== 0) }
+      : row;
 
   const currentColumn =
     useSelector((store: GRUDStore) => store.preview.currentColumn) ??
@@ -106,13 +110,13 @@ export default function PreviewView({
           className="preview-view__resizeable-left"
           style={{ width: `${leftWidth}%` }}
         >
-          {filteredColumns && row ? (
+          {filteredColumns && filteredRow ? (
             <PreviewRowView
               langtag={langtag}
               tableId={tableId}
               currentColumn={currentColumn}
               columns={filteredColumns}
-              row={row}
+              row={filteredRow}
             />
           ) : (
             <Spinner isLoading />

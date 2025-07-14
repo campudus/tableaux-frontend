@@ -21,6 +21,7 @@ export type Row = {
   id: number;
   tableId?: number;
   final?: boolean;
+  cells?: Cell[];
   archived?: boolean;
   values: CellValue["value"][];
   annotations?: Annotation[][];
