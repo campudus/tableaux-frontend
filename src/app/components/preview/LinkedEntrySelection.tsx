@@ -51,6 +51,7 @@ export default function LinkedEntrySelection({
         return (
           <Chip
             key={entry.id}
+            className="linked-entry-selection__chip"
             label={values.at(index)}
             onClick={() => handleClick(entry.id)}
             isActive={isActive}
