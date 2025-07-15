@@ -1,0 +1,19 @@
+.chip {
+  display: inline-flex;
+  padding: 4px 8px;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+  border-radius: 999px;
+  border: 1px solid #3296DC;
+  color: #3296DC;
+
+  &--clickable {
+    cursor: pointer;
+  }
+
+  &--active {
+    background-color: #3296DC;
+    color: #fff;
+  }
+}
