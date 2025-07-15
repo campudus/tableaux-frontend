@@ -11,6 +11,7 @@ import Spinner from "../header/Spinner";
 import actionTypes from "../../redux/actionTypes";
 import { loadAllRows } from "../../redux/actions/rowActions";
 import { filterOutIdColumn } from "./helper";
+import { useHistory } from "react-router-dom";
 
 type PreviewViewProps = {
   langtag: string;
@@ -23,6 +24,7 @@ export default function PreviewView({
   tableId,
   rowId
 }: PreviewViewProps): ReactElement {
+  const history = useHistory();
   const dispatch = useDispatch();
   const [leftWidth, setLeftWidth] = useState(50);
   const isDragging = useRef(false);
