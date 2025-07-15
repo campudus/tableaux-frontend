@@ -84,6 +84,7 @@ export type GRUDStore = {
     currentColumn: number | null;
     currentRow: number;
     currentDetailTable: number | null;
+    selectedLinkedEntries: number[] | null;
   };
   rows: Record<
     number,
