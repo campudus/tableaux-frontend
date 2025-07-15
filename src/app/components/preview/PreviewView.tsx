@@ -10,6 +10,7 @@ import PreviewDetailView from "./PreviewDetailView";
 import Spinner from "../header/Spinner";
 import actionTypes from "../../redux/actionTypes";
 import { loadAllRows } from "../../redux/actions/rowActions";
+import { filterOutIdColumn } from "./helper";
 
 type PreviewViewProps = {
   langtag: string;
@@ -31,16 +32,16 @@ export default function PreviewView({
       ? f.prop(["columns", tableId, "data"])
       : () => undefined
   ) as Column[] | undefined;
-  const filteredColumns = columns?.filter(column => column.id !== 0);
 
   const row = useSelector((store: GRUDStore) => {
     if (f.isNil(tableId) || f.isNil(rowId)) return undefined;
     return store.rows[tableId]?.data.find(row => row.id === rowId);
   });
-  const filteredRow =
-    columns?.some(column => column.id === 0) && row
-      ? { ...row, values: row.values.filter((_, index) => index !== 0) }
-      : row;
+
+  const { filteredColumns, filteredRows: filteredRow } = filterOutIdColumn(
+    columns,
+    row
+  );
 
   const currentColumn =
     useSelector((store: GRUDStore) => store.preview.currentColumn) ??
