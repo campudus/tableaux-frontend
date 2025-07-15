@@ -3,7 +3,8 @@ import actionTypes from "../actionTypes";
 const {
   PREVIEW_SET_VIEW,
   PREVIEW_SET_CURRENT_COLUMN,
-  PREVIEW_SET_CURRENT_DETAIL_TABLE
+  PREVIEW_SET_CURRENT_DETAIL_TABLE,
+  PREVIEW_SET_LINKED_SELECTION
 } = actionTypes.preview;
 
 const initialState = {};
@@ -14,6 +15,7 @@ type PreviewAction = {
   currentColumn: number | null;
   currentRow: number | null;
   currentDetailTable: number | null;
+  selectedLinkedEntries: number[] | null;
 };
 
 const previewReducer = (state = initialState, action: PreviewAction) => {
@@ -37,6 +39,12 @@ const previewReducer = (state = initialState, action: PreviewAction) => {
         ...state,
         currentDetailTable: action.currentDetailTable || null
       };
+    case PREVIEW_SET_LINKED_SELECTION: {
+      return {
+        ...state,
+        selectedLinkedEntries: action.selectedLinkedEntries || null
+      };
+    }
     default:
       return state;
   }
