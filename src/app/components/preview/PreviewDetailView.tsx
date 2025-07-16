@@ -7,6 +7,7 @@ import { buildClassName } from "../../helpers/buildClassName";
 import { getColumnDisplayName } from "../../helpers/multiLanguage";
 import LinkedEntrySelection from "./LinkedEntrySelection";
 import { filterOutIdColumn } from "./helper";
+import CellValueLink from "./CellValueLink";
 
 type ColumnWithIndex = { column: Column; columnIndex: number };
 
@@ -155,34 +156,20 @@ export default function PreviewDetailView({
                     </a>
                   </td>
 
-                  {filteredRows.map(row => {
-                    const cellLink = `/${langtag}/tables/${currentDetailTable}/columns/${column.id}/rows/${row.id}`;
-                    const rowValue =
-                      row.values.length > 1
-                        ? row?.values.at(columnIndex)
-                        : row?.values.at(0);
-                    let value = getDisplayValue(column)(rowValue);
-
-                    if (Array.isArray(value))
-                      value = value.map(v => v[langtag]).join(", ");
-                    else {
-                      value = value[langtag];
-                    }
-
-                    return (
-                      <td
-                        key={row.id}
-                        className="preview-detail-view__column preview-detail-view__column-value"
-                      >
-                        <a
-                          className={value ? undefined : "empty"}
-                          href={cellLink}
-                        >
-                          {value || "Leer"}
-                        </a>
-                      </td>
-                    );
-                  })}
+                  {filteredRows.map((row, rowIndex) => (
+                    <td
+                      className="preview-detail-view__column preview-detail-view__column-value"
+                      key={rowIndex}
+                    >
+                      <CellValueLink
+                        column={column}
+                        columnIndex={columnIndex}
+                        row={row}
+                        link={`/${langtag}/tables/${currentDetailTable}/columns/${column.id}/rows/${row.id}`}
+                        langtag={langtag}
+                      />
+                    </td>
+                  ))}
                 </tr>
               );
             })}

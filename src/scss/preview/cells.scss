@@ -1,0 +1,30 @@
+.cell-value-link {
+  display: block;
+  width: fit-content;
+
+  .empty {
+    color: $color-red;
+  }
+
+  .boolean-cell {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+
+    .svg-icon {
+      height: 11px;
+    }
+  }
+
+  .array-cell {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+
+    &__separator {
+      margin: 0 8px;
+      font-size: 18px;
+    }
+  }
+}

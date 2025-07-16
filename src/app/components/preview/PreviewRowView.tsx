@@ -1,9 +1,9 @@
 import { ReactElement } from "react";
 import { Column, Row } from "../../types/grud";
-import getDisplayValue from "../../helpers/getDisplayValue";
 import actionTypes from "../../redux/actionTypes";
 import { useDispatch } from "react-redux";
 import { getColumnDisplayName } from "../../helpers/multiLanguage";
+import CellValueLink from "./CellValueLink";
 
 type PreviewRowViewProps = {
   langtag: string;
@@ -39,15 +39,6 @@ export default function PreviewRowView({
           {columns.map((column, index) => {
             const columnLink = `/${langtag}/tables/${tableId}/columns/${column.id}`;
             const cellLink = `/${langtag}/tables/${tableId}/columns/${column.id}/rows/${row.id}`;
-            const rowValue =
-              row.values.length > 1 ? row?.values.at(index) : row?.values.at(0);
-            let value = getDisplayValue(column)(rowValue);
-
-            if (Array.isArray(value))
-              value = value.map(v => v[langtag]).join(", ");
-            else {
-              value = value[langtag];
-            }
 
             return (
               <tr key={column.id} className="preview-row-view__row">
@@ -67,9 +58,13 @@ export default function PreviewRowView({
                   </a>
                 </td>
                 <td className="preview-row-view__column preview-row-view__column-value">
-                  <a className={value ? undefined : "empty"} href={cellLink}>
-                    {value || "Leer"}
-                  </a>
+                  <CellValueLink
+                    column={column}
+                    columnIndex={index}
+                    row={row}
+                    link={cellLink}
+                    langtag={langtag}
+                  />
                 </td>
               </tr>
             );
