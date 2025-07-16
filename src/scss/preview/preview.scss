@@ -77,9 +77,25 @@
   height: 100%;
   box-sizing: border-box;
 
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+    padding-right: 16px;
+  }
+
   &__title {
     font-size: 24px;
-    margin-bottom: 16px;
+  }
+
+  &__checkbox {
+    display: flex;
+    align-items: center;
+
+    input {
+      cursor: pointer;
+    }
   }
 
   &__table-wrapper {
