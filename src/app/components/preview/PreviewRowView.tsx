@@ -43,7 +43,7 @@ export default function PreviewRowView({
             return (
               <tr key={column.id} className="preview-row-view__row">
                 <td className="preview-row-view__column preview-row-view__column-selection">
-                  {column.kind === "link" && (
+                  {(column.kind === "link" || column.kind === "richtext") && (
                     <input
                       type="radio"
                       name="column-selection"
@@ -52,18 +52,20 @@ export default function PreviewRowView({
                     />
                   )}
                 </td>
+
                 <td className="preview-row-view__column preview-row-view__column-name">
                   <a href={columnLink}>
                     {getColumnDisplayName(column, langtag)}
                   </a>
                 </td>
+
                 <td className="preview-row-view__column preview-row-view__column-value">
                   <CellValueLink
+                    langtag={langtag}
                     column={column}
                     columnIndex={index}
                     row={row}
                     link={cellLink}
-                    langtag={langtag}
                   />
                 </td>
               </tr>
