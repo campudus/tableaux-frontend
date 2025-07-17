@@ -26,8 +26,8 @@ export default function PreviewView({
 }: PreviewViewProps): ReactElement {
   const history = useHistory();
   const dispatch = useDispatch();
-  const [leftWidth, setLeftWidth] = useState(50);
   const isDragging = useRef(false);
+  const [leftWidth, setLeftWidth] = useState(50);
 
   const columns = useSelector(
     tableId !== undefined
@@ -104,11 +104,7 @@ export default function PreviewView({
         handleLanguageSwitch={handleLanguageSwitch}
       />
 
-      <div
-        id="resizable-container"
-        className="preview-view"
-        style={{ userSelect: "none" }}
-      >
+      <div id="resizable-container" className="preview-view">
         <div
           className="preview-view__resizeable-left"
           style={{ width: `${leftWidth}%` }}
@@ -135,16 +131,15 @@ export default function PreviewView({
             className="preview-view__resizer"
           />
 
-          {!currentDetailTable || !row || !currentColumn ? (
-            <Spinner isLoading />
-          ) : (
+          {row && currentColumn ? (
             <PreviewDetailView
               langtag={langtag}
               currentTable={tableId}
-              currentColumn={currentColumn}
+              currentColumnId={currentColumn}
               currentRow={row}
-              currentDetailTable={currentDetailTable}
             />
+          ) : (
+            <Spinner isLoading />
           )}
         </div>
       </div>
