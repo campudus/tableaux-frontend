@@ -6,7 +6,7 @@ import { setEmptyClassName } from "../helper";
 type ArrayCellProps = {
   langtag: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  values: any[];
+  values: Record<string, any>[];
 };
 
 export default function ArrayCell({

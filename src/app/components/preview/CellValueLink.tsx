@@ -7,6 +7,7 @@ import { Link } from "react-router-dom";
 import ArrayCell from "./cells/ArrayCell";
 import TextCell from "./cells/TextCell";
 import AttachmentCell from "./cells/AttachmentCell";
+import VariantCell from "./cells/VariantCell";
 
 type CellValueLinkProps = {
   langtag: string;
@@ -42,7 +43,11 @@ export default function CellValueLink({
     return <TextCell langtag={langtag} value={value} />;
   }
 
-  return column.kind === "attachment" ? (
+  return column.name === "variant" && column.kind === "link" ? (
+    <div className="cell-variant-link">
+      <VariantCell langtag={langtag} values={value} link={link} />
+    </div>
+  ) : column.kind === "attachment" ? (
     <div className="cell-attachemnt-link">
       <AttachmentCell attachemnts={rowValue as Attachment[]} link={link} />
     </div>

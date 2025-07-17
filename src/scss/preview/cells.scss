@@ -29,6 +29,31 @@
   }
 }
 
+.cell-variant-link {
+  .variant-cell {
+    display: grid;
+    gap: 8px;
+
+    &__link {
+      display: grid;
+      gap: 8px;
+    }
+
+    &__toggle {
+      color: $color-primary;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 0;
+
+      i {
+        font-size: smaller;
+      }
+    }
+  }
+}
+
 .cell-attachemnt-link {
   .attachemnt-cell {
     color: $color-primary;
