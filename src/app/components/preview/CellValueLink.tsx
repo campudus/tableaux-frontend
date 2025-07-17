@@ -5,23 +5,22 @@ import BooleanCell from "./cells/BooleanCell";
 import { ReactElement } from "react";
 import { Link } from "react-router-dom";
 import ArrayCell from "./cells/ArrayCell";
-import { buildClassName } from "../../helpers/buildClassName";
 import { setEmptyClassName } from "./helper";
 
 type CellValueLinkProps = {
+  langtag: string;
   column: Column;
   columnIndex: number;
   row: Row;
   link: string;
-  langtag: string;
 };
 
 export default function CellValueLink({
+  langtag,
   column,
   columnIndex,
   row,
-  link,
-  langtag
+  link
 }: CellValueLinkProps): ReactElement {
   const rowValue =
     row.values.length > 1
