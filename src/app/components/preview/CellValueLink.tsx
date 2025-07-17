@@ -5,7 +5,7 @@ import BooleanCell from "./cells/BooleanCell";
 import { ReactElement } from "react";
 import { Link } from "react-router-dom";
 import ArrayCell from "./cells/ArrayCell";
-import { setEmptyClassName } from "./helper";
+import TextCell from "./cells/TextCell";
 
 type CellValueLinkProps = {
   langtag: string;
@@ -38,11 +38,7 @@ export default function CellValueLink({
       return <ArrayCell langtag={langtag} values={value} />;
     }
 
-    return (
-      <span className={`text-cell ${setEmptyClassName(value[langtag])}`}>
-        {value[langtag] || "Leer"}
-      </span>
-    );
+    return <TextCell langtag={langtag} value={value} />;
   }
 
   return (
