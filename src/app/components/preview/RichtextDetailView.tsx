@@ -1,5 +1,6 @@
 import { ReactElement } from "react";
 import { Row } from "../../types/grud";
+import ReactMarkdown from "react-markdown";
 
 type RichtextDetailViewProps = {
   langtag: string;
@@ -19,8 +20,8 @@ export default function RichtextDetailView({
   const text = cellValue[langtag] || "No content available";
 
   return (
-    <div className="richtext-detail-view">
-      <p>{text}</p>
+    <div className="richtext-detail-view" style={{ padding: "16px 16px 0 0" }}>
+      <ReactMarkdown className="content-box">{text}</ReactMarkdown>
     </div>
   );
 }
