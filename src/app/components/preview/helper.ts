@@ -42,6 +42,6 @@ export function filterOutIdColumn<T extends Row[] | Row | undefined>(
   };
 }
 
-export function setEmptyClassName(value: any): string {
+export function setEmptyClassName(value?: any): string {
   return value ? "" : "empty";
 }
