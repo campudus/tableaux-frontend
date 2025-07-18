@@ -12,19 +12,17 @@ export default function TextCell({
   langtag,
   value
 }: TextCellProps): ReactElement {
-  const text = value[langtag] || "Leer";
+  const _value = value[langtag];
 
-  if (text.length > TEXT_MAX_LENGTH) {
+  if (_value && _value.length > TEXT_MAX_LENGTH) {
     return (
-      <div className="text-cell">
-        <span title={text}>{text.slice(0, TEXT_MAX_LENGTH)}...</span>
-      </div>
+      <span className="text-cell">{_value.slice(0, TEXT_MAX_LENGTH)}...</span>
     );
   }
 
   return (
-    <div className={`text-cell ${setEmptyClassName(text)}`}>
-      <span>{text}</span>
-    </div>
+    <span className={`text-cell ${setEmptyClassName(_value)}`}>
+      {_value || "Leer"}
+    </span>
   );
 }
