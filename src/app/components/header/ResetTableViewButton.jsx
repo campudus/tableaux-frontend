@@ -1,29 +1,13 @@
-import React from "react";
 import { t } from "i18next";
-import f from "lodash/fp";
 import { showDialog } from "../overlay/GenericOverlay";
 import { PROFILE_TAB } from "../profile/constants";
 import store from "../../redux/store";
 import actions from "../../redux/actionCreators";
-import { mapIndexed } from "../../helpers/functools";
-import { saveColumnWidths } from "../../helpers/localStorage";
 
-export default function ResetTableViewButton({
-  tableId,
-  langtag,
-  columns,
-  navigate
-}) {
+export default function ResetTableViewButton({ tableId, langtag, navigate }) {
   const resetTableView = () => {
-    const columnIds = f.map("id", columns);
-    const columnOrdering = mapIndexed(({ id }, idx) => ({ id, idx }))(columns);
-
-    store.dispatch(actions.setFiltersAndSorting([], [], true));
-    store.dispatch(actions.setColumnsVisible(columnIds));
-    store.dispatch(actions.setColumnOrdering(columnOrdering));
-    store.dispatch(actions.setAnnotationHighlight(""));
-    saveColumnWidths(tableId, {});
-    store.dispatch(actions.rerenderTable());
+    store.dispatch(actions.deleteUserSettings({ kind: "table", tableId }));
+    store.dispatch(actions.loadTableView(tableId));
   };
 
   const navigateToSettings = () => {

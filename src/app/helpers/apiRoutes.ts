@@ -1,5 +1,6 @@
 import f from "lodash/fp";
 import { TableParams } from "../types/grud";
+import { UserSettingKind, UserSettingParams } from "../types/userSettings";
 
 const urlTrim = (url: string) => url.match(/\.*\/?(.*)\/?/)?.at(1);
 
@@ -95,6 +96,20 @@ export const toCellHistory = ({ tableId, rowId, columnId }: TableParams) =>
 
 export const toAnnotationConfigs = () => "/system/annotations";
 
+export function toUserSettings<Kind extends UserSettingKind>(
+  params?: UserSettingParams<Kind>
+) {
+  const urlParts = [
+    "/user/settings",
+    params?.kind,
+    (params as UserSettingParams<"table">)?.tableId,
+    params?.key,
+    (params as UserSettingParams<"filter">)?.id
+  ];
+
+  return f.compact(urlParts).join("/");
+}
+
 const API_ROUTES = {
   joinUrlParts,
   getAllTables,
@@ -111,7 +126,8 @@ const API_ROUTES = {
   toServiceRegistry,
   toFrontendServiceView,
   toCellHistory,
-  toAnnotationConfigs
+  toAnnotationConfigs,
+  toUserSettings
 };
 
 export default API_ROUTES;

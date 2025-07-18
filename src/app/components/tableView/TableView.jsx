@@ -12,7 +12,6 @@ import {
   RowIdColumn
 } from "../../constants/TableauxConstants";
 import { mapIndexed } from "../../helpers/functools";
-import { getStoredViewObject } from "../../helpers/localStorage";
 import { getTableDisplayName } from "../../helpers/multiLanguage";
 import reduxActionHoc from "../../helpers/reduxActionHoc";
 import GrudHeader from "../GrudHeader";
@@ -45,7 +44,6 @@ const mapStatetoProps = (state, props) => {
   const rows = f.get(`rows.${tableId}.data`, state);
   const finishedLoading = f.get(`rows.${tableId}.finishedLoading`, state);
   const tableView = f.get("tableView", state);
-  const globalSettings = f.get("globalSettings", state);
   const hasStatusColumn = !!f.find({ kind: ColumnKinds.status }, columns);
   const {
     startedGeneratingDisplayValues,
@@ -75,8 +73,7 @@ const mapStatetoProps = (state, props) => {
     finishedLoading,
     columnOrdering,
     hasStatusColumn,
-    rerenderTable,
-    globalSettings
+    rerenderTable
   };
 };
 
@@ -174,15 +171,15 @@ class TableView extends PureComponent {
   };
 
   hasResettableChange() {
-    const { tableView, columns = [], table } = this.props;
+    const { tableView, columns = [] } = this.props;
     const {
       columnOrdering,
       filters,
       sorting,
       visibleColumns,
-      annotationHighlight
+      annotationHighlight,
+      columnWidths
     } = tableView;
-    const { columnWidths } = getStoredViewObject(table.id);
 
     const initialVisibleColumns = f.map("id", columns);
     const initialColumnOrdering = mapIndexed(({ id }, idx) => ({ id, idx }))(
