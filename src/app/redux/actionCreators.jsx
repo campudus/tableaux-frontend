@@ -396,8 +396,8 @@ const loadTableView = (tableId, customFilters) => (dispatch, getState) => {
   const direction = sortDirection || SortValue.asc;
   const sorting = { colName, direction };
   const cols = f.get([tableId, "data"], columns) ?? [];
-  const initVisibleColumns = f.map("id", cols);
-  const initColumnOrdering = mapIndexed(({ id }, idx) => ({ id, idx }))(cols);
+  const baseVisibleColumns = f.map("id", cols);
+  const baseColumnOrdering = mapIndexed(({ id }, idx) => ({ id, idx }))(cols);
 
   dispatch({
     type: SET_FILTERS_AND_SORTING,
@@ -407,12 +407,12 @@ const loadTableView = (tableId, customFilters) => (dispatch, getState) => {
 
   dispatch({
     type: SET_COLUMN_ORDERING,
-    columnIds: f.isEmpty(columnOrdering) ? initColumnOrdering : columnOrdering
+    columnIds: f.isEmpty(columnOrdering) ? baseColumnOrdering : columnOrdering
   });
 
   dispatch({
     type: SET_COLUMNS_VISIBLE,
-    columnIds: f.isEmpty(visibleColumns) ? initVisibleColumns : visibleColumns
+    columnIds: f.isEmpty(visibleColumns) ? baseVisibleColumns : visibleColumns
   });
 
   dispatch({
