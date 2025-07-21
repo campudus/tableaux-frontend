@@ -50,10 +50,6 @@ export default function PreviewView({
     useSelector((store: GRUDStore) => store.preview.currentColumn) ??
     filteredColumns?.find(c => c.kind === "link")?.id;
 
-  const currentDetailTable = useSelector(
-    (store: GRUDStore) => store.preview.currentDetailTable
-  );
-
   useEffect(() => {
     if (currentColumn) {
       const column = columns?.find(c => c.id === currentColumn);
