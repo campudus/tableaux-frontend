@@ -53,7 +53,12 @@ function FolderDirent(
   const isFile = isAttachment(dirent);
   const isModified = isFile && f.contains(dirent.uuid, fileIdsDiff);
   const translate = retrieveTranslation(langtag);
-  const label = isFile ? translate(dirent.title) : dirent.name;
+  const label = isFile ? (translate(dirent.title) as string) : dirent.name;
+  const labelLimit = layout === "list" ? 95 : 50;
+  const labelTruncated =
+    label.length > labelLimit
+      ? [label.slice(0, labelLimit - 10), label.slice(-8)].join("...")
+      : label;
   const direntKey = isFile ? "file" : "folder";
   const depCount = isFile ? dirent.dependentRowCount : 0;
   const depLabel = f.cond([
@@ -164,7 +169,7 @@ function FolderDirent(
         }
         label={
           <span className="folder-dirent__label" title={label}>
-            {label}
+            {labelTruncated}
           </span>
         }
         onClick={handleClick}
