@@ -41,5 +41,6 @@
   "show_all": "Show all {{count}} items",
   "show_less": "Show less",
   "layout_list": "List with thumbnails",
-  "layout_tiles": "Tiles"
+  "layout_tiles": "Tiles",
+  "download_file": "Download file"
 }

@@ -40,7 +40,8 @@ const iconUrls = {
   trash: "/img/icons/trash.svg",
   move: "/img/icons/move.svg",
   list: "/img/icons/list.svg",
-  tiles: "/img/icons/tiles.svg"
+  tiles: "/img/icons/tiles.svg",
+  download: "/img/icons/download.svg"
 };
 
 class ImageCache {
