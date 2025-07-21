@@ -56,13 +56,13 @@
 
   .cell-content {
     display: flex;
+    flex-wrap: wrap;
     gap: 8px;
   }
 
   &:not(&.selected, &.editing) {
     .button-action {
       height: 25px;
-      width: 40px;
     }
 
     .button-action__button {

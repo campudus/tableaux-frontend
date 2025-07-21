@@ -27,7 +27,7 @@ type FolderDirentThumbnailProps = {
   className?: string;
   langtag: string;
   dirent?: Attachment | Folder;
-  layout?: Layout;
+  layout?: Layout | "table";
   width?: number;
 };
 

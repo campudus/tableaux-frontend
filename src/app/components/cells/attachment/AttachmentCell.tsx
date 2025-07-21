@@ -13,36 +13,25 @@ import { Attachment, Cell } from "../../../types/grud";
 import ButtonAction from "../../helperComponents/ButtonAction";
 import MediaThumbnail from "../../media/MediaThumbnail";
 
-const PADDING = 18;
-const GAP = 8;
-const MORE_W = 10 + GAP;
-const IMG_W = 40 + GAP;
-
 type AttachmentCellProps = {
   cell: Cell;
   editing: boolean;
   selected: boolean;
   langtag: string;
-  width: number;
 };
 
 export default function AttachmentCell({
   langtag,
   cell,
   editing,
-  selected,
-  width
+  selected
 }: AttachmentCellProps): ReactElement {
   const dispatch = useDispatch();
   const translate = retrieveTranslation(langtag);
-  const allAttachments = (cell.value as unknown) as Attachment[];
-  const previewAttachmentCount = Math.floor((width - PADDING - MORE_W) / IMG_W);
-  const previewAttachments = f.take(previewAttachmentCount, allAttachments);
+  const attachments = (cell.value as unknown) as Attachment[];
   const isPreview = !selected && !editing;
-  const hasMore = allAttachments.length > previewAttachments.length;
-  const folderIds = f.uniq(f.map(a => a.folder, allAttachments));
+  const folderIds = f.uniq(f.map(a => a.folder, attachments));
   const folderId = folderIds.length === 1 ? folderIds.at(0) : undefined;
-  const attachments = isPreview ? previewAttachments : allAttachments;
 
   const handleClickAttachment = (attachment: Attachment) => {
     window.open(apiUrl(translate(attachment.url)), "_blank");
@@ -75,13 +64,19 @@ export default function AttachmentCell({
             <ButtonAction
               key={attachment.uuid}
               className={"attachment__action"}
-              icon={<MediaThumbnail langtag={langtag} dirent={attachment} />}
+              icon={
+                <MediaThumbnail
+                  langtag={langtag}
+                  dirent={attachment}
+                  layout="table"
+                  width={150}
+                />
+              }
               alt={translate(attachment.title)}
               onClick={() => handleClickAttachment(attachment)}
             />
           );
         })}
-        {isPreview && hasMore && <span className="more">&hellip;</span>}
       </div>
       {!isPreview && !isLocked(cell.row) && canUserChangeCell(cell)(langtag) && (
         <button className="edit" onClick={handleClickEdit}>
