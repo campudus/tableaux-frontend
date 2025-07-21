@@ -3,7 +3,6 @@ import f from "lodash/fp";
 import getDisplayValue from "../../helpers/getDisplayValue";
 import BooleanCell from "./cells/BooleanCell";
 import { ReactElement } from "react";
-import { Link } from "react-router-dom";
 import ArrayCell from "./cells/ArrayCell";
 import TextCell from "./cells/TextCell";
 import AttachmentCell from "./cells/AttachmentCell";
@@ -52,8 +51,8 @@ export default function CellValueLink({
       <AttachmentCell attachemnts={rowValue as Attachment[]} link={link} />
     </div>
   ) : (
-    <Link className="cell-value-link" to={link}>
+    <a className="cell-value-link" href={link}>
       {renderCellValue()}
-    </Link>
+    </a>
   );
 }
