@@ -242,6 +242,7 @@
     display: none;
   }
 
+  &--table,
   &--list {
     width: 40px;
     height: 40px;
@@ -272,6 +273,10 @@
         font-size: 24px;
       }
     }
+  }
+
+  &--table {
+    width: auto;
   }
 
   &--tiles {
