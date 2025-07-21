@@ -1,6 +1,5 @@
 import { ReactElement, useState } from "react";
 import f from "lodash/fp";
-import { Link } from "react-router-dom";
 
 type VariantCellProps = {
   langtag: string;
@@ -33,13 +32,13 @@ export default function VariantCell({
 
   return (
     <div className="variant-cell">
-      <Link className="variant-cell__link" to={link}>
+      <a className="variant-cell__link" href={link}>
         {displayedValues.map((value, index) => (
           <div key={value[langtag]}>
             {addIndexNumber(index + 1)}. &nbsp;{value[langtag]}
           </div>
         ))}
-      </Link>
+      </a>
 
       {shouldShowButton && (
         <button
