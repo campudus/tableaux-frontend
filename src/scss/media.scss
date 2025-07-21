@@ -61,12 +61,8 @@
     box-sizing: border-box;
     overflow: hidden;
 
-    .folder-dirent__action--main {
-      &:hover {
-        .folder-dirent__label {
-          font-weight: 500;
-        }
-      }
+    &:hover {
+      background: #efefef;
     }
 
     &--list {
@@ -166,6 +162,7 @@
         overflow: hidden;
 
         @supports (-webkit-line-clamp: 2) {
+          overflow-wrap: break-word;
           white-space: normal;
           display: -webkit-box;
           line-clamp: 2;
