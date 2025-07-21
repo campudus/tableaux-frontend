@@ -39,6 +39,10 @@
       gap: 8px;
     }
 
+    &__link:hover {
+      color: $color-primary;
+    }
+
     &__toggle {
       color: $color-primary;
       cursor: pointer;
@@ -62,4 +66,13 @@
   .empty {
     color: $color-red;
   }
+}
+
+.cell-value-link:hover {
+  color: $color-primary;
+}
+
+.cell-value-link .empty:hover,
+.cell-attachemnt-link .empty:hover {
+  color: $color-primary;
 }

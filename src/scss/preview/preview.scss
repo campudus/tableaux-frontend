@@ -178,3 +178,10 @@
     }
   }
 }
+
+.preview-row-view__column-name,
+.preview-detail-view__column-name {
+  a:hover {
+    color: $color-primary;
+  }
+}
