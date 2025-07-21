@@ -27,6 +27,7 @@ export default function PreviewView({
   const history = useHistory();
   const dispatch = useDispatch();
   const isDragging = useRef(false);
+  const [dragging, setDragging] = useState(false);
   const [leftWidth, setLeftWidth] = useState(50);
 
   const columns = useSelector(
@@ -74,6 +75,7 @@ export default function PreviewView({
 
   const handleMouseDown = () => {
     isDragging.current = true;
+    setDragging(true);
     document.addEventListener("mousemove", handleMouseMove);
     document.addEventListener("mouseup", handleMouseUp);
   };
@@ -93,6 +95,7 @@ export default function PreviewView({
 
   const handleMouseUp = () => {
     isDragging.current = false;
+    setDragging(false);
     document.removeEventListener("mousemove", handleMouseMove);
     document.removeEventListener("mouseup", handleMouseUp);
   };
@@ -104,7 +107,11 @@ export default function PreviewView({
         handleLanguageSwitch={handleLanguageSwitch}
       />
 
-      <div id="resizable-container" className="preview-view">
+      <div
+        id="resizable-container"
+        className="preview-view"
+        style={{ userSelect: dragging ? "none" : "auto" }}
+      >
         <div
           className="preview-view__resizeable-left"
           style={{ width: `${leftWidth}%` }}
