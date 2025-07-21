@@ -1,5 +1,4 @@
 import { ReactElement } from "react";
-import { Link } from "react-router-dom";
 import { Attachment } from "../../../types/grud";
 import { setEmptyClassName } from "../helper";
 
@@ -13,9 +12,9 @@ export default function AttachmentCell({
   link
 }: AttachmentCellProps): ReactElement {
   return !attachemnts || attachemnts.length === 0 ? (
-    <Link className={`attachemnt-cell ${setEmptyClassName()}`} to={link}>
+    <a className={`attachemnt-cell ${setEmptyClassName()}`} href={link}>
       Leer
-    </Link>
+    </a>
   ) : (
     <div className="attachemnt-cell">
       <span>Bilder anzeigen ({attachemnts.length})</span>
