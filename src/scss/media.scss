@@ -68,7 +68,7 @@
     &--list {
       border-bottom: 1px solid #dedede;
       display: grid;
-      grid-template-columns: 1fr auto auto auto auto;
+      grid-template-columns: 1fr auto auto auto auto auto;
       grid-template-rows: auto;
 
       .folder-dirent__action--main {
@@ -84,23 +84,29 @@
         grid-column: 2;
       }
 
-      .folder-dirent__action--move {
+      .folder-dirent__action--download {
         grid-row: 1;
         grid-column: 3;
       }
 
-      .folder-dirent__action--edit {
+      .folder-dirent__action--move {
         grid-row: 1;
         grid-column: 4;
       }
 
-      .folder-dirent__action--remove {
+      .folder-dirent__action--edit {
         grid-row: 1;
         grid-column: 5;
       }
 
+      .folder-dirent__action--remove {
+        grid-row: 1;
+        grid-column: 6;
+      }
+
       &:not(:hover) {
 
+        .folder-dirent__action--download,
         .folder-dirent__action--move,
         .folder-dirent__action--edit,
         .folder-dirent__action--remove {
@@ -108,6 +114,7 @@
         }
       }
 
+      .folder-dirent__action--download,
       .folder-dirent__action--move,
       .folder-dirent__action--edit,
       .folder-dirent__action--remove {
