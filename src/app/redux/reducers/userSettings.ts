@@ -72,7 +72,7 @@ export const initialState: UserSettingsState = {
 
 // we need optimistic updates/deletes here,
 // because we have synchronous redux code,
-// where it is expected that the store is updated immediatly after the event is fired.
+// where it is expected that the store is updated immediately after the event is fired.
 //
 // for example:
 // dispatch(deleteUserSettings({ kind, tableId, key: "rowsFilter" }));

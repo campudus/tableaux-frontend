@@ -2,11 +2,7 @@ import i18n from "i18next";
 import f from "lodash/fp";
 import { ShowArchived } from "../archivedRows/helpers";
 import { loadAndOpenEntityView } from "../components/overlay/EntityViewOverlay";
-import {
-  Langtags,
-  RowIdColumn,
-  SortValue
-} from "../constants/TableauxConstants";
+import { Langtags, SortValue } from "../constants/TableauxConstants";
 import { makeRequest } from "../helpers/apiHelper";
 import API_ROUTES from "../helpers/apiRoutes";
 import { urlToTableDestination } from "../helpers/apiUrl";
