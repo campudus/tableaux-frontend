@@ -89,6 +89,10 @@
     .button-action__button {
       border: none;
       width: 100%;
+
+      &:hover {
+        background: #efefef;
+      }
     }
   }
 }

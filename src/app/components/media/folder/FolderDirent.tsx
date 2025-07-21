@@ -72,6 +72,15 @@ function FolderDirent(
     }
   };
 
+  const handleDownload = () => {
+    if (isFile) {
+      const link = document.createElement("a");
+      link.href = apiUrl(translate(dirent.url));
+      link.download = "";
+      link.click();
+    }
+  };
+
   const handleOpenDependentsOverlay = () => {
     if (isFile) {
       dispatch(
@@ -172,6 +181,14 @@ function FolderDirent(
 
       {layout === "list" && (
         <>
+          {isFile && (
+            <ButtonAction
+              className={cn("folder-dirent__action", { download: true })}
+              icon={<SvgIcon icon="download" />}
+              alt={i18n.t(`media:download_${direntKey}`)}
+              onClick={handleDownload}
+            />
+          )}
           {canEdit && (
             <ButtonAction
               className={cn("folder-dirent__action", { move: true })}
@@ -204,6 +221,12 @@ function FolderDirent(
           className={cn("folder-dirent__action", { menu: true })}
           icon={<SvgIcon icon="hdots" />}
           options={f.compact([
+            isFile && {
+              className: cn("folder-dirent__action", { download: true }),
+              label: i18n.t(`media:download_${direntKey}`),
+              icon: <SvgIcon icon="download" />,
+              onClick: handleDownload
+            },
             canEdit && {
               className: cn("folder-dirent__action", { move: true }),
               label: i18n.t(`media:move_${direntKey}`),
