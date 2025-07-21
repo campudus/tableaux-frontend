@@ -4,6 +4,7 @@ import actionTypes from "../../redux/actionTypes";
 import { useDispatch } from "react-redux";
 import { getColumnDisplayName } from "../../helpers/multiLanguage";
 import CellValueLink from "./CellValueLink";
+import { buildClassName } from "../../helpers/buildClassName";
 
 type PreviewRowViewProps = {
   langtag: string;
@@ -41,7 +42,12 @@ export default function PreviewRowView({
             const cellLink = `/${langtag}/tables/${tableId}/columns/${column.id}/rows/${row.id}`;
 
             return (
-              <tr key={column.id} className="preview-row-view__row">
+              <tr
+                key={column.id}
+                className={buildClassName("preview-row-view__row", {
+                  selected: currentColumn === column.id
+                })}
+              >
                 <td className="preview-row-view__column preview-row-view__column-selection">
                   {(column.kind === "link" || column.kind === "richtext") && (
                     <input
