@@ -1,22 +1,25 @@
 import { ReactElement, useState } from "react";
 import { useSelector } from "react-redux";
-import { CellValue, GRUDStore, Row } from "../../types/grud";
+import { CellValue, GRUDStore } from "../../types/grud";
 import RichtextDetailView from "./RichtextDetailView";
 import LinkDetailView from "./LinkDetailView";
+import { ColumnAndRow } from "./helper";
 
 type PreviewDetailViewProps = {
   langtag: string;
   currentTable: number;
   currentColumnId: number;
-  currentRow: Row;
+  selectedColumnAndRow: ColumnAndRow | undefined;
 };
 
 export default function PreviewDetailView({
   langtag,
   currentTable,
   currentColumnId,
-  currentRow
+  selectedColumnAndRow
 }: PreviewDetailViewProps): ReactElement {
+  const [showDifferences, setShowDifferences] = useState(false);
+
   const title = useSelector(
     (store: GRUDStore) =>
       store.columns[currentTable]?.data.find(
@@ -27,21 +30,8 @@ export default function PreviewDetailView({
     (store: GRUDStore) => store.preview.currentDetailTable
   );
 
-  const [showDifferences, setShowDifferences] = useState(false);
-
-  const currentColumn = currentRow.cells?.find(
-    cell => cell.column.id === currentColumnId
-  )?.column;
-
-  const indexOfCurrentColumn = currentRow.cells?.findIndex(
-    cell => cell.column.id === currentColumnId
-  );
-
-  if (!indexOfCurrentColumn) {
-    return <div>Could not find index of the current column</div>;
-  }
-
-  const linkedCells = currentRow.values[indexOfCurrentColumn] as (CellValue & {
+  const currentColumn = selectedColumnAndRow?.column;
+  const linkedCells = selectedColumnAndRow?.row.values as (CellValue & {
     id: number;
   })[];
 
@@ -55,16 +45,10 @@ export default function PreviewDetailView({
       return <div>No current column</div>;
     }
 
-    if (!indexOfCurrentColumn) {
-      return <div>Could not find index of the current column</div>;
-    }
-
     if (currentColumn.kind === "richtext") {
       return (
         <RichtextDetailView
-          langtag={langtag}
-          indexOfCurrentColumn={indexOfCurrentColumn}
-          currentRow={currentRow}
+          richtext={selectedColumnAndRow.row.values[langtag] as string}
         />
       );
     }
@@ -77,9 +61,9 @@ export default function PreviewDetailView({
       return (
         <LinkDetailView
           langtag={langtag}
-          indexOfCurrentColumn={indexOfCurrentColumn}
           currentDetailTable={currentDetailTable}
-          currentRow={currentRow}
+          selectedColumnAndRow={selectedColumnAndRow}
+          linkedCells={linkedCells}
           showDifferences={showDifferences}
         />
       );
@@ -87,8 +71,6 @@ export default function PreviewDetailView({
 
     return null;
   }
-
-  console.log({ currentColumn });
 
   return (
     <div className="preview-detail-view">

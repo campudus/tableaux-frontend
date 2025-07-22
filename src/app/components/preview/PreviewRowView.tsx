@@ -1,30 +1,28 @@
 import { ReactElement } from "react";
-import { Column, Row } from "../../types/grud";
 import actionTypes from "../../redux/actionTypes";
 import { useDispatch } from "react-redux";
 import { getColumnDisplayName } from "../../helpers/multiLanguage";
 import CellValueLink from "./CellValueLink";
 import { buildClassName } from "../../helpers/buildClassName";
+import { ColumnAndRow } from "./helper";
 
 type PreviewRowViewProps = {
   langtag: string;
   tableId: number;
   currentColumn: number | undefined;
-  columns: Column[];
-  row: Row;
+  columnsAndRow: ColumnAndRow[];
 };
 
 export default function PreviewRowView({
   langtag,
   tableId,
   currentColumn,
-  columns,
-  row
+  columnsAndRow
 }: PreviewRowViewProps): ReactElement {
   const dispatch = useDispatch();
 
-  const handleColumnSelection = (columnId: number) => {
-    const newUrl = `/${langtag}/preview/${tableId}/columns/${columnId}/rows/${row.id}`;
+  const handleColumnSelection = (columnId: number, rowId: number) => {
+    const newUrl = `/${langtag}/preview/${tableId}/columns/${columnId}/rows/${rowId}`;
     window.history.replaceState({}, "", newUrl);
 
     dispatch({
@@ -37,7 +35,7 @@ export default function PreviewRowView({
     <div className="preview-row-view">
       <table>
         <tbody>
-          {columns.map((column, index) => {
+          {columnsAndRow.map(({ column, row }) => {
             const columnLink = `/${langtag}/tables/${tableId}/columns/${column.id}`;
             const cellLink = `/${langtag}/tables/${tableId}/columns/${column.id}/rows/${row.id}`;
 
@@ -54,7 +52,7 @@ export default function PreviewRowView({
                       type="radio"
                       name="column-selection"
                       checked={currentColumn === column.id}
-                      onChange={() => handleColumnSelection(column.id)}
+                      onChange={() => handleColumnSelection(column.id, row.id)}
                     />
                   )}
                 </td>
@@ -69,7 +67,6 @@ export default function PreviewRowView({
                   <CellValueLink
                     langtag={langtag}
                     column={column}
-                    columnIndex={index}
                     row={row}
                     link={cellLink}
                   />
