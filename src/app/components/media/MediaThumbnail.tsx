@@ -45,12 +45,9 @@ export default function FolderDirentThumbnail({
   if (!isFile) {
     return (
       <div className={cn("media-thumbnail", { [layout]: true }, className)}>
-        <i
-          className={cn(
-            "media-thumbnail__image",
-            { icon: true },
-            "icon fa fa-folder"
-          )}
+        <img
+          className={cn("media-thumbnail__image", { icon: true })}
+          src="/img/icons/folder.svg"
         />
       </div>
     );
@@ -61,11 +58,12 @@ export default function FolderDirentThumbnail({
   const internalName = translate(dirent.internalName);
   const extension = internalName?.split(".")[1]?.toLowerCase();
   const isValidMimeType = VALID_MIME_TYPES.includes(mimeType);
+  const isSVG = mimeType === "image/svg+xml";
   const imageUrl = apiUrl(translate(dirent.url));
-  const thumbnailUrl = `${imageUrl}?width=${width}`;
+  const thumbnailUrl = isSVG ? imageUrl : `${imageUrl}?width=${width}`;
   const hasFallback = FALLBACK_EXTENSIONS.includes(extension);
   const fallbackUrl = `/img/fileicons/${extension}.svg`;
-  const canShowImage = !isError && isValidMimeType;
+  const canShowImage = !isError && (isValidMimeType || isSVG);
 
   return (
     <div className={cn("media-thumbnail", { [layout]: true }, className)}>
@@ -77,7 +75,10 @@ export default function FolderDirentThumbnail({
 
       {canShowImage && (
         <img
-          className="media-thumbnail__image"
+          className={cn("media-thumbnail__image", {
+            icon: isSVG,
+            custom: isSVG
+          })}
           src={thumbnailUrl}
           onLoad={() => setIsLoading(false)}
           onError={() => setIsError(true)}

@@ -62,7 +62,7 @@
     overflow: hidden;
 
     &:hover {
-      background: #efefef;
+      background: #f8f8f8;
     }
 
     &--list {
@@ -132,8 +132,10 @@
       grid-template-columns: 1fr auto;
       grid-template-rows: 1fr 30px;
 
-      &:hover {
+      &:hover,
+      &:has(.button-action__button--active) {
         border: 1px solid #333333;
+        background: #f8f8f8;
       }
 
       .folder-dirent__action--main {
@@ -153,6 +155,14 @@
       .folder-dirent__action--menu {
         grid-row: 3;
         grid-column: 2;
+
+        .button-action__button--active {
+          background: #f8f8f8;
+
+          &>.svg-icon {
+            fill: #333333;
+          }
+        }
       }
 
       .folder-dirent__action--dependents {
@@ -236,7 +246,12 @@
 }
 
 .media-thumbnail {
+  background: #f8f8f8;
   position: relative;
+
+  &:has(.media-thumbnail__image--custom) {
+    background: url(/img/bg-tile_6x6.png);
+  }
 
   &__overlay {
     display: none;
@@ -258,12 +273,12 @@
 
       &:not(.media-thumbnail__image--icon) {
         object-fit: contain;
-        background: url(/img/bg-tile.png);
+        background: url(/img/bg-tile_6x6.png);
       }
 
       &--icon {
-        width: 36px;
-        height: 36px;
+        max-width: 26px;
+        max-height: 32px;
       }
 
       &--icon.icon {
@@ -292,12 +307,12 @@
 
       &:not(.media-thumbnail__image--icon) {
         object-fit: contain;
-        background: url(/img/bg-tile.png);
+        background: url(/img/bg-tile_6x6.png);
       }
 
       &--icon {
-        width: 70px;
-        height: 70px;
+        max-width: 150px;
+        max-height: 70px;
       }
 
       &--icon.icon {
@@ -534,7 +549,7 @@
           width: 180px;
           height: 180px;
           object-fit: contain;
-          background: url(/img/bg-tile.png);
+          background: url(/img/bg-tile_6x6.png);
 
           &--fallback {
             background: transparent;
