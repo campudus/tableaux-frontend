@@ -1,6 +1,6 @@
 import f from "lodash/fp";
 import cns from "classnames";
-import { ReactElement } from "react";
+import { ReactElement, useEffect, useRef } from "react";
 import { useDispatch } from "react-redux";
 import AttachmentOverlay from "./AttachmentOverlay";
 import Header from "../../overlay/Header";
@@ -26,6 +26,7 @@ export default function AttachmentCell({
   editing,
   selected
 }: AttachmentCellProps): ReactElement {
+  const contentRef = useRef<HTMLDivElement>(null);
   const dispatch = useDispatch();
   const translate = retrieveTranslation(langtag);
   const attachments = (cell.value as unknown) as Attachment[];
@@ -56,9 +57,16 @@ export default function AttachmentCell({
     );
   };
 
+  useEffect(() => {
+    contentRef.current?.scrollTo(0, 0);
+  }, [selected]);
+
   return (
     <>
-      <div className={cns("cell-content", { editing, selected })}>
+      <div
+        ref={contentRef}
+        className={cns("cell-content", { editing, selected })}
+      >
         {attachments.map(attachment => {
           return (
             <ButtonAction
