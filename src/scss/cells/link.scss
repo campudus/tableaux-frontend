@@ -39,6 +39,12 @@
     }
   }
 
+  &:not(&.selected, &.editing) {
+    .link-label {
+      pointer-events: none;
+    }
+  }
+
   &.selected,
   &.editing {
     .cell-content {
@@ -62,6 +68,7 @@
 
   &:not(&.selected, &.editing) {
     .button-action {
+      pointer-events: none;
       height: 25px;
     }
 
