@@ -1,13 +1,13 @@
-import { useCallback, useRef, useState } from "react";
 import f from "lodash/fp";
+import { useCallback, useRef, useState } from "react";
 
 export function useMeasure() {
-  const [dimensions, setDimensions] = useState({
-    width: null,
-    height: null
-  });
+  const [dimensions, setDimensions] = useState<{
+    width?: number;
+    height?: number;
+  }>({});
 
-  const previousObserver = useRef(null);
+  const previousObserver = useRef<ResizeObserver | null>(null);
 
   const customRef = useCallback(node => {
     if (previousObserver.current) {
@@ -34,5 +34,5 @@ export function useMeasure() {
     }
   }, []);
 
-  return [customRef, dimensions];
+  return [customRef, dimensions] as const;
 }
