@@ -11,7 +11,6 @@ import VariantCell from "./cells/VariantCell";
 type CellValueLinkProps = {
   langtag: string;
   column: Column;
-  columnIndex: number;
   row: Row;
   link: string;
 };
@@ -19,15 +18,10 @@ type CellValueLinkProps = {
 export default function CellValueLink({
   langtag,
   column,
-  columnIndex,
   row,
   link
 }: CellValueLinkProps): ReactElement {
-  const rowValue =
-    row.values.length > 1
-      ? row?.values.at(columnIndex)
-      : row.values[columnIndex];
-
+  const rowValue = row.values;
   const value = getDisplayValue(column)(rowValue);
 
   function renderCellValue(): ReactElement {

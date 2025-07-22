@@ -10,7 +10,7 @@ import PreviewDetailView from "./PreviewDetailView";
 import Spinner from "../header/Spinner";
 import actionTypes from "../../redux/actionTypes";
 import { loadAllRows } from "../../redux/actions/rowActions";
-import { filterOutIdColumn } from "./helper";
+import { combineColumnsAndRow } from "./helper";
 import { useHistory } from "react-router-dom";
 
 type PreviewViewProps = {
@@ -41,14 +41,11 @@ export default function PreviewView({
     return store.rows[tableId]?.data.find(row => row.id === rowId);
   });
 
-  const { filteredColumns, filteredRows: filteredRow } = filterOutIdColumn(
-    columns,
-    row
-  );
+  const columnsAndRow = combineColumnsAndRow(columns, row);
 
   const currentColumn =
     useSelector((store: GRUDStore) => store.preview.currentColumn) ??
-    filteredColumns?.find(c => c.kind === "link")?.id;
+    columnsAndRow.find(entry => entry.column.kind === "link")?.column.id;
 
   useEffect(() => {
     if (currentColumn) {
@@ -112,13 +109,12 @@ export default function PreviewView({
           className="preview-view__resizeable-left"
           style={{ width: `${leftWidth}%` }}
         >
-          {filteredColumns && filteredRow ? (
+          {columns && row && !f.isEmpty(columnsAndRow) ? (
             <PreviewRowView
               langtag={langtag}
               tableId={tableId}
               currentColumn={currentColumn}
-              columns={filteredColumns}
-              row={filteredRow}
+              columnsAndRow={columnsAndRow}
             />
           ) : (
             <Spinner isLoading />
@@ -134,12 +130,14 @@ export default function PreviewView({
             className="preview-view__resizer"
           />
 
-          {row && currentColumn ? (
+          {currentColumn && !f.isEmpty(columnsAndRow) ? (
             <PreviewDetailView
               langtag={langtag}
               currentTable={tableId}
               currentColumnId={currentColumn}
-              currentRow={row}
+              selectedColumnAndRow={columnsAndRow.find(
+                entry => entry.column.id === currentColumn
+              )}
             />
           ) : (
             <Spinner isLoading />
