@@ -1,6 +1,12 @@
 import f from "lodash/fp";
 import i18n from "i18next";
-import { CSSProperties, ForwardedRef, forwardRef, ReactElement } from "react";
+import {
+  CSSProperties,
+  ForwardedRef,
+  forwardRef,
+  ReactElement,
+  useMemo
+} from "react";
 import { isAttachment } from "../../../types/guards";
 import { Attachment, Folder } from "../../../types/grud";
 import { buildClassName as cn } from "../../../helpers/buildClassName";
@@ -33,6 +39,7 @@ import {
   canUserEditFiles,
   canUserEditFolders
 } from "../../../helpers/accessManagementHelper";
+import { useMeasure } from "../../../helpers/useMeasure";
 
 type FolderDirentProps = {
   className?: string;
@@ -45,20 +52,15 @@ type FolderDirentProps = {
 
 function FolderDirent(
   { className, style, langtag, dirent, layout, fileIdsDiff }: FolderDirentProps,
-  ref: ForwardedRef<HTMLDivElement>
+  direntRef: ForwardedRef<HTMLDivElement>
 ): ReactElement {
+  const [mainActionRef, { width = 1000 }] = useMeasure();
   const dispatch = useDispatch();
   const history = useHistory();
 
   const isFile = isAttachment(dirent);
   const isModified = isFile && f.contains(dirent.uuid, fileIdsDiff);
   const translate = retrieveTranslation(langtag);
-  const label = isFile ? (translate(dirent.title) as string) : dirent.name;
-  const labelLimit = layout === "list" ? 95 : 50;
-  const labelTruncated =
-    label.length > labelLimit
-      ? [label.slice(0, labelLimit - 10), label.slice(-8)].join("...")
-      : label;
   const direntKey = isFile ? "file" : "folder";
   const depCount = isFile ? dirent.dependentRowCount : 0;
   const depLabel = f.cond([
@@ -68,6 +70,29 @@ function FolderDirent(
   ])(depCount);
   const canEdit = isFile ? canUserEditFiles() : canUserEditFolders();
   const canDelete = isFile ? canUserDeleteFiles() : canUserDeleteFolders();
+
+  const label = isFile ? (translate(dirent.title) as string) : dirent.name;
+  const labelTruncated = useMemo(() => {
+    let charLimit;
+
+    if (layout === "tiles") {
+      charLimit = 50;
+    } else {
+      const pxPerChar = 7.2;
+      const wThumb = 45;
+      const wActs = 4 * 45 + (depCount > 0 ? 120 : 0);
+      charLimit = Math.floor((width - wThumb - wActs) / pxPerChar);
+    }
+
+    if (label.length <= charLimit) {
+      return label;
+    }
+
+    const labelStart = label.slice(0, charLimit - 10);
+    const labelEnd = label.slice(-8);
+
+    return `${labelStart}...${labelEnd}`;
+  }, [layout, width]);
 
   const handleClick = () => {
     if (isFile) {
@@ -148,7 +173,12 @@ function FolderDirent(
 
   return (
     <div
-      ref={ref}
+      ref={node => {
+        if (typeof direntRef === "function") {
+          direntRef(node);
+        }
+        mainActionRef(node);
+      }}
       style={style}
       className={cn(
         "folder-dirent",
