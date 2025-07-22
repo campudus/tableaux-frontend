@@ -1,28 +1,26 @@
 import { ReactElement } from "react";
-import { Row, Column, CellValue, GRUDStore } from "../../types/grud";
+import { CellValue, GRUDStore } from "../../types/grud";
 import { useSelector } from "react-redux";
-import { filterOutIdColumn } from "./helper";
-import getDisplayValue from "../../helpers/getDisplayValue";
+import { ColumnAndRow, ColumnAndRows, combinedColumnsAndRows } from "./helper";
 import LinkedEntrySelection from "./LinkedEntrySelection";
 import { buildClassName } from "../../helpers/buildClassName";
 import { getColumnDisplayName } from "../../helpers/multiLanguage";
 import CellValueLink from "./CellValueLink";
-
-type ColumnWithIndex = { column: Column; columnIndex: number };
+import getDisplayValue from "../../helpers/getDisplayValue";
 
 type LinkDetailViewProps = {
   langtag: string;
-  indexOfCurrentColumn: number;
   currentDetailTable: number;
-  currentRow: Row;
+  selectedColumnAndRow: ColumnAndRow;
+  linkedCells: (CellValue & { id: number })[];
   showDifferences: boolean;
 };
 
 export default function LinkDetailView({
   langtag,
-  indexOfCurrentColumn,
   currentDetailTable,
-  currentRow,
+  selectedColumnAndRow,
+  linkedCells,
   showDifferences
 }: LinkDetailViewProps): ReactElement {
   const columns = useSelector(
@@ -35,84 +33,62 @@ export default function LinkDetailView({
     (store: GRUDStore) => store.preview.selectedLinkedEntries
   );
 
-  const linkedCellsColumn = currentRow.cells?.[indexOfCurrentColumn]?.column;
-  const linkedCells = currentRow.values[indexOfCurrentColumn] as (CellValue & {
-    id: number;
-  })[];
-  const linkedCellIds = linkedCells.map(row => row.id);
+  const linkedRows = rows?.filter(row =>
+    linkedCells.map(cell => cell.id).includes(row.id)
+  );
 
-  const linkedRows = rows?.filter(row => linkedCellIds.includes(row.id));
   const selectedLinkedRows =
     selectedLinkedEntries && selectedLinkedEntries.length > 0
       ? linkedRows?.filter(row => selectedLinkedEntries?.includes(row.id))
       : linkedRows;
 
-  const { filteredColumns, filteredRows } = filterOutIdColumn(
-    columns,
-    selectedLinkedRows
-  );
+  const columnsAndRows = combinedColumnsAndRows(columns, selectedLinkedRows);
+
+  if (!columnsAndRows || columnsAndRows.length === 0) {
+    return <div>No linked entries found</div>;
+  }
 
   function getColumnsWithDifferences(
-    columns: Column[],
-    rows: Row[] | undefined,
+    columnsAndRows: ColumnAndRows[],
     langtag: string
-  ): ColumnWithIndex[] {
-    if (!rows || rows.length < 2)
-      return columns.map((column, index) => ({
-        column,
-        columnIndex: index
-      }));
+  ): ColumnAndRows[] {
+    return columnsAndRows.filter(({ column, rows }) => {
+      const firstValue = getDisplayValue(column)(rows[0]?.values);
+      const firstDisplay = Array.isArray(firstValue)
+        ? firstValue.map(v => v[langtag]).join(", ")
+        : firstValue[langtag];
 
-    return columns
-      .map((column, columnIndex) => {
-        const firstValue = getDisplayValue(column)(
-          rows[0]?.values && rows[0].values.length > 1
-            ? rows[0].values.at(columnIndex)
-            : rows[0]?.values?.at(0)
-        );
-        const firstDisplay = Array.isArray(firstValue)
-          ? firstValue.map(v => v[langtag]).join(", ")
-          : firstValue[langtag];
+      const hasDifference = rows.some(row => {
+        const value = getDisplayValue(column)(row.values);
+        const display = Array.isArray(value)
+          ? value.map(v => v[langtag]).join(", ")
+          : value[langtag];
 
-        const hasDifference = rows.some(row => {
-          const value = getDisplayValue(column)(
-            row.values.length > 1
-              ? row.values.at(columnIndex)
-              : row.values.at(0)
-          );
-          const display = Array.isArray(value)
-            ? value.map(v => v[langtag]).join(", ")
-            : value[langtag];
+        return display !== firstDisplay;
+      });
 
-          return display !== firstDisplay;
-        });
-
-        return hasDifference ? { column, columnIndex } : null;
-      })
-      .filter(Boolean) as ColumnWithIndex[];
+      return hasDifference;
+    });
   }
 
   const columnsToDisplay = showDifferences
-    ? getColumnsWithDifferences(filteredColumns, filteredRows, langtag)
-    : filteredColumns.map((column, idx) => ({
-        column,
-        columnIndex: idx
-      }));
+    ? getColumnsWithDifferences(columnsAndRows, langtag)
+    : columnsAndRows;
 
   return (
     <div className="link-detail-view">
-      {linkedCellsColumn && linkedCells.length > 1 && (
+      {linkedCells && linkedCells.length > 1 && (
         <LinkedEntrySelection
           langtag={langtag}
           linkedEntries={linkedCells}
-          linkedEntriesColumn={linkedCellsColumn}
+          linkedEntriesColumn={selectedColumnAndRow.column}
         />
       )}
 
       <div className="preview-detail-view__table-wrapper">
         <table>
           <tbody>
-            {columnsToDisplay.map(({ column, columnIndex }, index) => {
+            {columnsToDisplay.map(({ column, rows }, index) => {
               const columnLink = `/${langtag}/tables/${currentDetailTable}/columns/${column.id}`;
               return (
                 <tr
@@ -127,15 +103,14 @@ export default function LinkDetailView({
                     </a>
                   </td>
 
-                  {filteredRows?.map((row, rowIndex) => (
+                  {rows?.map(row => (
                     <td
                       className="preview-detail-view__column preview-detail-view__column-value"
-                      key={rowIndex}
+                      key={row.id}
                     >
                       <CellValueLink
                         langtag={langtag}
                         column={column}
-                        columnIndex={columnIndex}
                         row={row}
                         link={`/${langtag}/tables/${currentDetailTable}/columns/${column.id}/rows/${row.id}`}
                       />
