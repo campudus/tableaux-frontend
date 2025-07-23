@@ -27,6 +27,32 @@
       font-size: 18px;
     }
   }
+
+  .currency-cell {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px;
+
+    &__item {
+      display: inline-flex;
+      align-items: center;
+      flex-wrap: nowrap;
+      width: 150px;
+    }
+
+    &__separator {
+      margin: 0 8px 0 10px;
+      font-size: 18px;
+    }
+  }
+
+  .currency-cell:hover {
+    .empty {
+      color: $color-primary;
+    }
+  }
 }
 
 .cell-variant-link {
