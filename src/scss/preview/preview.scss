@@ -30,10 +30,18 @@
 }
 
 .preview-row-view {
-  padding: 16px;
+  padding: 20px;
   // to move the scrollbar to the left side
   // but show the content from left to right
   direction: ltr;
+
+  &__title {
+    display: inline-flex;
+    gap: 12px;
+    font-size: 32px;
+    font-weight: 500;
+    margin: 0 0 24px 8px;
+  }
 
   table {
     width: 100%;
@@ -102,7 +110,7 @@
 }
 
 .preview-detail-view {
-  padding: 16px 0 16px 16px;
+  padding: 20px 0 20px 20px;
   overflow-y: auto;
   height: 100%;
   box-sizing: border-box;
