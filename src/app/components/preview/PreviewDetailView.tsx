@@ -35,10 +35,11 @@ export default function PreviewDetailView({
     id: number;
   })[];
 
-  const fullTitle =
-    linkedCells?.length && linkedCells.length > 1
-      ? `${title} (${linkedCells.length})`
-      : title;
+  const hasMultipleLinkedCells = linkedCells?.length > 1;
+
+  const fullTitle = hasMultipleLinkedCells
+    ? `${title} (${linkedCells.length})`
+    : title;
 
   function renderDetailView(): ReactElement | null {
     if (!currentColumn) {
@@ -77,7 +78,7 @@ export default function PreviewDetailView({
       <div className="preview-detail-view__header">
         <h2 className="preview-detail-view__title">{fullTitle}</h2>
 
-        {currentColumn?.kind === "link" && (
+        {hasMultipleLinkedCells && (
           <div className="preview-detail-view__checkbox">
             <input
               type="checkbox"
