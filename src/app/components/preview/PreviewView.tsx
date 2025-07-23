@@ -12,7 +12,7 @@ import actionTypes from "../../redux/actionTypes";
 import { loadAllRows } from "../../redux/actions/rowActions";
 import { combineColumnsAndRow } from "./helper";
 import { useHistory } from "react-router-dom";
-import { isPreviewTitle } from "./constants";
+import { getDefaultSelectedColumnId } from "./constants";
 
 type PreviewViewProps = {
   langtag: string;
@@ -46,9 +46,7 @@ export default function PreviewView({
 
   const currentColumn =
     useSelector((store: GRUDStore) => store.preview.currentColumn) ??
-    columnsAndRow.find(
-      entry => entry.column.kind === "link" && !isPreviewTitle(entry.column)
-    )?.column.id;
+    getDefaultSelectedColumnId(columnsAndRow);
 
   useEffect(() => {
     if (currentColumn) {
