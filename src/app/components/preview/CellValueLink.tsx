@@ -7,6 +7,7 @@ import ArrayCell from "./cells/ArrayCell";
 import TextCell from "./cells/TextCell";
 import AttachmentCell from "./cells/AttachmentCell";
 import VariantCell from "./cells/VariantCell";
+import CurrencyCell from "./cells/CurrencyCell";
 
 type CellValueLinkProps = {
   langtag: string;
@@ -27,6 +28,16 @@ export default function CellValueLink({
   function renderCellValue(): ReactElement {
     if (f.isBoolean(rowValue)) {
       return <BooleanCell langtag={langtag} value={rowValue} />;
+    }
+
+    if (column.kind === "currency") {
+      return (
+        <CurrencyCell
+          langtag={langtag}
+          column={column}
+          values={(rowValue as unknown) as Record<string, number>}
+        />
+      );
     }
 
     if (Array.isArray(value)) {
