@@ -42,7 +42,8 @@ const iconUrls = {
   list: "/img/icons/list.svg",
   tiles: "/img/icons/tiles.svg",
   download: "/img/icons/download.svg",
-  folder: "/img/icons/folder.svg"
+  folder: "/img/icons/folder.svg",
+  folderBack: "/img/icons/folder-back.svg"
 };
 
 class ImageCache {

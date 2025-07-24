@@ -23,43 +23,46 @@ const FALLBACK_EXTENSIONS = [
   "docx"
 ];
 
-type FolderDirentThumbnailProps = {
+type MediaThumbnailProps = {
   className?: string;
   langtag: string;
-  dirent?: Attachment | Folder;
+  dirent?: Attachment;
   layout?: Layout | "table";
   width?: number;
 };
 
-export default function FolderDirentThumbnail({
+export function MediaThumbnailFolder({
+  className,
+  layout = "list",
+  icon = "folder"
+}: MediaThumbnailProps & { icon?: "folder" | "folder-back" }): ReactElement {
+  return (
+    <div className={cn("media-thumbnail", { [layout]: true }, className)}>
+      <img
+        className={cn("media-thumbnail__image", { icon: true })}
+        src={`/img/icons/${icon}.svg`}
+      />
+    </div>
+  );
+}
+
+export default function MediaThumbnail({
   className,
   langtag,
   dirent,
   layout = "list",
   width = 40
-}: FolderDirentThumbnailProps): ReactElement {
-  const isFile = isAttachment(dirent);
-  const [isLoading, setIsLoading] = useState(isFile);
+}: MediaThumbnailProps): ReactElement {
+  const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
 
-  if (!isFile) {
-    return (
-      <div className={cn("media-thumbnail", { [layout]: true }, className)}>
-        <img
-          className={cn("media-thumbnail__image", { icon: true })}
-          src="/img/icons/folder.svg"
-        />
-      </div>
-    );
-  }
-
   const translate = retrieveTranslation(langtag);
-  const mimeType = translate(dirent.mimeType);
-  const internalName = translate(dirent.internalName);
+  const mimeType = translate(dirent?.mimeType);
+  const internalName = translate(dirent?.internalName);
   const extension = internalName?.split(".")[1]?.toLowerCase();
   const isValidMimeType = VALID_MIME_TYPES.includes(mimeType);
   const isSVG = mimeType === "image/svg+xml";
-  const imageUrl = apiUrl(translate(dirent.url));
+  const imageUrl = apiUrl(translate(dirent?.url));
   const thumbnailUrl = isSVG ? imageUrl : `${imageUrl}?width=${width}`;
   const hasFallback = FALLBACK_EXTENSIONS.includes(extension);
   const fallbackUrl = `/img/fileicons/${extension}.svg`;
