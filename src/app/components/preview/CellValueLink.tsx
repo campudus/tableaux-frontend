@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Attachment, Column, Row } from "../../types/grud";
 import f from "lodash/fp";
 import getDisplayValue from "../../helpers/getDisplayValue";
@@ -8,6 +9,7 @@ import TextCell from "./cells/TextCell";
 import AttachmentCell from "./cells/AttachmentCell";
 import VariantCell from "./cells/VariantCell";
 import CurrencyCell from "./cells/CurrencyCell";
+import LinkCell from "./cells/LinkCell";
 
 type CellValueLinkProps = {
   langtag: string;
@@ -47,11 +49,18 @@ export default function CellValueLink({
     return <TextCell langtag={langtag} value={value} />;
   }
 
-  return column.name === "variant" && column.kind === "link" ? (
-    <div className="cell-variant-link">
-      <VariantCell langtag={langtag} values={value} link={link} />
+  return column.kind === "link" ? (
+    <div className="cell-link">
+      <LinkCell
+        langtag={langtag}
+        column={column}
+        values={rowValue as Record<string, any>[]}
+      />
     </div>
-  ) : column.kind === "attachment" ? (
+  ) : // <div className="cell-variant-link">
+  //   <VariantCell langtag={langtag} values={value} link={link} />
+  // </div>
+  column.kind === "attachment" ? (
     <div className="cell-attachemnt-link">
       <AttachmentCell attachemnts={rowValue as Attachment[]} link={link} />
     </div>
