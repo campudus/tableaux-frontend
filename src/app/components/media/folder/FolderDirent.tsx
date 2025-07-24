@@ -15,7 +15,7 @@ import { retrieveTranslation } from "../../../helpers/multiLanguage";
 import apiUrl from "../../../helpers/apiUrl";
 import { useHistory } from "react-router-dom";
 import { switchFolderHandler } from "../../Router";
-import MediaThumbnail from "../MediaThumbnail";
+import MediaThumbnail, { MediaThumbnailFolder } from "../MediaThumbnail";
 import { Layout } from "./FolderToolbar";
 import ButtonAction from "../../helperComponents/ButtonAction";
 import SvgIcon from "../../helperComponents/SvgIcon";
@@ -189,13 +189,21 @@ function FolderDirent(
       <ButtonAction
         className={cn("folder-dirent__action", { main: true })}
         icon={
-          <MediaThumbnail
-            className="folder-dirent__thumbnail"
-            langtag={langtag}
-            dirent={dirent}
-            layout={layout}
-            width={layout === "list" ? 40 : 200}
-          />
+          isFile ? (
+            <MediaThumbnail
+              className="folder-dirent__thumbnail"
+              langtag={langtag}
+              dirent={dirent}
+              layout={layout}
+              width={layout === "list" ? 40 : 200}
+            />
+          ) : (
+            <MediaThumbnailFolder
+              className="folder-dirent__thumbnail"
+              langtag={langtag}
+              layout={layout}
+            />
+          )
         }
         label={
           <span className="folder-dirent__label" title={label}>

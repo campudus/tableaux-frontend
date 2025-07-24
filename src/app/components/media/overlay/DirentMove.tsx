@@ -112,7 +112,7 @@ export function DirentMoveBody(props: DirentMoveProps): ReactElement {
       {!isTargetRoot && (
         <FolderDirentNav
           langtag={langtag!}
-          label=".."
+          icon="folder-back"
           layout="list"
           onClick={() => handleNavigate(targetFolder?.parentId)}
         />

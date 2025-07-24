@@ -116,7 +116,7 @@ export default function FolderDirents({
                       <FolderDirentNav
                         style={{ ...style, width: cellWidth }}
                         langtag={langtag}
-                        label=".."
+                        icon="folder-back"
                         layout={layout}
                         onClick={handleNavigateBack}
                       />
