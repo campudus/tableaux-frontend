@@ -127,6 +127,12 @@
     font-size: 24px;
   }
 
+  &__actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+  }
+
   &__checkbox {
     display: flex;
     align-items: center;
