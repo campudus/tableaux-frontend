@@ -94,6 +94,20 @@
   }
 }
 
+.cell-link {
+  .link-cell {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+
+    &__item:hover {
+      color: $color-primary;
+    }
+  }
+}
+
 .cell-value-link:hover {
   color: $color-primary;
 }
