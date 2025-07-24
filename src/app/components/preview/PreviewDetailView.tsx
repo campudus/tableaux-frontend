@@ -1,9 +1,10 @@
 import { ReactElement, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { CellValue, GRUDStore } from "../../types/grud";
 import RichtextDetailView from "./RichtextDetailView";
 import LinkDetailView from "./LinkDetailView";
 import { ColumnAndRow } from "./helper";
+import actionTypes from "../../redux/actionTypes";
 
 type PreviewDetailViewProps = {
   langtag: string;
@@ -18,6 +19,8 @@ export default function PreviewDetailView({
   currentColumnId,
   selectedColumnAndRow
 }: PreviewDetailViewProps): ReactElement {
+  const dispatch = useDispatch();
+  const [selectAll, setSelectAll] = useState(true);
   const [showDifferences, setShowDifferences] = useState(false);
 
   const title = useSelector(
@@ -73,19 +76,46 @@ export default function PreviewDetailView({
     return null;
   }
 
+  function handleSelectAll(selectAll: boolean): void {
+    if (selectAll) {
+      dispatch({
+        type: actionTypes.preview.PREVIEW_SET_LINKED_SELECTION,
+        selectedLinkedEntries: linkedCells.map(entry => entry.id)
+      });
+    } else {
+      dispatch({
+        type: actionTypes.preview.PREVIEW_SET_LINKED_SELECTION,
+        selectedLinkedEntries: []
+      });
+    }
+
+    setSelectAll(selectAll);
+  }
+
   return (
     <div className="preview-detail-view">
       <div className="preview-detail-view__header">
         <h2 className="preview-detail-view__title">{fullTitle}</h2>
 
         {hasMultipleLinkedCells && (
-          <div className="preview-detail-view__checkbox">
-            <input
-              type="checkbox"
-              checked={showDifferences}
-              onChange={() => setShowDifferences(!showDifferences)}
-            />
-            <label>Unterschiede anzeigen</label>
+          <div className="preview-detail-view__actions">
+            <div className="preview-detail-view__checkbox">
+              <input
+                type="checkbox"
+                checked={selectAll}
+                onChange={() => handleSelectAll(!selectAll)}
+              />
+              <label>Alle auswählen</label>
+            </div>
+
+            <div className="preview-detail-view__checkbox">
+              <input
+                type="checkbox"
+                checked={showDifferences}
+                onChange={() => setShowDifferences(!showDifferences)}
+              />
+              <label>Unterschiede anzeigen</label>
+            </div>
           </div>
         )}
       </div>

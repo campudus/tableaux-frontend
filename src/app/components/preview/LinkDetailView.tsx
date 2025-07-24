@@ -1,12 +1,13 @@
-import { ReactElement } from "react";
+import { ReactElement, useEffect } from "react";
 import { CellValue, GRUDStore } from "../../types/grud";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { ColumnAndRow, ColumnAndRows, combinedColumnsAndRows } from "./helper";
 import LinkedEntrySelection from "./LinkedEntrySelection";
 import { buildClassName } from "../../helpers/buildClassName";
 import { getColumnDisplayName } from "../../helpers/multiLanguage";
 import CellValueLink from "./CellValueLink";
 import getDisplayValue from "../../helpers/getDisplayValue";
+import actionTypes from "../../redux/actionTypes";
 
 type LinkDetailViewProps = {
   langtag: string;
@@ -23,6 +24,7 @@ export default function LinkDetailView({
   linkedCells,
   showDifferences
 }: LinkDetailViewProps): ReactElement {
+  const dispatch = useDispatch();
   const columns = useSelector(
     (store: GRUDStore) => store.columns[currentDetailTable]?.data
   );
@@ -33,6 +35,13 @@ export default function LinkDetailView({
     (store: GRUDStore) => store.preview.selectedLinkedEntries
   );
 
+  useEffect(() => {
+    dispatch({
+      type: actionTypes.preview.PREVIEW_SET_LINKED_SELECTION,
+      selectedLinkedEntries: linkedCells.map(entry => entry.id)
+    });
+  }, [linkedCells]);
+
   const linkedRows = rows?.filter(row =>
     linkedCells.map(cell => cell.id).includes(row.id)
   );
@@ -40,7 +49,7 @@ export default function LinkDetailView({
   const selectedLinkedRows =
     selectedLinkedEntries && selectedLinkedEntries.length > 0
       ? linkedRows?.filter(row => selectedLinkedEntries?.includes(row.id))
-      : linkedRows;
+      : [];
 
   const columnsAndRows = combinedColumnsAndRows(columns, selectedLinkedRows);
 
@@ -103,7 +112,7 @@ export default function LinkDetailView({
                     </a>
                   </td>
 
-                  {rows?.map(row => (
+                  {rows.map(row => (
                     <td
                       className="preview-detail-view__column preview-detail-view__column-value"
                       key={row.id}
