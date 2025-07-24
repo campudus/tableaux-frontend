@@ -95,10 +95,8 @@ export function DirentMoveBody(props: DirentMoveProps): ReactElement {
   const isTargetRoot = targetFolder?.id === null;
 
   const handleNavigate = async (folderId?: FolderID | null) => {
-    const folder: Folder = await makeRequest({
-      apiRoute: toFolder(folderId, langtag),
-      method: "GET"
-    });
+    const apiRoute = toFolder(folderId, langtag);
+    const folder: Folder = await makeRequest({ apiRoute, method: "GET" });
 
     updateTargetFolder?.(() => folder);
   };

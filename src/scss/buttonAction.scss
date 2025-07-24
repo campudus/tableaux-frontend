@@ -40,10 +40,14 @@
       cursor: not-allowed;
     }
 
-    .svg-icon {
+    .svg-icon,
+    .icon {
       box-sizing: border-box;
       min-width: 20px;
+      min-height: 20px;
       display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     &--link {
