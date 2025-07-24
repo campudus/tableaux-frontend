@@ -92,7 +92,7 @@ function FolderDirent(
     const labelEnd = label.slice(-8);
 
     return `${labelStart}...${labelEnd}`;
-  }, [layout, width]);
+  }, [dirent, layout, width]);
 
   const handleClick = () => {
     if (isFile) {
