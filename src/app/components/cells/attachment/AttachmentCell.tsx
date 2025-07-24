@@ -2,7 +2,6 @@ import f from "lodash/fp";
 import cns from "classnames";
 import { ReactElement, useEffect, useRef } from "react";
 import { useDispatch } from "react-redux";
-import AttachmentOverlay from "./AttachmentOverlay";
 import Header from "../../overlay/Header";
 import actions from "../../../redux/actionCreators";
 import apiUrl from "../../../helpers/apiUrl";
@@ -12,6 +11,7 @@ import { retrieveTranslation } from "../../../helpers/multiLanguage";
 import { Attachment, Cell } from "../../../types/grud";
 import ButtonAction from "../../helperComponents/ButtonAction";
 import MediaThumbnail from "../../media/MediaThumbnail";
+import AttachmentOverlayBody from "./AttachmentOverlay";
 
 type AttachmentCellProps = {
   cell: Cell;
@@ -43,11 +43,10 @@ export default function AttachmentCell({
       actions.openOverlay({
         head: <Header langtag={langtag} />,
         body: (
-          <AttachmentOverlay
+          <AttachmentOverlayBody
             cell={cell}
             langtag={langtag}
             folderId={folderId}
-            value={cell.value}
           />
         ),
         type: "full-height",
