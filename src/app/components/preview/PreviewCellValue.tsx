@@ -4,30 +4,28 @@ import f from "lodash/fp";
 import getDisplayValue from "../../helpers/getDisplayValue";
 import BooleanCell from "./cells/BooleanCell";
 import { ReactElement } from "react";
-import ArrayCell from "./cells/ArrayCell";
 import TextCell from "./cells/TextCell";
 import AttachmentCell from "./cells/AttachmentCell";
-import VariantCell from "./cells/VariantCell";
 import CurrencyCell from "./cells/CurrencyCell";
 import LinkCell from "./cells/LinkCell/LinkCell";
 
-type CellValueLinkProps = {
+type PreviewCellValueProps = {
   langtag: string;
   column: Column;
   row: Row;
   link: string;
 };
 
-export default function CellValueLink({
+export default function PreviewCellValue({
   langtag,
   column,
   row,
   link
-}: CellValueLinkProps): ReactElement {
-  const rowValue = row.values;
-  const value = getDisplayValue(column)(rowValue);
+}: PreviewCellValueProps): ReactElement {
+  function renderSingleLinkCell(): ReactElement {
+    const rowValue = row.values;
+    const value = getDisplayValue(column)(rowValue);
 
-  function renderCellValue(): ReactElement {
     if (f.isBoolean(rowValue)) {
       return <BooleanCell langtag={langtag} value={rowValue} />;
     }
@@ -42,27 +40,25 @@ export default function CellValueLink({
       );
     }
 
-    if (Array.isArray(value)) {
-      return <ArrayCell langtag={langtag} values={value} />;
-    }
-
     return <TextCell langtag={langtag} value={value} />;
   }
 
-  return column.kind === "link" ? (
-    <LinkCell
-      langtag={langtag}
-      column={column}
-      values={rowValue as Record<string, any>[]}
-      link={link}
-    />
-  ) : column.kind === "attachment" ? (
-    <div className="cell-attachemnt-link">
-      <AttachmentCell attachemnts={rowValue as Attachment[]} link={link} />
+  return (
+    <div className="preview-cell-value">
+      {column.kind === "link" ? (
+        <LinkCell
+          langtag={langtag}
+          column={column}
+          values={row.values as Record<string, any>[]}
+          link={link}
+        />
+      ) : column.kind === "attachment" ? (
+        <AttachmentCell attachemnts={row.values as Attachment[]} link={link} />
+      ) : (
+        <a className="preview-cell-value-link" href={link}>
+          {renderSingleLinkCell()}
+        </a>
+      )}
     </div>
-  ) : (
-    <a className="cell-value-link" href={link}>
-      {renderCellValue()}
-    </a>
   );
 }
