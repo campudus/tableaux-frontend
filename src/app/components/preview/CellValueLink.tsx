@@ -50,17 +50,13 @@ export default function CellValueLink({
   }
 
   return column.kind === "link" ? (
-    <div className="cell-link">
-      <LinkCell
-        langtag={langtag}
-        column={column}
-        values={rowValue as Record<string, any>[]}
-      />
-    </div>
-  ) : // <div className="cell-variant-link">
-  //   <VariantCell langtag={langtag} values={value} link={link} />
-  // </div>
-  column.kind === "attachment" ? (
+    <LinkCell
+      langtag={langtag}
+      column={column}
+      values={rowValue as Record<string, any>[]}
+      link={link}
+    />
+  ) : column.kind === "attachment" ? (
     <div className="cell-attachemnt-link">
       <AttachmentCell attachemnts={rowValue as Attachment[]} link={link} />
     </div>
