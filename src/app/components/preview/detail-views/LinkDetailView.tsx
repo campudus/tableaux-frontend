@@ -1,13 +1,13 @@
 import { ReactElement, useEffect } from "react";
-import { CellValue, GRUDStore } from "../../types/grud";
+import { CellValue, GRUDStore } from "../../../types/grud";
 import { useDispatch, useSelector } from "react-redux";
-import { ColumnAndRow, ColumnAndRows, combinedColumnsAndRows } from "./helper";
-import LinkedEntrySelection from "./LinkedEntrySelection";
-import { buildClassName } from "../../helpers/buildClassName";
-import { getColumnDisplayName } from "../../helpers/multiLanguage";
-import CellValueLink from "./CellValueLink";
-import getDisplayValue from "../../helpers/getDisplayValue";
-import actionTypes from "../../redux/actionTypes";
+import { ColumnAndRow, ColumnAndRows, combinedColumnsAndRows } from "../helper";
+import LinkedEntrySelection from "../LinkedEntrySelection";
+import { buildClassName } from "../../../helpers/buildClassName";
+import { getColumnDisplayName } from "../../../helpers/multiLanguage";
+import PreviewCellValue from "../PreviewCellValue";
+import getDisplayValue from "../../../helpers/getDisplayValue";
+import actionTypes from "../../../redux/actionTypes";
 
 type LinkDetailViewProps = {
   langtag: string;
@@ -117,7 +117,7 @@ export default function LinkDetailView({
                       className="preview-detail-view__column preview-detail-view__column-value"
                       key={row.id}
                     >
-                      <CellValueLink
+                      <PreviewCellValue
                         langtag={langtag}
                         column={column}
                         row={row}

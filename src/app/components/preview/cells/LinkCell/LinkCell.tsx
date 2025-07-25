@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { ConcatColumn, LinkColumn } from "@grud/devtools/types";
 import { ReactElement, ReactNode } from "react";
-import React from "react";
 import { setEmptyClassName } from "../../helper";
 import LinkListCell from "./LinkListCell";
 import LinkCellItem from "./LinkCellItem";
@@ -23,7 +22,9 @@ export default function LinkCell({
     if (!values || values.length === 0) {
       return (
         <a
-          className={`link-cell__item ${setEmptyClassName(values)}`}
+          className={`link-cell__item preview-cell-value-link ${setEmptyClassName(
+            values
+          )}`}
           href={link}
         >
           {"Leer"}
@@ -33,21 +34,18 @@ export default function LinkCell({
 
     if (column.toColumn.kind !== "concat") {
       return values.map((entry, index) => {
-        const value = column.multilanguage ? entry.value[langtag] : entry.value;
+        const currentColumn = column.toColumn;
+        const link = `/${langtag}/tables/${column.toTable}/columns/${currentColumn.id}/rows/${entry.id}`;
 
         return (
-          <React.Fragment key={entry.id}>
-            <a
-              className={`link-cell__item ${setEmptyClassName(value)}`}
-              href={`/${langtag}/tables/${column.toTable}/columns/${column.toColumn.id}/rows/${entry.id}`}
-            >
-              {value || "Leer"}
-            </a>
-
-            {index < values.length - 1 && (
-              <span className="array-cell__separator">&bull;</span>
-            )}
-          </React.Fragment>
+          <LinkCellItem
+            key={`${entry.id}-${index}`}
+            langtag={langtag}
+            column={currentColumn}
+            value={entry.value}
+            link={link}
+            isLast={index === values.length - 1}
+          />
         );
       });
     }

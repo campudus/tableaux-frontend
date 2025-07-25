@@ -12,11 +12,14 @@ export default function AttachmentCell({
   link
 }: AttachmentCellProps): ReactElement {
   return !attachemnts || attachemnts.length === 0 ? (
-    <a className={`attachemnt-cell ${setEmptyClassName()}`} href={link}>
+    <a
+      className={`attachemnt-cell preview-cell-value-link ${setEmptyClassName()}`}
+      href={link}
+    >
       Leer
     </a>
   ) : (
-    <div className="attachemnt-cell">
+    <div className="attachemnt-cell attachemnt-cell__link">
       <span>Bilder anzeigen ({attachemnts.length})</span>
     </div>
   );

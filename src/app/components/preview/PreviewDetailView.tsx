@@ -1,8 +1,8 @@
 import { ReactElement, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { CellValue, GRUDStore } from "../../types/grud";
-import RichtextDetailView from "./RichtextDetailView";
-import LinkDetailView from "./LinkDetailView";
+import RichtextDetailView from "./detail-views/RichtextDetailView";
+import LinkDetailView from "./detail-views/LinkDetailView";
 import { ColumnAndRow } from "./helper";
 import actionTypes from "../../redux/actionTypes";
 

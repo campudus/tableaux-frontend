@@ -2,7 +2,7 @@ import { ReactElement } from "react";
 import actionTypes from "../../redux/actionTypes";
 import { useDispatch } from "react-redux";
 import { getColumnDisplayName } from "../../helpers/multiLanguage";
-import CellValueLink from "./CellValueLink";
+import PreviewCellValue from "./PreviewCellValue";
 import { buildClassName } from "../../helpers/buildClassName";
 import { ColumnAndRow } from "./helper";
 import { attributeKeys, isPreviewTitle } from "./constants";
@@ -50,7 +50,7 @@ export default function PreviewRowView({
     );
 
     return previewTitlesSorted.map(({ column, row }) => (
-      <CellValueLink
+      <PreviewCellValue
         key={column.id}
         langtag={langtag}
         column={column}
@@ -103,7 +103,7 @@ export default function PreviewRowView({
                   </td>
 
                   <td className="preview-row-view__column preview-row-view__column-value">
-                    <CellValueLink
+                    <PreviewCellValue
                       langtag={langtag}
                       column={column}
                       row={row}
