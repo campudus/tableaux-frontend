@@ -9,7 +9,7 @@ import TextCell from "./cells/TextCell";
 import AttachmentCell from "./cells/AttachmentCell";
 import VariantCell from "./cells/VariantCell";
 import CurrencyCell from "./cells/CurrencyCell";
-import LinkCell from "./cells/LinkCell";
+import LinkCell from "./cells/LinkCell/LinkCell";
 
 type CellValueLinkProps = {
   langtag: string;

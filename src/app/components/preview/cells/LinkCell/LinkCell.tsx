@@ -1,11 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { ConcatColumn, LinkColumn } from "@grud/devtools/types";
 import { ReactElement, ReactNode } from "react";
-import getDisplayValue from "../../../helpers/getDisplayValue";
-import f from "lodash/fp";
 import React from "react";
-import { setEmptyClassName } from "../helper";
+import { setEmptyClassName } from "../../helper";
 import LinkListCell from "./LinkListCell";
+import LinkCellItem from "./LinkCellItem";
 
 type LinkCellProps = {
   langtag: string;
@@ -20,7 +19,7 @@ export default function LinkCell({
   values,
   link
 }: LinkCellProps): ReactElement {
-  function renderLinkValues(): ReactNode {
+  function renderLinkCell(): ReactNode {
     if (!values || values.length === 0) {
       return (
         <a
@@ -62,40 +61,18 @@ export default function LinkCell({
         return entry.value.map((value: any, index: number) => {
           const currentColumn = (column.toColumn as ConcatColumn).concats.at(
             index
-          );
-          const link = `/${langtag}/tables/${column.toTable}/columns/${currentColumn?.id}/rows/${entry.id}`;
-
-          let displayValue = value;
-
-          if (Array.isArray(value)) {
-            displayValue = getDisplayValue(currentColumn)(value);
-
-            if (Array.isArray(displayValue)) {
-              displayValue = displayValue.map(v => v[langtag]).join(" ");
-            } else {
-              displayValue = displayValue[langtag];
-            }
-          } else if (currentColumn?.multilanguage) {
-            displayValue = value[langtag];
-          }
-
-          if (f.isBoolean(displayValue)) {
-            displayValue = displayValue.toString();
-          }
+          )!;
+          const link = `/${langtag}/tables/${column.toTable}/columns/${currentColumn.id}/rows/${entry.id}`;
 
           return (
-            <React.Fragment key={`${entry.id}-${index}`}>
-              <a
-                className={`link-cell__item ${setEmptyClassName(displayValue)}`}
-                href={link}
-              >
-                {!displayValue || displayValue === "" ? "Leer" : displayValue}
-              </a>
-
-              {index < entry.value.length - 1 && (
-                <span className="array-cell__separator">&bull;</span>
-              )}
-            </React.Fragment>
+            <LinkCellItem
+              key={`${entry.id}-${index}`}
+              langtag={langtag}
+              column={currentColumn}
+              value={value}
+              link={link}
+              isLast={index === entry.value.length - 1}
+            />
           );
         });
       });
@@ -104,5 +81,5 @@ export default function LinkCell({
     return <LinkListCell langtag={langtag} column={column} values={values} />;
   }
 
-  return <div className="link-cell">{renderLinkValues()}</div>;
+  return <div className="link-cell">{renderLinkCell()}</div>;
 }
