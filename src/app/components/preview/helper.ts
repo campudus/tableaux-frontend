@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Column } from "../../types/grud";
+import f from "lodash/fp";
 
 type Row = {
   id: number;
@@ -55,5 +56,13 @@ export function combinedColumnsAndRows(
 }
 
 export function setEmptyClassName(value?: any): string {
-  return value ? "" : "empty";
+  if (f.isBoolean(value)) return "";
+
+  if (!value) return "empty";
+
+  if (Array.isArray(value) && value.length === 0) return "empty";
+
+  if (value === "") return "empty";
+
+  return "";
 }
