@@ -41,13 +41,15 @@ export default function LinkCellItem({
   return (
     <div className="link-cell-item">
       <a
-        className={`link-cell__item ${setEmptyClassName(displayValue)}`}
+        className={`link-cell__item__value preview-cell-value-link ${setEmptyClassName(
+          displayValue
+        )}`}
         href={link}
       >
         {!displayValue || displayValue === "" ? "Leer" : displayValue}
       </a>
 
-      {!isLast && <span className="array-cell__separator">&bull;</span>}
+      {!isLast && <span className="link-cell-item__separator">&bull;</span>}
     </div>
   );
 }
