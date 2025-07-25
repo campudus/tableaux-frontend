@@ -55,6 +55,37 @@
   }
 }
 
+.link-cell {
+  .link-list-cell {
+    display: grid;
+    gap: 8px;
+
+    &__entry {
+      display: inline-flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    &__item:hover {
+      color: $color-primary;
+    }
+
+    &__toggle {
+      color: $color-primary;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 0;
+
+      i {
+        font-size: smaller;
+      }
+    }
+  }
+}
+
 .cell-variant-link {
   .variant-cell {
     display: grid;
