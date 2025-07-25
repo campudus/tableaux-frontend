@@ -3,48 +3,61 @@ import { ConcatColumn, LinkColumn } from "@grud/devtools/types";
 import { ReactElement, ReactNode } from "react";
 import getDisplayValue from "../../../helpers/getDisplayValue";
 import f from "lodash/fp";
+import React from "react";
+import { setEmptyClassName } from "../helper";
+import LinkListCell from "./LinkListCell";
 
 type LinkCellProps = {
   langtag: string;
   column: LinkColumn;
   values: Record<string, any>[];
+  link: string;
 };
 
 export default function LinkCell({
   langtag,
   column,
-  values
+  values,
+  link
 }: LinkCellProps): ReactElement {
   function renderLinkValues(): ReactNode {
     if (!values || values.length === 0) {
-      return <span>Leer</span>;
-    }
-
-    if (column.toColumn.kind !== "concat" && !column.multilanguage) {
-      return values.map(entry => (
+      return (
         <a
-          key={entry.id}
-          className="link-cell__item"
-          href={`/${langtag}/tables/${column.toTable}/columns/${column.toColumn.id}/rows/${entry.id}`}
+          className={`link-cell__item ${setEmptyClassName(values)}`}
+          href={link}
         >
-          {entry.value || "Leer"}
+          {"Leer"}
         </a>
-      ));
+      );
     }
 
-    if (column.toColumn.kind !== "concat" && column.multilanguage) {
-      return values.map(entry => (
-        <a
-          key={entry.id}
-          className="link-cell__item"
-          href={`/${langtag}/tables/${column.toTable}/columns/${column.toColumn.id}/rows/${entry.id}`}
-        >
-          {entry.value[langtag] || "Leer"}
-        </a>
-      ));
+    if (column.toColumn.kind !== "concat") {
+      return values.map((entry, index) => {
+        const value = column.multilanguage ? entry.value[langtag] : entry.value;
+
+        return (
+          <React.Fragment key={entry.id}>
+            <a
+              className={`link-cell__item ${setEmptyClassName(value)}`}
+              href={`/${langtag}/tables/${column.toTable}/columns/${column.toColumn.id}/rows/${entry.id}`}
+            >
+              {value || "Leer"}
+            </a>
+
+            {index < values.length - 1 && (
+              <span className="array-cell__separator">&bull;</span>
+            )}
+          </React.Fragment>
+        );
+      });
     }
 
-    if (column.toColumn.kind === "concat") {
+    if (
+      (column.toColumn.kind === "concat" &&
+        column.constraint?.cardinality?.to === 1) ||
+      values.length === 1
+    ) {
       return values.map(entry => {
         return entry.value.map((value: any, index: number) => {
           const currentColumn = (column.toColumn as ConcatColumn).concats.at(
@@ -52,44 +65,43 @@ export default function LinkCell({
           );
           const link = `/${langtag}/tables/${column.toTable}/columns/${currentColumn?.id}/rows/${entry.id}`;
 
+          let displayValue = value;
+
           if (Array.isArray(value)) {
-            let displayValue = getDisplayValue(currentColumn)(value);
+            displayValue = getDisplayValue(currentColumn)(value);
 
             if (Array.isArray(displayValue)) {
-              displayValue = displayValue.map(v => v[langtag]).join(", ");
+              displayValue = displayValue.map(v => v[langtag]).join(" ");
             } else {
               displayValue = displayValue[langtag];
             }
+          } else if (currentColumn?.multilanguage) {
+            displayValue = value[langtag];
+          }
 
-            return (
-              <a
-                key={`${entry.id}-${index}`}
-                className="link-cell__item"
-                href={link}
-              >
-                {f.isEmpty(displayValue) ? "Leer" : displayValue}
-              </a>
-            );
+          if (f.isBoolean(displayValue)) {
+            displayValue = displayValue.toString();
           }
 
           return (
-            <a
-              key={`${entry.id}-${index}`}
-              className="link-cell__item"
-              href={link}
-            >
-              {f.isEmpty(value)
-                ? "Leer"
-                : currentColumn?.multilanguage
-                ? value[langtag]
-                : value}
-            </a>
+            <React.Fragment key={`${entry.id}-${index}`}>
+              <a
+                className={`link-cell__item ${setEmptyClassName(displayValue)}`}
+                href={link}
+              >
+                {!displayValue || displayValue === "" ? "Leer" : displayValue}
+              </a>
+
+              {index < entry.value.length - 1 && (
+                <span className="array-cell__separator">&bull;</span>
+              )}
+            </React.Fragment>
           );
         });
       });
     }
 
-    return <span>Leer</span>;
+    return <LinkListCell langtag={langtag} column={column} values={values} />;
   }
 
   return <div className="link-cell">{renderLinkValues()}</div>;
