@@ -119,6 +119,7 @@ export default function AttachmentOverlayDirents({
                         dirent={dirent}
                         layout={layout}
                         onNavigate={onNavigate}
+                        width={width}
                       />
                     ) : (
                       <div style={{ ...style, width: cellWidth }}></div>

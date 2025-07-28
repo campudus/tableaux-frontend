@@ -24,7 +24,6 @@ import {
   canUserEditFiles,
   canUserEditFolders
 } from "../../../helpers/accessManagementHelper";
-import { useMeasure } from "../../../helpers/useMeasure";
 
 type AttachmentOverlayDirentProps = {
   className?: string;
@@ -33,6 +32,7 @@ type AttachmentOverlayDirentProps = {
   dirent: Attachment | Folder;
   layout: Layout;
   onNavigate: (id?: FolderID | null) => void;
+  width?: number;
 };
 
 function AttachmentOverlayDirent(
@@ -42,12 +42,11 @@ function AttachmentOverlayDirent(
     langtag,
     dirent,
     layout,
-    onNavigate
+    onNavigate,
+    width = 1000
   }: AttachmentOverlayDirentProps,
   direntRef: ForwardedRef<HTMLDivElement>
 ): ReactElement {
-  const [mainActionRef, { width = 1000 }] = useMeasure();
-
   const isFile = isAttachment(dirent);
   const translate = retrieveTranslation(langtag);
   const direntKey = isFile ? "file" : "folder";
@@ -96,12 +95,7 @@ function AttachmentOverlayDirent(
 
   return (
     <div
-      ref={node => {
-        if (typeof direntRef === "function") {
-          direntRef(node);
-        }
-        mainActionRef(node);
-      }}
+      ref={direntRef}
       style={style}
       className={cn("attachment-overlay-dirent", { [layout]: true }, className)}
     >

@@ -39,7 +39,6 @@ import {
   canUserEditFiles,
   canUserEditFolders
 } from "../../../helpers/accessManagementHelper";
-import { useMeasure } from "../../../helpers/useMeasure";
 
 type FolderDirentProps = {
   className?: string;
@@ -48,13 +47,21 @@ type FolderDirentProps = {
   dirent: Attachment | Folder;
   layout: Layout;
   fileIdsDiff: string[];
+  width?: number;
 };
 
 function FolderDirent(
-  { className, style, langtag, dirent, layout, fileIdsDiff }: FolderDirentProps,
+  {
+    className,
+    style,
+    langtag,
+    dirent,
+    layout,
+    fileIdsDiff,
+    width = 1000
+  }: FolderDirentProps,
   direntRef: ForwardedRef<HTMLDivElement>
 ): ReactElement {
-  const [mainActionRef, { width = 1000 }] = useMeasure();
   const dispatch = useDispatch();
   const history = useHistory();
 
@@ -72,7 +79,7 @@ function FolderDirent(
   const canDelete = isFile ? canUserDeleteFiles() : canUserDeleteFolders();
 
   const label = isFile ? (translate(dirent.title) as string) : dirent.name;
-  const labelTruncated = () => {
+  const labelTruncated = useMemo(() => {
     let charLimit;
 
     if (layout === "tiles") {
@@ -92,7 +99,7 @@ function FolderDirent(
     const labelEnd = label.slice(-8);
 
     return `${labelStart}...${labelEnd}`;
-  };
+  }, [dirent, layout, width]);
 
   const handleClick = () => {
     if (isFile) {
@@ -173,12 +180,7 @@ function FolderDirent(
 
   return (
     <div
-      ref={node => {
-        if (typeof direntRef === "function") {
-          direntRef(node);
-        }
-        mainActionRef(node);
-      }}
+      ref={direntRef}
       style={style}
       className={cn(
         "folder-dirent",
@@ -207,7 +209,7 @@ function FolderDirent(
         }
         label={
           <span className="folder-dirent__label" title={label}>
-            {labelTruncated()}
+            {labelTruncated}
           </span>
         }
         onClick={handleClick}
