@@ -73,7 +73,6 @@ export default function PreviewRowView({
           {columnsAndRow
             .filter(({ column }) => !isPreviewTitle(column))
             .map(({ column, row }) => {
-              const columnLink = `/${langtag}/tables/${tableId}/columns/${column.id}`;
               const cellLink = `/${langtag}/tables/${tableId}/columns/${column.id}/rows/${row.id}`;
 
               return (
@@ -97,7 +96,7 @@ export default function PreviewRowView({
                   </td>
 
                   <td className="preview-row-view__column preview-row-view__column-name">
-                    <a href={columnLink}>
+                    <a href={cellLink}>
                       {getColumnDisplayName(column, langtag)}
                     </a>
                   </td>

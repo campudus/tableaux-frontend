@@ -99,6 +99,14 @@ export default function LinkDetailView({
           <tbody>
             {columnsToDisplay.map(({ column, rows }, index) => {
               const columnLink = `/${langtag}/tables/${currentDetailTable}/columns/${column.id}`;
+              const rowFilter = `/rows/${selectedLinkedEntries?.at(
+                0
+              )}?filter:id:${selectedLinkedEntries?.join(":")}`;
+
+              const columnNameLink = selectedLinkedEntries
+                ? columnLink + rowFilter
+                : columnLink;
+
               return (
                 <tr
                   key={column.id}
@@ -107,7 +115,7 @@ export default function LinkDetailView({
                   })}
                 >
                   <td className="preview-detail-view__column preview-detail-view__column-name">
-                    <a href={columnLink}>
+                    <a href={columnNameLink}>
                       {getColumnDisplayName(column, langtag)}
                     </a>
                   </td>
