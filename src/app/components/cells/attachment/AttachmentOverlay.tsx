@@ -49,12 +49,23 @@ export default function AttachmentOverlayBody({
     f.propEq("name", i18n.t("media:new_folder")),
     folder?.subfolders
   );
+  const files = f.orderBy(f.prop("updatedAt"), "desc", folder?.files ?? []);
+  // sort new folder to top
+  const subfolders = f.orderBy(
+    f.propEq("name", i18n.t("media:new_folder")),
+    "desc",
+    folder?.subfolders ?? []
+  );
 
   const handleNavigate = async (folderId?: FolderID | null) => {
     const apiRoute = toFolder(folderId, langtag);
     const folder: Folder = await makeRequest({ apiRoute, method: "GET" });
 
     updateFolder?.(() => folder);
+  };
+
+  const handleNavigateBack = () => {
+    handleNavigate(folder?.parentId);
   };
 
   const handleClickUpload = () => {
@@ -141,9 +152,11 @@ export default function AttachmentOverlayBody({
           <AttachmentOverlayDirents
             className="attachment-overlay__dirents"
             langtag={langtag}
-            folder={folder}
+            files={files}
+            subfolders={subfolders}
             layout={layoutState.nav}
             onNavigate={handleNavigate}
+            onNavigateBack={handleNavigateBack}
           />
         )}
 
