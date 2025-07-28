@@ -124,7 +124,7 @@ export default function MediaThumbnail({
               fill="#333333"
               fontFamily="Roboto, Helvetica Neue, Helvetica, Arial, sans-serif"
               fontWeight={500}
-              fontSize={7}
+              fontSize={6}
               x="10"
               y="24"
               textAnchor="middle"

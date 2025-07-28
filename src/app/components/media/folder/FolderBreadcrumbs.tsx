@@ -30,12 +30,7 @@ export default function FolderBreadcrumbs({
         },
         ...breadcrumbsFolders.map(({ id, name }) => ({
           path: `/${langtag}/media/${id}`,
-          label: (
-            <>
-              <i className="fa fa-folder-open" />
-              <span>{name ?? `Folder ${id}`}</span>
-            </>
-          )
+          label: <span>{name ?? `Folder ${id}`}</span>
         }))
       ]}
     />
