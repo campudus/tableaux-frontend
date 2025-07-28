@@ -49,14 +49,6 @@
 
   &__row:hover {
     background-color: rgba(50, 150, 220, 0.05);
-
-    .preview-row-view__column-selection {
-      input {
-        display: inline-block;
-        cursor: pointer;
-        margin-left: 0px;
-      }
-    }
   }
 
   &__row {
@@ -65,17 +57,10 @@
     display: flex;
     align-items: center;
     border-radius: 4px;
+    padding: 4px 0;
 
     &--selected {
       background-color: rgba(50, 150, 220, 0.20);
-
-      .preview-row-view__column-selection {
-        input {
-          display: inline-block;
-          cursor: pointer;
-          margin-left: 0px;
-        }
-      }
     }
 
     &--selected:hover {
@@ -91,8 +76,7 @@
     width: 30px;
 
     input {
-      display: none;
-      margin-left: 21px;
+      cursor: pointer;
     }
   }
 
