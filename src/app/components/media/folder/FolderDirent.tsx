@@ -72,7 +72,7 @@ function FolderDirent(
   const canDelete = isFile ? canUserDeleteFiles() : canUserDeleteFolders();
 
   const label = isFile ? (translate(dirent.title) as string) : dirent.name;
-  const labelTruncated = useMemo(() => {
+  const labelTruncated = () => {
     let charLimit;
 
     if (layout === "tiles") {
@@ -92,7 +92,7 @@ function FolderDirent(
     const labelEnd = label.slice(-8);
 
     return `${labelStart}...${labelEnd}`;
-  }, [dirent, layout, width]);
+  };
 
   const handleClick = () => {
     if (isFile) {
@@ -207,7 +207,7 @@ function FolderDirent(
         }
         label={
           <span className="folder-dirent__label" title={label}>
-            {labelTruncated}
+            {labelTruncated()}
           </span>
         }
         onClick={handleClick}

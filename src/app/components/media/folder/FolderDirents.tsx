@@ -99,6 +99,7 @@ export default function FolderDirents({
               height={height}
               width={width}
               autoHeight={false}
+              overscanByPixels={200}
               cellCount={dirents.length}
               cellMeasurerCache={cellMeasurerCache}
               cellPositioner={cellPositioner}

@@ -44,5 +44,6 @@
   "show_less": "Weniger anzeigen",
   "layout_list": "Liste mit Bildvorschau",
   "layout_tiles": "Kachelansicht",
-  "download_file": "Datei herunterladen"
+  "download_file": "Datei herunterladen",
+  "files_selected": "Alle ausgewählten Dateien"
 }
