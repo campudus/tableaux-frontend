@@ -19,6 +19,8 @@ import AttachmentOverlayDirents from "./AttachmentOverlayDirents";
 
 export type Layout = "list" | "tiles";
 
+type LayoutState = { nav: Layout; content: Layout };
+
 type AttachmentOverlayProps = {
   langtag: string;
   context?: string;
@@ -36,7 +38,10 @@ export default function AttachmentOverlayBody({
   updateSharedData: updateFolder
 }: AttachmentOverlayProps): ReactElement {
   const dispatch = useDispatch();
-  const [layout, setLayout] = useState<Layout>("list");
+  const [layoutState, setLayoutState] = useState<LayoutState>({
+    nav: "list",
+    content: "list"
+  });
   const dropzoneRef = useRef<Dropzone>(null);
   const isRoot = folder?.id === null;
   const parents = isRoot ? [] : f.compact([...(folder?.parents ?? []), folder]);
@@ -66,8 +71,8 @@ export default function AttachmentOverlayBody({
     );
   };
 
-  const handleSelectLayout = (layout: Layout) => {
-    setLayout(layout);
+  const handleSelectLayout = (layout: Partial<LayoutState>) => {
+    setLayoutState({ ...layoutState, ...layout });
   };
 
   useEffect(() => {
@@ -84,17 +89,17 @@ export default function AttachmentOverlayBody({
         <div className="attachment-overlay__toolbar">
           <ButtonAction
             variant="outlined"
-            icon={<SvgIcon icon={layout} />}
+            icon={<SvgIcon icon={layoutState.nav} />}
             options={[
               {
                 label: i18n.t("media:layout_list"),
                 icon: <SvgIcon icon="list" />,
-                onClick: () => handleSelectLayout("list")
+                onClick: () => handleSelectLayout({ nav: "list" })
               },
               {
                 label: i18n.t("media:layout_tiles"),
                 icon: <SvgIcon icon="tiles" />,
-                onClick: () => handleSelectLayout("tiles")
+                onClick: () => handleSelectLayout({ nav: "tiles" })
               }
             ]}
           />
@@ -137,7 +142,7 @@ export default function AttachmentOverlayBody({
             className="attachment-overlay__dirents"
             langtag={langtag}
             folder={folder}
-            layout={layout}
+            layout={layoutState.nav}
             onNavigate={handleNavigate}
           />
         )}
@@ -151,7 +156,39 @@ export default function AttachmentOverlayBody({
           />
         )}
       </div>
-      <div className="attachment-overlay__content"></div>
+      <div className="attachment-overlay__content">
+        <h4 className="attachment-overlay__title">
+          {i18n.t("media:files_selected")}
+        </h4>
+
+        <div className="attachment-overlay__toolbar">
+          <ButtonAction
+            variant="outlined"
+            alignmentH="left"
+            icon={<SvgIcon icon={layoutState.content} />}
+            options={[
+              {
+                label: i18n.t("media:layout_list"),
+                icon: <SvgIcon icon="list" />,
+                onClick: () => handleSelectLayout({ content: "list" })
+              },
+              {
+                label: i18n.t("media:layout_tiles"),
+                icon: <SvgIcon icon="tiles" />,
+                onClick: () => handleSelectLayout({ content: "tiles" })
+              }
+            ]}
+          />
+        </div>
+
+        {/* <AttachmentOverlayDirents
+            className="attachment-overlay__dirents"
+            langtag={langtag}
+            folder={folder}
+            layout={layout}
+            onNavigate={handleNavigate}
+          /> */}
+      </div>
     </div>
   );
 }

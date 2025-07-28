@@ -17,6 +17,7 @@ type ButtonActionProps = {
   label?: ReactNode;
   alt?: string;
   disabled?: boolean;
+  alignmentH?: "left" | "right";
 } & (
   | { options: ButtonActionOption[]; onClick?: never }
   | {
@@ -33,12 +34,18 @@ export default function ButtonAction({
   alt,
   options,
   onClick,
-  disabled
+  disabled,
+  alignmentH = "right"
 }: ButtonActionProps) {
   const buttonRef = useRef<HTMLButtonElement>(null);
-  const buttonPosition = buttonRef.current?.getBoundingClientRect();
+  const { left, right, bottom } =
+    buttonRef.current?.getBoundingClientRect() ?? {};
   const menuRef = useRef<HTMLDivElement>(null);
   const [showMenu, setShowMenu] = useState(false);
+  const style =
+    alignmentH === "right"
+      ? { left: left, top: bottom }
+      : { right: `calc(100% - ${right}px)`, top: bottom };
 
   const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
     if (onClick) {
@@ -79,14 +86,7 @@ export default function ButtonAction({
 
       {showMenu && options && (
         <Portal>
-          <div
-            ref={menuRef}
-            style={{
-              left: buttonPosition?.left,
-              top: buttonPosition?.bottom
-            }}
-            className="button-action__menu"
-          >
+          <div ref={menuRef} style={style} className="button-action__menu">
             {options.map(option => (
               <ButtonAction
                 key={option.label?.toString()}
