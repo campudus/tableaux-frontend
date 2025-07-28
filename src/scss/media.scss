@@ -684,11 +684,20 @@
 }
 
 .overlay .overlay-wrapper .overlay-content .attachment-overlay {
-  height: calc(100% - 40px);
+  margin: 0;
+  height: 100%;
+  display: grid;
+  grid-template-columns: 460px 1fr;
 
+  &__content {
+    border-left: 1px solid #c4c4c4;
+    background: #ffffff;
+  }
+
+  &__content,
   &__navigation {
-    height: 100%;
-    padding: 0 8px;
+    height: calc(100% - 32px);
+    padding: 16px 16px;
     display: grid;
     align-items: baseline;
     grid-template-areas: "title . toolbar"
@@ -730,6 +739,10 @@
 
   &__upload {
     grid-area: upload;
+
+    .file-upload__dropzone {
+      width: 100%;
+    }
   }
 
   .attachment-overlay-dirent--tiles {
@@ -766,6 +779,11 @@
         display: flex;
         align-items: center;
         gap: 8px;
+
+        .button-action__button {
+          display: grid;
+          grid-template-columns: 40px 1fr;
+        }
       }
 
       .attachment-overlay-dirent__action--download {

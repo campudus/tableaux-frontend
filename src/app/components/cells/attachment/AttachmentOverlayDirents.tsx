@@ -97,6 +97,7 @@ export default function AttachmentOverlayDirents({
               height={height}
               width={width}
               autoHeight={false}
+              overscanByPixels={200}
               cellCount={dirents.length}
               cellMeasurerCache={cellMeasurerCache}
               cellPositioner={cellPositioner}

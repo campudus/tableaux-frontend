@@ -63,7 +63,7 @@ function AttachmentOverlayDirent(
     } else {
       const pxPerChar = 7.2;
       const wThumb = 45;
-      const wActs = 4 * 45;
+      const wActs = 1 * 45;
       charLimit = Math.floor((width - wThumb - wActs) / pxPerChar);
     }
 
