@@ -128,6 +128,7 @@ export default function FolderDirents({
                         dirent={dirent}
                         layout={layout}
                         fileIdsDiff={fileIdsDiff}
+                        width={width}
                       />
                     ) : (
                       <div style={{ ...style, width: cellWidth }}></div>
