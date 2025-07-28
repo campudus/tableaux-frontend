@@ -1,5 +1,3 @@
-import f from "lodash/fp";
-import i18n from "i18next";
 import { ReactElement, useEffect, useMemo, useRef, useState } from "react";
 import {
   AutoSizer,
@@ -8,7 +6,7 @@ import {
   Masonry
 } from "react-virtualized";
 import { createCellPositioner } from "react-virtualized/dist/es/Masonry";
-import { Folder, FolderID } from "../../../types/grud";
+import { Attachment, Folder, FolderID } from "../../../types/grud";
 import { buildClassName as cn } from "../../../helpers/buildClassName";
 import { Layout } from "./AttachmentOverlay";
 import AttachmentOverlayDirent from "./AttachmentOverlayDirent";
@@ -17,31 +15,30 @@ import AttachmentOverlayDirentNav from "./AttachmentOverlayDirentNav";
 type AttachmentOverlayDirentsProps = {
   className?: string;
   langtag: string;
-  folder: Partial<Folder>;
+  files?: Attachment[];
+  subfolders?: Folder[];
   layout: Layout;
   onNavigate: (id?: FolderID | null) => void;
+  onNavigateBack?: () => void;
 };
 
 export default function AttachmentOverlayDirents({
   className,
   langtag,
-  folder,
+  files = [],
+  subfolders = [],
   layout,
-  onNavigate
+  onNavigate,
+  onNavigateBack
 }: AttachmentOverlayDirentsProps): ReactElement {
   const [dimensions, setDimensions] = useState({ width: 100, height: 100 });
   const masonryRef = useRef<Masonry>(null);
-  const isRoot = folder.id === null;
-  const hasBack = !isRoot;
-  const files = f.orderBy(f.prop("updatedAt"), "desc", folder.files);
-  // sort new folder to top
-  const subfolders = f.orderBy(
-    folder => folder.name === i18n.t("media:new_folder"),
-    "desc",
-    folder.subfolders ?? []
-  );
   // add dummy folder for back action
-  const dirents = [...(hasBack ? [{} as Folder] : []), ...subfolders, ...files];
+  const dirents = [
+    ...(onNavigateBack ? [{} as Folder] : []),
+    ...subfolders,
+    ...files
+  ];
 
   const cellHeight = layout === "list" ? 50 : 100;
   const cellWidth = layout === "list" ? dimensions.width : 130;
@@ -65,10 +62,6 @@ export default function AttachmentOverlayDirents({
 
   const calculateColumnCount = () => {
     return Math.floor(dimensions.width / (cellWidth + gutterSize));
-  };
-
-  const handleNavigateBack = () => {
-    onNavigate(folder.parentId);
   };
 
   useEffect(() => {
@@ -111,13 +104,13 @@ export default function AttachmentOverlayDirents({
                     parent={parent}
                     cache={cellMeasurerCache}
                   >
-                    {hasBack && index === 0 ? (
+                    {onNavigateBack && index === 0 ? (
                       <AttachmentOverlayDirentNav
                         style={{ ...style, width: cellWidth }}
                         langtag={langtag}
                         icon="folder-back"
                         layout={layout}
-                        onClick={handleNavigateBack}
+                        onClick={onNavigateBack}
                       />
                     ) : dirent ? (
                       <AttachmentOverlayDirent
