@@ -70,7 +70,14 @@
       align-items: center;
       flex-wrap: nowrap;
 
+      .tooltip {
+        &:after {
+          display: none; // hide tooltip arrow
+        }
+      }
+
       &__value {
+        position: relative;
         text-wrap: nowrap;
       }
 

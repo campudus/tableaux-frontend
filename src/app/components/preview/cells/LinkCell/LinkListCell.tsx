@@ -44,6 +44,10 @@ export default function LinkListCell({
           column={currentColumn}
           value={value}
           link={link}
+          path={[
+            column.displayName[langtag],
+            currentColumn.displayName[langtag]
+          ]}
           isLast={index === values.length - 1}
         />
       );
