@@ -44,6 +44,10 @@ export default function LinkCell({
             column={currentColumn}
             value={entry.value}
             link={link}
+            path={[
+              column.displayName[langtag],
+              currentColumn.displayName[langtag]
+            ]}
             isLast={index === values.length - 1}
           />
         );
@@ -69,6 +73,10 @@ export default function LinkCell({
               column={currentColumn}
               value={value}
               link={link}
+              path={[
+                column.displayName[langtag],
+                currentColumn.displayName[langtag]
+              ]}
               isLast={index === entry.value.length - 1}
             />
           );
