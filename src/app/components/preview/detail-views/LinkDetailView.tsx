@@ -1,6 +1,7 @@
 import { ReactElement, useEffect } from "react";
-import { CellValue, GRUDStore } from "../../../types/grud";
 import { useDispatch, useSelector } from "react-redux";
+import f from "lodash/fp";
+import { CellValue, GRUDStore } from "../../../types/grud";
 import { ColumnAndRow, ColumnAndRows, combinedColumnsAndRows } from "../helper";
 import LinkedEntrySelection from "../LinkedEntrySelection";
 import { buildClassName } from "../../../helpers/buildClassName";
@@ -103,7 +104,7 @@ export default function LinkDetailView({
                 0
               )}?filter:id:${selectedLinkedEntries?.join(":")}`;
 
-              const columnNameLink = selectedLinkedEntries
+              const columnNameLink = !f.isEmpty(selectedLinkedEntries)
                 ? columnLink + rowFilter
                 : columnLink;
 
