@@ -84,7 +84,9 @@ export default function LinkCell({
       });
     }
 
-    return <LinkListCell langtag={langtag} column={column} values={values} />;
+    return (
+      <LinkListCell langtag={langtag} linkColumn={column} values={values} />
+    );
   }
 
   return <div className="link-cell">{renderLinkCell()}</div>;
