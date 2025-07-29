@@ -37,11 +37,11 @@ export default function PreviewDetailView({
   const linkedCells = selectedColumnAndRow?.row.values as (CellValue & {
     id: number;
   })[];
-
-  const hasMultipleLinkedCells = linkedCells?.length > 1;
+  const sortedLinkedCells = linkedCells.sort((a, b) => a.id - b.id);
+  const hasMultipleLinkedCells = sortedLinkedCells?.length > 1;
 
   const fullTitle = hasMultipleLinkedCells
-    ? `${title} (${linkedCells.length})`
+    ? `${title} (${sortedLinkedCells.length})`
     : title;
 
   function renderDetailView(): ReactElement | null {
@@ -67,7 +67,7 @@ export default function PreviewDetailView({
           langtag={langtag}
           currentDetailTable={currentDetailTable}
           selectedColumnAndRow={selectedColumnAndRow}
-          linkedCells={linkedCells}
+          linkedCells={sortedLinkedCells}
           showDifferences={showDifferences}
         />
       );
@@ -80,7 +80,7 @@ export default function PreviewDetailView({
     if (selectAll) {
       dispatch({
         type: actionTypes.preview.PREVIEW_SET_LINKED_SELECTION,
-        selectedLinkedEntries: linkedCells.map(entry => entry.id)
+        selectedLinkedEntries: sortedLinkedCells.map(entry => entry.id)
       });
     } else {
       dispatch({
