@@ -5,7 +5,7 @@ import LinkCellItem from "./LinkCellItem";
 
 type LinkListCellProps = {
   langtag: string;
-  column: LinkColumn;
+  linkColumn: LinkColumn;
   values: Record<string, any>[];
 };
 
@@ -13,7 +13,7 @@ const MAX_VARIANT_LENGTH = 5;
 
 export default function LinkListCell({
   langtag,
-  column,
+  linkColumn,
   values
 }: LinkListCellProps): ReactElement {
   const [showAll, setShowAll] = useState(false);
@@ -28,13 +28,13 @@ export default function LinkListCell({
     : values.slice(0, MAX_VARIANT_LENGTH);
 
   function renderLinkValues(
-    column: ConcatColumn,
+    concatColumn: ConcatColumn,
     values: any,
     toTable: number,
     entryId: number
   ): ReactNode {
     return values.map((value: any, index: number) => {
-      const currentColumn = column.concats.at(index)!;
+      const currentColumn = concatColumn.concats.at(index)!;
       const link = `/${langtag}/tables/${toTable}/columns/${currentColumn.id}/rows/${entryId}`;
 
       return (
@@ -45,7 +45,7 @@ export default function LinkListCell({
           value={value}
           link={link}
           path={[
-            column.displayName[langtag],
+            linkColumn.displayName[langtag],
             currentColumn.displayName[langtag]
           ]}
           isLast={index === values.length - 1}
@@ -61,9 +61,9 @@ export default function LinkListCell({
           <div key={entry.id} className="link-list-cell__entry">
             {addIndexNumber(entryIndex + 1)}. &nbsp;
             {renderLinkValues(
-              column.toColumn as ConcatColumn,
+              linkColumn.toColumn as ConcatColumn,
               entry.value,
-              column.toTable,
+              linkColumn.toTable,
               entry.id
             )}
           </div>
