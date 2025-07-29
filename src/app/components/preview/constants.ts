@@ -1,13 +1,32 @@
+import f from "lodash/fp";
 import { Column } from "../../types/grud";
-import { ColumnAndRow } from "./helper";
+import { ColumnAndRow, ColumnAndRows } from "./helper";
 
 export const attributeKeys = {
   PREVIEW_TITLE: "previewTitle",
-  PREVIEW_DEFAULT_SELECTED: "previewDefaultSelected"
+  PREVIEW_DEFAULT_SELECTED: "previewDefaultSelected",
+  PREVIEW_DETAIL_VIEW_STICKY_COLUMN: "previewDetailViewStickyColumn"
 };
 
 export function isPreviewTitle(column: Column): boolean {
   return !!column.attributes?.[attributeKeys.PREVIEW_TITLE];
+}
+
+export function isStickyColumn(column: Column): boolean {
+  return !!column.attributes?.[attributeKeys.PREVIEW_DETAIL_VIEW_STICKY_COLUMN];
+}
+
+export function sortColumnsAndRows(
+  columnsAndRows: ColumnAndRows[]
+): ColumnAndRows[] {
+  const sortedColumnsAndRows = f.sortBy(
+    (item: ColumnAndRows) =>
+      item.column.attributes?.[attributeKeys.PREVIEW_DETAIL_VIEW_STICKY_COLUMN]
+        ?.value,
+    columnsAndRows
+  );
+
+  return sortedColumnsAndRows;
 }
 
 export function isValidPreviewColumn(column: Column): boolean {
