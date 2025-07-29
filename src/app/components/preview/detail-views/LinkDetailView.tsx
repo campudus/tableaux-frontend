@@ -9,6 +9,7 @@ import { getColumnDisplayName } from "../../../helpers/multiLanguage";
 import PreviewCellValue from "../PreviewCellValue";
 import getDisplayValue from "../../../helpers/getDisplayValue";
 import actionTypes from "../../../redux/actionTypes";
+import { isStickyColumn, sortColumnsAndRows } from "../constants";
 
 type LinkDetailViewProps = {
   langtag: string;
@@ -53,10 +54,7 @@ export default function LinkDetailView({
       : [];
 
   const columnsAndRows = combinedColumnsAndRows(columns, selectedLinkedRows);
-
-  if (!columnsAndRows || columnsAndRows.length === 0) {
-    return <div>No linked entries found</div>;
-  }
+  const columnsAndRowsSorted = sortColumnsAndRows(columnsAndRows);
 
   function getColumnsWithDifferences(
     columnsAndRows: ColumnAndRows[],
@@ -82,8 +80,29 @@ export default function LinkDetailView({
   }
 
   const columnsToDisplay = showDifferences
-    ? getColumnsWithDifferences(columnsAndRows, langtag)
-    : columnsAndRows;
+    ? getColumnsWithDifferences(columnsAndRowsSorted, langtag)
+    : columnsAndRowsSorted;
+
+  // with this code we dynamically set the top offset for sticky rows
+  // to ensure they are positioned correctly in the viewport
+  // this is necessary because the height of the rows is dynamic
+  useEffect(() => {
+    const tableRows = document.querySelectorAll(
+      ".preview-detail-view__row--sticky"
+    );
+    let offset = 0;
+
+    if (!tableRows || tableRows.length === 0) return;
+
+    tableRows.forEach(row => {
+      (row as HTMLElement).style.top = `${offset}px`;
+      offset += (row as HTMLElement).offsetHeight;
+    });
+  }, [columnsToDisplay]);
+
+  if (!columnsToDisplay || columnsToDisplay.length === 0) {
+    return <div>No linked entries found</div>;
+  }
 
   return (
     <div className="link-detail-view">
@@ -112,7 +131,8 @@ export default function LinkDetailView({
                 <tr
                   key={column.id}
                   className={buildClassName("preview-detail-view__row", {
-                    uneven: index % 2 === 0
+                    uneven: index % 2 === 0,
+                    sticky: isStickyColumn(column)
                   })}
                 >
                   <td className="preview-detail-view__column preview-detail-view__column-name">
