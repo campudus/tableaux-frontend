@@ -136,8 +136,8 @@
   &__row {
     width: 100%;
     min-height: 40px;
+    height: 100%;
     display: flex;
-    align-items: center;
 
     &--uneven {
       background-color: #efefef;
@@ -153,7 +153,9 @@
     left: 0;
     z-index: 2;
     background: #f8f8f8;
-    width: 250px;
+    width: 225px;
+    display: flex;
+    align-items: center;
   }
 
   &__row--uneven {
@@ -166,6 +168,8 @@
     min-width: 275px;
     width: 325px;
     max-width: 325px;
+    display: flex;
+    align-items: center;
   }
 }
 
