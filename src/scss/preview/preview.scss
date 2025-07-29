@@ -5,6 +5,7 @@
   padding-top: ($space-height-header);
   display: flex;
   flex-direction: row;
+  overflow: hidden;
 
   &__resizeable-left {
     overflow-y: auto;
@@ -90,9 +91,8 @@
 }
 
 .preview-detail-view {
-  padding: 20px 0 20px 20px;
-  overflow-y: auto;
   height: 100%;
+  padding: 20px 0 20px 20px;
   box-sizing: border-box;
 
   &__header {
@@ -122,15 +122,22 @@
     }
   }
 
-  &__table-wrapper {
-    width: 100%;
-    max-width: 100%;
-    overflow-y: auto;
-    overflow-x: auto;
+  .link-detail-view {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
   }
 
-  table {
+  &__table-wrapper {
+    height: 100%;
     width: 100%;
+    overflow-x: auto;
+    overflow-y: scroll;
+    margin-bottom: 24px;
+
+    table {
+      width: 100%;
+    }
   }
 
   &__row {
