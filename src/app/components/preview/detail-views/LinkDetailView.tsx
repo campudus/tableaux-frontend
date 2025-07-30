@@ -1,7 +1,7 @@
 import { ReactElement, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import f from "lodash/fp";
-import { CellValue, GRUDStore } from "../../../types/grud";
+import { GRUDStore, Row } from "../../../types/grud";
 import { ColumnAndRow, ColumnAndRows, combinedColumnsAndRows } from "../helper";
 import LinkedEntrySelection from "../LinkedEntrySelection";
 import { buildClassName } from "../../../helpers/buildClassName";
@@ -15,7 +15,7 @@ type LinkDetailViewProps = {
   langtag: string;
   currentDetailTable: number;
   selectedColumnAndRow: ColumnAndRow;
-  linkedCells: (CellValue & { id: number })[];
+  linkedCells: Row[];
   showDifferences: boolean;
 };
 

@@ -1,6 +1,6 @@
 import { ReactElement, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { CellValue, GRUDStore } from "../../types/grud";
+import { GRUDStore, Row } from "../../types/grud";
 import RichtextDetailView from "./detail-views/RichtextDetailView";
 import LinkDetailView from "./detail-views/LinkDetailView";
 import { ColumnAndRow } from "./helper";
@@ -38,9 +38,7 @@ export default function PreviewDetailView({
 
   const currentColumn = selectedColumnAndRow?.column;
   const linkedCells = Array.isArray(selectedColumnAndRow?.row.values)
-    ? (selectedColumnAndRow.row.values as (CellValue & {
-        id: number;
-      })[])
+    ? (selectedColumnAndRow.row.values as Row[])
     : undefined;
 
   const sortedLinkedCells =
