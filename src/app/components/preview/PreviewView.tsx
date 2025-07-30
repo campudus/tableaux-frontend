@@ -54,7 +54,7 @@ export default function PreviewView({
 
       if (column?.kind === "link") {
         dispatch(actions.loadColumns(column.toTable));
-        dispatch(loadAllRows(column.toTable));
+        dispatch(loadAllRows(column.toTable, row?.archived ?? false));
         dispatch({
           type: actionTypes.preview.PREVIEW_SET_CURRENT_DETAIL_TABLE,
           currentDetailTable: column.toTable
