@@ -120,6 +120,10 @@
     input {
       cursor: pointer;
     }
+
+    input:disabled {
+      cursor: not-allowed;
+    }
   }
 
   .link-detail-view {
