@@ -1,4 +1,4 @@
-import { ReactElement } from "react";
+import { ReactElement, useState } from "react";
 import actionTypes from "../../redux/actionTypes";
 import { useDispatch } from "react-redux";
 import { getColumnDisplayName } from "../../helpers/multiLanguage";
@@ -7,12 +7,16 @@ import { buildClassName } from "../../helpers/buildClassName";
 import { ColumnAndRow } from "./helper";
 import { attributeKeys, isPreviewTitle } from "./constants";
 import f from "lodash/fp";
+import Notifier from "./Notifier";
+import { setRowFlag } from "../../redux/actions/annotationActions";
+import { Row } from "../../types/grud";
 
 const { PREVIEW_TITLE } = attributeKeys;
 
 type PreviewRowViewProps = {
   langtag: string;
   tableId: number;
+  row: Row;
   currentColumn: number | undefined;
   columnsAndRow: ColumnAndRow[];
 };
@@ -20,10 +24,12 @@ type PreviewRowViewProps = {
 export default function PreviewRowView({
   langtag,
   tableId,
+  row,
   currentColumn,
   columnsAndRow
 }: PreviewRowViewProps): ReactElement {
   const dispatch = useDispatch();
+  const [isRowFinal, setIsRowFinal] = useState(row.final);
 
   const handleColumnSelection = (columnId: number, rowId: number) => {
     const newUrl = `/${langtag}/preview/${tableId}/columns/${columnId}/rows/${rowId}`;
@@ -60,10 +66,52 @@ export default function PreviewRowView({
     ));
   }
 
+  function handleUpdateRowFinalStatus() {
+    const newFinalStatus = !isRowFinal;
+
+    dispatch(
+      setRowFlag({
+        table: { id: tableId },
+        row: { id: row.id },
+        flagName: "final",
+        flagValue: newFinalStatus,
+        onSuccess: setIsRowFinal(newFinalStatus),
+        onError: (err: unknown) => {
+          console.error("Error updating row final status:", err);
+        }
+      })
+    );
+  }
+
   const previewTitle = getPreviewTitle(columnsAndRow);
 
   return (
     <div className="preview-row-view">
+      <div className="preview-row-view__header">
+        <Notifier
+          className="preview-row-view__notifier"
+          icon={<i className={`fa ${isRowFinal ? "fa-lock" : "fa-unlock"} `} />}
+          label={
+            isRowFinal
+              ? "Dieser Datensatz ist schreibgeschützt."
+              : "Dieser Datensatz ist in Bearbeitung."
+          }
+          button={
+            <button onClick={handleUpdateRowFinalStatus}>
+              {isRowFinal ? "Datensatz entsperren" : "Datensatz sperren"}
+            </button>
+          }
+          color={isRowFinal ? "dark" : "orange"}
+        />
+        {row.archived && (
+          <Notifier
+            className="preview-row-view__archived-notifier"
+            icon={<i className="fa fa-archive" />}
+            label="Dieser Datensatz ist archiviert."
+          />
+        )}
+      </div>
+
       {previewTitle && (
         <div className="preview-row-view__title">{previewTitle}</div>
       )}

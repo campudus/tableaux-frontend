@@ -36,6 +36,13 @@
   // but show the content from left to right
   direction: ltr;
 
+  &__header {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 28px;
+  }
+
   &__title {
     display: inline-flex;
     gap: 12px;
