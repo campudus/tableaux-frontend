@@ -1,17 +1,14 @@
-import { CellValue } from "@grud/devtools/types";
 import { ReactElement, useCallback } from "react";
 import Chip from "../Chip/Chip";
 import { useSelector, useDispatch } from "react-redux";
-import { GRUDStore, Column } from "../../types/grud";
+import { GRUDStore, Column, Row } from "../../types/grud";
 import actionTypes from "../../redux/actionTypes";
 import getDisplayValue from "../../helpers/getDisplayValue";
 
 type LinkedEntrySelectionProps = {
   langtag: string;
   linkedEntriesColumn: Column;
-  linkedEntries: (CellValue & {
-    id: number;
-  })[];
+  linkedEntries: Row[];
 };
 
 export default function LinkedEntrySelection({
@@ -52,6 +49,7 @@ export default function LinkedEntrySelection({
           <Chip
             key={entry.id}
             className="linked-entry-selection__chip"
+            icon={entry.archived && <i className="fa fa-archive" />}
             label={values.at(index)}
             onClick={() => handleClick(entry.id)}
             isActive={isActive}
