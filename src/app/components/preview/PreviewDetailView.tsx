@@ -32,6 +32,9 @@ export default function PreviewDetailView({
   const currentDetailTable = useSelector(
     (store: GRUDStore) => store.preview.currentDetailTable
   );
+  const selectedLinkedEntries = useSelector(
+    (store: GRUDStore) => store.preview.selectedLinkedEntries
+  );
 
   const currentColumn = selectedColumnAndRow?.column;
   const linkedCells = selectedColumnAndRow?.row.values as (CellValue & {
@@ -87,6 +90,7 @@ export default function PreviewDetailView({
         type: actionTypes.preview.PREVIEW_SET_LINKED_SELECTION,
         selectedLinkedEntries: []
       });
+      setShowDifferences(false);
     }
 
     setSelectAll(selectAll);
@@ -112,6 +116,9 @@ export default function PreviewDetailView({
               <input
                 type="checkbox"
                 checked={showDifferences}
+                disabled={
+                  !(selectedLinkedEntries && selectedLinkedEntries.length >= 2)
+                }
                 onChange={() => setShowDifferences(!showDifferences)}
               />
               <label>Unterschiede anzeigen</label>
