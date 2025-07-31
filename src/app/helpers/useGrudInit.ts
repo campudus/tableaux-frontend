@@ -1,5 +1,5 @@
 import f from "lodash/fp";
-import { useEffect, useState } from "react";
+import { DependencyList, useEffect, useState } from "react";
 import { makeRequest } from "./apiHelper";
 import route from "./apiRoutes";
 import { promisifyAction } from "../redux/redux-helpers";
@@ -11,7 +11,11 @@ import actions from "../redux/actionCreators";
 import store from "../redux/store";
 import initUserSettings from "./initUserSettings";
 
-export const useGrudInit = () => {
+type GrudInitProps = {
+  retryOn?: DependencyList;
+};
+
+export const useGrudInit = ({ retryOn = [] }: GrudInitProps) => {
   const [isInitialized, setInitialized] = useState(false);
 
   const init = async () => {
@@ -49,7 +53,7 @@ export const useGrudInit = () => {
 
   useEffect(() => {
     void init();
-  }, []);
+  }, retryOn);
 
   return isInitialized;
 };
