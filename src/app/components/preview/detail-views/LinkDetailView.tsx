@@ -9,7 +9,11 @@ import { getColumnDisplayName } from "../../../helpers/multiLanguage";
 import PreviewCellValue from "../PreviewCellValue";
 import getDisplayValue from "../../../helpers/getDisplayValue";
 import actionTypes from "../../../redux/actionTypes";
-import { isStickyColumn, sortColumnsAndRows } from "../constants";
+import {
+  isPreviewImage,
+  isStickyColumn,
+  sortColumnsAndRows
+} from "../constants";
 
 type LinkDetailViewProps = {
   langtag: string;
@@ -83,6 +87,10 @@ export default function LinkDetailView({
     ? getColumnsWithDifferences(columnsAndRowsSorted, langtag)
     : columnsAndRowsSorted;
 
+  const previewImageColumn = columnsToDisplay.find(columnAndRow =>
+    isPreviewImage(columnAndRow.column)
+  );
+
   // with this code we dynamically set the top offset for sticky rows
   // to ensure they are positioned correctly in the viewport
   // this is necessary because the height of the rows is dynamic
@@ -116,6 +124,25 @@ export default function LinkDetailView({
 
       <div className="preview-detail-view__table-wrapper">
         <table>
+          {previewImageColumn && (
+            <thead>
+              <tr className="preview-detail-view__row preview-detail-view__row--header">
+                <th className="preview-detail-view__column preview-detail-view__column-name" />
+                {previewImageColumn.rows.map(row => (
+                  <th
+                    className="preview-detail-view__column preview-detail-view__column-value"
+                    key={row.id}
+                  >
+                    <img
+                      className="preview-detail-view__column-image"
+                      src={"/api" + row.values.at(0).url[langtag]}
+                      alt="Preview"
+                    />
+                  </th>
+                ))}
+              </tr>
+            </thead>
+          )}
           <tbody>
             {columnsToDisplay.map(({ column, rows }, index) => {
               const columnLink = `/${langtag}/tables/${currentDetailTable}/columns/${column.id}`;
@@ -131,7 +158,7 @@ export default function LinkDetailView({
                 <tr
                   key={column.id}
                   className={buildClassName("preview-detail-view__row", {
-                    uneven: index % 2 === 0,
+                    uneven: index % 2 !== 0,
                     sticky: isStickyColumn(column)
                   })}
                 >
