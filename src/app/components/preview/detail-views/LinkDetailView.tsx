@@ -14,6 +14,7 @@ import {
   isStickyColumn,
   sortColumnsAndRows
 } from "../constants";
+import Chip from "../../Chip/Chip";
 
 type LinkDetailViewProps = {
   langtag: string;
@@ -91,6 +92,10 @@ export default function LinkDetailView({
     isPreviewImage(columnAndRow.column)
   );
 
+  function isArchivedRow(row: Row): boolean {
+    return linkedCells.find(c => c.id === row.id)?.archived || false;
+  }
+
   // with this code we dynamically set the top offset for sticky rows
   // to ensure they are positioned correctly in the viewport
   // this is necessary because the height of the rows is dynamic
@@ -130,7 +135,12 @@ export default function LinkDetailView({
                 <th className="preview-detail-view__column preview-detail-view__column-name" />
                 {previewImageColumn.rows.map(row => (
                   <th
-                    className="preview-detail-view__column preview-detail-view__column-value preview-detail-view__column-image-wrapper"
+                    className={buildClassName(
+                      "preview-detail-view__column preview-detail-view__column-value preview-detail-view__column-image-wrapper",
+                      {
+                        archived: isArchivedRow(row)
+                      }
+                    )}
                     key={row.id}
                   >
                     <img
@@ -144,6 +154,13 @@ export default function LinkDetailView({
                           "35px";
                       }}
                     />
+
+                    {isArchivedRow(row) && (
+                      <Chip
+                        icon={<i className="fa fa-archive" />}
+                        label="Archiviert"
+                      />
+                    )}
                   </th>
                 ))}
               </tr>

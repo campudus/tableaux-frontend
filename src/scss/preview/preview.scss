@@ -185,6 +185,7 @@
   }
 
   &__column-image-wrapper {
+    position: relative;
     width: 100%;
     display: flex;
     align-items: center;
@@ -193,6 +194,15 @@
     border-radius: 4px;
     padding: 0;
     margin: 6px 12px;
+
+    .chip {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      z-index: 1;
+      background-color: $color-archived-row-fg;
+      color: $color-white;
+    }
   }
 
   &__column-image {
