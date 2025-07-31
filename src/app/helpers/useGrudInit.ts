@@ -11,11 +11,7 @@ import actions from "../redux/actionCreators";
 import store from "../redux/store";
 import initUserSettings from "./initUserSettings";
 
-type GrudInitProps = {
-  retryOn?: DependencyList;
-};
-
-export const useGrudInit = ({ retryOn = [] }: GrudInitProps) => {
+export const useGrudInit = (retryOn: DependencyList = []) => {
   const [isInitialized, setInitialized] = useState(false);
 
   const init = async () => {
