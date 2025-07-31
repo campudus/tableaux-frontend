@@ -5,11 +5,19 @@ import { ColumnAndRow, ColumnAndRows } from "./helper";
 export const attributeKeys = {
   PREVIEW_TITLE: "previewTitle",
   PREVIEW_DEFAULT_SELECTED: "previewDefaultSelected",
+  PREVIEW_DETAIL_VIEW_IMAGE: "previewDetailViewImage",
   PREVIEW_DETAIL_VIEW_STICKY_COLUMN: "previewDetailViewStickyColumn"
 };
 
 export function isPreviewTitle(column: Column): boolean {
   return !!column.attributes?.[attributeKeys.PREVIEW_TITLE];
+}
+
+export function isPreviewImage(column: Column): boolean {
+  return (
+    column.kind === "attachment" &&
+    column.attributes?.[attributeKeys.PREVIEW_DETAIL_VIEW_IMAGE]?.value === true
+  );
 }
 
 export function isStickyColumn(column: Column): boolean {

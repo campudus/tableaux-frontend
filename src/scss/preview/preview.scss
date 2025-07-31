@@ -1,6 +1,6 @@
 .preview-view {
   box-sizing: border-box;
-  background-color: white;
+  background-color: $color-white;
   height: 100%;
   padding-top: ($space-height-header);
   display: flex;
@@ -171,7 +171,7 @@
   }
 
   &__column {
-    padding: 6px 8px;
+    padding: 6px 12px;
   }
 
   &__column-name {
@@ -182,6 +182,14 @@
     width: 225px;
     display: flex;
     align-items: center;
+  }
+
+  &__column-image {
+    width: 100%;
+    height: 200px;
+    object-fit: contain;
+    background-color: $color-white;
+    border-radius: 4px;
   }
 
   &__row--uneven {
