@@ -130,13 +130,19 @@ export default function LinkDetailView({
                 <th className="preview-detail-view__column preview-detail-view__column-name" />
                 {previewImageColumn.rows.map(row => (
                   <th
-                    className="preview-detail-view__column preview-detail-view__column-value"
+                    className="preview-detail-view__column preview-detail-view__column-value preview-detail-view__column-image-wrapper"
                     key={row.id}
                   >
                     <img
                       className="preview-detail-view__column-image"
                       src={"/api" + row.values.at(0).url[langtag]}
                       alt="Preview"
+                      onError={e => {
+                        (e.currentTarget as HTMLImageElement).src =
+                          "/img/preview-fallback.svg";
+                        (e.currentTarget as HTMLImageElement).style.width =
+                          "35px";
+                      }}
                     />
                   </th>
                 ))}
