@@ -29,9 +29,12 @@ function OverlayHeadRowIdentificator({
       return row?.values.at(0);
     }
   );
+  const translate = retrieveTranslation(langtag);
   const displayValue = getDisplayValue(firstColumn)(firstCellValue);
-  const title = retrieveTranslation(langtag)(displayValue);
-  const columnName = retrieveTranslation(langtag)(cell.column?.displayName);
+  const title = f.isArray(displayValue)
+    ? displayValue.map(translate).join(" ")
+    : translate(displayValue);
+  const columnName = translate(cell.column?.displayName);
 
   return (
     <span>
