@@ -1,0 +1,75 @@
+import {
+  FocusEvent,
+  MouseEvent,
+  ReactElement,
+  useEffect,
+  useState
+} from "react";
+import ReactCurrencyInput, {
+  CurrencyInputOnChangeValues
+} from "react-currency-input-field";
+
+type CurrencyInputProps = {
+  className?: string;
+  langtag: string;
+  country: string;
+  value?: number | null;
+  onClick?: (evt: MouseEvent<HTMLInputElement>) => void;
+  onBlur: (country: string, value?: number | null) => void;
+  disabled?: boolean;
+};
+
+export default function CurrencyInput({
+  langtag,
+  country,
+  value,
+  onClick,
+  onBlur,
+  disabled
+}: CurrencyInputProps): ReactElement {
+  const [values, setValues] = useState<Partial<CurrencyInputOnChangeValues>>();
+
+  const handleChange = (
+    value?: string,
+    country?: string,
+    values?: CurrencyInputOnChangeValues
+  ) => {
+    setValues(values);
+  };
+
+  const handleFocus = (evt: FocusEvent<HTMLInputElement>) => {
+    if (disabled) {
+      // prevent focus without suppressing pointer events
+      evt.target.blur();
+    }
+  };
+
+  const handleBlur = () => {
+    if (!disabled) {
+      onBlur(country, values?.float);
+    }
+  };
+
+  useEffect(() => {
+    setValues({ float: value, value: value?.toString() });
+  }, [value]);
+
+  return (
+    <ReactCurrencyInput
+      key={country}
+      name={country}
+      className="currency-input"
+      placeholder="-,-"
+      decimalsLimit={2}
+      decimalScale={2}
+      allowNegativeValue={false}
+      disableAbbreviations={true}
+      intlConfig={{ locale: langtag }}
+      value={values?.value}
+      onClick={onClick}
+      onFocus={handleFocus}
+      onValueChange={handleChange}
+      onBlur={handleBlur}
+    />
+  );
+}

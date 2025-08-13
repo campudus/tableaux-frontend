@@ -1,114 +1,91 @@
-import React, { useState, KeyboardEventHandler } from "react";
-import CurrencyItem from "./CurrencyItem";
-import * as f from "lodash/fp";
-import { canUserChangeCountryTypeCell } from "../../../helpers/accessManagementHelper";
-import { requestRowUnlock, isLocked } from "../../../helpers/rowUnlock";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import f from "lodash/fp";
+import { MouseEvent, PropsWithChildren, ReactElement } from "react";
+import { useDispatch } from "react-redux";
+import { isLocked } from "../../../helpers/rowUnlock";
+import actions from "../../../redux/actionCreators";
+import CurrencyInput from "../../helperComponents/CurrencyInput";
+import { Cell, CurrencyColumn } from "../../../types/grud";
 import {
-  Cell,
-  CurrencyCellValue,
-  CurrencyColumn,
-  Country,
-  Locale,
-  GRUDStore
-} from "../../../types/grud";
-import { useSelector } from "react-redux";
+  getCurrencyCode,
+  getLanguageOrCountryIcon
+} from "../../../helpers/multiLanguage";
 
-type Props = {
-  actions: Record<string, (..._: unknown[]) => void>;
+type CurrencyViewProps = PropsWithChildren<{
   langtag: string;
-  cell: Omit<Cell, "column" | "value"> & {
-    column: CurrencyColumn & { countryCodes: Array<Country> };
-    value: CurrencyCellValue;
-  };
-  children: React.ReactChildren;
-  funcs: Record<string, (..._: unknown[]) => void>;
+  cell: Cell;
+  funcs: any;
   thisUserCantEdit: boolean;
-};
-const CurrencyView = ({
-  actions,
+}>;
+
+export default function CurrencyView({
   langtag,
   cell,
-  children,
+  thisUserCantEdit,
   funcs,
-  thisUserCantEdit
-}: Props) => {
-  const value: CurrencyCellValue = useSelector((store: GRUDStore) => {
-    const row = store.rows[cell.table.id]?.data.find(r => r.id === cell.row.id);
-    const idx = row?.cells.findIndex(c => c.id === cell.id);
-    return f.isNil(idx) || f.isNil(row)
-      ? cell.value
-      : (row?.values[idx] as CurrencyCellValue);
-  });
-  const {
-    column: { countryCodes },
-    row
-  } = cell;
-  const [activeCountry, setActiveCountry] = useState<Country>();
-  const handleChange = (country: string) => (value: number | null) => {
-    const newValue = { ...cell.value, [country]: value };
-    actions.changeCellValue?.({ cell, oldValue: cell.value, newValue });
-    setActiveCountry(undefined);
+  children
+}: CurrencyViewProps): ReactElement {
+  const dispatch = useDispatch();
+  const column = cell.column as CurrencyColumn;
+  const disabled = thisUserCantEdit || isLocked(cell.row);
+
+  const handleClick = (evt: MouseEvent<HTMLInputElement>) => {
+    // allow select in entityView
+    evt.stopPropagation();
   };
 
-  const handleKeyDown: KeyboardEventHandler = evt => {
-    f.cond([
-      [
-        (key: KeyboardEvent["key"]) => key === "tab" && !!activeCountry,
-        () => {
-          evt.stopPropagation();
-          evt.preventDefault();
+  const handleBlur = (country: string, value?: number | null) => {
+    console.log("handleBlur", { country, value });
+    dispatch(
+      actions.changeCellValue({
+        cell,
+        oldValue: cell.value,
+        newValue: {
+          ...cell.value,
+          [country]: value
         }
-      ],
-      [
-        f.eq("enter"),
-        () => {
-          if (isLocked(row)) {
-            requestRowUnlock(row);
-            return;
-          }
-          if (activeCountry) {
-            setActiveCountry(countryCodes[0]);
-          }
-          evt.stopPropagation();
-          evt.preventDefault();
-        }
-      ]
-    ])(evt.key);
-  };
-
-  const isDisabled = thisUserCantEdit || isLocked(row);
-  const handleSetActiveCountry = (country: Country) => () => {
-    if (!isDisabled && canUserChangeCountryTypeCell(cell)(country)) {
-      setActiveCountry(country);
-    }
+      })
+    );
   };
 
   return (
     <div>
       <div
         className="item-content currency"
-        ref={el => {
-          funcs.register?.(el);
-        }}
+        ref={el => funcs.register?.(el)}
         tabIndex={1}
-        onKeyDown={handleKeyDown}
       >
-        {countryCodes.map(kc => (
-          <CurrencyItem
-            key={kc}
-            langtag={langtag as Locale}
-            cell={{ ...cell, value }}
-            editing={kc === activeCountry}
-            onChange={handleChange(kc)}
-            isDisabled={isDisabled || !canUserChangeCountryTypeCell(cell)(kc)}
-            countryCode={kc}
-            setActive={handleSetActiveCountry(kc)}
-          />
-        ))}
+        {column.countryCodes.map(country => {
+          const value = (cell.value as any)[country];
+
+          return (
+            <div
+              key={country}
+              className={[
+                "currency-item",
+                f.isNil(value) ? "grey-out" : ""
+              ].join(" ")}
+            >
+              <div className="country-code">
+                {getLanguageOrCountryIcon(country)}
+              </div>
+
+              <CurrencyInput
+                key={country}
+                langtag={langtag}
+                country={country}
+                value={value}
+                onClick={handleClick}
+                onBlur={handleBlur}
+                disabled={disabled}
+              />
+
+              <div className="currency-code">{getCurrencyCode(country)}</div>
+            </div>
+          );
+        })}
       </div>
       {children}
     </div>
   );
-};
-
-export default CurrencyView;
+}

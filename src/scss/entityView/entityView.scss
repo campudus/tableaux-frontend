@@ -120,111 +120,66 @@
 }
 
 .currency {
-  display: flex;
-  flex-flow: row wrap;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 4px;
+
+  .currency-code {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-left: 1px solid $color-border-grey;
+    background-color: $color-background-very-light-grey;
+  }
 
   .currency-item {
-    position: relative;
-    width: 33%;
-    padding: 7px 0;
-    display: flex;
-    flex-flow: row nowrap;
-    justify-content: space-between;
-    border: none;
     border-color: transparent;
+    height: 45px;
+    background-color: white;
+    box-sizing: border-box;
+    display: grid;
+    grid-template-columns: 40px 1fr 40px;
+    gap: 6px;
+    align-items: center;
+    justify-content: center;
 
-    &.disabled {
-      cursor: not-allowed;
+    &.grey-out,
+    .grey-out,
+    .grey-out input {
+      color: $color-text-medium-grey;
     }
+  }
 
-    &.not-set {
-      .currency-string,
-      .langtag-label,
-      .currency-code {
-        color: $color-text-medium-grey;
-      }
-    }
-
-    &:hover {
-      border-color: $color-primary-lighter;
-    }
-    &.editing {
-      border-color: transparent;
-    }
-
-    div,
-    span {
-      @include flex-centered();
-      height: 100%;
-      margin: 0 0.5px;
-      flex-direction: column;
-      padding: 5px 0;
-    }
+  .country-code  {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-right: 1px solid $color-border-grey;
 
     .langtag {
-      flex: 1;
-      @include flex-centered();
-      background-color: $color-white;
-      .langtag-label {
-        font-weight: normal;
-        padding: 0;
-        margin: 0 !important;
-        height: $font-size-standard;
-      }
+      width: auto;
+      display: flex;
+      flex-flow: column;
+      gap: 2px;
+      align-items: center;
+      justify-content: center;
     }
 
-    .value {
-      flex: 2;
-      background-color: $color-white;
-      border-color: inherit;
-      flex-direction: row;
-      padding-left: 4px;
-
-      .clear-icon {
-        padding: 8px;
-        color: $color-text-medium-grey;
-        opacity: 0;
-      }
-
-      .currency-string {
-        border-bottom: 1px solid;
-        border-color: inherit;
-        height: $font-size-standard;
-        flex: 1;
-        width: 80%;
-      }
-
-      .currency-input {
-        @include flex-centered();
-        flex-flow: row nowrap;
-        padding: 0;
-        margin: 0;
-        flex: 1;
-
-        input {
-          border: none;
-          border-bottom: 1px solid transparent;
-          width: 45%;
-          color: $color-text-medium-grey;
-          &.left {
-            text-align: right;
-          }
-          &:focus {
-            border-bottom: 1px solid $color-primary-lighter;
-            color: $color-primary-text;
-          }
-        }
-      }
-      &:hover .clear-icon {
-        opacity: 1;
-      }
+    .langtag-label {
+      margin: 0 !important;
+      line-height: 1;
     }
+  }
 
-    .currency-code {
-      flex: 1;
-      background-color: $color-background-very-light-grey;
-    }
+  .currency-input {
+    flex: 1;
+    min-width: 75px;
+    text-align: end;
+    justify-self: end;
   }
 }
 
