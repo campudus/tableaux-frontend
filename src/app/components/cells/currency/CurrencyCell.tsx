@@ -109,6 +109,7 @@ export default function CurrencyCell({
               />
 
               <div className="currency-code">{getCurrencyCode(country)}</div>
+              {!editing && <i className="open-country fa fa-angle-down" />}
             </div>
           );
         })}
