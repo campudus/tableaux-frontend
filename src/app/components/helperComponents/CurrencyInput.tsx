@@ -13,6 +13,7 @@ type CurrencyInputProps = {
   className?: string;
   langtag: string;
   country: string;
+  placeholder?: string;
   value?: number | null;
   onClick?: (evt: MouseEvent<HTMLInputElement>) => void;
   onBlur: (country: string, value?: number | null) => void;
@@ -22,6 +23,7 @@ type CurrencyInputProps = {
 export default function CurrencyInput({
   langtag,
   country,
+  placeholder = "-,-",
   value,
   onClick,
   onBlur,
@@ -59,7 +61,7 @@ export default function CurrencyInput({
       key={country}
       name={country}
       className="currency-input"
-      placeholder="-,-"
+      placeholder={placeholder}
       decimalsLimit={2}
       decimalScale={2}
       allowNegativeValue={false}

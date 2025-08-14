@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import f from "lodash/fp";
 import { ReactElement } from "react";
+import i18n from "i18next";
 import {
   autoUpdate,
   useFloating,
@@ -78,6 +79,7 @@ export default function CurrencyCell({
         {countries.map(country => {
           const canEdit = canUserChangeCountryTypeCell(cell)(country);
           const value = (cell.value as any)[country];
+          const currencyCode = getCurrencyCode(country);
 
           return (
             <div
@@ -96,6 +98,11 @@ export default function CurrencyCell({
                 key={country}
                 langtag={langtag}
                 country={country}
+                placeholder={
+                  f.isNil(currencyCode)
+                    ? i18n.t("table:error_language_is_no_country")
+                    : undefined
+                }
                 value={value}
                 onBlur={handleBlur}
                 disabled={!editing || !canEdit}
