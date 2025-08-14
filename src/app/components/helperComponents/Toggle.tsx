@@ -1,12 +1,18 @@
-import React from "react";
+import { ChangeEventHandler } from "react";
 import uniqueId from "lodash/fp/uniqueId";
 import { buildClassName as cn } from "../../helpers/buildClassName";
 
-export default function Toggle({ className, checked, onChange }) {
+type ToggleProps = {
+  className?: string;
+  checked?: boolean;
+  onChange?: ChangeEventHandler<HTMLInputElement>;
+};
+
+export default function Toggle({ className, checked, onChange }: ToggleProps) {
   const id = uniqueId("toggle");
 
   return (
-    <label className={cn("toggle", null, className)} htmlFor={id}>
+    <label className={cn("toggle", {}, className)} htmlFor={id}>
       <input
         id={id}
         className="toggle__input"

@@ -95,14 +95,11 @@ export const RestoreSavedFiltersArea = ({
   const columnNames = new Set(columns.map(col => col.name));
   const isValidTemplate = isApplicable(columnNames);
   const isGoodTemplate = t => !f.isEmpty(t) && isValidTemplate(t);
-  const getGoodTemplates = f.compose(
-    Object.fromEntries,
-    f.filter(([_, template]) => isGoodTemplate(template)),
-    f.map(([name, view]) => [name, view?.rowsFilter?.filters ?? []]),
-    Object.entries
+  const validFilters = f.filter(
+    filter => isGoodTemplate(filter.value.filters),
+    storedFilters
   );
-  const templates = getGoodTemplates(storedFilters);
-  const clearTemplate = name => void onClear(name);
+  const clearFilter = filter => onClear(filter);
 
   return (
     <section className="stored-filters-area">
@@ -110,18 +107,18 @@ export const RestoreSavedFiltersArea = ({
         <span className="filter-popup__heading">Gespeicherte Filter</span>
       </header>
       <ul className="stored-filters">
-        {Object.entries(templates).map(([name, template]) => (
-          <li className="stored-filter" key={name}>
-            <span className="stored-filter__name">{name}</span>
+        {validFilters.map(filter => (
+          <li className="stored-filter" key={filter.name}>
+            <span className="stored-filter__name">{filter.name}</span>
             <button
               className="button button--set-stored-filter"
-              onClick={() => onSubmit(template)}
+              onClick={() => onSubmit(filter)}
             >
               Anwenden
             </button>
             <button
               className="button button--delete-stored-filter"
-              onClick={() => void clearTemplate(name)}
+              onClick={() => clearFilter(filter)}
             >
               <i className="fa fa-trash" />
             </button>

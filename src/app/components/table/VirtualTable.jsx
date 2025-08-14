@@ -17,10 +17,9 @@ import {
 } from "../../constants/TableauxConstants";
 import { canUserCreateRow } from "../../helpers/accessManagementHelper";
 import { isLocked } from "../../helpers/rowUnlock";
-import { doto, either, maybe } from "../../helpers/functools";
+import { doto, maybe } from "../../helpers/functools";
 import getDisplayValue from "../../helpers/getDisplayValue";
 import KeyboardShortcutsHelper from "../../helpers/KeyboardShortcutsHelper";
-import { saveColumnWidths } from "../../helpers/localStorage";
 import actions from "../../redux/actionCreators";
 import store from "../../redux/store";
 import Cell from "../cells/Cell";
@@ -56,16 +55,8 @@ class VirtualTable extends PureComponent {
   colWidths = new Map([[0, META_CELL_WIDTH]]);
   columnStartSize = null;
 
-  getStoredView = () =>
-    either(localStorage)
-      .map(f.get("tableViews"))
-      .map(JSON.parse)
-      .map(f.get([this.props.table.id, "default"]))
-      .getOrElse({});
-
   componentWillMount() {
-    const view = this.getStoredView();
-    this.setState({ columnWidths: view.columnWidths || {} });
+    this.setState({ columnWidths: this.props.columnWidths });
   }
 
   focusTable = () => {
@@ -142,8 +133,7 @@ class VirtualTable extends PureComponent {
       window.removeEventListener("mousemove", this.setBarOffset);
       this.setState({ showResizeBar: false });
     }
-    const storageKey = this.props.table.id.toString();
-    saveColumnWidths(storageKey, this.state.columnWidths || {});
+    store.dispatch(actions.setColumnWidths(this.state.columnWidths));
     store.dispatch(actions.rerenderTable());
   };
 
@@ -486,8 +476,7 @@ class VirtualTable extends PureComponent {
       maybe(this.multiGrid).method("invalidateCellSizeAfterRender");
     }
     if (this.props.rerenderTable !== next.rerenderTable) {
-      const view = this.getStoredView();
-      this.setState({ columnWidths: view.columnWidths || {} });
+      this.setState({ columnWidths: next.columnWidths });
       maybe(this.multiGrid).method("invalidateCellSizeAfterRender");
     }
 
@@ -642,6 +631,7 @@ VirtualTable.propTypes = {
 
 const mapStateToProps = state => {
   return {
+    columnWidths: f.propOr({}, "tableView.columnWidths", state),
     selectedCell: f.propOr({}, "selectedCell.selectedCell", state)
   };
 };
