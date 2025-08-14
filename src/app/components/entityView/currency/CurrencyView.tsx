@@ -31,11 +31,12 @@ export default function CurrencyView({
 
   const handleClick = (evt: MouseEvent<HTMLInputElement>) => {
     // allow select in entityView
-    evt.stopPropagation();
+    if (!disabled) {
+      evt.stopPropagation();
+    }
   };
 
   const handleBlur = (country: string, value?: number | null) => {
-    console.log("handleBlur", { country, value });
     dispatch(
       actions.changeCellValue({
         cell,
