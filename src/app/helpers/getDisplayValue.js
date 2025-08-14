@@ -1,6 +1,5 @@
 import * as f from "lodash/fp";
 import Moment from "moment";
-import { getCurrencyWithCountry } from "../components/cells/currency/currencyHelper";
 import {
   ColumnKinds,
   DateFormats,
@@ -8,7 +7,11 @@ import {
   DefaultLangtag,
   Langtags
 } from "../constants/TableauxConstants";
-import { getCountryOfLangtag, getCurrencyCode } from "./multiLanguage";
+import {
+  getCountryOfLangtag,
+  getCurrencyCode,
+  getFallbackCurrencyValue
+} from "./multiLanguage";
 
 // (obj, obj) -> obj
 //
@@ -79,6 +82,12 @@ const getDefaultValue = column => value =>
 
     return f.isEmpty(val) && !f.isNumber(val) ? "" : format(column, val);
   });
+
+function getCurrencyWithCountry(currencyObj, country, withFallback = false) {
+  const result = f.getOr(null, country, currencyObj);
+  const fallBack = getFallbackCurrencyValue({ country }, currencyObj) || null;
+  return withFallback ? result || fallBack : result;
+}
 
 const getCurrencyValue = column => value =>
   applyToAllLangs(lt => {

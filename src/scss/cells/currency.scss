@@ -1,118 +1,66 @@
-body {
-  $countryWidth: 50px;
-  $currencyWidth: 50px;
+.cell.cell-currency {
+  &.editing {
+    .cell-content {
+      padding: 0;
+    }
 
-  .cell.cell-currency {
-    .open-country {
-      margin-left: 10px;
-      display: inline-block;
+    .currency-item {
+      height: 45px;
+      grid-template-columns: 40px 1fr 40px;
+      background-color: white;
+      border-bottom: 1px solid $color-border-grey;
     }
 
     .currency-code {
-      display: inline-block;
-      margin-left: 5px;
+      border-left: 1px solid $color-border-grey;
+      background-color: $color-background-very-light-grey;
+    }
+  }
+
+  .currency-code {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .currency-item {
+    box-sizing: border-box;
+    display: grid;
+    grid-template-columns: 1fr 30px 10px;
+    gap: 6px;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .country-code  {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-right: 1px solid $color-border-grey;
+
+    .langtag {
+      width: auto;
+      display: flex;
+      flex-flow: column;
+      gap: 2px;
+      align-items: center;
+      justify-content: center;
     }
 
-    .currency-no-country {
-      color: $color-text-medium-grey;
+    .langtag-label {
+      margin: 0;
+      line-height: 1;
     }
+  }
 
-    &.editing {
-      border: 0;
-      padding: 0;
-      align-items: flex-start;
-
-      .cell-content {
-        padding: 0;
-        background-color: white;
-        box-shadow: none;
-        border: 1px solid $color-primary;
-        z-index: 1;
-        height: auto;
-        min-height: $space-height-cell;
-        max-height: 170px;
-        overflow-y: visible;
-        overflow-x: hidden;
-      }
-    }
-    .disabled {
-      opacity: 0.5;
-    }
-
-    .currency-row {
-      position: relative;
-      height: $space-height-cell;
-      border-bottom: 1px solid $color-border-grey;
-      line-height: $space-height-cell;
-
-      .clear-icon {
-        opacity: 0;
-        padding: 8px;
-        color: $color-text-medium-grey;
-      }
-
-      .country-code,
-      .currency-value,
-      .currency-code {
-        position: absolute;
-        top: 0;
-        height: 100%;
-      }
-
-      .country-code {
-        width: $countryWidth;
-        text-align: center;
-
-        .langtag {
-          line-height: 1;
-          vertical-align: middle;
-          display: inline-block;
-        }
-
-        .langtag-label {
-          display: block;
-        }
-      }
-
-      .currency-value {
-        padding: 0 20px;
-        left: $countryWidth;
-        right: $currencyWidth;
-        border-left: 1px solid $color-border-grey;
-        border-right: 1px solid $color-border-grey;
-        white-space: nowrap;
-      }
-
-      .currency-code {
-        width: $currencyWidth;
-        right: 0;
-        text-align: center;
-        background-color: $color-background-very-light-grey;
-      }
-
-      .currency-input {
-        display: inline-block;
-        width: 70px;
-        font-size: $font-size-standard;
-
-        &:focus {
-          border-bottom: 1px solid $color-primary;
-        }
-
-        &.integer {
-          text-align: right;
-        }
-      }
-
-      .delimiter {
-        display: inline;
-        color: $color-text-medium-grey;
-      }
-      &:hover {
-        .clear-icon {
-          opacity: 1;
-        }
-      }
-    }
+  .currency-input {
+    flex: 1;
+    min-width: 75px;
+    text-align: end;
+    justify-self: end;
   }
 }

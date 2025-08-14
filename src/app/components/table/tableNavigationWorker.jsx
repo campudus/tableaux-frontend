@@ -41,9 +41,8 @@ export function getKeyboardShortcuts() {
   const { actions, tableView } = this.props;
   const { currentTable } = tableView;
   const {
-    selectedCell: { selectedCell }
+    selectedCell: { selectedCell, editing: selectedCellEditing }
   } = store.getState();
-  const selectedCellEditing = tableView.editing;
   const { cell, langtag } = selectedCell;
 
   const clearVisibleCellValue = () => {
