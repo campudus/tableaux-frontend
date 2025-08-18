@@ -15,9 +15,7 @@ class MultiselectArea extends PureComponent {
     placeholder: PropTypes.any, // if nothing selected
     allSelected: PropTypes.any, // if dropdown list is empty
     selection: PropTypes.array, // array of selected items
-    onChange: PropTypes.func, // receives array of selected items
-    onSelect: PropTypes.func, // receives single item
-    onDeselect: PropTypes.func, // receives single item
+    onChange: PropTypes.func, // receives single item to toggle
     idProperty: PropTypes.string, // default: "id", for comparisons and keys
     labelProperty: PropTypes.string, // default: "label", define text fallback
     deleteTagIcon: PropTypes.element, // instead of svg-cross
@@ -71,27 +69,16 @@ class MultiselectArea extends PureComponent {
 
   handleSelect = item => event => {
     event.stopPropagation();
-    this.props.onSelect && this.props.onSelect(item);
-    const oldSelection = this.state.selection;
-    const selection = [...oldSelection, item];
-    this.handleChange(selection);
+    this.toggleItem(item);
   };
 
   handleDeselect = item => event => {
     event.stopPropagation();
-    this.props.onDeselect && this.props.onDeselect(item);
-    const oldSelection = this.state.selection;
-    const idToRemove = this.getId(item);
-    const selection = f.reject(
-      _itm => this.getId(_itm) === idToRemove,
-      oldSelection
-    );
-    this.handleChange(selection);
+    this.toggleItem(item);
   };
 
-  handleChange = selection => {
-    this.props.onChange && this.props.onChange(selection);
-    this.setState({ selection });
+  toggleItem = item => {
+    this.props.onChange && this.props.onChange(item);
   };
 
   renderTag = item => {
@@ -153,7 +140,8 @@ class MultiselectArea extends PureComponent {
   };
 
   render() {
-    const { listOpen, selection } = this.state;
+    const { listOpen } = this.state;
+    const { selection } = this.props;
     const areaClass = classNames("multiselect-area", {
       "ignore-react-onclickoutside": listOpen,
       "no-selection": f.isEmpty(selection)
