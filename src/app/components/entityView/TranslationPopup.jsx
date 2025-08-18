@@ -13,13 +13,14 @@ import { isTranslationNeeded } from "../../helpers/annotationHelper";
 import {
   getColumnDisplayName,
   getCountryOfLangtag,
-  getLanguageOrCountryIcon
+  getLanguageOrCountryIcon,
+  getLocaleDecimalSeparator
 } from "../../helpers/multiLanguage";
 import Empty from "../helperComponents/emptyEntry";
 import SvgIcon from "../helperComponents/SvgIcon";
 import MultiselectArea from "../MultiselectArea";
 
-const displayCell = (cell, langtag) => {
+const displayCell = (cell, langtag, mainLangtag) => {
   const displayValue = f.get("displayValue", cell);
   const displayArray = () => (
     <ul>
@@ -38,6 +39,14 @@ const displayCell = (cell, langtag) => {
   const isCountryCell = () => cell.column.languageType === LanguageType.country;
 
   const displayCountryValue = () => cell.value[getCountryOfLangtag(langtag)];
+  const formatCurrencyValue = value => {
+    const [pre = 0, post = "00"] = String(value).split(".");
+    return f.isNil(value)
+      ? null
+      : [pre, post?.padEnd(2, "0")].join(
+          getLocaleDecimalSeparator(mainLangtag)
+        );
+  };
 
   const result = f.cond([
     [hasArrayValue, displayArray],
@@ -46,15 +55,18 @@ const displayCell = (cell, langtag) => {
     [f.stubTrue, f.always(f.get(langtag, displayValue))]
   ])(cell);
 
-  console.log({
-    isCountryCell: isCountryCell(cell),
-    value: cell.value,
-    langtag,
-    ctLt: getCountryOfLangtag(langtag),
-    result
-  });
+  const formattedResult =
+    cell.column.kind === ColumnKinds.currency
+      ? formatCurrencyValue(result)
+      : typeof result === "number"
+      ? String(result).replace(".", getLocaleDecimalSeparator(mainLangtag))
+      : result;
 
-  return f.isEmpty(result) ? <Empty /> : result;
+  return f.isNil(result) || f.isEmpty(String(result).trim()) ? (
+    <Empty />
+  ) : (
+    formattedResult
+  );
 };
 
 const LanguageView = ({
@@ -64,10 +76,11 @@ const LanguageView = ({
   toggleExpand,
   handleLanguageSwitch
 }) => {
-  const value = f.get(["displayValue", langtag], cell);
   const wrapperClass = classNames("item translation-item", {
     "needs-translation": isTranslationNeeded(langtag)(cell)
   });
+
+  console.log("LanguageView", langtag);
 
   const switchLanguage = event => {
     event.stopPropagation();
@@ -83,13 +96,7 @@ const LanguageView = ({
         {getLanguageOrCountryIcon(langtag, cell.column.languageType)}
       </button>
       <div className="item-content">
-        <div className="content-box">
-          {f.isEmpty(f.trim(value)) && !f.isArray(cell.value) ? (
-            <Empty />
-          ) : (
-            displayCell(cell, langtag)
-          )}
-        </div>
+        <div className="content-box">{displayCell(cell, langtag)}</div>
       </div>
       <button className="toggle-button" onClick={toggleExpand}>
         <SvgIcon icon="cross" />
@@ -118,7 +125,7 @@ const TranslationPopup = ({
   switchLanguage
 }) => {
   const allLangtags =
-    cell.column.languageType === "country"
+    cell.column.languageType === LanguageType.country
       ? cell.column.countryCodes
       : Langtags;
   const [visibleLangtags, setVisibleLangtags] = React.useState(allLangtags);
@@ -200,6 +207,7 @@ const TranslationPopup = ({
               key={`${cell.id}-${lt}`}
               cell={cell}
               langtag={lt}
+              mainLangtag={langtag}
               isExpanded={true}
               toggleExpand={() => toggleTranslation(lt)}
               isMain={langtag === lt}
