@@ -22,10 +22,11 @@ type FileUploadProps = {
   className?: string;
   langtag: string;
   folder: Partial<Folder>;
+  onDone?: () => void;
 };
 
 function FileUpload(
-  { className, langtag, folder }: FileUploadProps,
+  { className, langtag, folder, onDone }: FileUploadProps,
   ref: ForwardedRef<Dropzone>
 ): ReactElement {
   const dispatch = useDispatch();
@@ -44,7 +45,7 @@ function FileUpload(
         }
       });
 
-      makeRequest({
+      await makeRequest({
         apiRoute: toFileUpload(uuid, DefaultLangtag),
         method: "PUT",
         file: uploadFile,
@@ -66,6 +67,8 @@ function FileUpload(
           console.error("Error uploading file:", err);
         });
     }
+
+    onDone?.();
   };
 
   return (

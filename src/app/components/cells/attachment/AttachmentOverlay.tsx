@@ -1,9 +1,15 @@
 import f from "lodash/fp";
 import i18n from "i18next";
 import Dropzone from "react-dropzone";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { ReactElement, useEffect, useRef, useState } from "react";
-import { Cell, Folder, FolderID } from "../../../types/grud";
+import {
+  Attachment,
+  Cell,
+  Folder,
+  FolderID,
+  GRUDStore
+} from "../../../types/grud";
 import { toFolder } from "../../../helpers/apiRoutes";
 import { makeRequest } from "../../../helpers/apiHelper";
 import Breadcrumbs from "../../helperComponents/Breadcrumbs";
@@ -16,6 +22,8 @@ import FileUpload from "../../media/folder/FileUpload";
 import ButtonAction from "../../helperComponents/ButtonAction";
 import SvgIcon from "../../helperComponents/SvgIcon";
 import AttachmentOverlayDirents from "./AttachmentOverlayDirents";
+import { changeCellValue } from "../../../redux/actions/cellActions";
+import { idsToIndices } from "../../../redux/redux-helpers";
 
 export type Layout = "list" | "tiles";
 
@@ -33,10 +41,24 @@ type AttachmentOverlayProps = {
 
 export default function AttachmentOverlayBody({
   langtag,
+  cell,
   folderId,
   sharedData: folder,
   updateSharedData: updateFolder
 }: AttachmentOverlayProps): ReactElement {
+  const ids = {
+    tableId: cell.table.id,
+    columnId: cell.column.id,
+    rowId: cell.row.id
+  };
+  const attachedFiles = useSelector<GRUDStore, Attachment[]>(store => {
+    const [rowIdx, colIdx] = idsToIndices(ids, store);
+    return f.get(
+      ["rows", ids.tableId, "data", rowIdx!, "values", colIdx!],
+      store
+    );
+  });
+
   const dispatch = useDispatch();
   const [layoutState, setLayoutState] = useState<LayoutState>({
     nav: "list",
@@ -49,7 +71,11 @@ export default function AttachmentOverlayBody({
     f.propEq("name", i18n.t("media:new_folder")),
     folder?.subfolders
   );
-  const files = f.orderBy(f.prop("updatedAt"), "desc", folder?.files ?? []);
+  const files = f.orderBy(
+    f.prop("updatedAt"),
+    "desc",
+    f.differenceBy("uuid", folder?.files ?? [], attachedFiles)
+  );
   // sort new folder to top
   const subfolders = f.orderBy(
     f.propEq("name", i18n.t("media:new_folder")),
@@ -72,18 +98,48 @@ export default function AttachmentOverlayBody({
     dropzoneRef.current?.open();
   };
 
-  const handleClickNewFolder = () => {
+  const handleClickNewFolder = async () => {
     dispatch(
-      createMediaFolder({
-        parentId: folder?.id,
-        name: i18n.t("media:new_folder"),
-        description: ""
-      })
+      createMediaFolder(
+        {
+          parentId: folder?.id,
+          name: i18n.t("media:new_folder"),
+          description: ""
+        },
+        // refresh folder
+        () => handleNavigate(folder?.id)
+      )
     );
   };
 
   const handleSelectLayout = (layout: Partial<LayoutState>) => {
     setLayoutState({ ...layoutState, ...layout });
+  };
+
+  const handleToggleLink = (file: Attachment, action: "add" | "remove") => {
+    dispatch(
+      changeCellValue({
+        cell,
+        columnId: cell.column.id,
+        rowId: cell.row.id,
+        tableId: cell.table.id,
+        oldValue: attachedFiles,
+        newValue:
+          action === "add"
+            ? [...attachedFiles, file]
+            : f.remove(f.matchesProperty("uuid", file.uuid), attachedFiles),
+        method: "PUT"
+      })
+    );
+  };
+
+  const handleUploadDone = async () => {
+    // refresh folder
+    await handleNavigate(folder?.id);
+  };
+
+  const handleNavigateToMediaFolder = () => {
+    window.open(`/${langtag}/media/${folder?.id}`, "_blank");
   };
 
   useEffect(() => {
@@ -98,6 +154,13 @@ export default function AttachmentOverlayBody({
         </h4>
 
         <div className="attachment-overlay__toolbar">
+          <ButtonAction
+            variant="outlined"
+            icon={<SvgIcon icon="edit" />}
+            alt={i18n.t("media:change_folder")}
+            onClick={handleNavigateToMediaFolder}
+          />
+
           <ButtonAction
             variant="outlined"
             icon={<SvgIcon icon={layoutState.nav} />}
@@ -157,6 +220,8 @@ export default function AttachmentOverlayBody({
             layout={layoutState.nav}
             onNavigate={handleNavigate}
             onNavigateBack={handleNavigateBack}
+            onToggle={handleToggleLink}
+            toggleAction="add"
           />
         )}
 
@@ -166,6 +231,7 @@ export default function AttachmentOverlayBody({
             ref={dropzoneRef}
             langtag={langtag}
             folder={folder}
+            onDone={handleUploadDone}
           />
         )}
       </div>
@@ -173,6 +239,8 @@ export default function AttachmentOverlayBody({
         <h4 className="attachment-overlay__title">
           {i18n.t("media:files_selected")}
         </h4>
+
+        <div className="attachment-overlay__breadcrumbs">&nbsp;</div>
 
         <div className="attachment-overlay__toolbar">
           <ButtonAction
@@ -194,13 +262,15 @@ export default function AttachmentOverlayBody({
           />
         </div>
 
-        {/* <AttachmentOverlayDirents
-            className="attachment-overlay__dirents"
-            langtag={langtag}
-            folder={folder}
-            layout={layout}
-            onNavigate={handleNavigate}
-          /> */}
+        <AttachmentOverlayDirents
+          className="attachment-overlay__dirents"
+          langtag={langtag}
+          files={attachedFiles}
+          layout={layoutState.content}
+          onNavigate={handleNavigate}
+          onToggle={handleToggleLink}
+          toggleAction="remove"
+        />
       </div>
     </div>
   );
