@@ -66,6 +66,7 @@
     }
 
     &--list {
+      padding: 4px;
       border-bottom: 1px solid #dedede;
       display: grid;
       grid-template-columns: 1fr auto auto auto auto auto;
@@ -314,7 +315,13 @@
 
       &--icon {
         max-width: 150px;
-        max-height: 70px;
+        max-height: 60px;
+      }
+
+      &--folder,
+      &--folder-back {
+        max-width: 130px;
+        max-height: 50px;
       }
 
       &--icon.icon {
@@ -721,7 +728,7 @@
     grid-area: toolbar;
     height: 30px;
     box-sizing: border-box;
-    padding: 0 8px;
+    padding: 0 15px 0 8px;
     display: flex;
     gap: 8px;
     justify-content: space-between;
@@ -747,11 +754,17 @@
 
   .attachment-overlay-dirent--tiles {
     .attachment-overlay-dirent__thumbnail {
-      height: 70px;
-  
+      height: 100px;
+
       .media-thumbnail__image--icon {
         max-width: 100px;
         max-height: 50px;
+      }
+
+      .media-thumbnail__image--folder,
+      .media-thumbnail__image--folder-back {
+        max-width: 100px;
+        max-height: 35px;
       }
     }
   }
@@ -760,18 +773,54 @@
   .attachment-overlay-dirent {
     box-sizing: border-box;
     overflow: hidden;
-    background: #f8f8f8;
+    background: #ffffff;
     border-radius: 4px;
 
     &:hover {
       background: #efefef;
     }
 
+    &:has(.attachment-overlay-dirent__action--remove) {
+      fill: #ffffff;
+      background: #3296DC;
+      border: 1px solid #3296DC;
+
+      button {
+        color: #ffffff;
+      }
+
+      &:hover {
+        background: #3296DC;
+      }
+    }
+
+    .attachment-overlay-dirent__action--edit,
+    .attachment-overlay-dirent__action--download,
+    .attachment-overlay-dirent__action--toggle {
+      width: 30px;
+      height: 30px;
+      border-radius: 4px;
+
+      .button-action__button {
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+    }
+
+    .attachment-overlay-dirent__action--toggle {
+      background: #C3E1FF;
+      fill: #2E96FF;
+    }
+
     &--list {
-      border-bottom: 1px solid #dedede;
+      padding: 2px 8px 2px 4px;
       display: grid;
-      grid-template-columns: 1fr auto;
+      grid-template-columns: 1fr auto auto auto;
+      gap: 8px;
       grid-template-rows: auto;
+      align-items: center;
 
       .attachment-overlay-dirent__action--main {
         grid-row: 1;
@@ -781,9 +830,15 @@
         gap: 8px;
 
         .button-action__button {
+          padding: 0;
           display: grid;
           grid-template-columns: 40px 1fr;
         }
+      }
+
+      .attachment-overlay-dirent__action--edit {
+        grid-row: 1;
+        grid-column: 3;
       }
 
       .attachment-overlay-dirent__action--download {
@@ -791,13 +846,20 @@
         grid-column: 2;
       }
 
+      .attachment-overlay-dirent__action--toggle {
+        grid-row: 1;
+        grid-column: 4;
+      }
+
       &:not(:hover) {
 
+        .attachment-overlay-dirent__action--edit,
         .attachment-overlay-dirent__action--download {
           opacity: 0.3;
         }
       }
 
+      .attachment-overlay-dirent__action--edit,
       .attachment-overlay-dirent__action--download {
 
         .button-action__button {
@@ -811,13 +873,8 @@
       border-radius: 4px;
       display: grid;
       grid-template-columns: 1fr auto;
-      grid-template-rows: 1fr 30px;
-
-      &:hover,
-      &:has(.button-action__button--active) {
-        border: 1px solid #333333;
-        background: #f8f8f8;
-      }
+      grid-template-rows: 1fr 28px;
+      padding: 0;
 
       .attachment-overlay-dirent__action--main {
         width: 100%;
@@ -839,224 +896,32 @@
 
         .button-action__button {
           padding: 0 3px;
-        }
+          justify-content: center;
 
-        .button-action__button--active {
-          background: #f8f8f8;
+          &--active {
+            background: transparent;
 
-          &>.svg-icon {
-            fill: #333333;
+            &:hover {
+              background: transparent;
+            }
+
+            &>.svg-icon {
+              fill: inherit;
+            }
           }
         }
+      }
+
+      .attachment-overlay-dirent__action--toggle {
+        grid-row: 1;
+        grid-column: 2;
+        margin: 4px;
       }
 
       .attachment-overlay-dirent__label {
         font-size: 11px;
         padding: 0 4px;
-        // box-sizing: border-box;
-        // width: 100%;
-        // white-space: nowrap;
-        // text-overflow: ellipsis;
-        // overflow: hidden;
-
-        // @supports (-webkit-line-clamp: 2) {
-        //   overflow-wrap: break-word;
-        //   white-space: normal;
-        //   display: -webkit-box;
-        //   line-clamp: 2;
-        //   -webkit-line-clamp: 2;
-        //   -webkit-box-orient: vertical;
-        // }
       }
     }
   }
 }
-
-
-// .overlay .overlay-wrapper .overlay-content .attachment-overlay-wrapper {
-//   // overrule some overlay styles
-//   margin: 0;
-//   height: 100%;
-//   overflow: hidden;
-
-//   .folder-file-list {
-//     display: flex;
-//     flex-direction: row;
-//     width: 100%;
-//     height: 100%;
-//     overflow: hidden;
-//     position: relative;
-
-//     i {
-//       margin-right: 5px;
-//     }
-
-//     .folder-navigation {
-//       flex: 1;
-//       background-color: $color-overlay-background-even;
-//       color: $color-primary-contrast-text;
-//       height: 100%;
-
-//       .back {
-//         padding: 23px 10px;
-//         display: flex;
-//         justify-content: space-between;
-//         align-items: center;
-//         width: 100%;
-//         box-sizing: border-box;
-//         border-bottom: 1px solid lighten($color-text-light-grey, 5);
-//         height: 35px;
-
-//         button {
-//           padding: 10px 8px;
-//           border-radius: 3px;
-//           color: $color-text-medium-grey;
-
-//           display: flex;
-//           align-items: center;
-
-//           &:hover {
-//             color: $color-primary-contrast-text;
-//             background-color: $color-primary;
-//           }
-//         }
-
-//         .folder-name {
-//           color: $color-primary-text;
-//           font-weight: bold;
-//           padding: 4px 8px;
-
-//           overflow: hidden;
-//           text-overflow: ellipsis;
-//           white-space: nowrap;
-//         }
-//       }
-
-//       .folder-list-wrapper {
-//         overflow-y: auto;
-//         height: calc(100% - 35px);
-
-//         padding-top: 1em;
-//         padding-bottom: 1em;
-
-//         box-sizing: border-box;
-
-//         ul li {
-//           width: 100%;
-//           position: relative;
-//           box-sizing: border-box;
-
-//           button {
-//             padding: 5px 20px;
-//             display: block;
-//             width: 100%;
-//             height: 100%;
-//             color: $color-primary-text;
-
-//             &:hover {
-//               color: $color-hover-foreground;
-//               background-color: $color-hover-background;
-
-//               &:before {
-//                 font-family: FontAwesome;
-//                 content: "\f178";
-//                 position: absolute;
-//                 right: 10px;
-//               }
-//             }
-//           }
-//         }
-//       }
-//     }
-
-//     .file-list {
-//       flex: 2;
-//       padding: 0;
-//       height: auto;
-//       position: relative;
-//       display: flex;
-//       flex-direction: column;
-//       border-left: 1px solid lighten($color-text-light-grey, 5);
-
-//       .real-file-list {
-//         flex: 1 1 auto;
-//       }
-
-//       .ReactVirtualized__Grid__innerScrollContainer {
-//         padding: 15px;
-//         margin-top: 15px;
-//       }
-
-//       .file-wrapper {
-//         width: 100%;
-//         padding: 3px 15px;
-//         box-sizing: border-box;
-//       }
-
-//       .file {
-//         padding: 8px;
-//         border-radius: 3px;
-//         background-color: $color-primary-contrast-text;
-//         color: $color-primary;
-
-//         svg {
-//           fill: transparent;
-//         }
-
-//         .overlay-table-row {
-//           box-sizing: border-box;
-//           display: flex !important;
-//           align-items: center;
-//           justify-content: space-between;
-//           padding: 5px;
-//           width: 100%;
-
-//           span {
-//             flex: 1 1 auto;
-//             text-overflow: ellipsis;
-//             overflow: hidden;
-//             white-space: nowrap;
-//           }
-//         }
-
-//         &.is-linked {
-//           background-color: $color-primary;
-//           color: $color-primary-contrast-text;
-//         }
-
-//         button {
-//           color: inherit;
-
-//           &:hover {
-//             color: $color-primary-darker;
-
-//             svg {
-//               fill: $color-primary;
-//             }
-//           }
-//         }
-
-//         &:hover {
-//           background-color: $color-hover-background;
-//           color: $color-hover-foreground;
-
-//           .media-options {
-//             color: $color-primary;
-//           }
-//         }
-
-//         font-size: small;
-//         font-weight: bold;
-
-//         .media-options {
-//           color: transparent;
-//           font-weight: normal;
-
-//           button {
-//             color: inherit;
-//           }
-//         }
-//       }
-//     }
-//   }
-// }

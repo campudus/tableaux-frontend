@@ -43,5 +43,7 @@
   "layout_list": "List with thumbnails",
   "layout_tiles": "Tiles",
   "download_file": "Download file",
-  "files_selected": "All selected files"
+  "files_selected": "All selected files",
+  "link_add": "Add link",
+  "link_remove": "Remove link"
 }

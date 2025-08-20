@@ -87,8 +87,9 @@ function FolderDirent(
     } else {
       const pxPerChar = 7.2;
       const wThumb = 45;
+      const wGaps = 24;
       const wActs = 4 * 45 + (depCount > 0 ? 120 : 0);
-      charLimit = Math.floor((width - wThumb - wActs) / pxPerChar);
+      charLimit = Math.floor((width - wThumb - wActs - wGaps) / pxPerChar);
     }
 
     if (label.length <= charLimit) {

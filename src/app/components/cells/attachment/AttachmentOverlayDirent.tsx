@@ -1,4 +1,3 @@
-import f from "lodash/fp";
 import i18n from "i18next";
 import {
   CSSProperties,
@@ -18,12 +17,6 @@ import MediaThumbnail, {
 import { Layout } from "./AttachmentOverlay";
 import ButtonAction from "../../helperComponents/ButtonAction";
 import SvgIcon from "../../helperComponents/SvgIcon";
-import {
-  canUserDeleteFiles,
-  canUserDeleteFolders,
-  canUserEditFiles,
-  canUserEditFolders
-} from "../../../helpers/accessManagementHelper";
 
 type AttachmentOverlayDirentProps = {
   className?: string;
@@ -33,6 +26,8 @@ type AttachmentOverlayDirentProps = {
   layout: Layout;
   onNavigate: (id?: FolderID | null) => void;
   width?: number;
+  onToggle?: (dirent: Attachment, action: "add" | "remove") => void;
+  toggleAction?: "add" | "remove";
 };
 
 function AttachmentOverlayDirent(
@@ -43,27 +38,28 @@ function AttachmentOverlayDirent(
     dirent,
     layout,
     onNavigate,
-    width = 1000
+    width = 1000,
+    onToggle,
+    toggleAction
   }: AttachmentOverlayDirentProps,
   direntRef: ForwardedRef<HTMLDivElement>
 ): ReactElement {
   const isFile = isAttachment(dirent);
   const translate = retrieveTranslation(langtag);
   const direntKey = isFile ? "file" : "folder";
-  const canEdit = isFile ? canUserEditFiles() : canUserEditFolders();
-  const canDelete = isFile ? canUserDeleteFiles() : canUserDeleteFolders();
 
   const label = isFile ? (translate(dirent.title) as string) : dirent.name;
   const labelTruncated = useMemo(() => {
     let charLimit;
 
     if (layout === "tiles") {
-      charLimit = 16;
+      charLimit = 26;
     } else {
-      const pxPerChar = 7.2;
+      const pxPerChar = 7.5;
       const wThumb = 45;
-      const wActs = 1 * 45;
-      charLimit = Math.floor((width - wThumb - wActs) / pxPerChar);
+      const wActs = 3 * 30;
+      const wGaps = 16;
+      charLimit = Math.floor((width - wThumb - wActs - wGaps) / pxPerChar);
     }
 
     if (label.length <= charLimit) {
@@ -90,6 +86,18 @@ function AttachmentOverlayDirent(
       link.href = apiUrl(translate(dirent.url));
       link.download = "";
       link.click();
+    }
+  };
+
+  const handleToggle = () => {
+    if (isAttachment(dirent) && onToggle && toggleAction) {
+      onToggle(dirent, toggleAction);
+    }
+  };
+
+  const handleNavigateToMediaFile = () => {
+    if (isFile) {
+      window.open(`/${langtag}/media/${dirent?.folder}`, "_blank");
     }
   };
 
@@ -138,24 +146,78 @@ function AttachmentOverlayDirent(
               onClick={handleDownload}
             />
           )}
+          {isFile && (
+            <ButtonAction
+              className={cn("attachment-overlay-dirent__action", {
+                edit: true
+              })}
+              icon={<SvgIcon icon="edit" />}
+              alt={i18n.t(`media:change_${direntKey}`)}
+              onClick={handleNavigateToMediaFile}
+            />
+          )}
+          {isFile && toggleAction ? (
+            <ButtonAction
+              className={cn("attachment-overlay-dirent__action", {
+                toggle: true,
+                [toggleAction]: true
+              })}
+              icon={
+                <SvgIcon icon={toggleAction === "add" ? "plus" : "minus"} />
+              }
+              alt={i18n.t(`media:link_${toggleAction}`)}
+              onClick={handleToggle}
+            />
+          ) : (
+            <div></div>
+          )}
         </>
       )}
 
-      {layout === "tiles" && (canEdit || canDelete) && isFile && (
-        <ButtonAction
-          className={cn("attachment-overlay-dirent__action", { menu: true })}
-          icon={<SvgIcon icon="hdots" />}
-          options={f.compact([
-            isFile && {
-              className: cn("attachment-overlay-dirent__action", {
-                download: true
-              }),
-              label: i18n.t(`media:download_${direntKey}`),
-              icon: <SvgIcon icon="download" />,
-              onClick: handleDownload
-            }
-          ])}
-        />
+      {layout === "tiles" && (
+        <>
+          {isFile && (
+            <ButtonAction
+              className={cn("attachment-overlay-dirent__action", {
+                menu: true
+              })}
+              icon={<SvgIcon icon="hdots" />}
+              options={[
+                {
+                  className: cn("attachment-overlay-dirent__action", {
+                    edit: true
+                  }),
+                  label: i18n.t(`media:change_${direntKey}`),
+                  icon: <SvgIcon icon="edit" />,
+                  onClick: handleNavigateToMediaFile
+                },
+                {
+                  className: cn("attachment-overlay-dirent__action", {
+                    download: true
+                  }),
+                  label: i18n.t(`media:download_${direntKey}`),
+                  icon: <SvgIcon icon="download" />,
+                  onClick: handleDownload
+                }
+              ]}
+            />
+          )}
+          {isFile && toggleAction ? (
+            <ButtonAction
+              className={cn("attachment-overlay-dirent__action", {
+                toggle: true,
+                [toggleAction]: true
+              })}
+              icon={
+                <SvgIcon icon={toggleAction === "add" ? "plus" : "minus"} />
+              }
+              alt={i18n.t(`media:link_${toggleAction}`)}
+              onClick={handleToggle}
+            />
+          ) : (
+            <div></div>
+          )}
+        </>
       )}
     </div>
   );

@@ -20,6 +20,8 @@ type AttachmentOverlayDirentsProps = {
   layout: Layout;
   onNavigate: (id?: FolderID | null) => void;
   onNavigateBack?: () => void;
+  onToggle?: (file: Attachment, action: "add" | "remove") => void;
+  toggleAction?: "add" | "remove";
 };
 
 export default function AttachmentOverlayDirents({
@@ -29,7 +31,9 @@ export default function AttachmentOverlayDirents({
   subfolders = [],
   layout,
   onNavigate,
-  onNavigateBack
+  onNavigateBack,
+  onToggle,
+  toggleAction
 }: AttachmentOverlayDirentsProps): ReactElement {
   const [dimensions, setDimensions] = useState({ width: 100, height: 100 });
   const masonryRef = useRef<Masonry>(null);
@@ -40,9 +44,9 @@ export default function AttachmentOverlayDirents({
     ...files
   ];
 
-  const cellHeight = layout === "list" ? 50 : 100;
-  const cellWidth = layout === "list" ? dimensions.width : 130;
-  const gutterSize = layout === "list" ? 0 : 6;
+  const cellHeight = layout === "list" ? 48 : 130;
+  const cellWidth = layout === "list" ? dimensions.width : 200;
+  const gutterSize = layout === "list" ? 3 : 6;
 
   const cellMeasurerCache = useMemo(() => {
     return new CellMeasurerCache({
@@ -80,6 +84,7 @@ export default function AttachmentOverlayDirents({
       <AutoSizer
         key={dirents.length}
         onResize={({ height, width }) => {
+          // subtract width of scrollbar
           setDimensions({ width: width - 15, height });
         }}
       >
@@ -120,6 +125,8 @@ export default function AttachmentOverlayDirents({
                         layout={layout}
                         onNavigate={onNavigate}
                         width={width}
+                        onToggle={onToggle}
+                        toggleAction={toggleAction}
                       />
                     ) : (
                       <div style={{ ...style, width: cellWidth }}></div>
