@@ -38,7 +38,7 @@ export function MediaThumbnailFolder({
   return (
     <div className={cn("media-thumbnail", { [layout]: true }, className)}>
       <img
-        className={cn("media-thumbnail__image", { icon: true })}
+        className={cn("media-thumbnail__image", { icon: true, [icon]: true })}
         src={`/img/icons/${icon}.svg`}
       />
     </div>
