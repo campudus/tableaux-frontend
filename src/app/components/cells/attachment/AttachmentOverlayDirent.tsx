@@ -97,7 +97,9 @@ function AttachmentOverlayDirent(
 
   const handleNavigateToMediaFile = () => {
     if (isFile) {
-      window.open(`/${langtag}/media/${dirent?.folder}`, "_blank");
+      const mediaUrl = `/${langtag}/media/${dirent?.folder}?uuid=${dirent.uuid}`;
+
+      window.open(mediaUrl, "_blank");
     }
   };
 
