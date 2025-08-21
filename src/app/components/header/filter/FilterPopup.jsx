@@ -11,7 +11,6 @@ import {
   getAnnotationColor,
   getAnnotationTitle
 } from "../../../helpers/annotationHelper";
-import * as Storage from "../../../helpers/localStorage";
 import { getColumnDisplayName } from "../../../helpers/multiLanguage";
 import RowFilters from "../../../RowFilters";
 import AnnotationBadge from "../../annotation/AnnotationBadge";
@@ -37,6 +36,7 @@ const FilterPopup = ({
   currentFilter
 }) => {
   const tableId = useSelector(f.prop("tableView.currentTable"));
+  const presetFilters = useSelector(f.prop("userSettings.filter.presetFilter"));
   const anyColumnContains = {
     id: -1,
     name: "any-column",
@@ -62,30 +62,25 @@ const FilterPopup = ({
     direction: currentFilter.sorting?.direction ?? SortValue.asc
   });
 
-  const [userFilters, setUserFilters] = useState(
-    f.propOr({}, "*", Storage.getStoredViewObject())
-  );
-  const handleSetFromUserFilter = template => {
+  const handleSetFromPresetFilter = presetFilter => {
+    const template = presetFilter.value.filters;
     const parsedTemplate = parseFilterSettings(template);
     setRowFilters(toRowFilterArray(parsedTemplate.rowFilters));
     setAnnotationFilters(parsedTemplate.annotationFilters);
     actions.setFiltersAndSorting(template, [], true);
     onClickedOutside();
   };
-  const handleStoreUserFilter = (title, template) => {
-    Storage.saveFilterSettings("*", { filters: template }, title);
-    setUserFilters(f.propOr({}, "*", Storage.getStoredViewObject()));
+  const handleStorePresetFilter = (title, template) => {
+    actions.upsertUserSetting(
+      { kind: "filter", key: "presetFilter" },
+      { name: title, value: { filters: template } }
+    );
   };
-  const handleClearUserFilter = title => {
-    const cleared = f.dissoc(title, userFilters);
-    const tableViews = JSON.stringify(
-      localStorage.getItem("tableViews") ?? "{}"
-    );
-    localStorage.setItem(
-      "tableViews",
-      JSON.stringify({ ...tableViews, ["*"]: cleared })
-    );
-    setUserFilters(cleared);
+  const handleClearPresetFilter = presetFilter => {
+    actions.deleteUserSettings({
+      kind: "filter",
+      id: presetFilter.id
+    });
   };
 
   const toggleAnnotationFilter = key => () =>
@@ -174,12 +169,12 @@ const FilterPopup = ({
             clearFilters={handleClearFilters}
             canApplyFilters={true}
           />
-          {f.isEmpty(userFilters) ? null : (
+          {f.isEmpty(presetFilters) ? null : (
             <RestoreSavedFiltersArea
               columns={columns}
-              onClear={handleClearUserFilter}
-              onSubmit={handleSetFromUserFilter}
-              storedFilters={userFilters}
+              onClear={handleClearPresetFilter}
+              onSubmit={handleSetFromPresetFilter}
+              storedFilters={presetFilters}
             />
           )}
         </section>
@@ -188,7 +183,7 @@ const FilterPopup = ({
           <FilterSavingPopup
             filters={filterList}
             onClose={() => setShowFilterSavePopup(false)}
-            onSubmit={handleStoreUserFilter}
+            onSubmit={handleStorePresetFilter}
           />
         ) : null}
       </div>

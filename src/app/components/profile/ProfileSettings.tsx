@@ -1,46 +1,41 @@
-import React from "react";
 import { t } from "i18next";
+import { ChangeEvent } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { buildClassName as cn } from "../../helpers/buildClassName";
 import Breadcrumbs from "../helperComponents/Breadcrumbs";
 import { PROFILE_TAB } from "./constants";
 import Toggle from "../helperComponents/Toggle";
-import { useDispatch, useSelector } from "react-redux";
-import { GLOBAL_SETTING } from "../../redux/reducers/globalSettings";
 import action from "../../redux/actionCreators";
+import { UserSettingKeyGlobal } from "../../types/userSettings";
+import { GRUDStore } from "../../types/grud";
+import { UserSettingsState } from "../../redux/reducers/userSettings";
 
-const {
-  FILTER_RESET,
-  COLUMNS_RESET,
-  SORTING_RESET,
-  SORTING_DESC,
-  ANNOTATION_RESET
-} = GLOBAL_SETTING;
-
-const { setGlobalSettings } = action;
-
-const globalSettingsSelector = state => {
-  return state.globalSettings;
+type ProfileSettingsProps = {
+  langtag: string;
 };
 
-export default function ProfileSettings({ langtag }) {
-  const settings = useSelector(globalSettingsSelector);
+export default function ProfileSettings({ langtag }: ProfileSettingsProps) {
   const dispatch = useDispatch();
+  const settings = useSelector<GRUDStore, UserSettingsState["global"]>(
+    state => state.userSettings.global
+  );
 
-  const onChangeFilterReset = event => {
-    dispatch(setGlobalSettings({ [FILTER_RESET]: event.target.checked }));
+  const buildOnChange = (key: UserSettingKeyGlobal) => {
+    return async (event: ChangeEvent<HTMLInputElement>) => {
+      dispatch(
+        action.upsertUserSetting(
+          { kind: "global", key },
+          { value: event.target.checked }
+        )
+      );
+    };
   };
-  const onChangeColumnsReset = event => {
-    dispatch(setGlobalSettings({ [COLUMNS_RESET]: event.target.checked }));
-  };
-  const onChangeSortingReset = event => {
-    dispatch(setGlobalSettings({ [SORTING_RESET]: event.target.checked }));
-  };
-  const onChangeSortingDesc = event => {
-    dispatch(setGlobalSettings({ [SORTING_DESC]: event.target.checked }));
-  };
-  const onChangeAnnotationReset = event => {
-    dispatch(setGlobalSettings({ [ANNOTATION_RESET]: event.target.checked }));
-  };
+
+  const onChangeFilterReset = buildOnChange("filterReset");
+  const onChangeColumnsReset = buildOnChange("columnsReset");
+  const onChangeSortingReset = buildOnChange("sortingReset");
+  const onChangeSortingDesc = buildOnChange("sortingDesc");
+  const onChangeAnnotationReset = buildOnChange("annotationReset");
 
   return (
     <div className={cn("profile-tab", { settings: true })}>
@@ -84,7 +79,7 @@ export default function ProfileSettings({ langtag }) {
           </div>
           <Toggle
             className="profile-tab__toggle"
-            checked={settings[FILTER_RESET]}
+            checked={settings.filterReset}
             onChange={onChangeFilterReset}
           />
         </div>
@@ -102,7 +97,7 @@ export default function ProfileSettings({ langtag }) {
           </div>
           <Toggle
             className="profile-tab__toggle"
-            checked={settings[COLUMNS_RESET]}
+            checked={settings.columnsReset}
             onChange={onChangeColumnsReset}
           />
         </div>
@@ -118,7 +113,7 @@ export default function ProfileSettings({ langtag }) {
           </div>
           <Toggle
             className="profile-tab__toggle"
-            checked={settings[ANNOTATION_RESET]}
+            checked={settings.annotationReset}
             onChange={onChangeAnnotationReset}
           />
         </div>
@@ -136,7 +131,7 @@ export default function ProfileSettings({ langtag }) {
           </div>
           <Toggle
             className="profile-tab__toggle"
-            checked={settings[SORTING_RESET]}
+            checked={settings.sortingReset}
             onChange={onChangeSortingReset}
           />
         </div>
@@ -152,7 +147,7 @@ export default function ProfileSettings({ langtag }) {
           </div>
           <Toggle
             className="profile-tab__toggle"
-            checked={settings[SORTING_DESC]}
+            checked={settings.sortingDesc}
             onChange={onChangeSortingDesc}
           />
         </div>

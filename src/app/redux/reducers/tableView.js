@@ -42,6 +42,7 @@ const {
   SET_FILTERS_AND_SORTING,
   CLEAN_UP,
   SET_COLUMN_ORDERING,
+  SET_COLUMN_WIDTHS,
   SET_ANNOTATION_HIGHLIGHT
 } = ActionTypes;
 
@@ -51,6 +52,7 @@ const initialState = {
   editing: false,
   visibleColumns: [],
   columnOrdering: [],
+  columnWidths: {},
   currentTable: null,
   displayValues: {},
   expandedRowIds: [],
@@ -167,7 +169,10 @@ const toggleExpandedRow = (state, action) => {
 
 const setInitialVisibleColumns = (action, completeState) => state => {
   const isCurrentTable = state.currentTable === action.tableId;
-  const isReset = f.get(["globalSettings", "columnsReset"], completeState);
+  const isReset = f.get(
+    ["userSettings", "global", "columnsReset"],
+    completeState
+  );
   const isVisibleColumnsEmpty = f.isEmpty(f.get("visibleColumns", state));
 
   if ((isReset || isVisibleColumnsEmpty) && isCurrentTable) {
@@ -182,7 +187,10 @@ const setInitialVisibleColumns = (action, completeState) => state => {
 
 const setInitialColumnOrdering = (action, completeState) => state => {
   const isCurrentTable = state.currentTable === action.tableId;
-  const isReset = f.get(["globalSettings", "columnsReset"], completeState);
+  const isReset = f.get(
+    ["userSettings", "global", "columnsReset"],
+    completeState
+  );
   const isColumnOrderingEmpty = f.isEmpty(f.get("columnOrdering", state));
 
   if ((isReset || isColumnOrderingEmpty) && isCurrentTable) {
@@ -322,6 +330,8 @@ export default (state = initialState, action, completeState) => {
       return { ...state, visibleColumns: action.columnIds };
     case SET_COLUMN_ORDERING:
       return { ...state, columnOrdering: action.columnIds };
+    case SET_COLUMN_WIDTHS:
+      return { ...state, columnWidths: action.columnWidths };
     case SET_CURRENT_TABLE:
       return { ...state, currentTable: action.tableId };
     case COLUMNS_DATA_LOADED:

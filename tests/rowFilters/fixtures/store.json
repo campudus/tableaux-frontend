@@ -6001,11 +6001,5 @@
     "preventCellSelection": false,
     "editing": false
   },
-  "globalSettings": {
-    "filterReset": false,
-    "columnsReset": false,
-    "sortingReset": false,
-    "sortingDesc": false
-  },
   "multiSelect": []
 }

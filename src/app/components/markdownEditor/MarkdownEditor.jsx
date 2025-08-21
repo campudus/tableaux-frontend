@@ -1,5 +1,6 @@
 import React from "react";
 import f from "lodash/fp";
+import { useSelector } from "react-redux";
 
 import PropTypes from "prop-types";
 import classNames from "classnames";
@@ -7,7 +8,6 @@ import classNames from "classnames";
 import { StyleIcon } from "./StyleControls";
 import { getTableDisplayName } from "../../helpers/multiLanguage";
 import { ifElse } from "../../helpers/functools";
-import { useLocalStorage } from "../../helpers/useLocalStorage";
 import EditorPanel from "./EditorPanel";
 import Header from "../overlay/Header";
 import PlainMarkdownEditor from "./PlainMarkdownEditor";
@@ -25,10 +25,16 @@ const MarkdownEditor = ({ value, cell, actions, langtag, readOnly }, ref) => {
     (isMultiLanguage ? value[langtag] : value) || ""
   );
 
-  const [preferredEditor, setPreferredEditor] = useLocalStorage(
-    "markdownEditor",
-    MarkdownEditors.DIRECT
+  const preferredEditor = useSelector(
+    f.prop("userSettings.global.markdownEditor")
   );
+
+  const setPreferredEditor = editor => {
+    actions.upsertUserSetting(
+      { kind: "global", key: "markdownEditor" },
+      { value: editor }
+    );
+  };
 
   const editorRef = React.useRef();
   React.useImperativeHandle(ref, () => ({
