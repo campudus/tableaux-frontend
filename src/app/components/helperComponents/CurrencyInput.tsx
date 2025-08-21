@@ -6,7 +6,8 @@ import {
   useState
 } from "react";
 import ReactCurrencyInput, {
-  CurrencyInputOnChangeValues
+  CurrencyInputOnChangeValues,
+  formatValue
 } from "react-currency-input-field";
 
 type CurrencyInputProps = {
@@ -53,7 +54,15 @@ export default function CurrencyInput({
   };
 
   useEffect(() => {
-    setValues({ float: value, value: value?.toString() });
+    setValues({
+      float: value,
+      value: formatValue({
+        value: value?.toString(),
+        decimalScale: 2,
+        disableGroupSeparators: true,
+        intlConfig: { locale: langtag }
+      })
+    });
   }, [value]);
 
   return (
