@@ -2,7 +2,7 @@ import classNames from "classnames";
 import i18n from "i18next";
 import * as f from "lodash/fp";
 import PropTypes from "prop-types";
-import React, { PureComponent } from "react";
+import React from "react";
 import ReactMarkdown from "react-markdown";
 import {
   ColumnKinds,
@@ -80,7 +80,6 @@ const LanguageView = ({
     "needs-translation": isTranslationNeeded(langtag)(cell)
   });
 
-  console.log("LanguageView", langtag);
 
   const switchLanguage = event => {
     event.stopPropagation();
