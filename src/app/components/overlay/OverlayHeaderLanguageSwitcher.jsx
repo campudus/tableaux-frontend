@@ -1,7 +1,7 @@
 import classNames from "classnames";
 import PropTypes from "prop-types";
 import React, { useEffect, useRef, useState } from "react";
-import { Langtags } from "../../constants/TableauxConstants";
+import { Langtags, LanguageType } from "../../constants/TableauxConstants";
 import { getLanguageOrCountryIcon } from "../../helpers/multiLanguage";
 import { outsideClickEffect } from "../../helpers/useOutsideClick";
 
@@ -24,7 +24,7 @@ const Popup = ({ langtag, handleLangtagSwitch, onClose }) => {
               className="language-switcher__switch-language-button"
               onClick={handleLangtagSwitch(lt)}
             >
-              {getLanguageOrCountryIcon(lt, "language")}
+              {getLanguageOrCountryIcon(lt, LanguageType.language)}
             </button>
           </div>
         );
@@ -51,7 +51,7 @@ const OverlayHeaderLanguageSwitcher = props => {
     <div className={`overlay-header-language-switcher__wrapper ${classes}`}>
       <div className={cssClass} onClick={togglePopup}>
         <div className="language-switcher__label">
-          {getLanguageOrCountryIcon(contentLangtag)}
+          {getLanguageOrCountryIcon(contentLangtag, LanguageType.language)}
           <i
             className={
               open
