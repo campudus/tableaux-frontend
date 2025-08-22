@@ -80,7 +80,6 @@ const LanguageView = ({
     "needs-translation": isTranslationNeeded(langtag)(cell)
   });
 
-
   const switchLanguage = event => {
     event.stopPropagation();
     if (Langtags.includes(langtag)) handleLanguageSwitch(langtag);
@@ -225,7 +224,7 @@ const LanguageIcon = ({ cell, langtag }) => {
   });
   return (
     <div className={wrapperClass}>
-      {getLanguageOrCountryIcon(langtag, cell.languageType)}
+      {getLanguageOrCountryIcon(langtag, cell.column.languageType)}
     </div>
   );
 };
