@@ -52,7 +52,6 @@ class MultiselectArea extends PureComponent {
       </div>
     );
   };
-  getOrderFn = () => this.props.order || this.getId;
 
   getId = item => f.get(this.getIdProperty(), item) || item;
   getLabel = item => f.get(this.getLabelProperty(), item) || this.getId(item);
@@ -134,7 +133,7 @@ class MultiselectArea extends PureComponent {
       <ul className="multiselect-item-list">
         {f.isEmpty(listItems)
           ? this.getEmptyListPlaceholder()
-          : f.sortBy(this.getOrderFn(), listItems).map(this.renderListItem)}
+          : listItems.map(this.renderListItem)}
       </ul>
     );
   };
@@ -151,7 +150,7 @@ class MultiselectArea extends PureComponent {
       <div className={areaClass} onClick={this.openList(!listOpen)}>
         {f.isEmpty(selection)
           ? this.getPlaceholder()
-          : f.sortBy(this.getOrderFn(), selection).map(this.renderTag)}
+          : selection.map(this.renderTag)}
         <div className={`multiselect-list-wrapper ${listOpen ? "open" : ""}`}>
           {listOpen ? this.renderList() : null}
         </div>
