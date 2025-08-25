@@ -302,14 +302,9 @@ class VirtualTable extends PureComponent {
     const cell = this.getCell(rowIndex, columnIndex);
     const { value } = cell;
     const { width } = style;
-    // force update of cell component if locked state changes
-    const cellKey = isLocked(cell.row)
-      ? `${langtag}-${key}-locked`
-      : `${langtag}-${key}`;
 
     return (
       <Cell
-        key={cellKey}
         actions={actions}
         allDisplayValues={tableView.displayValues}
         annotationsOpen={
