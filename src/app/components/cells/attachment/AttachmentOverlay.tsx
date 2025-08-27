@@ -149,18 +149,17 @@ export default function AttachmentOverlayBody({
   return (
     <div className="attachment-overlay">
       <div className="attachment-overlay__navigation">
-        <h4 className="attachment-overlay__title">
-          {isRoot ? i18n.t("media:root_folder_name") : folder?.name}
-        </h4>
+        <a
+          href={`/${langtag}/media/${folder?.id}`}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <h4 className="attachment-overlay__title">
+            {isRoot ? i18n.t("media:root_folder_name") : folder?.name}
+          </h4>
+        </a>
 
         <div className="attachment-overlay__toolbar">
-          <ButtonAction
-            variant="outlined"
-            icon={<SvgIcon icon="edit" />}
-            alt={i18n.t("media:change_folder")}
-            onClick={handleNavigateToMediaFolder}
-          />
-
           <ButtonAction
             variant="outlined"
             icon={<SvgIcon icon={layoutState.nav} />}
