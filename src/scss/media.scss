@@ -781,10 +781,6 @@
     background: #ffffff;
     border-radius: 4px;
 
-    &:hover {
-      background: #efefef;
-    }
-
     &:has(.attachment-overlay-dirent__action--remove) {
       fill: #ffffff;
       background: #3296DC;
