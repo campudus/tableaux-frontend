@@ -7,7 +7,7 @@
     position: relative;
     box-sizing: border-box;
     min-width: 600px;
-    max-width: 1200px;
+    max-width: 1440px;
     height: 100%;
     padding: 30px;
     margin: 0 auto;
@@ -181,6 +181,7 @@
 
         @supports (-webkit-line-clamp: 2) {
           overflow-wrap: break-word;
+          word-break: break-all;
           white-space: normal;
           display: -webkit-box;
           line-clamp: 2;
