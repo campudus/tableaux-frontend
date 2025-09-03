@@ -53,7 +53,11 @@ export default function PreviewCellValue({
           link={link}
         />
       ) : column.kind === "attachment" ? (
-        <AttachmentCell attachemnts={row.values as Attachment[]} link={link} />
+        <AttachmentCell
+          langtag={langtag}
+          attachemnts={row.values as Attachment[]}
+          link={link}
+        />
       ) : (
         <a className="preview-cell-value-link" href={link}>
           {renderSingleLinkCell()}
