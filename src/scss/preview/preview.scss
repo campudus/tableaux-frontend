@@ -169,7 +169,7 @@
 
     background-color: #f8f8f8;
 
-    &--uneven {
+    &--even {
       background-color: #efefef;
     }
 
@@ -220,7 +220,7 @@
     object-fit: contain;
   }
 
-  &__row--uneven {
+  &__row--even {
     .preview-detail-view__column-name {
       background: #efefef;
     }

@@ -181,7 +181,7 @@ export default function LinkDetailView({
                 <tr
                   key={column.id}
                   className={buildClassName("preview-detail-view__row", {
-                    uneven: index % 2 !== 0,
+                    even: index % 2 === 0,
                     sticky: isStickyColumn(column)
                   })}
                 >
