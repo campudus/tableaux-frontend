@@ -135,32 +135,36 @@ export default function LinkDetailView({
                 <th className="preview-detail-view__column preview-detail-view__column-name" />
                 {previewImageColumn.rows.map(row => (
                   <th
+                    key={row.id}
                     className={buildClassName(
-                      "preview-detail-view__column preview-detail-view__column-value preview-detail-view__column-image-wrapper",
+                      "preview-detail-view__column preview-detail-view__column-value",
                       {
                         archived: isArchivedRow(row)
                       }
                     )}
-                    key={row.id}
                   >
-                    <img
-                      className="preview-detail-view__column-image"
-                      src={"/api" + row.values.at(0).url[langtag]}
-                      alt="Preview"
-                      onError={e => {
-                        (e.currentTarget as HTMLImageElement).src =
-                          "/img/preview-fallback.svg";
-                        (e.currentTarget as HTMLImageElement).style.width =
-                          "35px";
-                      }}
-                    />
-
-                    {isArchivedRow(row) && (
-                      <Chip
-                        icon={<i className="fa fa-archive" />}
-                        label="Archiviert"
+                    <div className="preview-detail-view__column-image-wrapper">
+                      <img
+                        className="preview-detail-view__column-image"
+                        src={"/api" + row.values.at(0).url[langtag]}
+                        alt="Preview"
+                        onError={e => {
+                          (e.currentTarget as HTMLImageElement).src =
+                            "/img/preview-fallback.svg";
+                          (e.currentTarget as HTMLImageElement).style.width =
+                            "35px";
+                        }}
                       />
-                    )}
+
+                      {isArchivedRow(row) && (
+                        <Chip
+                          icon={<i className="fa fa-archive" />}
+                          label="Archiviert"
+                        />
+                      )}
+                    </div>
+
+                    <div>{row.values.at(0).title[langtag]}</div>
                   </th>
                 ))}
               </tr>

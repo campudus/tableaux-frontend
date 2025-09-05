@@ -193,6 +193,13 @@
     align-items: center;
   }
 
+  th.preview-detail-view__column-value {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 12px;
+    font-size: 11px;
+  }
+
   &__column-image-wrapper {
     position: relative;
     width: 100%;
@@ -202,7 +209,7 @@
     background-color: $color-white;
     border-radius: 4px;
     padding: 0;
-    margin: 6px 12px;
+    margin: 6px 0px;
 
     .chip {
       position: absolute;
