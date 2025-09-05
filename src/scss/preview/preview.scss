@@ -69,10 +69,18 @@
 
     &--selected {
       background-color: rgba(50, 150, 220, 0.2);
+
+      .preview-row-view__column-selection input {
+        opacity: 0.8;
+      }
     }
 
     &--selected:hover {
       background-color: rgba(50, 150, 220, 0.2);
+
+      .preview-row-view__column-selection input {
+        opacity: 0.8;
+      }
     }
   }
 
@@ -85,6 +93,7 @@
 
     input {
       cursor: pointer;
+      opacity: 0.4;
     }
   }
 
