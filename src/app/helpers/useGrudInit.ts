@@ -16,6 +16,19 @@ export const useGrudInit = (retryOn: DependencyList = []) => {
 
   const init = async () => {
     try {
+      // user settings are not a hard requirement for initialization
+      const settingsAction = actions.getUserSettings;
+      const settingsResponse = await promisifyAction(settingsAction)();
+      const settings = settingsResponse.settings;
+
+      if (f.isEmpty(settings)) {
+        await initUserSettings();
+      }
+    } catch (err) {
+      console.error("Could not init GRUD user settings!", err);
+    }
+
+    try {
       const langtagsRoute = route.toSetting("langtags");
       const langtagsResponse = await makeRequest({ apiRoute: langtagsRoute });
       const langtags = langtagsResponse.value;
@@ -34,14 +47,6 @@ export const useGrudInit = (retryOn: DependencyList = []) => {
       store.dispatch(actions.createDisplayValueWorker());
 
       setInitialized(true);
-
-      // user settings are not a hard requirement for initialization
-      const settingsResponse = await promisifyAction(actions.getUserSettings)();
-      const settings = settingsResponse.settings;
-
-      if (f.isEmpty(settings)) {
-        await initUserSettings();
-      }
     } catch (err) {
       console.error("Could not init GRUD!", err);
     }
