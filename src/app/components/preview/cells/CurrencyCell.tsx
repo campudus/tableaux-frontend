@@ -17,7 +17,7 @@ export default function CurrencyCell({
 }: CurrencyCellProps): ReactElement {
   return (
     <div className="currency-cell">
-      {column.countryCodes.map((countryCode, index) => {
+      {column.countryCodes.map(countryCode => {
         const value = values[countryCode];
         const currencyCode = getCurrencyCode(countryCode);
         const formattedValue =
@@ -37,11 +37,6 @@ export default function CurrencyCell({
                 ? `${formattedValue} ${currencyCode}`
                 : i18n.t("preview:empty")}
             </span>
-
-            {/* {column.countryCodes.length > 1 &&
-              index < column.countryCodes.length - 1 && (
-                <span className="currency-cell__separator">&bull;</span>
-              )} */}
           </span>
         );
       })}

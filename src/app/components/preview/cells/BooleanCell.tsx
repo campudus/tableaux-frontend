@@ -3,14 +3,10 @@ import SvgIcon from "../../helperComponents/SvgIcon";
 import i18n from "i18next";
 
 type BooleanCellProps = {
-  langtag: string;
   value: boolean;
 };
 
-export default function BooleanCell({
-  langtag,
-  value
-}: BooleanCellProps): ReactElement {
+export default function BooleanCell({ value }: BooleanCellProps): ReactElement {
   return (
     <div className="boolean-cell">
       <SvgIcon
