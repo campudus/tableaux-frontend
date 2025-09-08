@@ -2,6 +2,7 @@
 import React, { ReactElement, ReactNode, useState } from "react";
 import { ConcatColumn, LinkColumn } from "../../../../types/grud";
 import LinkCellItem from "./LinkCellItem";
+import i18n from "i18next";
 
 type LinkListCellProps = {
   langtag: string;
@@ -78,7 +79,9 @@ export default function LinkListCell({
           <i
             className={`fa ${showAll ? "fa-chevron-up" : "fa-chevron-down"}`}
           />
-          <span>{showAll ? "Weniger anzeigen" : "Alle anzeigen"}</span>
+          <span>
+            {showAll ? i18n.t("preview:show_less") : i18n.t("preview:show_all")}
+          </span>
         </button>
       )}
     </div>

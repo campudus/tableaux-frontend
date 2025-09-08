@@ -5,6 +5,7 @@ import RichtextDetailView from "./detail-views/RichtextDetailView";
 import LinkDetailView from "./detail-views/LinkDetailView";
 import { ColumnAndRow } from "./helper";
 import actionTypes from "../../redux/actionTypes";
+import i18n from "i18next";
 
 type PreviewDetailViewProps = {
   langtag: string;
@@ -117,7 +118,7 @@ export default function PreviewDetailView({
                 checked={selectAll}
                 onChange={() => handleSelectAll(!selectAll)}
               />
-              <label>Alle auswählen</label>
+              <label>{i18n.t("preview:select_all")}</label>
             </div>
 
             <div className="preview-detail-view__checkbox">
@@ -129,7 +130,7 @@ export default function PreviewDetailView({
                 }
                 onChange={() => setShowDifferences(!showDifferences)}
               />
-              <label>Unterschiede anzeigen</label>
+              <label>{i18n.t("preview:show_differences")}</label>
             </div>
           </div>
         )}
