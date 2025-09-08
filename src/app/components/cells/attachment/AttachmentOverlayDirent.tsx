@@ -57,7 +57,8 @@ function AttachmentOverlayDirent(
     } else {
       const pxPerChar = 7.5;
       const wThumb = 45;
-      const wActs = 3 * 30;
+      const actionCount = toggleAction === "add" ? 3 : 4;
+      const wActs = actionCount * 30;
       const wGaps = 16;
       charLimit = Math.floor((width - wThumb - wActs - wGaps) / pxPerChar);
     }
@@ -92,6 +93,12 @@ function AttachmentOverlayDirent(
   const handleToggle = () => {
     if (isAttachment(dirent) && onToggle && toggleAction) {
       onToggle(dirent, toggleAction);
+    }
+  };
+
+  const handleNavigateToMediaFolder = () => {
+    if (isFile) {
+      onNavigate(dirent?.folder);
     }
   };
 
@@ -148,6 +155,16 @@ function AttachmentOverlayDirent(
               onClick={handleDownload}
             />
           )}
+          {isFile && toggleAction === "remove" && (
+            <ButtonAction
+              className={cn("attachment-overlay-dirent__action", {
+                folder: true
+              })}
+              icon={<i className="fa fa-folder" />}
+              alt={i18n.t(`media:folder_${direntKey}`)}
+              onClick={handleNavigateToMediaFolder}
+            />
+          )}
           {isFile && (
             <ButtonAction
               className={cn("attachment-overlay-dirent__action", {
@@ -192,6 +209,14 @@ function AttachmentOverlayDirent(
                   label: i18n.t(`media:change_${direntKey}`),
                   icon: <SvgIcon icon="edit" />,
                   onClick: handleNavigateToMediaFile
+                },
+                {
+                  className: cn("attachment-overlay-dirent__action", {
+                    folder: true
+                  }),
+                  label: i18n.t(`media:folder_${direntKey}`),
+                  icon: <i className="icon fa fa-folder" />,
+                  onClick: handleNavigateToMediaFolder
                 },
                 {
                   className: cn("attachment-overlay-dirent__action", {
