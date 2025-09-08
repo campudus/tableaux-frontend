@@ -796,6 +796,7 @@
     }
 
     .attachment-overlay-dirent__action--edit,
+    .attachment-overlay-dirent__action--folder,
     .attachment-overlay-dirent__action--download,
     .attachment-overlay-dirent__action--toggle {
       width: 30px;
@@ -817,54 +818,31 @@
 
     &--list {
       padding: 2px 8px 2px 4px;
-      display: grid;
-      grid-template-columns: 1fr auto auto auto;
+      display: flex;
       gap: 8px;
-      grid-template-rows: auto;
       align-items: center;
 
-      .attachment-overlay-dirent__action--main {
-        grid-row: 1;
-        grid-column: 1/-1;
-        display: flex;
-        align-items: center;
-        gap: 8px;
+      .attachment-overlay-dirent__action {
+        opacity: 0.3;
 
-        .button-action__button {
-          padding: 0;
-          display: grid;
-          grid-template-columns: 40px 1fr;
+        &--main {
+          opacity: 1;
+          flex: 1;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+  
+          .button-action__button {
+            padding: 0;
+            display: grid;
+            grid-template-columns: 40px 1fr;
+          }
         }
       }
 
-      .attachment-overlay-dirent__action--edit {
-        grid-row: 1;
-        grid-column: 3;
-      }
-
-      .attachment-overlay-dirent__action--download {
-        grid-row: 1;
-        grid-column: 2;
-      }
-
-      .attachment-overlay-dirent__action--toggle {
-        grid-row: 1;
-        grid-column: 4;
-      }
-
-      &:not(:hover) {
-
-        .attachment-overlay-dirent__action--edit,
-        .attachment-overlay-dirent__action--download {
-          opacity: 0.3;
-        }
-      }
-
-      .attachment-overlay-dirent__action--edit,
-      .attachment-overlay-dirent__action--download {
-
-        .button-action__button {
-          padding: 0 12px;
+      &:hover {
+        .attachment-overlay-dirent__action {
+          opacity: 1;
         }
       }
     }
