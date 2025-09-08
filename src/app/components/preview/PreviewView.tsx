@@ -12,7 +12,7 @@ import actionTypes from "../../redux/actionTypes";
 import { loadAllRows } from "../../redux/actions/rowActions";
 import { combineColumnsAndRow } from "./helper";
 import { useHistory } from "react-router-dom";
-import { getDefaultSelectedColumnId } from "./constants";
+import { getDefaultSelectedColumnId } from "./attributes";
 
 type PreviewViewProps = {
   langtag: string;

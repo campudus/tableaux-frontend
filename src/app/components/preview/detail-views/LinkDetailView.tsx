@@ -13,7 +13,7 @@ import {
   isPreviewImage,
   isStickyColumn,
   sortColumnsAndRows
-} from "../constants";
+} from "../attributes";
 import Chip from "../../Chip/Chip";
 import i18n from "i18next";
 

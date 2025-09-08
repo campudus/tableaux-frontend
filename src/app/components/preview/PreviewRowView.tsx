@@ -5,7 +5,7 @@ import { getColumnDisplayName } from "../../helpers/multiLanguage";
 import PreviewCellValue from "./PreviewCellValue";
 import { buildClassName } from "../../helpers/buildClassName";
 import { ColumnAndRow } from "./helper";
-import { attributeKeys, isPreviewTitle } from "./constants";
+import { attributeKeys, isPreviewTitle } from "./attributes";
 import f from "lodash/fp";
 import Notifier from "./Notifier";
 import { setRowFlag } from "../../redux/actions/annotationActions";
