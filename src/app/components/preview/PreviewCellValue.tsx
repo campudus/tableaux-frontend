@@ -27,7 +27,7 @@ export default function PreviewCellValue({
     const value = getDisplayValue(column)(rowValue);
 
     if (f.isBoolean(rowValue)) {
-      return <BooleanCell langtag={langtag} value={rowValue} />;
+      return <BooleanCell value={rowValue} />;
     }
 
     if (column.kind === "currency") {

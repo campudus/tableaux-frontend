@@ -26,18 +26,6 @@
     }
   }
 
-  // .array-cell {
-  //   display: flex;
-  //   flex-direction: row;
-  //   flex-wrap: wrap;
-  //   align-items: center;
-
-  //   &__separator {
-  //     margin: 0 8px;
-  //     font-size: 18px;
-  //   }
-  // }
-
   .currency-cell {
     display: flex;
     flex-direction: row;
@@ -105,64 +93,6 @@
       }
     }
   }
-
-  // .link-cell {
-  //   .link-list-cell {
-  //     display: grid;
-  //     gap: 8px;
-
-  //     &__entry {
-  //       display: inline-flex;
-  //       align-items: center;
-  //       flex-wrap: wrap;
-  //       gap: 8px;
-  //     }
-
-  //     &__item:hover {
-  //       color: $color-primary;
-  //     }
-
-  //     &__toggle {
-  //       color: $color-primary;
-  //       cursor: pointer;
-  //       display: flex;
-  //       align-items: center;
-  //       gap: 4px;
-  //       padding: 0;
-
-  //       i {
-  //         font-size: smaller;
-  //       }
-  //     }
-  //   }
-  // }
-
-  // .variant-cell {
-  //   display: grid;
-  //   gap: 8px;
-
-  //   &__link {
-  //     display: grid;
-  //     gap: 8px;
-  //   }
-
-  //   &__link:hover {
-  //     color: $color-primary;
-  //   }
-
-  //   &__toggle {
-  //     color: $color-primary;
-  //     cursor: pointer;
-  //     display: flex;
-  //     align-items: center;
-  //     gap: 4px;
-  //     padding: 0;
-
-  //     i {
-  //       font-size: smaller;
-  //     }
-  //   }
-  // }
 
   .attachment-cell {
     &__link {
