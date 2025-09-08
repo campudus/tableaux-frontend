@@ -15,6 +15,7 @@ import {
   sortColumnsAndRows
 } from "../constants";
 import Chip from "../../Chip/Chip";
+import i18n from "i18next";
 
 type LinkDetailViewProps = {
   langtag: string;
@@ -159,7 +160,7 @@ export default function LinkDetailView({
                       {isArchivedRow(row) && (
                         <Chip
                           icon={<i className="fa fa-archive" />}
-                          label="Archiviert"
+                          label={i18n.t("preview:archived")}
                         />
                       )}
                     </div>
