@@ -6,6 +6,7 @@ import getDisplayValue from "../../../../helpers/getDisplayValue";
 import { setEmptyClassName } from "../../helper";
 import { useDebouncedValue } from "../../../../helpers/useDebouncedValue";
 import Tooltip from "../../../../components/helperComponents/Tooltip/Tooltip";
+import i18n from "i18next";
 
 type LinkCellItemProps = {
   langtag: string;
@@ -45,7 +46,9 @@ export default function LinkCellItem({
   }
 
   if (f.isBoolean(displayValue)) {
-    displayValue = displayValue ? "WAHR" : "FALSCH";
+    displayValue = displayValue
+      ? i18n.t("preview:true")
+      : i18n.t("preview:false");
   }
 
   return (
@@ -58,7 +61,9 @@ export default function LinkCellItem({
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
-        {!displayValue || displayValue === "" ? "Leer" : displayValue}
+        {!displayValue || displayValue === ""
+          ? i18n.t("preview:empty")
+          : displayValue}
         {isVisible && (
           <Tooltip defaultInvert style={{ left: "10px" }}>
             {path.join(" / ")}

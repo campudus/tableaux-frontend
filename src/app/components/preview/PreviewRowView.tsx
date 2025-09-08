@@ -10,6 +10,7 @@ import f from "lodash/fp";
 import Notifier from "./Notifier";
 import { setRowFlag } from "../../redux/actions/annotationActions";
 import { Row } from "../../types/grud";
+import i18n from "i18next";
 
 const { PREVIEW_TITLE } = attributeKeys;
 
@@ -93,12 +94,14 @@ export default function PreviewRowView({
           icon={<i className={`fa ${isRowFinal ? "fa-lock" : "fa-unlock"} `} />}
           label={
             isRowFinal
-              ? "Dieser Datensatz ist schreibgeschützt."
-              : "Dieser Datensatz ist in Bearbeitung."
+              ? i18n.t("preview:row_is_final")
+              : i18n.t("preview:row_is_not_final")
           }
           button={
             <button onClick={handleUpdateRowFinalStatus}>
-              {isRowFinal ? "Datensatz entsperren" : "Datensatz sperren"}
+              {isRowFinal
+                ? i18n.t("preview:unlock_row")
+                : i18n.t("preview:lock_row")}
             </button>
           }
           color={isRowFinal ? "dark" : "orange"}
@@ -107,7 +110,7 @@ export default function PreviewRowView({
           <Notifier
             className="preview-row-view__archived-notifier"
             icon={<i className="fa fa-archive" />}
-            label="Dieser Datensatz ist archiviert."
+            label={i18n.t("preview:row_is_archived")}
           />
         )}
       </div>

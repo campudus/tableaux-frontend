@@ -4,6 +4,7 @@ import { ReactElement, ReactNode } from "react";
 import { setEmptyClassName } from "../../helper";
 import LinkListCell from "./LinkListCell";
 import LinkCellItem from "./LinkCellItem";
+import i18n from "i18next";
 
 type LinkCellProps = {
   langtag: string;
@@ -27,7 +28,7 @@ export default function LinkCell({
           )}`}
           href={link}
         >
-          {"Leer"}
+          {i18n.t("preview:empty")}
         </a>
       );
     }

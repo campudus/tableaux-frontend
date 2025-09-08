@@ -2,6 +2,7 @@ import { ReactElement, useState } from "react";
 import { Attachment } from "../../../types/grud";
 import { setEmptyClassName } from "../helper";
 import SvgIcon from "../../helperComponents/SvgIcon";
+import i18n from "i18next";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination } from "swiper/modules";
 import "swiper/css";
@@ -27,7 +28,7 @@ export default function AttachmentCell({
         className={`attachment-cell preview-cell-value-link ${setEmptyClassName()}`}
         href={link}
       >
-        Leer
+        {i18n.t("preview:empty")}
       </a>
     );
   }
@@ -46,7 +47,9 @@ export default function AttachmentCell({
         onClick={() => setOpen(true)}
         type="button"
       >
-        <span>Bilder anzeigen ({attachments.length})</span>
+        <span>
+          {i18n.t("preview:show_images")} ({attachments.length})
+        </span>
       </button>
 
       {open && (
