@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Attachment, Column, Row } from "../../types/grud";
-import f from "lodash/fp";
 import getDisplayValue from "../../helpers/getDisplayValue";
 import BooleanCell from "./cells/BooleanCell";
 import { ReactElement } from "react";
@@ -22,11 +21,11 @@ export default function PreviewCellValue({
   row,
   link
 }: PreviewCellValueProps): ReactElement {
-  function renderSingleLinkCell(): ReactElement {
+  function renderCell(): ReactElement {
     const rowValue = row.values;
     const value = getDisplayValue(column)(rowValue);
 
-    if (f.isBoolean(rowValue)) {
+    if (column.kind === "boolean" && typeof rowValue === "boolean") {
       return <BooleanCell value={rowValue} />;
     }
 
@@ -60,7 +59,7 @@ export default function PreviewCellValue({
         />
       ) : (
         <a className="preview-cell-value-link" href={link}>
-          {renderSingleLinkCell()}
+          {renderCell()}
         </a>
       )}
     </div>
