@@ -55,7 +55,7 @@ export default function PreviewCellValue({
       ) : column.kind === "attachment" ? (
         <AttachmentCell
           langtag={langtag}
-          attachemnts={row.values as Attachment[]}
+          attachments={row.values as Attachment[]}
           link={link}
         />
       ) : (
