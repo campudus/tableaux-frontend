@@ -10,21 +10,21 @@ import "swiper/css/pagination";
 
 type AttachmentCellProps = {
   langtag: string;
-  attachemnts: Attachment[] | undefined;
+  attachments: Attachment[] | undefined;
   link: string;
 };
 
 export default function AttachmentCell({
   langtag,
-  attachemnts,
+  attachments,
   link
 }: AttachmentCellProps): ReactElement {
   const [open, setOpen] = useState(false);
 
-  if (!attachemnts || attachemnts.length === 0) {
+  if (!attachments || attachments.length === 0) {
     return (
       <a
-        className={`attachemnt-cell preview-cell-value-link ${setEmptyClassName()}`}
+        className={`attachment-cell preview-cell-value-link ${setEmptyClassName()}`}
         href={link}
       >
         Leer
@@ -35,18 +35,18 @@ export default function AttachmentCell({
   const pagination = {
     clickable: true,
     renderBullet: function(index: number, className: string) {
-      return `<img class="${className}" src="/api${attachemnts[index]?.url[langtag]}" alt="thumb" />`;
+      return `<img class="${className}" src="/api${attachments[index]?.url[langtag]}" alt="thumb" />`;
     }
   };
 
   return (
     <>
       <button
-        className="attachemnt-cell attachemnt-cell__link"
+        className="attachment-cell attachment-cell__link"
         onClick={() => setOpen(true)}
         type="button"
       >
-        <span>Bilder anzeigen ({attachemnts.length})</span>
+        <span>Bilder anzeigen ({attachments.length})</span>
       </button>
 
       {open && (
@@ -59,10 +59,10 @@ export default function AttachmentCell({
           <div className="attachment-slider-modal">
             <Swiper
               modules={[Navigation, Pagination]}
-              navigation={attachemnts.length > 1}
-              pagination={attachemnts.length > 1 && pagination}
+              navigation={attachments.length > 1}
+              pagination={attachments.length > 1 && pagination}
             >
-              {attachemnts.map(att => (
+              {attachments.map(att => (
                 <SwiperSlide key={att.uuid}>
                   <div className="swiper-image-wrapper">
                     <img src={"/api" + att.url[langtag]} alt={"alt"} />
