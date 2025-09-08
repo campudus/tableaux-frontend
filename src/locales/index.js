@@ -12,6 +12,8 @@ import historyDE from "./de/history.json";
 import historyEN from "./en/history.json";
 import mediaDE from "./de/media.json";
 import mediaEN from "./en/media.json";
+import previewDE from "./de/preview.json";
+import previewEN from "./en/preview.json";
 import profileDE from "./de/profile.json";
 import profileEN from "./en/profile.json";
 import tableDE from "./de/table.json";
@@ -26,6 +28,7 @@ export default {
     header: headerDE,
     history: historyDE,
     media: mediaDE,
+    preview: previewDE,
     profile: profileDE,
     table: tableDE
   },
@@ -37,6 +40,7 @@ export default {
     header: headerEN,
     history: historyEN,
     media: mediaEN,
+    preview: previewEN,
     profile: profileEN,
     table: tableEN
   }

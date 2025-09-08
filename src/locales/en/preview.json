@@ -1,0 +1,18 @@
+{
+  "row_is_final": "This row is final.",
+  "row_is_not_final": "This row is in progress.",
+  "row_is_archived": "This row is archived.",
+  "unlock_row": "Unlock row",
+  "lock_row": "Lock row",
+  "select_all": "Select all",
+  "show_differences": "Show differences",
+  "archived": "Archived",
+  "empty": "Empty",
+  "yes": "Yes",
+  "no": "No",
+  "true": "TRUE",
+  "false": "FALSE",
+  "show_images": "Show images",
+  "show_less": "Show less",
+  "show_all": "Show all"
+}
