@@ -22,11 +22,26 @@
     position: absolute;
     top: 20%;
     left: -8px;
-    width: 18px;
-    height: 18px;
-    background-color: blue;
+    width: 16px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    border: 1px solid $color-subtle-grey;
+    background: $color-subtle-grey;
+
     cursor: col-resize;
     z-index: 10;
+
+    .svg-icon {
+      max-width: none;
+    }
+
+    svg {
+      width: 15px;
+      height: 15px;
+    }
   }
 }
 
