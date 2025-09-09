@@ -24,7 +24,9 @@ import SvgIcon from "../../helperComponents/SvgIcon";
 import AttachmentDirents from "./AttachmentDirents";
 import { changeCellValue } from "../../../redux/actions/cellActions";
 import { idsToIndices } from "../../../redux/redux-helpers";
-import { Layout, SharedProps } from "./AttachmentOverlay";
+import { FILTER_MODE_DEFAULT, Layout, SharedProps } from "./AttachmentOverlay";
+import SearchFunctions from "../../../helpers/searchFunctions";
+import { retrieveTranslation } from "../../../helpers/multiLanguage";
 
 type LayoutState = { nav: Layout; content: Layout };
 
@@ -40,7 +42,9 @@ export default function AttachmentOverlayBody({
   sharedData,
   updateSharedData
 }: AttachmentOverlayBodyProps): ReactElement {
-  const { folder } = sharedData ?? {};
+  const translate = retrieveTranslation(langtag);
+  const { folder, filterMode = FILTER_MODE_DEFAULT, filterValue } =
+    sharedData ?? {};
   const ids = {
     tableId: cell.table.id,
     columnId: cell.column.id,
@@ -66,11 +70,14 @@ export default function AttachmentOverlayBody({
     f.propEq("name", i18n.t("media:new_folder")),
     folder?.subfolders
   );
-  const files = f.orderBy(
-    f.prop("updatedAt"),
-    "desc",
-    f.differenceBy("uuid", folder?.files ?? [], attachedFiles)
-  );
+  const nonAttachedFiles = f.differenceBy("uuid", folder?.files, attachedFiles);
+  const filter = SearchFunctions[filterMode];
+  const filteredFiles = f.filter(file => {
+    const targetValue = translate(file.title);
+    return filter(filterValue, targetValue) as boolean;
+  }, nonAttachedFiles);
+  const files = f.orderBy(f.prop("updatedAt"), "desc", filteredFiles);
+
   // sort new folder to top
   const subfolders = f.orderBy(
     f.propEq("name", i18n.t("media:new_folder")),

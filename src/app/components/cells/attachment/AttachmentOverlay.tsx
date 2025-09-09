@@ -1,17 +1,24 @@
 import store from "../../../redux/store";
 import actions from "../../../redux/actionCreators";
 import { Folder } from "../../../types/grud";
-import Header from "../../overlay/Header";
 import AttachmentOverlayBody, {
   AttachmentOverlayBodyProps
 } from "./AttachmentOverlayBody";
+import AttachmentOverlayHeader from "./AttachmentOverlayHeader";
+import { FilterModes } from "../../../constants/TableauxConstants";
+
+export const FILTER_MODE_DEFAULT = FilterModes.CONTAINS;
+
+export type FilterMode =
+  | typeof FilterModes.CONTAINS
+  | typeof FilterModes.STARTS_WITH;
 
 export type Layout = "list" | "tiles";
 
 export type SharedData = {
   folder?: Folder;
-  search?: string;
-  sortKey?: string;
+  filterValue?: string;
+  filterMode?: FilterMode;
 };
 
 export type SharedProps = {
@@ -28,7 +35,7 @@ export function openAttachmentOverlay({
 }: AttachmentOverlayBodyProps) {
   store.dispatch(
     actions.openOverlay({
-      head: <Header langtag={langtag} />,
+      head: <AttachmentOverlayHeader langtag={langtag} />,
       body: (
         <AttachmentOverlayBody
           cell={cell}
