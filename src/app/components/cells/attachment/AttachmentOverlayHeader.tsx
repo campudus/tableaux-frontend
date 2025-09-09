@@ -1,7 +1,8 @@
 import { ReactElement } from "react";
-import { SharedProps, FilterMode } from "./AttachmentOverlay";
+import { SharedProps, FilterMode, OrderMode } from "./AttachmentOverlay";
 import Header from "../../overlay/Header";
 import AttachmentFilter from "./AttachmentFilter";
+import AttachmentOrder from "./AttachmentOrder";
 
 type AttachmentOverlayHeaderProps = SharedProps;
 
@@ -9,7 +10,7 @@ export default function AttachmentOverlayHeader(
   props: AttachmentOverlayHeaderProps
 ): ReactElement {
   const { sharedData, updateSharedData } = props;
-  const { filterValue, filterMode } = sharedData ?? {};
+  const { filterValue, filterMode, orderMode } = sharedData ?? {};
 
   const handleUpdateFilterValue = (value: string) => {
     updateSharedData?.(() => ({
@@ -27,14 +28,27 @@ export default function AttachmentOverlayHeader(
     }));
   };
 
+  const handleUpdateOrderMode = (mode: OrderMode) => {
+    updateSharedData?.(() => ({
+      ...sharedData,
+      orderMode: mode
+    }));
+  };
+
   return (
     <Header {...props}>
-      <AttachmentFilter
-        value={filterValue}
-        mode={filterMode}
-        onUpdateValue={handleUpdateFilterValue}
-        onUpdateMode={handleUpdateFilterMode}
-      />
+      <div className="attachment-overlay-header">
+        <AttachmentFilter
+          value={filterValue}
+          mode={filterMode}
+          onUpdateValue={handleUpdateFilterValue}
+          onUpdateMode={handleUpdateFilterMode}
+        />
+        <AttachmentOrder
+          mode={orderMode}
+          onUpdateMode={handleUpdateOrderMode}
+        />
+      </div>
     </Header>
   );
 }

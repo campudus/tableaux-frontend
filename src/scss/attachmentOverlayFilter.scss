@@ -1,6 +1,38 @@
-.overlay .attachment-filter {
+.overlay .attachment-overlay-header {
+  grid-column-start: 2;
+  grid-column-end: 5;
+  grid-row-start: 3;
   height: 30px;
   display: flex;
+  gap: 8px;
+
+  .attachment-filter {
+    flex: 1;
+    display: flex;
+
+    &__input {
+      width: 100%;
+      padding: 8px;
+      border-radius: 3px;
+      border: none;
+      box-sizing: border-box;
+    }
+  }
+
+  .attachment-order {
+    flex: 0 1 auto;
+    min-width: 35px;
+
+    .button-action__button {
+      justify-content: center;
+      color: #999;
+      background: #ffffff;
+
+      &--active {
+        background: #ffffff;
+      }
+    }
+  }
 
   input.attachment-filter__input {
     border-top-right-radius: 0;
