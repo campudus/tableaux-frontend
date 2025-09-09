@@ -1,11 +1,9 @@
-import { ReactElement, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { ReactElement } from "react";
+import { useSelector } from "react-redux";
 import { GRUDStore, Row } from "../../types/grud";
-import RichtextDetailView from "./detail-views/RichtextDetailView";
-import LinkDetailView from "./detail-views/LinkDetailView";
+import DetailViewRichtext from "./detailViews/DetailViewRichtext";
+import DetailViewLink from "./detailViews/DetailViewLink";
 import { ColumnAndRow } from "./helper";
-import actionTypes from "../../redux/actionTypes";
-import i18n from "i18next";
 
 type PreviewDetailViewProps = {
   langtag: string;
@@ -20,10 +18,6 @@ export default function PreviewDetailView({
   currentColumnId,
   selectedColumnAndRow
 }: PreviewDetailViewProps): ReactElement {
-  const dispatch = useDispatch();
-  const [selectAll, setSelectAll] = useState(true);
-  const [showDifferences, setShowDifferences] = useState(false);
-
   const title = useSelector(
     (store: GRUDStore) =>
       store.columns[currentTable]?.data.find(
@@ -33,24 +27,15 @@ export default function PreviewDetailView({
   const currentDetailTable = useSelector(
     (store: GRUDStore) => store.preview.currentDetailTable
   );
-  const selectedLinkedEntries = useSelector(
-    (store: GRUDStore) => store.preview.selectedLinkedEntries
-  );
 
   const currentColumn = selectedColumnAndRow?.column;
+
   const linkedCells = Array.isArray(selectedColumnAndRow?.row.values)
     ? (selectedColumnAndRow.row.values as Row[])
     : undefined;
 
   const sortedLinkedCells =
     linkedCells && linkedCells.sort((a, b) => a.id - b.id);
-
-  const hasMultipleLinkedCells =
-    (sortedLinkedCells && sortedLinkedCells.length > 1) || false;
-
-  const fullTitle = hasMultipleLinkedCells
-    ? `${title} (${sortedLinkedCells?.length})`
-    : title;
 
   function renderDetailView(): ReactElement | null {
     if (!currentColumn) {
@@ -59,7 +44,8 @@ export default function PreviewDetailView({
 
     if (currentColumn.kind === "richtext") {
       return (
-        <RichtextDetailView
+        <DetailViewRichtext
+          title={title}
           richtext={selectedColumnAndRow.row.values[langtag] as string}
         />
       );
@@ -75,12 +61,12 @@ export default function PreviewDetailView({
       }
 
       return (
-        <LinkDetailView
+        <DetailViewLink
           langtag={langtag}
+          title={title}
           currentDetailTable={currentDetailTable}
           selectedColumnAndRow={selectedColumnAndRow}
           linkedCells={sortedLinkedCells}
-          showDifferences={showDifferences}
         />
       );
     }
@@ -88,55 +74,5 @@ export default function PreviewDetailView({
     return null;
   }
 
-  function handleSelectAll(selectAll: boolean): void {
-    if (selectAll) {
-      dispatch({
-        type: actionTypes.preview.PREVIEW_SET_LINKED_SELECTION,
-        selectedLinkedEntries: sortedLinkedCells?.map(entry => entry.id)
-      });
-    } else {
-      dispatch({
-        type: actionTypes.preview.PREVIEW_SET_LINKED_SELECTION,
-        selectedLinkedEntries: []
-      });
-      setShowDifferences(false);
-    }
-
-    setSelectAll(selectAll);
-  }
-
-  return (
-    <div className="preview-detail-view">
-      <div className="preview-detail-view__header">
-        <h2 className="preview-detail-view__title">{fullTitle}</h2>
-
-        {hasMultipleLinkedCells && (
-          <div className="preview-detail-view__actions">
-            <div className="preview-detail-view__checkbox">
-              <input
-                type="checkbox"
-                checked={selectAll}
-                onChange={() => handleSelectAll(!selectAll)}
-              />
-              <label>{i18n.t("preview:select_all")}</label>
-            </div>
-
-            <div className="preview-detail-view__checkbox">
-              <input
-                type="checkbox"
-                checked={showDifferences}
-                disabled={
-                  !(selectedLinkedEntries && selectedLinkedEntries.length >= 2)
-                }
-                onChange={() => setShowDifferences(!showDifferences)}
-              />
-              <label>{i18n.t("preview:show_differences")}</label>
-            </div>
-          </div>
-        )}
-      </div>
-
-      {renderDetailView()}
-    </div>
-  );
+  return <div className="preview-detail-view">{renderDetailView()}</div>;
 }
