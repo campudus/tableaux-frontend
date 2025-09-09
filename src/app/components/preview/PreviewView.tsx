@@ -13,6 +13,7 @@ import { loadAllRows } from "../../redux/actions/rowActions";
 import { combineColumnsAndRow } from "./helper";
 import { useHistory } from "react-router-dom";
 import { getDefaultSelectedColumnId } from "./attributes";
+import SvgIcon from "../helperComponents/SvgIcon";
 
 type PreviewViewProps = {
   langtag: string;
@@ -185,10 +186,10 @@ export default function PreviewView({
           className="preview-view__resizeable-right"
           style={{ width: `${100 - leftWidth}%` }}
         >
-          <div
-            onMouseDown={handleMouseDown}
-            className="preview-view__resizer"
-          />
+          <div onMouseDown={handleMouseDown} className="preview-view__resizer">
+            <SvgIcon icon={"grabber"} />
+          </div>
+
           {renderDetailView()}
         </div>
       </div>
