@@ -3,7 +3,7 @@ import { MouseEvent, ReactNode, useEffect, useRef, useState } from "react";
 import { buildClassName as cn } from "../../helpers/buildClassName";
 import { outsideClickEffect } from "../../helpers/useOutsideClick";
 
-type ButtonActionOption = {
+export type ButtonActionOption = {
   className?: string;
   icon?: ReactNode;
   label?: ReactNode;

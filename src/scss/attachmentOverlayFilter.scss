@@ -1,98 +1,121 @@
-.attachment-overlay-filter-container {
-  height: 40px;
+.overlay .attachment-filter {
+  height: 30px;
   display: flex;
-  align-items: center;
-  background-color: $color-overlay-background;
-  border-bottom: 1px solid lighten($color-text-light-grey, 5);
-  padding: 3px 7px;
 
-  &>* {
-    margin: 0 8px;
+  input.attachment-filter__input {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
   }
 
-  .attachment-overlay-filter-bar {
-    flex: 1 1 auto;
-    display: flex;
-    align-items: center;
-    position: relative;
+  .attachment-filter__mode {
+    .button-action__button {
+      color: #999;
+      background: #ffffff;
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0;
 
-    .attachment-overlay-filter-input {
-      padding: 8px;
-      border-radius: 3px;
-      border: none !important;
-      background-color: white !important;
-      margin: 0 !important;
-      flex: 1 1 auto;
-    }
-
-    .popup-wrapper {
-      position: absolute;
-      right: 0;
-
-      .popup-button {
-        @include flex-centered();
-        width: 30px;
-        height: 25px;
-        margin-left: 5px;
-        position: relative;
-        background-color: $color-primary-contrast-text;
-        color: $color-text-medium-grey;
-        border-radius: 3px;
-
-        i {
-          margin: 0 !important;
-        }
+      &--active {
+        background: #ffffff;
       }
-    }
-
-    .attachment-overlay-filter-mode-popup {
-      position: absolute;
-      top: 100%;
-      right: 10px;
-      display: flex;
-      flex-direction: column;
-      z-index: 1;
-      box-shadow: 3px 2px 10px black;
-
-      .filter-mode-item {
-        width: 100%;
-        background-color: white;
-        color: $color-text-medium-grey;
-        padding: 5px;
-        white-space: nowrap;
-        text-wrap: none;
-
-        &.selected {
-          background-color: $color-primary;
-          color: $color-primary-contrast-text;
-        }
-
-        &:hover {
-          background-color: $color-hover-background;
-          color: $color-hover-foreground;
-        }
-      }
-    }
-  }
-
-  .attachment-overlay-sort-button {
-    @include flex-centered();
-    flex-direction: row;
-    height: 31px;
-    width: 35px;
-    border-radius: 3px;
-    margin-left: 0;
-
-    background-color: $color-primary-contrast-text;
-    color: $color-text-medium-grey;
-
-    &:hover {
-      background-color: $color-primary;
-      color: $color-primary-contrast-text;
-    }
-
-    i {
-      margin: 0 !important;
     }
   }
 }
+
+// .attachment-overlay-filter-container {
+//   height: 40px;
+//   display: flex;
+//   align-items: center;
+//   background-color: $color-overlay-background;
+//   border-bottom: 1px solid lighten($color-text-light-grey, 5);
+//   padding: 3px 7px;
+
+//   &>* {
+//     margin: 0 8px;
+//   }
+
+//   .attachment-overlay-filter-bar {
+//     flex: 1 1 auto;
+//     display: flex;
+//     align-items: center;
+//     position: relative;
+
+//     .attachment-overlay-filter-input {
+//       padding: 8px;
+//       border-radius: 3px;
+//       border: none !important;
+//       background-color: white !important;
+//       margin: 0 !important;
+//       flex: 1 1 auto;
+//     }
+
+//     .popup-wrapper {
+//       position: absolute;
+//       right: 0;
+
+//       .popup-button {
+//         @include flex-centered();
+//         width: 30px;
+//         height: 25px;
+//         margin-left: 5px;
+//         position: relative;
+//         background-color: $color-primary-contrast-text;
+//         color: $color-text-medium-grey;
+//         border-radius: 3px;
+
+//         i {
+//           margin: 0 !important;
+//         }
+//       }
+//     }
+
+//     .attachment-overlay-filter-mode-popup {
+//       position: absolute;
+//       top: 100%;
+//       right: 10px;
+//       display: flex;
+//       flex-direction: column;
+//       z-index: 1;
+//       box-shadow: 3px 2px 10px black;
+
+//       .filter-mode-item {
+//         width: 100%;
+//         background-color: white;
+//         color: $color-text-medium-grey;
+//         padding: 5px;
+//         white-space: nowrap;
+//         text-wrap: none;
+
+//         &.selected {
+//           background-color: $color-primary;
+//           color: $color-primary-contrast-text;
+//         }
+
+//         &:hover {
+//           background-color: $color-hover-background;
+//           color: $color-hover-foreground;
+//         }
+//       }
+//     }
+//   }
+
+//   .attachment-overlay-sort-button {
+//     @include flex-centered();
+//     flex-direction: row;
+//     height: 31px;
+//     width: 35px;
+//     border-radius: 3px;
+//     margin-left: 0;
+
+//     background-color: $color-primary-contrast-text;
+//     color: $color-text-medium-grey;
+
+//     &:hover {
+//       background-color: $color-primary;
+//       color: $color-primary-contrast-text;
+//     }
+
+//     i {
+//       margin: 0 !important;
+//     }
+//   }
+// }
