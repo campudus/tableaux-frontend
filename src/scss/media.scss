@@ -757,8 +757,8 @@
     }
   }
 
-  .attachment-overlay-dirent--tiles {
-    .attachment-overlay-dirent__thumbnail {
+  .attachment-dirent--tiles {
+    .attachment-dirent__thumbnail {
       height: 100px;
 
       .media-thumbnail__image--icon {
@@ -775,13 +775,13 @@
   }
 
 
-  .attachment-overlay-dirent {
+  .attachment-dirent {
     box-sizing: border-box;
     overflow: hidden;
     background: #ffffff;
     border-radius: 4px;
 
-    &:has(.attachment-overlay-dirent__action--remove) {
+    &:has(.attachment-dirent__action--remove) {
       fill: #ffffff;
       background: #3296DC;
       border: 1px solid #3296DC;
@@ -795,10 +795,10 @@
       }
     }
 
-    .attachment-overlay-dirent__action--edit,
-    .attachment-overlay-dirent__action--folder,
-    .attachment-overlay-dirent__action--download,
-    .attachment-overlay-dirent__action--toggle {
+    .attachment-dirent__action--edit,
+    .attachment-dirent__action--folder,
+    .attachment-dirent__action--download,
+    .attachment-dirent__action--toggle {
       width: 30px;
       height: 30px;
       border-radius: 4px;
@@ -811,7 +811,7 @@
       }
     }
 
-    .attachment-overlay-dirent__action--toggle {
+    .attachment-dirent__action--toggle {
       background: #C3E1FF;
       fill: #2E96FF;
     }
@@ -822,7 +822,7 @@
       gap: 8px;
       align-items: center;
 
-      .attachment-overlay-dirent__action {
+      .attachment-dirent__action {
         opacity: 0.3;
 
         &--main {
@@ -841,7 +841,7 @@
       }
 
       &:hover {
-        .attachment-overlay-dirent__action {
+        .attachment-dirent__action {
           opacity: 1;
         }
       }
@@ -855,7 +855,7 @@
       grid-template-rows: 1fr 28px;
       padding: 0;
 
-      .attachment-overlay-dirent__action--main {
+      .attachment-dirent__action--main {
         width: 100%;
         grid-column: 1/-1;
         grid-row: 1/3;
@@ -869,7 +869,7 @@
         }
       }
 
-      .attachment-overlay-dirent__action--menu {
+      .attachment-dirent__action--menu {
         grid-row: 2;
         grid-column: 2;
 
@@ -891,13 +891,13 @@
         }
       }
 
-      .attachment-overlay-dirent__action--toggle {
+      .attachment-dirent__action--toggle {
         grid-row: 1;
         grid-column: 2;
         margin: 4px;
       }
 
-      .attachment-overlay-dirent__label {
+      .attachment-dirent__label {
         font-size: 11px;
         padding: 0 4px;
       }
