@@ -1,9 +1,6 @@
 import f from "lodash/fp";
 import cns from "classnames";
 import { ReactElement, useEffect, useRef } from "react";
-import { useDispatch } from "react-redux";
-import Header from "../../overlay/Header";
-import actions from "../../../redux/actionCreators";
 import apiUrl from "../../../helpers/apiUrl";
 import { isLocked } from "../../../helpers/rowUnlock";
 import { canUserChangeCell } from "../../../helpers/accessManagementHelper";
@@ -11,7 +8,7 @@ import { retrieveTranslation } from "../../../helpers/multiLanguage";
 import { Attachment, Cell } from "../../../types/grud";
 import ButtonAction from "../../helperComponents/ButtonAction";
 import MediaThumbnail from "../../media/MediaThumbnail";
-import AttachmentOverlayBody from "./AttachmentOverlay";
+import { openAttachmentOverlay } from "./AttachmentOverlay";
 
 type AttachmentCellProps = {
   cell: Cell;
@@ -27,7 +24,6 @@ export default function AttachmentCell({
   selected
 }: AttachmentCellProps): ReactElement {
   const contentRef = useRef<HTMLDivElement>(null);
-  const dispatch = useDispatch();
   const translate = retrieveTranslation(langtag);
   const attachments = (cell.value as unknown) as Attachment[];
   const isPreview = !selected && !editing;
@@ -39,21 +35,7 @@ export default function AttachmentCell({
   };
 
   const handleClickEdit = () => {
-    dispatch(
-      actions.openOverlay({
-        head: <Header langtag={langtag} />,
-        body: (
-          <AttachmentOverlayBody
-            cell={cell}
-            langtag={langtag}
-            folderId={folderId}
-          />
-        ),
-        type: "full-height",
-        preferRight: true,
-        title: cell
-      })
-    );
+    openAttachmentOverlay({ langtag, cell, folderId });
   };
 
   useEffect(() => {

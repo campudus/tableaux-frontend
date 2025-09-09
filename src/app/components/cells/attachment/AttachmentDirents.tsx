@@ -9,10 +9,10 @@ import { createCellPositioner } from "react-virtualized/dist/es/Masonry";
 import { Attachment, Folder, FolderID } from "../../../types/grud";
 import { buildClassName as cn } from "../../../helpers/buildClassName";
 import { Layout } from "./AttachmentOverlay";
-import AttachmentOverlayDirent from "./AttachmentOverlayDirent";
-import AttachmentOverlayDirentNav from "./AttachmentOverlayDirentNav";
+import AttachmentDirent from "./AttachmentDirent";
+import AttachmentDirentNav from "./AttachmentDirentNav";
 
-type AttachmentOverlayDirentsProps = {
+type AttachmentDirentsProps = {
   className?: string;
   langtag: string;
   files?: Attachment[];
@@ -24,7 +24,7 @@ type AttachmentOverlayDirentsProps = {
   toggleAction?: "add" | "remove";
 };
 
-export default function AttachmentOverlayDirents({
+export default function AttachmentDirents({
   className,
   langtag,
   files = [],
@@ -34,7 +34,7 @@ export default function AttachmentOverlayDirents({
   onNavigateBack,
   onToggle,
   toggleAction
-}: AttachmentOverlayDirentsProps): ReactElement {
+}: AttachmentDirentsProps): ReactElement {
   const [dimensions, setDimensions] = useState({ width: 100, height: 100 });
   const masonryRef = useRef<Masonry>(null);
   // add dummy folder for back action
@@ -80,7 +80,7 @@ export default function AttachmentOverlayDirents({
   }, [dirents.length, layout, dimensions]);
 
   return (
-    <div className={cn("attachment-overlay-dirents", {}, className)}>
+    <div className={cn("attachment-dirents", {}, className)}>
       <AutoSizer
         key={dirents.length}
         onResize={({ height, width }) => {
@@ -110,7 +110,7 @@ export default function AttachmentOverlayDirents({
                     cache={cellMeasurerCache}
                   >
                     {onNavigateBack && index === 0 ? (
-                      <AttachmentOverlayDirentNav
+                      <AttachmentDirentNav
                         style={{ ...style, width: cellWidth }}
                         langtag={langtag}
                         icon="folder-back"
@@ -118,7 +118,7 @@ export default function AttachmentOverlayDirents({
                         onClick={onNavigateBack}
                       />
                     ) : dirent ? (
-                      <AttachmentOverlayDirent
+                      <AttachmentDirent
                         style={{ ...style, width: cellWidth }}
                         langtag={langtag}
                         dirent={dirent}

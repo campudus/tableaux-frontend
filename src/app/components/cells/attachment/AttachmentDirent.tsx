@@ -18,7 +18,7 @@ import { Layout } from "./AttachmentOverlay";
 import ButtonAction from "../../helperComponents/ButtonAction";
 import SvgIcon from "../../helperComponents/SvgIcon";
 
-type AttachmentOverlayDirentProps = {
+type AttachmentDirentProps = {
   className?: string;
   style: CSSProperties;
   langtag: string;
@@ -30,7 +30,7 @@ type AttachmentOverlayDirentProps = {
   toggleAction?: "add" | "remove";
 };
 
-function AttachmentOverlayDirent(
+function AttachmentDirent(
   {
     className,
     style,
@@ -41,7 +41,7 @@ function AttachmentOverlayDirent(
     width = 1000,
     onToggle,
     toggleAction
-  }: AttachmentOverlayDirentProps,
+  }: AttachmentDirentProps,
   direntRef: ForwardedRef<HTMLDivElement>
 ): ReactElement {
   const isFile = isAttachment(dirent);
@@ -114,14 +114,14 @@ function AttachmentOverlayDirent(
     <div
       ref={direntRef}
       style={style}
-      className={cn("attachment-overlay-dirent", { [layout]: true }, className)}
+      className={cn("attachment-dirent", { [layout]: true }, className)}
     >
       <ButtonAction
-        className={cn("attachment-overlay-dirent__action", { main: true })}
+        className={cn("attachment-dirent__action", { main: true })}
         icon={
           isFile ? (
             <MediaThumbnail
-              className="attachment-overlay-dirent__thumbnail"
+              className="attachment-dirent__thumbnail"
               langtag={langtag}
               dirent={dirent}
               layout={layout}
@@ -129,14 +129,14 @@ function AttachmentOverlayDirent(
             />
           ) : (
             <MediaThumbnailFolder
-              className="attachment-overlay-dirent__thumbnail"
+              className="attachment-dirent__thumbnail"
               langtag={langtag}
               layout={layout}
             />
           )
         }
         label={
-          <span className="attachment-overlay-dirent__label" title={label}>
+          <span className="attachment-dirent__label" title={label}>
             {labelTruncated}
           </span>
         }
@@ -147,7 +147,7 @@ function AttachmentOverlayDirent(
         <>
           {isFile && (
             <ButtonAction
-              className={cn("attachment-overlay-dirent__action", {
+              className={cn("attachment-dirent__action", {
                 download: true
               })}
               icon={<SvgIcon icon="download" />}
@@ -157,7 +157,7 @@ function AttachmentOverlayDirent(
           )}
           {isFile && toggleAction === "remove" && (
             <ButtonAction
-              className={cn("attachment-overlay-dirent__action", {
+              className={cn("attachment-dirent__action", {
                 folder: true
               })}
               icon={<i className="fa fa-folder" />}
@@ -167,7 +167,7 @@ function AttachmentOverlayDirent(
           )}
           {isFile && (
             <ButtonAction
-              className={cn("attachment-overlay-dirent__action", {
+              className={cn("attachment-dirent__action", {
                 edit: true
               })}
               icon={<SvgIcon icon="edit" />}
@@ -177,7 +177,7 @@ function AttachmentOverlayDirent(
           )}
           {isFile && toggleAction ? (
             <ButtonAction
-              className={cn("attachment-overlay-dirent__action", {
+              className={cn("attachment-dirent__action", {
                 toggle: true,
                 [toggleAction]: true
               })}
@@ -197,13 +197,13 @@ function AttachmentOverlayDirent(
         <>
           {isFile && (
             <ButtonAction
-              className={cn("attachment-overlay-dirent__action", {
+              className={cn("attachment-dirent__action", {
                 menu: true
               })}
               icon={<SvgIcon icon="hdots" />}
               options={[
                 {
-                  className: cn("attachment-overlay-dirent__action", {
+                  className: cn("attachment-dirent__action", {
                     edit: true
                   }),
                   label: i18n.t(`media:change_${direntKey}`),
@@ -211,7 +211,7 @@ function AttachmentOverlayDirent(
                   onClick: handleNavigateToMediaFile
                 },
                 {
-                  className: cn("attachment-overlay-dirent__action", {
+                  className: cn("attachment-dirent__action", {
                     folder: true
                   }),
                   label: i18n.t(`media:folder_${direntKey}`),
@@ -219,7 +219,7 @@ function AttachmentOverlayDirent(
                   onClick: handleNavigateToMediaFolder
                 },
                 {
-                  className: cn("attachment-overlay-dirent__action", {
+                  className: cn("attachment-dirent__action", {
                     download: true
                   }),
                   label: i18n.t(`media:download_${direntKey}`),
@@ -231,7 +231,7 @@ function AttachmentOverlayDirent(
           )}
           {isFile && toggleAction ? (
             <ButtonAction
-              className={cn("attachment-overlay-dirent__action", {
+              className={cn("attachment-dirent__action", {
                 toggle: true,
                 [toggleAction]: true
               })}
@@ -250,4 +250,4 @@ function AttachmentOverlayDirent(
   );
 }
 
-export default forwardRef(AttachmentOverlayDirent);
+export default forwardRef(AttachmentDirent);
