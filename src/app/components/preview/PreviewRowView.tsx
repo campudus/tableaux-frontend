@@ -17,8 +17,8 @@ const { PREVIEW_TITLE } = attributeKeys;
 type PreviewRowViewProps = {
   langtag: string;
   tableId: number;
+  columnId: number | undefined;
   row: Row;
-  currentColumn: number | undefined;
   columnsAndRow: ColumnAndRow[];
 };
 
@@ -26,7 +26,7 @@ export default function PreviewRowView({
   langtag,
   tableId,
   row,
-  currentColumn,
+  columnId,
   columnsAndRow
 }: PreviewRowViewProps): ReactElement {
   const dispatch = useDispatch();
@@ -106,6 +106,7 @@ export default function PreviewRowView({
           }
           color={isRowFinal ? "dark" : "orange"}
         />
+
         {row.archived && (
           <Notifier
             className="preview-row-view__archived-notifier"
@@ -130,7 +131,7 @@ export default function PreviewRowView({
                 <tr
                   key={column.id}
                   className={buildClassName("preview-row-view__row", {
-                    selected: currentColumn === column.id
+                    selected: columnId === column.id
                   })}
                 >
                   <td className="preview-row-view__column preview-row-view__column-selection">
@@ -138,7 +139,7 @@ export default function PreviewRowView({
                       <input
                         type="radio"
                         name="column-selection"
-                        checked={currentColumn === column.id}
+                        checked={columnId === column.id}
                         onChange={() =>
                           handleColumnSelection(column.id, row.id)
                         }

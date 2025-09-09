@@ -1,0 +1,142 @@
+.preview-detail-view {
+  height: 100%;
+  padding: 20px 0 5px 20px;
+  box-sizing: border-box;
+}
+
+.detail-view-richtext {
+ &__content {
+    padding: 16px 40px 16px 0;
+ }
+}
+
+.detail-view-link {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+    padding-right: 16px;
+  }
+
+  &__actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  &__checkbox {
+    display: flex;
+    align-items: center;
+
+    input {
+      cursor: pointer;
+    }
+
+    input:disabled {
+      cursor: not-allowed;
+    }
+  }
+
+  &__table-wrapper {
+    height: 100%;
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: scroll;
+
+    table {
+      width: 100%;
+      position: relative;
+      margin-bottom: 40px;
+    }
+  }
+
+  &__row {
+    width: 100%;
+    min-height: 40px;
+    height: 100%;
+    display: flex;
+
+    background-color: #f8f8f8;
+
+    &--even {
+      background-color: #efefef;
+    }
+
+    &--sticky {
+      position: sticky;
+      z-index: 10;
+    }
+  }
+
+  &__column {
+    padding: 6px 12px;
+  }
+
+  &__column-name {
+    position: sticky;
+    left: 0;
+    z-index: 5;
+    background: #f8f8f8;
+    width: 225px;
+    display: flex;
+    align-items: center;
+  }
+
+  th.detail-view-link__column-value {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 12px;
+    font-size: 11px;
+  }
+
+  &__column-image-wrapper {
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: $color-white;
+    border-radius: 4px;
+    padding: 0;
+    margin: 6px 0px;
+
+    .chip {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      z-index: 1;
+      background-color: $color-archived-row-fg;
+      color: $color-white;
+    }
+  }
+
+  &__column-image {
+    width: 100%;
+    height: 200px;
+    object-fit: contain;
+  }
+
+  &__row--even {
+    .detail-view-link__column-name {
+      background: #efefef;
+    }
+  }
+
+  &__column-value {
+    min-width: 275px;
+    width: 325px;
+    max-width: 325px;
+    display: flex;
+    align-items: center;
+  }
+}
+
+.detail-view-richtext__title,
+.detail-view-link__title {
+  font-size: 24px;
+}

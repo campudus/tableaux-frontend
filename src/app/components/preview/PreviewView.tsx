@@ -3,7 +3,7 @@ import f from "lodash/fp";
 import GrudHeader from "../GrudHeader";
 import { switchLanguageHandler } from "../Router";
 import { useSelector, useDispatch } from "react-redux";
-import { Column, GRUDStore } from "../../types/grud";
+import { Cell, Column, GRUDStore, Row } from "../../types/grud";
 import actions from "../../redux/actionCreators";
 import PreviewRowView from "./PreviewRowView";
 import PreviewDetailView from "./PreviewDetailView";
@@ -31,26 +31,31 @@ export default function PreviewView({
   const [dragging, setDragging] = useState(false);
   const [leftWidth, setLeftWidth] = useState(50);
 
-  const columns = useSelector(
-    tableId !== undefined
-      ? f.prop(["columns", tableId, "data"])
-      : () => undefined
-  ) as Column[] | undefined;
+  const columnsMeta = useSelector(f.prop(["columns", tableId])) as
+    | { data: Array<Column>; error: boolean; finishedLoading: boolean }
+    | undefined;
 
-  const row = useSelector((store: GRUDStore) => {
-    if (f.isNil(tableId) || f.isNil(rowId)) return undefined;
-    return store.rows[tableId]?.data.find(row => row.id === rowId);
-  });
+  const columns = columnsMeta?.data;
+
+  const rowMeta = useSelector(f.prop(["rows", tableId])) as
+    | {
+        data: Array<Row & { cells: Array<Cell> }>;
+        error: boolean;
+        finishedLoading: boolean;
+      }
+    | undefined;
+
+  const row = rowMeta?.data.find(row => row.id === rowId);
 
   const columnsAndRow = combineColumnsAndRow(columns, row);
 
-  const currentColumn =
+  const columnId =
     useSelector((store: GRUDStore) => store.preview.currentColumn) ??
     getDefaultSelectedColumnId(columnsAndRow);
 
   useEffect(() => {
-    if (currentColumn) {
-      const column = columns?.find(c => c.id === currentColumn);
+    if (columnId) {
+      const column = columns?.find(c => c.id === columnId);
 
       if (column?.kind === "link") {
         dispatch(actions.loadColumns(column.toTable));
@@ -61,7 +66,7 @@ export default function PreviewView({
         });
       }
     }
-  }, [currentColumn, columns]);
+  }, [columnId, columns]);
 
   const handleLanguageSwitch = (newLangtag: string) => {
     switchLanguageHandler(history, newLangtag);
@@ -94,6 +99,69 @@ export default function PreviewView({
     document.removeEventListener("mouseup", handleMouseUp);
   };
 
+  const renderRowView = () => {
+    if (
+      !columnsMeta ||
+      !rowMeta ||
+      columnsMeta?.finishedLoading === false ||
+      rowMeta?.finishedLoading === false
+    ) {
+      return <Spinner isLoading />;
+    }
+
+    if (columnsMeta?.error || rowMeta?.error) {
+      return <div>Error loading columns.</div>;
+    }
+
+    if (!row) {
+      return <div>No row found.</div>;
+    }
+
+    if (f.isEmpty(columnsAndRow)) {
+      return <div>No data found.</div>;
+    }
+
+    return (
+      <PreviewRowView
+        langtag={langtag}
+        tableId={tableId}
+        columnId={columnId}
+        row={row}
+        columnsAndRow={columnsAndRow}
+      />
+    );
+  };
+
+  const renderDetailView = () => {
+    if (
+      !columnsMeta ||
+      !rowMeta ||
+      columnsMeta?.finishedLoading === false ||
+      rowMeta?.finishedLoading === false
+    ) {
+      return <Spinner isLoading />;
+    }
+
+    if (!columnId) {
+      return <div>No column found or selected for the detail view.</div>;
+    }
+
+    if (f.isEmpty(columnsAndRow)) {
+      return <div>No data found.</div>;
+    }
+
+    return (
+      <PreviewDetailView
+        langtag={langtag}
+        currentTable={tableId}
+        currentColumnId={columnId}
+        selectedColumnAndRow={columnsAndRow.find(
+          entry => entry.column.id === columnId
+        )}
+      />
+    );
+  };
+
   return (
     <>
       <GrudHeader
@@ -110,17 +178,7 @@ export default function PreviewView({
           className="preview-view__resizeable-left"
           style={{ width: `${leftWidth}%` }}
         >
-          {columns && row && !f.isEmpty(columnsAndRow) ? (
-            <PreviewRowView
-              langtag={langtag}
-              tableId={tableId}
-              row={row}
-              currentColumn={currentColumn}
-              columnsAndRow={columnsAndRow}
-            />
-          ) : (
-            <Spinner isLoading />
-          )}
+          {renderRowView()}
         </div>
 
         <div
@@ -131,19 +189,7 @@ export default function PreviewView({
             onMouseDown={handleMouseDown}
             className="preview-view__resizer"
           />
-
-          {currentColumn && !f.isEmpty(columnsAndRow) ? (
-            <PreviewDetailView
-              langtag={langtag}
-              currentTable={tableId}
-              currentColumnId={currentColumn}
-              selectedColumnAndRow={columnsAndRow.find(
-                entry => entry.column.id === currentColumn
-              )}
-            />
-          ) : (
-            <Spinner isLoading />
-          )}
+          {renderDetailView()}
         </div>
       </div>
     </>
