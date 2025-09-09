@@ -1,4 +1,4 @@
-import { ReactElement, useEffect } from "react";
+import { ReactElement, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import f from "lodash/fp";
 import { GRUDStore, Row } from "../../../types/grud";
@@ -17,22 +17,25 @@ import {
 import Chip from "../../Chip/Chip";
 import i18n from "i18next";
 
-type LinkDetailViewProps = {
+type DetailViewLinkProps = {
   langtag: string;
+  title: string | undefined;
   currentDetailTable: number;
   selectedColumnAndRow: ColumnAndRow;
   linkedCells: Row[];
-  showDifferences: boolean;
 };
 
-export default function LinkDetailView({
+export default function DetailViewLink({
   langtag,
+  title,
   currentDetailTable,
   selectedColumnAndRow,
-  linkedCells,
-  showDifferences
-}: LinkDetailViewProps): ReactElement {
+  linkedCells
+}: DetailViewLinkProps): ReactElement {
   const dispatch = useDispatch();
+  const [selectAll, setSelectAll] = useState(true);
+  const [showDifferences, setShowDifferences] = useState(false);
+
   const columns = useSelector(
     (store: GRUDStore) => store.columns[currentDetailTable]?.data
   );
@@ -114,13 +117,61 @@ export default function LinkDetailView({
     });
   }, [columnsToDisplay]);
 
+  function handleSelectAll(selectAll: boolean): void {
+    if (selectAll) {
+      dispatch({
+        type: actionTypes.preview.PREVIEW_SET_LINKED_SELECTION,
+        selectedLinkedEntries: linkedCells.map(entry => entry.id)
+      });
+    } else {
+      dispatch({
+        type: actionTypes.preview.PREVIEW_SET_LINKED_SELECTION,
+        selectedLinkedEntries: []
+      });
+      setShowDifferences(false);
+    }
+
+    setSelectAll(selectAll);
+  }
+
   if (!columnsToDisplay || columnsToDisplay.length === 0) {
     return <div>No linked entries found</div>;
   }
 
   return (
-    <div className="link-detail-view">
-      {linkedCells && linkedCells.length > 1 && (
+    <div className="detail-view-link">
+      <div className="detail-view-link__header">
+        <h2 className="detail-view-link__title">
+          {linkedCells.length > 1 ? `${title} (${linkedCells.length})` : title}
+        </h2>
+
+        {linkedCells.length > 1 && (
+          <div className="detail-view-link__actions">
+            <div className="detail-view-link__checkbox">
+              <input
+                type="checkbox"
+                checked={selectAll}
+                onChange={() => handleSelectAll(!selectAll)}
+              />
+              <label>{i18n.t("preview:select_all")}</label>
+            </div>
+
+            <div className="detail-view-link__checkbox">
+              <input
+                type="checkbox"
+                checked={showDifferences}
+                disabled={
+                  !(selectedLinkedEntries && selectedLinkedEntries.length >= 2)
+                }
+                onChange={() => setShowDifferences(!showDifferences)}
+              />
+              <label>{i18n.t("preview:show_differences")}</label>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {linkedCells.length > 1 && (
         <LinkedEntrySelection
           langtag={langtag}
           linkedEntries={linkedCells}
@@ -128,25 +179,25 @@ export default function LinkDetailView({
         />
       )}
 
-      <div className="preview-detail-view__table-wrapper">
+      <div className="detail-view-link__table-wrapper">
         <table>
           {previewImageColumn && (
             <thead>
-              <tr className="preview-detail-view__row preview-detail-view__row--header">
-                <th className="preview-detail-view__column preview-detail-view__column-name" />
+              <tr className="detail-view-link__row detail-view-link__row--header">
+                <th className="detail-view-link__column detail-view-link__column-name" />
                 {previewImageColumn.rows.map(row => (
                   <th
                     key={row.id}
                     className={buildClassName(
-                      "preview-detail-view__column preview-detail-view__column-value",
+                      "detail-view-link__column detail-view-link__column-value",
                       {
                         archived: isArchivedRow(row)
                       }
                     )}
                   >
-                    <div className="preview-detail-view__column-image-wrapper">
+                    <div className="detail-view-link__column-image-wrapper">
                       <img
-                        className="preview-detail-view__column-image"
+                        className="detail-view-link__column-image"
                         src={"/api" + row.values.at(0).url[langtag]}
                         alt="Preview"
                         onError={e => {
@@ -171,7 +222,9 @@ export default function LinkDetailView({
               </tr>
             </thead>
           )}
+
           <tbody>
+            {!columnsToDisplay}
             {columnsToDisplay.map(({ column, rows }, index) => {
               const columnLink = `/${langtag}/tables/${currentDetailTable}/columns/${column.id}`;
               const rowFilter = `/rows/${selectedLinkedEntries?.at(
@@ -185,12 +238,12 @@ export default function LinkDetailView({
               return (
                 <tr
                   key={column.id}
-                  className={buildClassName("preview-detail-view__row", {
+                  className={buildClassName("detail-view-link__row", {
                     even: index % 2 === 0,
                     sticky: isStickyColumn(column)
                   })}
                 >
-                  <td className="preview-detail-view__column preview-detail-view__column-name">
+                  <td className="detail-view-link__column detail-view-link__column-name">
                     <a href={columnNameLink}>
                       {getColumnDisplayName(column, langtag)}
                     </a>
@@ -198,7 +251,7 @@ export default function LinkDetailView({
 
                   {rows.map(row => (
                     <td
-                      className="preview-detail-view__column preview-detail-view__column-value"
+                      className="detail-view-link__column detail-view-link__column-value"
                       key={row.id}
                     >
                       <PreviewCellValue
