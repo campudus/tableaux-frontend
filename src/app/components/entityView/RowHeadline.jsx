@@ -6,14 +6,10 @@ import PropTypes from "prop-types";
 
 import { ColumnKinds } from "../../constants/TableauxConstants";
 import { canUserSeeTable } from "../../helpers/accessManagementHelper";
-import {
-  getColumnDisplayName,
-  getTableDisplayName
-} from "../../helpers/multiLanguage";
+import { getColumnDisplayName } from "../../helpers/multiLanguage";
 import { openLinkOverlay } from "../cells/link/LinkOverlay";
 import { openMarkdownEditor } from "../markdownEditor/MarkdownEditor";
-import AttachmentOverlay from "../cells/attachment/AttachmentOverlay";
-import Header from "../overlay/Header";
+import { openAttachmentOverlay } from "../cells/attachment/AttachmentOverlay";
 import ItemPopupMenu from "./ItemPopupMenu";
 import SvgIcon from "../helperComponents/SvgIcon";
 
@@ -104,21 +100,8 @@ class RowHeadline extends React.Component {
   };
 
   openAttachmentOverlay = () => {
-    const {
-      actions,
-      cell,
-      cell: { table },
-      langtag,
-      value
-    } = this.props;
-    const tableName = getTableDisplayName(table, langtag);
-    actions.openOverlay({
-      head: <Header langtag={langtag} context={tableName} />,
-      body: <AttachmentOverlay cell={cell} langtag={langtag} value={value} />,
-      title: cell,
-      type: "full-height",
-      preferRight: true
-    });
+    const { cell, langtag } = this.props;
+    openAttachmentOverlay({ langtag, cell });
   };
 
   mkAttachmentHeader = () => {

@@ -11,7 +11,7 @@ import ButtonAction from "../../helperComponents/ButtonAction";
 import { MediaThumbnailFolder } from "../../media/MediaThumbnail";
 import { Layout } from "./AttachmentOverlay";
 
-type AttachmentOverlayDirentNavProps = {
+type AttachmentDirentNavProps = {
   className?: string;
   style?: CSSProperties;
   langtag: string;
@@ -21,7 +21,7 @@ type AttachmentOverlayDirentNavProps = {
   icon?: "folder" | "folder-back";
 };
 
-function AttachmentOverlayDirentNav(
+function AttachmentDirentNav(
   {
     className,
     style,
@@ -30,32 +30,30 @@ function AttachmentOverlayDirentNav(
     layout,
     onClick,
     icon
-  }: AttachmentOverlayDirentNavProps,
+  }: AttachmentDirentNavProps,
   ref: ForwardedRef<HTMLDivElement>
 ): ReactElement {
   return (
     <div
       ref={ref}
       style={style}
-      className={cn("attachment-overlay-dirent", { [layout]: true }, className)}
+      className={cn("attachment-dirent", { [layout]: true }, className)}
     >
       <ButtonAction
-        className={cn("attachment-overlay-dirent__action", { main: true })}
+        className={cn("attachment-dirent__action", { main: true })}
         icon={
           <MediaThumbnailFolder
-            className="attachment-overlay-dirent__thumbnail"
+            className="attachment-dirent__thumbnail"
             langtag={langtag}
             layout={layout}
             icon={icon}
           />
         }
-        label={
-          <span className="attachment-overlay-dirent__label">{label}</span>
-        }
+        label={<span className="attachment-dirent__label">{label}</span>}
         onClick={onClick}
       />
     </div>
   );
 }
 
-export default forwardRef(AttachmentOverlayDirentNav);
+export default forwardRef(AttachmentDirentNav);

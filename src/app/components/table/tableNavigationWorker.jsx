@@ -16,7 +16,7 @@ import { getModifiers } from "../../helpers/modifierState";
 import { getTableDisplayName } from "../../helpers/multiLanguage";
 import { clearSelectedCellValue } from "../../redux/actions/cellActions";
 import store from "../../redux/store";
-import AttachmentOverlay from "../cells/attachment/AttachmentOverlay";
+import { openAttachmentOverlay } from "../cells/attachment/AttachmentOverlay";
 import pasteCellValue from "../cells/cellCopyHelper";
 import { openLinkOverlay } from "../cells/link/LinkOverlay";
 import TextEditOverlay from "../cells/text/TextEditOverlay";
@@ -320,20 +320,7 @@ export function toggleCellEditing(params = {}) {
           });
           break;
         case ColumnKinds.attachment:
-          actions.openOverlay({
-            head: <Header langtag={langtag} />,
-            body: (
-              <AttachmentOverlay
-                cell={selectedCellObject}
-                langtag={langtag}
-                folderId={null}
-                value={selectedCellDisplayValues}
-              />
-            ),
-            type: "full-height",
-            preferRight: true,
-            title: selectedCellObject
-          });
+          openAttachmentOverlay({ langtag, cell: selectedCellObject });
           break;
         case ColumnKinds.text:
         case ColumnKinds.richtext:
