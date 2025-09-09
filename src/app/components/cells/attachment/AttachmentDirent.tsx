@@ -210,14 +210,18 @@ function AttachmentDirent(
                   icon: <SvgIcon icon="edit" />,
                   onClick: handleNavigateToMediaFile
                 },
-                {
-                  className: cn("attachment-dirent__action", {
-                    folder: true
-                  }),
-                  label: i18n.t(`media:folder_${direntKey}`),
-                  icon: <i className="icon fa fa-folder" />,
-                  onClick: handleNavigateToMediaFolder
-                },
+                ...(toggleAction === "remove"
+                  ? [
+                      {
+                        className: cn("attachment-dirent__action", {
+                          folder: true
+                        }),
+                        label: i18n.t(`media:folder_${direntKey}`),
+                        icon: <i className="icon fa fa-folder" />,
+                        onClick: handleNavigateToMediaFolder
+                      }
+                    ]
+                  : []),
                 {
                   className: cn("attachment-dirent__action", {
                     download: true
