@@ -1,18 +1,17 @@
 import i18n from "i18next";
-import { ChangeEvent, ReactElement } from "react";
-import { buildClassName as cn } from "../../../helpers/buildClassName";
+import { ChangeEvent, PropsWithChildren, ReactElement } from "react";
 import { FilterModes } from "../../../constants/TableauxConstants";
 import ButtonAction, {
   ButtonActionOption
 } from "../../helperComponents/ButtonAction";
 import { FILTER_MODE_DEFAULT, FilterMode } from "./AttachmentOverlay";
 
-type AttachmentFilterProps = {
+type AttachmentFilterProps = PropsWithChildren<{
   value?: string;
   mode?: FilterMode;
   onUpdateValue: (value: string) => void;
   onUpdateMode: (mode: FilterMode) => void;
-};
+}>;
 
 export default function AttachmentFilter({
   value,
@@ -40,7 +39,7 @@ export default function AttachmentFilter({
   };
 
   return (
-    <div className={cn("attachment-filter", {}, "filter-bar")}>
+    <div className="attachment-filter">
       <input
         className="attachment-filter__input"
         type="text"
