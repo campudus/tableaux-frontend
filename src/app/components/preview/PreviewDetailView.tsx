@@ -56,8 +56,8 @@ export default function PreviewDetailView({
         return <div>No detail table selected.</div>;
       }
 
-      if (!sortedLinkedCells || sortedLinkedCells.length === 0) {
-        return <div>No linked cells available.</div>;
+      if (!sortedLinkedCells) {
+        return <div>No data available.</div>;
       }
 
       return (
