@@ -10,7 +10,7 @@ type LinkListCellProps = {
   values: Record<string, any>[];
 };
 
-const MAX_VARIANT_LENGTH = 5;
+const MAX_ENTRIES_LENGTH = 10;
 
 export default function LinkListCell({
   langtag,
@@ -23,10 +23,10 @@ export default function LinkListCell({
     return index >= 10 ? index.toString() : `0${index}`;
   }
 
-  const showToggleButton = values.length > MAX_VARIANT_LENGTH;
+  const showToggleButton = values.length > MAX_ENTRIES_LENGTH;
   const displayedValues = showAll
     ? values
-    : values.slice(0, MAX_VARIANT_LENGTH);
+    : values.slice(0, MAX_ENTRIES_LENGTH);
 
   function renderLinkValues(
     concatColumn: ConcatColumn,
