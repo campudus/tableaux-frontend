@@ -140,3 +140,11 @@
 .detail-view-link__title {
   font-size: 24px;
 }
+
+.linked-entry-selection {
+  margin-bottom: 16px;
+
+  &__chip {
+    margin: 4px 8px 4px 0;
+  }
+}
