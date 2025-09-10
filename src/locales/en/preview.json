@@ -1,4 +1,5 @@
 {
+  "open_preview_view": "Check",
   "row_is_final": "This row is final.",
   "row_is_not_final": "This row is in progress.",
   "row_is_archived": "This row is archived.",
