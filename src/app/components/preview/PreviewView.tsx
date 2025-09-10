@@ -65,8 +65,7 @@ export default function PreviewView({
 
       if (
         column?.kind === "link" &&
-        !detailTableColumnsMeta?.data &&
-        !detailTableRowsMeta?.data
+        (!detailTableColumnsMeta?.data || !detailTableRowsMeta?.data)
       ) {
         dispatch(actions.loadColumns(column.toTable));
         dispatch(loadAllRows(column.toTable, row?.archived ?? false));
