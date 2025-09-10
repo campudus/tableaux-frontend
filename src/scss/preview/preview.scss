@@ -7,6 +7,13 @@
   flex-direction: row;
   overflow: hidden;
 
+  &__centered {
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
   &__resizeable-left {
     overflow-y: auto;
     // to move the scrollbar to the left side
