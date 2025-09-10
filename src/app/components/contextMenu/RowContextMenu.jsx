@@ -343,7 +343,7 @@ class RowContextMenu extends React.Component {
           {this.mkItem(showTranslations, "show_translation", "flag")}
           <Link to={previewUrl}>
             <i className="fa fa-eye" />
-            <div className="item-label">{"Überprüfen"}</div>
+            <div className="item-label">{t("preview:open_preview_view")}</div>
           </Link>
           {this.setFinalItem()}
           {this.setArchivedItem()}

@@ -1,4 +1,5 @@
 {
+  "open_preview_view": "Überprüfen",
   "row_is_final": "Dieser Datensatz ist schreibgeschützt.",
   "row_is_not_final": "Dieser Datensatz ist in Bearbeitung.",
   "row_is_archived": "Dieser Datensatz ist archiviert.",
