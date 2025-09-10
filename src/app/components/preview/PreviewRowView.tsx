@@ -40,6 +40,20 @@ export default function PreviewRowView({
       type: actionTypes.preview.PREVIEW_SET_CURRENT_COLUMN,
       currentColumn: columnId
     });
+
+    const newColumn = columnsAndRow.find(c => c.column.id === columnId)?.column;
+
+    if (newColumn?.kind === "link") {
+      dispatch({
+        type: actionTypes.preview.PREVIEW_SET_CURRENT_DETAIL_TABLE,
+        currentDetailTable: newColumn.toTable
+      });
+    } else {
+      dispatch({
+        type: actionTypes.preview.PREVIEW_SET_CURRENT_DETAIL_TABLE,
+        currentDetailTable: undefined
+      });
+    }
   };
 
   function getPreviewTitle(columnsAndRows: ColumnAndRow[]) {
