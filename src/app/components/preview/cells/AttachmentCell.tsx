@@ -68,7 +68,10 @@ export default function AttachmentCell({
               {attachments.map(att => (
                 <SwiperSlide key={att.uuid}>
                   <div className="swiper-image-wrapper">
-                    <img src={"/api" + att.url[langtag]} alt={"alt"} />
+                    <img
+                      src={"/api" + att.url[langtag]}
+                      alt={att.title[langtag]}
+                    />
 
                     <div className="swiper-image-title">
                       {att.title[langtag]}
