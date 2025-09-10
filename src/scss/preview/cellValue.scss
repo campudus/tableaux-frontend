@@ -8,11 +8,9 @@
     width: fit-content;
   }
 
-  .preview-cell-value-link:hover {
-    color: $color-primary;
-  }
-
-  .preview-cell-value-link .empty:hover {
+  .preview-cell-value-link:hover,
+  .preview-cell-value-link .empty:hover,
+  .currency-cell:hover .empty {
     color: $color-primary;
   }
 
@@ -43,12 +41,6 @@
     &__separator {
       margin: 0 8px 0 10px;
       font-size: 18px;
-    }
-  }
-
-  .currency-cell:hover {
-    .empty {
-      color: $color-primary;
     }
   }
 
