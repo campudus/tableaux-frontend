@@ -3,7 +3,7 @@ import f from "lodash/fp";
 import GrudHeader from "../GrudHeader";
 import { switchLanguageHandler } from "../Router";
 import { useSelector, useDispatch } from "react-redux";
-import { Cell, Column, GRUDStore, Row } from "../../types/grud";
+import { GRUDStore } from "../../types/grud";
 import actions from "../../redux/actionCreators";
 import PreviewRowView from "./PreviewRowView";
 import PreviewDetailView from "./PreviewDetailView";
@@ -32,33 +32,42 @@ export default function PreviewView({
   const [dragging, setDragging] = useState(false);
   const [leftWidth, setLeftWidth] = useState(50);
 
-  const columnsMeta = useSelector(f.prop(["columns", tableId])) as
-    | { data: Array<Column>; error: boolean; finishedLoading: boolean }
-    | undefined;
-
+  const columnsMeta = useSelector((store: GRUDStore) => store.columns[tableId]);
   const columns = columnsMeta?.data;
 
-  const rowMeta = useSelector(f.prop(["rows", tableId])) as
-    | {
-        data: Array<Row & { cells: Array<Cell> }>;
-        error: boolean;
-        finishedLoading: boolean;
-      }
-    | undefined;
-
+  const rowMeta = useSelector((store: GRUDStore) => store.rows[tableId]);
   const row = rowMeta?.data.find(row => row.id === rowId);
 
-  const columnsAndRow = combineColumnsAndRow(columns, row);
+  const loadingData =
+    !columnsMeta ||
+    !rowMeta ||
+    columnsMeta?.finishedLoading === false ||
+    rowMeta?.finishedLoading === false;
 
+  const columnsAndRow = combineColumnsAndRow(columns, row);
   const columnId =
     useSelector((store: GRUDStore) => store.preview.currentColumn) ??
     getDefaultSelectedColumnId(columnsAndRow);
+
+  const currentDetailTable = useSelector(
+    (store: GRUDStore) => store.preview.currentDetailTable
+  );
+  const detailTableColumnsMeta = useSelector((store: GRUDStore) =>
+    currentDetailTable ? store.columns[currentDetailTable] : undefined
+  );
+  const detailTableRowsMeta = useSelector((store: GRUDStore) =>
+    currentDetailTable ? store.rows[currentDetailTable] : undefined
+  );
 
   useEffect(() => {
     if (columnId) {
       const column = columns?.find(c => c.id === columnId);
 
-      if (column?.kind === "link") {
+      if (
+        column?.kind === "link" &&
+        !detailTableColumnsMeta?.data &&
+        !detailTableRowsMeta?.data
+      ) {
         dispatch(actions.loadColumns(column.toTable));
         dispatch(loadAllRows(column.toTable, row?.archived ?? false));
         dispatch({
@@ -101,19 +110,6 @@ export default function PreviewView({
   };
 
   const renderRowView = () => {
-    if (
-      !columnsMeta ||
-      !rowMeta ||
-      columnsMeta?.finishedLoading === false ||
-      rowMeta?.finishedLoading === false
-    ) {
-      return <Spinner isLoading />;
-    }
-
-    if (columnsMeta?.error || rowMeta?.error) {
-      return <div>Error loading columns.</div>;
-    }
-
     if (!row) {
       return <div>No row found.</div>;
     }
@@ -135,12 +131,17 @@ export default function PreviewView({
 
   const renderDetailView = () => {
     if (
-      !columnsMeta ||
-      !rowMeta ||
-      columnsMeta?.finishedLoading === false ||
-      rowMeta?.finishedLoading === false
+      currentDetailTable &&
+      (!detailTableColumnsMeta ||
+        !detailTableRowsMeta ||
+        detailTableColumnsMeta?.finishedLoading === false ||
+        detailTableRowsMeta?.finishedLoading === false)
     ) {
       return <Spinner isLoading />;
+    }
+
+    if (detailTableColumnsMeta?.error || detailTableRowsMeta?.error) {
+      return <div>Error loading data. Please try again.</div>;
     }
 
     if (!columnId) {
@@ -175,23 +176,34 @@ export default function PreviewView({
         className="preview-view"
         style={{ userSelect: dragging ? "none" : "auto" }}
       >
-        <div
-          className="preview-view__resizeable-left"
-          style={{ width: `${leftWidth}%` }}
-        >
-          {renderRowView()}
-        </div>
+        {loadingData ? (
+          <Spinner isLoading />
+        ) : columnsMeta?.error || rowMeta?.error ? (
+          <div>Error loading data. Please try again.</div>
+        ) : (
+          <>
+            <div
+              className="preview-view__resizeable-left"
+              style={{ width: `${leftWidth}%` }}
+            >
+              {renderRowView()}
+            </div>
 
-        <div
-          className="preview-view__resizeable-right"
-          style={{ width: `${100 - leftWidth}%` }}
-        >
-          <div onMouseDown={handleMouseDown} className="preview-view__resizer">
-            <SvgIcon icon={"grabber"} />
-          </div>
+            <div
+              className="preview-view__resizeable-right"
+              style={{ width: `${100 - leftWidth}%` }}
+            >
+              <div
+                onMouseDown={handleMouseDown}
+                className="preview-view__resizer"
+              >
+                <SvgIcon icon={"grabber"} />
+              </div>
 
-          {renderDetailView()}
-        </div>
+              {renderDetailView()}
+            </div>
+          </>
+        )}
       </div>
     </>
   );
