@@ -110,11 +110,11 @@ export default function PreviewView({
 
   const renderRowView = () => {
     if (!row) {
-      return <div>No row found.</div>;
+      return <div className="preview-view__centered">No row found.</div>;
     }
 
     if (f.isEmpty(columnsAndRow)) {
-      return <div>No data found.</div>;
+      return <div className="preview-view__centered">No data found.</div>;
     }
 
     return (
@@ -140,15 +140,21 @@ export default function PreviewView({
     }
 
     if (detailTableColumnsMeta?.error || detailTableRowsMeta?.error) {
-      return <div>Error loading data. Please try again.</div>;
+      return (
+        <div className="preview-view__centered">
+          Error loading data. Please try again.
+        </div>
+      );
     }
 
     if (!columnId) {
-      return <div>No column found or selected for the detail view.</div>;
+      console.warn("No column found or selected for the detail view.");
+      return;
     }
 
     if (f.isEmpty(columnsAndRow)) {
-      return <div>No data found.</div>;
+      console.warn("No data found.");
+      return;
     }
 
     return (
