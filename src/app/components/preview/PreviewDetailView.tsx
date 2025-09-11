@@ -9,6 +9,7 @@ type PreviewDetailViewProps = {
   langtag: string;
   currentTable: number;
   currentColumnId: number;
+  currentDetailTable: number | null;
   selectedColumnAndRow: ColumnAndRow | undefined;
 };
 
@@ -16,6 +17,7 @@ export default function PreviewDetailView({
   langtag,
   currentTable,
   currentColumnId,
+  currentDetailTable,
   selectedColumnAndRow
 }: PreviewDetailViewProps): ReactElement {
   const title = useSelector(
@@ -24,9 +26,6 @@ export default function PreviewDetailView({
         column => column.id === currentColumnId
       )?.displayName[langtag]
   );
-  const currentDetailTable = useSelector(
-    (store: GRUDStore) => store.preview.currentDetailTable
-  );
 
   const currentColumn = selectedColumnAndRow?.column;
 
@@ -34,12 +33,13 @@ export default function PreviewDetailView({
     ? (selectedColumnAndRow.row.values as Row[])
     : undefined;
 
-  const sortedLinkedCells =
-    linkedCells && linkedCells.sort((a, b) => a.id - b.id);
+  const sortedLinkedCells = linkedCells?.length
+    ? [...linkedCells].sort((a, b) => a.id - b.id)
+    : undefined;
 
   function renderDetailView(): ReactElement | null {
     if (!currentColumn) {
-      return <div>No current column</div>;
+      return <div className="preview-view__centered">No column selected.</div>;
     }
 
     if (currentColumn.kind === "richtext") {
@@ -53,11 +53,19 @@ export default function PreviewDetailView({
 
     if (currentColumn.kind === "link") {
       if (!currentDetailTable) {
-        return <div>No detail table selected.</div>;
+        return (
+          <div className="preview-view__centered">
+            No detail table selected.
+          </div>
+        );
       }
 
       if (!sortedLinkedCells) {
-        return <div>No data available.</div>;
+        return (
+          <div className="preview-view__centered">
+            No linked entries available.
+          </div>
+        );
       }
 
       return (

@@ -16,6 +16,7 @@ import {
 } from "../attributes";
 import Chip from "../../Chip/Chip";
 import i18n from "i18next";
+import actions from "../../../redux/actionCreators";
 
 type DetailViewLinkProps = {
   langtag: string;
@@ -45,6 +46,20 @@ export default function DetailViewLink({
   const selectedLinkedEntries = useSelector(
     (store: GRUDStore) => store.preview.selectedLinkedEntries
   );
+
+  // load all linked rows that are not yet loaded
+  useEffect(() => {
+    linkedCells.forEach(row => {
+      if (!rows?.find(r => r.id === row.id)) {
+        dispatch(
+          actions.fetchSingleRow({
+            tableId: currentDetailTable,
+            selectedRowId: row.id
+          })
+        );
+      }
+    });
+  }, [currentDetailTable, linkedCells]);
 
   useEffect(() => {
     dispatch({
@@ -134,8 +149,10 @@ export default function DetailViewLink({
     setSelectAll(selectAll);
   }
 
-  if (!columnsToDisplay || columnsToDisplay.length === 0) {
-    return <div>No linked entries found</div>;
+  if (columnsToDisplay && columnsToDisplay.length === 0) {
+    return (
+      <div className="preview-view__centered">No linked entries found.</div>
+    );
   }
 
   return (

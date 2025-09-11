@@ -9,7 +9,6 @@ import PreviewRowView from "./PreviewRowView";
 import PreviewDetailView from "./PreviewDetailView";
 import Spinner from "../header/Spinner";
 import actionTypes from "../../redux/actionTypes";
-import { loadAllRows } from "../../redux/actions/rowActions";
 import { combineColumnsAndRow } from "./helper";
 import { useHistory } from "react-router-dom";
 import { getDefaultSelectedColumnId } from "./attributes";
@@ -55,24 +54,21 @@ export default function PreviewView({
   const detailTableColumnsMeta = useSelector((store: GRUDStore) =>
     currentDetailTable ? store.columns[currentDetailTable] : undefined
   );
-  const detailTableRowsMeta = useSelector((store: GRUDStore) =>
-    currentDetailTable ? store.rows[currentDetailTable] : undefined
-  );
 
   useEffect(() => {
-    if (columnId) {
-      const column = columns?.find(c => c.id === columnId);
+    if (!columnId || !columns) return;
 
-      if (
-        column?.kind === "link" &&
-        (!detailTableColumnsMeta?.data || !detailTableRowsMeta?.data)
-      ) {
-        dispatch(actions.loadColumns(column.toTable));
-        dispatch(loadAllRows(column.toTable, row?.archived ?? false));
+    const column = columns.find(c => c.id === columnId);
+
+    if (column?.kind === "link") {
+      if (column.toTable !== currentDetailTable) {
         dispatch({
           type: actionTypes.preview.PREVIEW_SET_CURRENT_DETAIL_TABLE,
           currentDetailTable: column.toTable
         });
+      }
+      if (!detailTableColumnsMeta?.data) {
+        dispatch(actions.loadColumns(column.toTable));
       }
     }
   }, [columnId, columns]);
@@ -129,17 +125,11 @@ export default function PreviewView({
   };
 
   const renderDetailView = () => {
-    if (
-      currentDetailTable &&
-      (!detailTableColumnsMeta ||
-        !detailTableRowsMeta ||
-        detailTableColumnsMeta?.finishedLoading === false ||
-        detailTableRowsMeta?.finishedLoading === false)
-    ) {
+    if (detailTableColumnsMeta && !detailTableColumnsMeta.finishedLoading) {
       return <Spinner isLoading />;
     }
 
-    if (detailTableColumnsMeta?.error || detailTableRowsMeta?.error) {
+    if (detailTableColumnsMeta?.error) {
       return (
         <div className="preview-view__centered">
           Error loading data. Please try again.
@@ -162,6 +152,7 @@ export default function PreviewView({
         langtag={langtag}
         currentTable={tableId}
         currentColumnId={columnId}
+        currentDetailTable={currentDetailTable}
         selectedColumnAndRow={columnsAndRow.find(
           entry => entry.column.id === columnId
         )}
