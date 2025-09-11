@@ -64,8 +64,9 @@ export default function LinkCellItem({
         {!displayValue || displayValue === ""
           ? i18n.t("preview:empty")
           : displayValue}
+
         {isVisible && (
-          <Tooltip defaultInvert style={{ left: "10px" }}>
+          <Tooltip defaultInvert style={{ left: "10px", fontSize: "13px" }}>
             {path.join(" / ")}
           </Tooltip>
         )}
