@@ -10,7 +10,7 @@ const shouldStartForTable = ({
 }) =>
   !f.isEmpty(columns) &&
   (f.isNil(allDisplayValues[table.id]) ||
-    allDisplayValues[table.id].length < rows.length) &&
+    allDisplayValues[table.id].length !== rows.length) &&
   !startedGeneratingDisplayValues &&
   finishedLoading;
 
