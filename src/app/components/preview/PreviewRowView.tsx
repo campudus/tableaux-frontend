@@ -11,6 +11,7 @@ import Notifier from "./Notifier";
 import { setRowFlag } from "../../redux/actions/annotationActions";
 import { Row } from "../../types/grud";
 import i18n from "i18next";
+import { previewUrl } from "../../helpers/apiUrl";
 
 const { PREVIEW_TITLE } = attributeKeys;
 
@@ -33,7 +34,7 @@ export default function PreviewRowView({
   const [isRowFinal, setIsRowFinal] = useState(row.final);
 
   const handleColumnSelection = (columnId: number, rowId: number) => {
-    const newUrl = `/${langtag}/preview/${tableId}/columns/${columnId}/rows/${rowId}`;
+    const newUrl = previewUrl({ langtag, tableId, columnId, rowId });
     window.history.replaceState({}, "", newUrl);
 
     dispatch({
