@@ -9,6 +9,13 @@ export type UrlProps = {
   row?: Row;
 } & Partial<TableParams>;
 
+type PreviewUrlProps = {
+  langtag: string;
+  tableId: number | string;
+  rowId: number | string;
+  columnId?: number | string;
+};
+
 // TODO: use apiRoutes here
 // Either prefix a string or create string from a target object; see urlToTableDestination function
 const apiUrl = (destination: string | UrlProps): string => {
@@ -42,5 +49,16 @@ const openInNewTab = (destination: UrlProps) => {
   window.open(urlToTableDestination(f.assoc("browserUrl", true, destination)));
 };
 
+const previewUrl = ({
+  langtag,
+  tableId,
+  rowId,
+  columnId
+}: PreviewUrlProps): string => {
+  return columnId
+    ? `/${langtag}/preview/${tableId}/columns/${columnId}/rows/${rowId}`
+    : `/${langtag}/preview/${tableId}/rows/${rowId}`;
+};
+
 export default apiUrl;
-export { urlToTableDestination, openInNewTab };
+export { urlToTableDestination, openInNewTab, previewUrl };
