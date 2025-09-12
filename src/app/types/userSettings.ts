@@ -34,6 +34,7 @@ export type UserSettingBase<
   Kind extends UserSettingKind,
   Value = unknown
 > = {
+  id?: number;
   key: Key;
   kind: Kind;
   value: Value;

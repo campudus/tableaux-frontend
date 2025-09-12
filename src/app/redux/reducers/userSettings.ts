@@ -95,7 +95,15 @@ export default (state = initialState, action: UserSettingAction) => {
 
       if (setting.kind === "filter") {
         const { kind, key } = setting;
-        return f.update([kind, key], settings => [...settings, setting], state);
+        return f.update(
+          [kind, key],
+          settings => [
+            // filter out settings without id (optimistic updates)
+            ...f.filter<UserSetting>(s => !!s.id, settings),
+            setting
+          ],
+          state
+        );
       }
 
       return state;
