@@ -79,10 +79,8 @@ const withCachedLinks = Component => props => {
       });
   });
 
-  const dvLookupTable = f.compose(
-    f.keyBy("id"),
-    f.prop(["displayValues", column.toTable])
-  )(grudData);
+  const displayValues = f.prop(["displayValues", column.toTable], grudData);
+  const dvLookupTable = f.keyBy("id", displayValues);
 
   const lookupDisplayValue = link =>
     retrieveTranslation(langtag, f.prop([link.id, "values", 0], dvLookupTable));
@@ -127,7 +125,7 @@ const withCachedLinks = Component => props => {
         f.uniqBy(f.prop("id")),
         f.map(addDisplayValues)
       ),
-    [f.prop(["displayValues", column.toTable], grudData), ...cell.value]
+    [[...displayValues, ...cell.value].length]
   );
 
   const rowResults = loading
