@@ -154,11 +154,12 @@ const buildContext = (tableId, langtag, store) => {
   const rows = f.propOr([], ["rows", tableId, "data"], store);
   const displayValues = store.tableView.displayValues[tableId];
   const rowIdxLookup = buildIdxLookup("id", rows);
+  const displayValueIdxLookup = buildIdxLookup("id", displayValues);
 
   const getDisplayValueEntry = (name, row) => {
-    const rowIdx = rowIdxLookup[row.id];
+    const displayValueIdx = displayValueIdxLookup[row.id];
     const colIdx = columnIdxLookup[name];
-    return f.get(`${rowIdx}.values.${colIdx}`, displayValues);
+    return f.get(`${displayValueIdx}.values.${colIdx}`, displayValues);
   };
 
   const retrieveDisplayValue = name => row =>
