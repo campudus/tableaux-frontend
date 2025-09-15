@@ -3,17 +3,6 @@
     color: $color-red;
   }
 
-  .preview-cell-value-link {
-    display: block;
-    width: fit-content;
-  }
-
-  .preview-cell-value-link:hover,
-  .preview-cell-value-link .empty:hover,
-  .currency-cell:hover .empty {
-    color: $color-primary;
-  }
-
   .boolean-cell {
     display: flex;
     align-items: baseline;
@@ -194,3 +183,17 @@
     cursor: auto !important;
   }
 }
+
+a.preview-cell-value:hover {
+  color: $color-primary;
+
+  .empty {
+    color: $color-primary;
+  }
+}
+
+.preview-cell-value a:hover {
+  color: $color-primary;
+}
+
+

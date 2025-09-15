@@ -1,6 +1,6 @@
 import { CurrencyColumn } from "../../../types/grud";
 import { ReactElement } from "react";
-import { setEmptyClassName } from "../helper";
+import { getEmptyClassName } from "../helper";
 import { formatNumber, getCurrencyCode } from "../../../helpers/multiLanguage";
 import i18n from "i18next";
 
@@ -25,7 +25,7 @@ export default function CurrencyCell({
         return (
           <span key={countryCode} className="currency-cell__item">
             <span style={{ width: "25px" }}>{countryCode}:&nbsp;</span>
-            <span className={setEmptyClassName(formattedNumber)}>
+            <span className={getEmptyClassName(formattedNumber)}>
               {formattedNumber
                 ? `${formattedNumber} ${currencyCode}`
                 : i18n.t("preview:empty")}

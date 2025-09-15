@@ -1,5 +1,5 @@
 import { ReactElement } from "react";
-import { setEmptyClassName } from "../helper";
+import { getEmptyClassName } from "../helper";
 import i18n from "i18next";
 
 type TextCellProps = {
@@ -22,7 +22,7 @@ export default function TextCell({
   }
 
   return (
-    <span className={`text-cell ${setEmptyClassName(value)}`}>
+    <span className={`text-cell ${getEmptyClassName(value)}`}>
       {value || i18n.t("preview:empty")}
     </span>
   );

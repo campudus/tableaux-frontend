@@ -1,6 +1,6 @@
 import { ReactElement, useState } from "react";
 import { Attachment } from "../../../types/grud";
-import { setEmptyClassName } from "../helper";
+import { getEmptyClassName } from "../helper";
 import SvgIcon from "../../helperComponents/SvgIcon";
 import i18n from "i18next";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -24,10 +24,7 @@ export default function AttachmentCell({
 
   if (!attachments || attachments.length === 0) {
     return (
-      <a
-        className={`attachment-cell preview-cell-value-link ${setEmptyClassName()}`}
-        href={link}
-      >
+      <a className={`attachment-cell  ${getEmptyClassName()}`} href={link}>
         {i18n.t("preview:empty")}
       </a>
     );

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { ConcatColumn, LinkColumn } from "@grud/devtools/types";
 import { ReactElement, ReactNode } from "react";
-import { setEmptyClassName } from "../../helper";
+import { getEmptyClassName } from "../../helper";
 import LinkListCell from "./LinkListCell";
 import LinkCellItem from "./LinkCellItem";
 import i18n from "i18next";
@@ -25,9 +25,7 @@ export default function LinkCell({
     if (!values || values.length === 0) {
       return (
         <a
-          className={`link-cell__item preview-cell-value-link ${setEmptyClassName(
-            values
-          )}`}
+          className={`link-cell__item  ${getEmptyClassName(values)}`}
           href={link}
         >
           {i18n.t("preview:empty")}
