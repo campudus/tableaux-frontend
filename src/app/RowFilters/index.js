@@ -152,7 +152,7 @@ const buildContext = (tableId, langtag, store) => {
     { rowId: "integer" }
   );
   const rows = f.propOr([], ["rows", tableId, "data"], store);
-  const displayValues = store.tableView.displayValues[tableId];
+  const displayValues = store.tableView.displayValues[tableId] ?? [];
   const rowIdxLookup = buildIdxLookup("id", rows);
   const displayValueIdxLookup = buildIdxLookup("id", displayValues);
 
