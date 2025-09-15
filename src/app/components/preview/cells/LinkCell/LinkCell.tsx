@@ -5,6 +5,7 @@ import { setEmptyClassName } from "../../helper";
 import LinkListCell from "./LinkListCell";
 import LinkCellItem from "./LinkCellItem";
 import i18n from "i18next";
+import apiUrl from "../../../../helpers/apiUrl";
 
 type LinkCellProps = {
   langtag: string;
@@ -36,7 +37,6 @@ export default function LinkCell({
     if (column.toColumn.kind !== "concat") {
       return values.map((entry, index) => {
         const currentColumn = column.toColumn;
-        const link = `/${langtag}/tables/${column.toTable}/columns/${currentColumn.id}/rows/${entry.id}`;
 
         return (
           <LinkCellItem
@@ -44,7 +44,12 @@ export default function LinkCell({
             langtag={langtag}
             column={currentColumn}
             value={entry.value}
-            link={link}
+            link={apiUrl({
+              langtag,
+              tableId: column.toTable,
+              columnId: currentColumn.id,
+              rowId: entry.id
+            })}
             path={[
               column.displayName[langtag],
               currentColumn.displayName[langtag]
@@ -65,7 +70,6 @@ export default function LinkCell({
           const currentColumn = (column.toColumn as ConcatColumn).concats.at(
             index
           )!;
-          const link = `/${langtag}/tables/${column.toTable}/columns/${currentColumn.id}/rows/${entry.id}`;
 
           return (
             <LinkCellItem
@@ -73,7 +77,12 @@ export default function LinkCell({
               langtag={langtag}
               column={currentColumn}
               value={value}
-              link={link}
+              link={apiUrl({
+                langtag,
+                tableId: column.toTable,
+                columnId: currentColumn.id,
+                rowId: entry.id
+              })}
               path={[
                 column.displayName[langtag],
                 currentColumn.displayName[langtag]
