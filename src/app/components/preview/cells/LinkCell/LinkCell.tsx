@@ -6,6 +6,7 @@ import LinkListCell from "./LinkListCell";
 import LinkCellItem from "./LinkCellItem";
 import i18n from "i18next";
 import apiUrl from "../../../../helpers/apiUrl";
+import { getColumnDisplayName } from "../../../../helpers/multiLanguage";
 
 type LinkCellProps = {
   langtag: string;
@@ -51,8 +52,8 @@ export default function LinkCell({
               rowId: entry.id
             })}
             path={[
-              column.displayName[langtag],
-              currentColumn.displayName[langtag]
+              getColumnDisplayName(column, langtag),
+              getColumnDisplayName(currentColumn, langtag)
             ]}
             isLast={index === values.length - 1}
           />
@@ -84,8 +85,8 @@ export default function LinkCell({
                 rowId: entry.id
               })}
               path={[
-                column.displayName[langtag],
-                currentColumn.displayName[langtag]
+                getColumnDisplayName(column, langtag),
+                getColumnDisplayName(currentColumn, langtag)
               ]}
               isLast={index === entry.value.length - 1}
             />
