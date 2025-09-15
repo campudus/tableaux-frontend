@@ -24,7 +24,7 @@ export default function Chip({
         className
       )}
       onClick={onClick}
-      role="button"
+      role={onClick ? "button" : undefined}
     >
       {icon && <span className="chip__icon">{icon}</span>}
       <span className="chip__label">{label}</span>

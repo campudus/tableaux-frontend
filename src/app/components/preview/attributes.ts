@@ -56,9 +56,5 @@ export function getDefaultSelectedColumnId(
     ({ column }) => isValidPreviewColumn(column) && !isPreviewTitle(column)
   )?.column;
 
-  if (validPreviewDetailColumn) {
-    return validPreviewDetailColumn.id;
-  }
-
-  return undefined;
+  return validPreviewDetailColumn?.id;
 }

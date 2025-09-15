@@ -1,4 +1,4 @@
-import { ReactElement, useState } from "react";
+import { ReactElement } from "react";
 import actionTypes from "../../redux/actionTypes";
 import { useDispatch } from "react-redux";
 import { getColumnDisplayName } from "../../helpers/multiLanguage";
@@ -12,6 +12,7 @@ import { setRowFlag } from "../../redux/actions/annotationActions";
 import { Row } from "../../types/grud";
 import i18n from "i18next";
 import { previewUrl } from "../../helpers/apiUrl";
+import { canUserEditRowAnnotations } from "../../helpers/accessManagementHelper";
 
 const { PREVIEW_TITLE } = attributeKeys;
 
@@ -31,7 +32,6 @@ export default function PreviewRowView({
   columnsAndRow
 }: PreviewRowViewProps): ReactElement {
   const dispatch = useDispatch();
-  const [isRowFinal, setIsRowFinal] = useState(row.final);
 
   const handleColumnSelection = (columnId: number, rowId: number) => {
     const newUrl = previewUrl({ langtag, tableId, columnId, rowId });
@@ -83,15 +83,14 @@ export default function PreviewRowView({
   }
 
   function handleUpdateRowFinalStatus() {
-    const newFinalStatus = !isRowFinal;
+    if (!canUserEditRowAnnotations({ row })) return;
 
     dispatch(
       setRowFlag({
         table: { id: tableId },
         row: { id: row.id },
         flagName: "final",
-        flagValue: newFinalStatus,
-        onSuccess: setIsRowFinal(newFinalStatus),
+        flagValue: !row.final,
         onError: (err: unknown) => {
           console.error("Error updating row final status:", err);
         }
@@ -106,20 +105,23 @@ export default function PreviewRowView({
       <div className="preview-row-view__header">
         <Notifier
           className="preview-row-view__notifier"
-          icon={<i className={`fa ${isRowFinal ? "fa-lock" : "fa-unlock"} `} />}
+          icon={<i className={`fa ${row.final ? "fa-lock" : "fa-unlock"} `} />}
           label={
-            isRowFinal
+            row.final
               ? i18n.t("preview:row_is_final")
               : i18n.t("preview:row_is_not_final")
           }
           button={
-            <button onClick={handleUpdateRowFinalStatus}>
-              {isRowFinal
+            <button
+              onClick={handleUpdateRowFinalStatus}
+              disabled={!canUserEditRowAnnotations({ row })}
+            >
+              {row.final
                 ? i18n.t("preview:unlock_row")
                 : i18n.t("preview:lock_row")}
             </button>
           }
-          color={isRowFinal ? "dark" : "orange"}
+          color={row.final ? "dark" : "orange"}
         />
 
         {row.archived && (

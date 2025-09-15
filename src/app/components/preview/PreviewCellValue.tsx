@@ -1,5 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Attachment, Column, Row } from "../../types/grud";
+import {
+  Attachment,
+  Column,
+  CurrencyColumn,
+  LinkColumn,
+  Row
+} from "../../types/grud";
 import getDisplayValue from "../../helpers/getDisplayValue";
 import BooleanCell from "./cells/BooleanCell";
 import { ReactElement } from "react";
@@ -15,53 +21,96 @@ type PreviewCellValueProps = {
   link: string;
 };
 
+const ColumnKind = {
+  boolean: "boolean",
+  currency: "currency",
+  link: "link",
+  attachment: "attachment"
+};
+
+const cssClass = "preview-cell-value";
+
+const PreviewContent = ({
+  column,
+  langtag,
+  link,
+  value
+}: {
+  column: Column;
+  langtag: string;
+  link: string;
+  value: any;
+}) => {
+  const displayValue = getDisplayValue(column)(value);
+
+  switch (column.kind) {
+    case ColumnKind.boolean:
+      return <BooleanCell value={Boolean(value)} />;
+    case ColumnKind.currency:
+      return (
+        <CurrencyCell
+          langtag={langtag}
+          column={column as CurrencyColumn}
+          values={value as Record<string, number>}
+        />
+      );
+    case ColumnKind.link:
+      return (
+        <LinkCell
+          langtag={langtag}
+          column={column as LinkColumn}
+          values={value as Record<string, any>[]}
+          link={link}
+        />
+      );
+    case ColumnKind.attachment:
+      return (
+        <AttachmentCell
+          langtag={langtag}
+          attachments={value as Attachment[]}
+          link={link}
+        />
+      );
+    default:
+      return <TextCell langtag={langtag} value={displayValue} />;
+  }
+};
+
+const PreviewWithLink = ({
+  href,
+  children
+}: {
+  href: string;
+  children: ReactElement;
+}) => (
+  <a className={cssClass} href={href}>
+    {children}
+  </a>
+);
+
+const PreviewWithoutLink = ({ children }: { children: ReactElement }) => (
+  <div className={cssClass}>{children}</div>
+);
+
 export default function PreviewCellValue({
   langtag,
   column,
   row,
   link
 }: PreviewCellValueProps): ReactElement {
-  function renderCell(): ReactElement {
-    const rowValue = row.values;
-    const value = getDisplayValue(column)(rowValue);
-
-    if (column.kind === "boolean" && typeof rowValue === "boolean") {
-      return <BooleanCell value={rowValue} />;
-    }
-
-    if (column.kind === "currency") {
-      return (
-        <CurrencyCell
-          langtag={langtag}
-          column={column}
-          values={(rowValue as unknown) as Record<string, number>}
-        />
-      );
-    }
-
-    return <TextCell langtag={langtag} value={value} />;
-  }
+  const preventLink = [ColumnKind.link, ColumnKind.attachment].includes(
+    column.kind
+  );
+  const Preview = preventLink ? PreviewWithoutLink : PreviewWithLink;
 
   return (
-    <div className="preview-cell-value">
-      {column.kind === "link" ? (
-        <LinkCell
-          langtag={langtag}
-          column={column}
-          values={row.values as Record<string, any>[]}
-          link={link}
-        />
-      ) : column.kind === "attachment" ? (
-        <AttachmentCell
-          langtag={langtag}
-          attachments={row.values as Attachment[]}
-          link={link}
-        />
-      ) : (
-        <a className="preview-cell-value-link" href={link}>
-          {renderCell()}
-        </a>
-      )}
-    </div>
+    <Preview href={link}>
+      <PreviewContent
+        column={column}
+        langtag={langtag}
+        link={link}
+        value={row.values}
+      />
+    </Preview>
   );
 }

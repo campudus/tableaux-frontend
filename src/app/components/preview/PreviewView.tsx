@@ -3,16 +3,100 @@ import f from "lodash/fp";
 import GrudHeader from "../GrudHeader";
 import { switchLanguageHandler } from "../Router";
 import { useSelector, useDispatch } from "react-redux";
-import { GRUDStore } from "../../types/grud";
+import { GRUDStore, Row } from "../../types/grud";
 import actions from "../../redux/actionCreators";
 import PreviewRowView from "./PreviewRowView";
 import PreviewDetailView from "./PreviewDetailView";
 import Spinner from "../header/Spinner";
 import actionTypes from "../../redux/actionTypes";
-import { combineColumnsAndRow } from "./helper";
+import { ColumnAndRow, combineColumnsAndRow } from "./helper";
 import { useHistory } from "react-router-dom";
 import { getDefaultSelectedColumnId } from "./attributes";
 import SvgIcon from "../helperComponents/SvgIcon";
+
+type RowViewProps = {
+  langtag: string;
+  tableId: number;
+  columnId: number | undefined;
+  row: Row | undefined;
+  columnsAndRow: ColumnAndRow[];
+};
+
+const RowView = ({
+  langtag,
+  tableId,
+  columnId,
+  row,
+  columnsAndRow
+}: RowViewProps) => {
+  if (!row) {
+    return <div className="preview-view__centered">No row found.</div>;
+  }
+  if (f.isEmpty(columnsAndRow)) {
+    return <div className="preview-view__centered">No data found.</div>;
+  }
+  return (
+    <PreviewRowView
+      langtag={langtag}
+      tableId={tableId}
+      columnId={columnId}
+      row={row}
+      columnsAndRow={columnsAndRow}
+    />
+  );
+};
+
+type DetailViewProps = {
+  langtag: string;
+  tableId: number;
+  columnId: number | undefined;
+  currentDetailTable: number | null;
+  columnsAndRow: ColumnAndRow[];
+  detailTableColumnsMeta: GRUDStore["columns"][number] | undefined;
+};
+
+const DetailView = ({
+  langtag,
+  tableId,
+  columnId,
+  currentDetailTable,
+  columnsAndRow,
+  detailTableColumnsMeta
+}: DetailViewProps) => {
+  if (detailTableColumnsMeta && !detailTableColumnsMeta.finishedLoading) {
+    return <Spinner isLoading />;
+  }
+
+  if (detailTableColumnsMeta?.error) {
+    return (
+      <div className="preview-view__centered">
+        Error loading data. Please try again.
+      </div>
+    );
+  }
+
+  if (!columnId) {
+    console.warn("No column found or selected for the detail view.");
+    return null;
+  }
+
+  if (f.isEmpty(columnsAndRow)) {
+    console.warn("No data found.");
+    return null;
+  }
+
+  return (
+    <PreviewDetailView
+      langtag={langtag}
+      currentTable={tableId}
+      currentColumnId={columnId}
+      currentDetailTable={currentDetailTable}
+      selectedColumnAndRow={columnsAndRow.find(
+        entry => entry.column.id === columnId
+      )}
+    />
+  );
+};
 
 type PreviewViewProps = {
   langtag: string;
@@ -28,8 +112,8 @@ export default function PreviewView({
   const history = useHistory();
   const dispatch = useDispatch();
   const isDragging = useRef(false);
-  const [dragging, setDragging] = useState(false);
   const [leftWidth, setLeftWidth] = useState(50);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const columnsMeta = useSelector((store: GRUDStore) => store.columns[tableId]);
   const columns = columnsMeta?.data;
@@ -56,9 +140,7 @@ export default function PreviewView({
   );
 
   useEffect(() => {
-    if (!columnId || !columns) return;
-
-    const column = columns.find(c => c.id === columnId);
+    const column = columns?.find(c => c.id === columnId);
 
     if (column?.kind === "link") {
       if (column.toTable !== currentDetailTable) {
@@ -79,7 +161,7 @@ export default function PreviewView({
 
   const handleMouseDown = () => {
     isDragging.current = true;
-    setDragging(true);
+
     document.addEventListener("mousemove", handleMouseMove);
     document.addEventListener("mouseup", handleMouseUp);
   };
@@ -87,77 +169,20 @@ export default function PreviewView({
   const handleMouseMove = (e: MouseEvent) => {
     if (!isDragging.current) return;
 
-    const container = document.getElementById("resizable-container");
+    const container = containerRef.current;
     if (!container) return;
+
     const containerWidth = container.offsetWidth;
     const newLeftWidth = (e.clientX / containerWidth) * 100;
 
-    if (newLeftWidth < 20 || newLeftWidth > 80) return;
-
-    setLeftWidth(newLeftWidth);
+    setLeftWidth(f.clamp(20, 80, newLeftWidth));
   };
 
   const handleMouseUp = () => {
     isDragging.current = false;
-    setDragging(false);
+
     document.removeEventListener("mousemove", handleMouseMove);
     document.removeEventListener("mouseup", handleMouseUp);
-  };
-
-  const renderRowView = () => {
-    if (!row) {
-      return <div className="preview-view__centered">No row found.</div>;
-    }
-
-    if (f.isEmpty(columnsAndRow)) {
-      return <div className="preview-view__centered">No data found.</div>;
-    }
-
-    return (
-      <PreviewRowView
-        langtag={langtag}
-        tableId={tableId}
-        columnId={columnId}
-        row={row}
-        columnsAndRow={columnsAndRow}
-      />
-    );
-  };
-
-  const renderDetailView = () => {
-    if (detailTableColumnsMeta && !detailTableColumnsMeta.finishedLoading) {
-      return <Spinner isLoading />;
-    }
-
-    if (detailTableColumnsMeta?.error) {
-      return (
-        <div className="preview-view__centered">
-          Error loading data. Please try again.
-        </div>
-      );
-    }
-
-    if (!columnId) {
-      console.warn("No column found or selected for the detail view.");
-      return;
-    }
-
-    if (f.isEmpty(columnsAndRow)) {
-      console.warn("No data found.");
-      return;
-    }
-
-    return (
-      <PreviewDetailView
-        langtag={langtag}
-        currentTable={tableId}
-        currentColumnId={columnId}
-        currentDetailTable={currentDetailTable}
-        selectedColumnAndRow={columnsAndRow.find(
-          entry => entry.column.id === columnId
-        )}
-      />
-    );
   };
 
   return (
@@ -168,9 +193,9 @@ export default function PreviewView({
       />
 
       <div
-        id="resizable-container"
+        ref={containerRef}
         className="preview-view"
-        style={{ userSelect: dragging ? "none" : "auto" }}
+        style={{ userSelect: isDragging.current ? "none" : "auto" }}
       >
         {loadingData ? (
           <Spinner isLoading />
@@ -182,7 +207,13 @@ export default function PreviewView({
               className="preview-view__resizeable-left"
               style={{ width: `${leftWidth}%` }}
             >
-              {renderRowView()}
+              <RowView
+                langtag={langtag}
+                tableId={tableId}
+                columnId={columnId}
+                row={row}
+                columnsAndRow={columnsAndRow}
+              />
             </div>
 
             <div
@@ -196,7 +227,14 @@ export default function PreviewView({
                 <SvgIcon icon={"grabber"} />
               </div>
 
-              {renderDetailView()}
+              <DetailView
+                langtag={langtag}
+                tableId={tableId}
+                columnId={columnId}
+                currentDetailTable={currentDetailTable}
+                columnsAndRow={columnsAndRow}
+                detailTableColumnsMeta={detailTableColumnsMeta}
+              />
             </div>
           </>
         )}
