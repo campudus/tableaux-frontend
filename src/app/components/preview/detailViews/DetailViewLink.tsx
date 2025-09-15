@@ -17,6 +17,7 @@ import {
 import Chip from "../../Chip/Chip";
 import i18n from "i18next";
 import actions from "../../../redux/actionCreators";
+import apiUrl from "../../../helpers/apiUrl";
 
 type DetailViewLinkProps = {
   langtag: string;
@@ -68,9 +69,8 @@ export default function DetailViewLink({
     });
   }, [linkedCells]);
 
-  const linkedRows = rows?.filter(row =>
-    linkedCells.map(cell => cell.id).includes(row.id)
-  );
+  const linkedCellIds = new Set(f.map("id", linkedCells));
+  const linkedRows = rows?.filter(row => linkedCellIds.has(row.id));
 
   const selectedLinkedRows =
     selectedLinkedEntries && selectedLinkedEntries.length > 0
@@ -120,7 +120,7 @@ export default function DetailViewLink({
   // this is necessary because the height of the rows is dynamic
   useEffect(() => {
     const tableRows = document.querySelectorAll(
-      ".preview-detail-view__row--sticky"
+      ".detail-view-link__row--sticky"
     );
     let offset = 0;
 
@@ -243,7 +243,11 @@ export default function DetailViewLink({
           <tbody>
             {!columnsToDisplay}
             {columnsToDisplay.map(({ column, rows }, index) => {
-              const columnLink = `/${langtag}/tables/${currentDetailTable}/columns/${column.id}`;
+              const columnLink = apiUrl({
+                langtag,
+                tableId: currentDetailTable,
+                columnId: column.id
+              });
               const rowFilter = `/rows/${selectedLinkedEntries?.at(
                 0
               )}?filter:id:${selectedLinkedEntries?.join(":")}`;
@@ -275,7 +279,12 @@ export default function DetailViewLink({
                         langtag={langtag}
                         column={column}
                         row={row}
-                        link={`/${langtag}/tables/${currentDetailTable}/columns/${column.id}/rows/${row.id}`}
+                        link={apiUrl({
+                          langtag,
+                          tableId: currentDetailTable,
+                          columnId: column.id,
+                          rowId: row.id
+                        })}
                       />
                     </td>
                   ))}
