@@ -55,14 +55,12 @@ export function combinedColumnsAndRows(
     .filter(({ column }) => column.id !== 0);
 }
 
-export function setEmptyClassName(value?: any): string {
+export function getEmptyClassName(value?: unknown): string {
   if (f.isBoolean(value)) return "";
 
   if (!value) return "empty";
 
   if (Array.isArray(value) && value.length === 0) return "empty";
-
-  if (value === "") return "empty";
 
   return "";
 }
