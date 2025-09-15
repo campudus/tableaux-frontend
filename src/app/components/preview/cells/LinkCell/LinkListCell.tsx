@@ -3,6 +3,7 @@ import React, { ReactElement, ReactNode, useState } from "react";
 import { ConcatColumn, LinkColumn } from "../../../../types/grud";
 import LinkCellItem from "./LinkCellItem";
 import i18n from "i18next";
+import apiUrl from "../../../../helpers/apiUrl";
 
 type LinkListCellProps = {
   langtag: string;
@@ -36,7 +37,6 @@ export default function LinkListCell({
   ): ReactNode {
     return values.map((value: any, index: number) => {
       const currentColumn = concatColumn.concats.at(index)!;
-      const link = `/${langtag}/tables/${toTable}/columns/${currentColumn.id}/rows/${entryId}`;
 
       return (
         <LinkCellItem
@@ -44,7 +44,12 @@ export default function LinkListCell({
           langtag={langtag}
           column={currentColumn}
           value={value}
-          link={link}
+          link={apiUrl({
+            langtag,
+            tableId: toTable,
+            columnId: currentColumn.id,
+            rowId: entryId
+          })}
           path={[
             linkColumn.displayName[langtag],
             currentColumn.displayName[langtag]
