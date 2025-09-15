@@ -3,7 +3,7 @@ import { ReactElement, useCallback, useState } from "react";
 import f, { isBoolean } from "lodash/fp";
 import { Column } from "../../../../types/grud";
 import getDisplayValue from "../../../../helpers/getDisplayValue";
-import { setEmptyClassName } from "../../helper";
+import { getEmptyClassName } from "../../helper";
 import { useDebouncedValue } from "../../../../helpers/useDebouncedValue";
 import Tooltip from "../../../../components/helperComponents/Tooltip/Tooltip";
 import i18n from "i18next";
@@ -43,9 +43,7 @@ export default function LinkCellItem({
   return (
     <div className="link-cell-item">
       <a
-        className={`link-cell-item__value preview-cell-value-link ${setEmptyClassName(
-          displayValue
-        )}`}
+        className={`link-cell-item__value  ${getEmptyClassName(displayValue)}`}
         href={link}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
