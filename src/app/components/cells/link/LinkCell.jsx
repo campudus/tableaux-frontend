@@ -29,20 +29,18 @@ const LinkCell = props => {
     return getVisibleLinkCount(currentLangDisplayValues, width);
   }, [width]);
 
-  // Show a link preview for performance
-  // const displayValues = getDisplayValue(column, value);
-  const tooManyLinks = f.size(value) > previewLinkCount;
-  const links = f
-    .take(previewLinkCount, value)
-    .map((element, index) => (
-      <LinkLabelCell
-        key={element.id}
-        value={element}
-        langtag={langtag}
-        displayValue={displayValue[index]}
-        cell={cell}
-      />
-    ));
+  const isEditOrSelect = editing || selected;
+  const hasMore = f.size(value) > previewLinkCount;
+  const linkValues = isEditOrSelect ? value : f.take(previewLinkCount, value);
+  const links = linkValues.map((element, index) => (
+    <LinkLabelCell
+      key={element.id}
+      value={element}
+      langtag={langtag}
+      displayValue={displayValue[index]}
+      cell={cell}
+    />
+  ));
 
   const handleClick = e => {
     if (
@@ -57,14 +55,12 @@ const LinkCell = props => {
   return (
     <>
       <div className={"cell-content"} onClick={handleClick}>
-        {tooManyLinks
-          ? [
-              ...links,
-              <span key={"more"} className="more">
-                &hellip;
-              </span>
-            ]
-          : links}
+        {links}
+        {hasMore && !isEditOrSelect && (
+          <span key={"more"} className="more">
+            &hellip;
+          </span>
+        )}
       </div>
       {(selected || editing) && !isLocked(cell.row) && (
         <button key={"add-btn"} className="edit" onClick={handleClick}>

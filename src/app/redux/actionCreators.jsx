@@ -48,6 +48,7 @@ const {
   COLUMN_EDIT_SUCCESS,
   DELETE_ROW,
   GENERATED_DISPLAY_VALUES,
+  DELETE_DISPLAY_VALUES,
   HIDE_ALL_COLUMNS,
   SET_COLUMNS_VISIBLE,
   SET_COLUMN_ORDERING,
@@ -578,7 +579,9 @@ const deleteRow = action => {
       apiRoute: toRow({ tableId, rowId }) + queryString,
       method: "DELETE"
     }),
-    actionTypes: [DELETE_ROW, "NOTHING_TO_DO", "NOTHING_TO_DO"]
+    actionTypes: [DELETE_ROW, DELETE_DISPLAY_VALUES, "NOTHING_TO_DO"],
+    tableId,
+    rowId
   };
 };
 
