@@ -30,6 +30,7 @@ const {
   SET_CURRENT_TABLE,
   COLUMNS_DATA_LOADED,
   GENERATED_DISPLAY_VALUES,
+  DELETE_DISPLAY_VALUES,
   START_GENERATING_DISPLAY_VALUES,
   SET_CURRENT_LANGUAGE,
   SET_DISPLAY_VALUE_WORKER,
@@ -84,9 +85,11 @@ const mergeDisplayValues = (oldDisplayValues, newDisplayValues) =>
   )([...oldDisplayValues, ...newDisplayValues]);
 
 // This sets display values for foreign tables, allowing us to track
-// changes made by entity views onto them
+// changes made by entity views onto them.
+// Does not handle deletion of display values
 const setLinkDisplayValues = (state, linkDisplayValues) => {
   const { displayValues = {} } = state;
+  console.log({ displayValues, linkDisplayValues });
   const updatedDisplayValues = f.reduce(
     (acc, val) => {
       const { values, tableId } = val;
@@ -107,6 +110,16 @@ const setLinkDisplayValues = (state, linkDisplayValues) => {
     displayValues: updatedDisplayValues,
     startedGeneratingDisplayValues: false
   };
+};
+
+const deleteLinkDisplayValues = (state, action) => {
+  const { tableId, rowId } = action;
+
+  return f.update(
+    ["displayValues", tableId],
+    f.reject(f.propEq("id", rowId)),
+    state
+  );
 };
 
 const insertSkeletonLinks = (state, action, completeState) => {
@@ -341,6 +354,8 @@ export default (state = initialState, action, completeState) => {
       )(state);
     case GENERATED_DISPLAY_VALUES:
       return setLinkDisplayValues(state, action.displayValues);
+    case DELETE_DISPLAY_VALUES:
+      return deleteLinkDisplayValues(state, action);
     case ADDITIONAL_ROWS_DATA_LOADED:
       return insertSkeletonLinks(state, action, completeState);
     case ROW_CREATE_SUCCESS:
