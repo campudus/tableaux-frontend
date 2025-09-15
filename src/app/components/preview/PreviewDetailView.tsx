@@ -13,62 +13,68 @@ type PreviewDetailViewProps = {
   selectedColumnAndRow: ColumnAndRow | undefined;
 };
 
-export default function PreviewDetailView({
-  langtag,
-  currentTable,
-  currentColumnId,
-  currentDetailTable,
-  selectedColumnAndRow
-}: PreviewDetailViewProps): ReactElement {
+const getNoColumnContent = () => {
+  return <div className="preview-view__centered">No column selected.</div>;
+};
+const getNoDetailTableContent = () => {
+  return (
+    <div className="preview-view__centered">No detail table selected.</div>
+  );
+};
+const getNoLinkedEntriesContent = () => {
+  return (
+    <div className="preview-view__centered">No linked entries available.</div>
+  );
+};
+
+const cssClass = "preview-detail-view";
+
+export default function PreviewDetailView(
+  props: PreviewDetailViewProps
+): ReactElement {
+  const {
+    langtag,
+    currentTable,
+    currentColumnId,
+    currentDetailTable,
+    selectedColumnAndRow
+  } = props;
   const title = useSelector(
     (store: GRUDStore) =>
       store.columns[currentTable]?.data.find(
         column => column.id === currentColumnId
       )?.displayName[langtag]
   );
-
   const currentColumn = selectedColumnAndRow?.column;
-
   const linkedCells = Array.isArray(selectedColumnAndRow?.row.values)
     ? (selectedColumnAndRow.row.values as Row[])
     : undefined;
-
   const sortedLinkedCells = linkedCells?.length
     ? [...linkedCells].sort((a, b) => a.id - b.id)
     : undefined;
 
-  function renderDetailView(): ReactElement | null {
-    if (!currentColumn) {
-      return <div className="preview-view__centered">No column selected.</div>;
-    }
+  if (!currentColumn)
+    return <div className={cssClass}>{getNoColumnContent()}</div>;
 
-    if (currentColumn.kind === "richtext") {
-      return (
+  if (currentColumn.kind === "richtext") {
+    return (
+      <div className={cssClass}>
         <DetailViewRichtext
           title={title}
           richtext={selectedColumnAndRow.row.values[langtag] as string}
         />
-      );
-    }
+      </div>
+    );
+  }
 
-    if (currentColumn.kind === "link") {
-      if (!currentDetailTable) {
-        return (
-          <div className="preview-view__centered">
-            No detail table selected.
-          </div>
-        );
-      }
+  if (currentColumn.kind === "link") {
+    if (!currentDetailTable)
+      return <div className={cssClass}>{getNoDetailTableContent()}</div>;
+    if (!sortedLinkedCells)
+      return <div className={cssClass}>{getNoLinkedEntriesContent()}</div>;
 
-      if (!sortedLinkedCells) {
-        return (
-          <div className="preview-view__centered">
-            No linked entries available.
-          </div>
-        );
-      }
-
-      return (
+    return (
+      <div className={cssClass}>
         <DetailViewLink
           langtag={langtag}
           title={title}
@@ -76,11 +82,9 @@ export default function PreviewDetailView({
           selectedColumnAndRow={selectedColumnAndRow}
           linkedCells={sortedLinkedCells}
         />
-      );
-    }
-
-    return null;
+      </div>
+    );
   }
 
-  return <div className="preview-detail-view">{renderDetailView()}</div>;
+  return <div className={cssClass}>No preview available.</div>;
 }
