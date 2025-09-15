@@ -72,7 +72,7 @@ const PreviewContent = ({
         />
       );
     default:
-      return <TextCell langtag={langtag} value={displayValue} />;
+      return <TextCell langtag={langtag} multilangValue={displayValue} />;
   }
 };
 
