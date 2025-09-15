@@ -4,26 +4,26 @@ import i18n from "i18next";
 
 type TextCellProps = {
   langtag: string;
-  value: Record<string, string>;
+  multilangValue: Record<string, string>;
 };
 
 const TEXT_MAX_LENGTH = 250;
 
 export default function TextCell({
   langtag,
-  value
+  multilangValue
 }: TextCellProps): ReactElement {
-  const _value = value[langtag];
+  const value = multilangValue[langtag];
 
-  if (_value && _value.length > TEXT_MAX_LENGTH) {
+  if (value && value.length > TEXT_MAX_LENGTH) {
     return (
-      <span className="text-cell">{_value.slice(0, TEXT_MAX_LENGTH)}...</span>
+      <span className="text-cell">{value.slice(0, TEXT_MAX_LENGTH)}...</span>
     );
   }
 
   return (
-    <span className={`text-cell ${setEmptyClassName(_value)}`}>
-      {_value || i18n.t("preview:empty")}
+    <span className={`text-cell ${setEmptyClassName(value)}`}>
+      {value || i18n.t("preview:empty")}
     </span>
   );
 }
