@@ -33,12 +33,10 @@ export default function LinkedEntrySelection({
     [dispatch, selectedIds]
   );
 
-  let values = getDisplayValue(linkedEntriesColumn)(linkedEntries);
-  if (Array.isArray(values)) {
-    values = values.map(v => v[langtag]);
-  } else {
-    values = values[langtag];
-  }
+  const displayValues = getDisplayValue(linkedEntriesColumn, linkedEntries);
+  const values = Array.isArray(displayValues)
+    ? displayValues.map(v => v[langtag])
+    : displayValues[langtag];
 
   return (
     <div className="linked-entry-selection">
