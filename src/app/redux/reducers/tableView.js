@@ -89,7 +89,6 @@ const mergeDisplayValues = (oldDisplayValues, newDisplayValues) =>
 // Does not handle deletion of display values
 const setLinkDisplayValues = (state, linkDisplayValues) => {
   const { displayValues = {} } = state;
-  console.log({ displayValues, linkDisplayValues });
   const updatedDisplayValues = f.reduce(
     (acc, val) => {
       const { values, tableId } = val;
