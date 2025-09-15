@@ -70,23 +70,18 @@ const initialState = {
   rerenderTable: ""
 };
 
-const mergeDisplayValues = (oldDisplayValues, newDisplayValues) => {
-  const oldDisplayValueLookup = f.keyBy("id", oldDisplayValues);
-
-  return f.compose(
+const mergeDisplayValues = (oldDisplayValues, newDisplayValues) =>
+  f.compose(
     f.values,
-    f.reduce((accum, { id, values: newValues }) => {
-      const oldValues = f.prop([id, "values"], oldDisplayValueLookup);
+    f.reduce((accum, { id, values }) => {
+      const oldValues = f.prop([id, "values"], accum);
       accum[id] = {
         id,
-        values: f.isEmpty(oldValues)
-          ? newValues
-          : mergeArrays(oldValues, newValues)
+        values: f.isEmpty(oldValues) ? values : mergeArrays(oldValues, values)
       };
       return accum;
     }, {})
-  )(newDisplayValues);
-};
+  )([...oldDisplayValues, ...newDisplayValues]);
 
 // This sets display values for foreign tables, allowing us to track
 // changes made by entity views onto them
