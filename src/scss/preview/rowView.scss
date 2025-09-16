@@ -18,7 +18,9 @@
   }
 
   &__title {
-    display: inline-flex;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
     gap: 12px;
     font-size: 32px;
     font-weight: 500;
