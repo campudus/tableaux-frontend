@@ -34,7 +34,7 @@ export function combineColumnsAndRow(
     .filter(({ column }) => column.id !== 0);
 }
 
-export function combinedColumnsAndRows(
+export function combineColumnsAndRows(
   columns: Column[] | undefined,
   rows: Row[] | undefined
 ): ColumnAndRows[] {

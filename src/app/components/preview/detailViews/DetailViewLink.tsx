@@ -2,7 +2,7 @@ import { ReactElement, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import f from "lodash/fp";
 import { GRUDStore, Row } from "../../../types/grud";
-import { ColumnAndRow, ColumnAndRows, combinedColumnsAndRows } from "../helper";
+import { ColumnAndRow, ColumnAndRows, combineColumnsAndRows } from "../helper";
 import LinkedEntrySelection from "../LinkedEntrySelection";
 import { buildClassName } from "../../../helpers/buildClassName";
 import { getColumnDisplayName } from "../../../helpers/multiLanguage";
@@ -77,7 +77,7 @@ export default function DetailViewLink({
       ? linkedRows?.filter(row => selectedLinkedEntries?.includes(row.id))
       : [];
 
-  const columnsAndRows = combinedColumnsAndRows(columns, selectedLinkedRows);
+  const columnsAndRows = combineColumnsAndRows(columns, selectedLinkedRows);
   const columnsAndRowsSorted = sortColumnsAndRows(columnsAndRows);
 
   function getColumnsWithDifferences(
