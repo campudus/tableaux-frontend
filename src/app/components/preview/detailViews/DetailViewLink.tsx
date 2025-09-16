@@ -170,7 +170,7 @@ export default function DetailViewLink({
               className="detail-view-link__checkbox"
               onClick={() => handleSelectAll(!selectAll)}
             >
-              <input type="checkbox" checked={selectAll} />
+              <input type="checkbox" defaultChecked={selectAll} />
               <label>{i18n.t("preview:select_all")}</label>
             </button>
 
@@ -181,7 +181,7 @@ export default function DetailViewLink({
                 !(selectedLinkedEntries && selectedLinkedEntries.length >= 2)
               }
             >
-              <input type="checkbox" checked={showDifferences} />
+              <input type="checkbox" defaultChecked={showDifferences} />
               <label>{i18n.t("preview:show_differences")}</label>
             </button>
           </div>
