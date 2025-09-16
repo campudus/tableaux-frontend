@@ -15,5 +15,12 @@
   "false": "FALSCH",
   "show_images": "Bilder anzeigen",
   "show_less": "Weniger anzeigen",
-  "show_all": "Alle anzeigen"
+  "show_all": "Alle anzeigen",
+  "error_no_row_found": "Es konnte keine Zeile mit der id {{rowId}} in der Tabelle {{tableId}} gefunden werden",
+  "error_no_data": "Es konnten keine Daten geladen werden",
+  "error_loading_data": "Es konnten keine Daten geladen werden. Bitte versuchen Sie es erneut",
+  "warning_no_column_selected": "Es wurde keine Auswahl getroffen. Bitte wählen Sie eine Spalte aus, um die Vorschau anzuzeigen.",
+  "warning_no_detail_table_selected": "Da ist etwas schief gelaufen. Bitte versuchen Sie es erneut.",
+  "warning_no_linked_entries": "Es sind keine verknüpften Einträge vorhanden.",
+  "error_no_preview_available": "Keine Vorschau verfügbar."
 }
