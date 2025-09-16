@@ -32,14 +32,7 @@
   &__checkbox {
     display: flex;
     align-items: center;
-
-    input {
-      cursor: pointer;
-    }
-
-    input:disabled {
-      cursor: not-allowed;
-    }
+    gap: 2px;
   }
 
   &__table-wrapper {
