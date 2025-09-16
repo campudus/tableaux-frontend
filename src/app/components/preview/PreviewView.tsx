@@ -13,10 +13,12 @@ import { ColumnAndRow, combineColumnsAndRow } from "./helper";
 import { useHistory } from "react-router-dom";
 import { getDefaultSelectedColumnId } from "./attributes";
 import SvgIcon from "../helperComponents/SvgIcon";
+import i18n from "i18next";
 
 type RowViewProps = {
   langtag: string;
   tableId: number;
+  rowId: number;
   columnId: number | undefined;
   row: Row | undefined;
   columnsAndRow: ColumnAndRow[];
@@ -25,15 +27,24 @@ type RowViewProps = {
 const RowView = ({
   langtag,
   tableId,
+  rowId,
   columnId,
   row,
   columnsAndRow
 }: RowViewProps) => {
   if (!row) {
-    return <div className="preview-view__centered">No row found.</div>;
+    return (
+      <div className="preview-view__centered">
+        {i18n.t("preview:error_no_row_found", { rowId, tableId })}
+      </div>
+    );
   }
   if (f.isEmpty(columnsAndRow)) {
-    return <div className="preview-view__centered">No data found.</div>;
+    return (
+      <div className="preview-view__centered">
+        {i18n.t("preview:error_no_data")}
+      </div>
+    );
   }
   return (
     <PreviewRowView
@@ -70,7 +81,7 @@ const DetailView = ({
   if (detailTableColumnsMeta?.error) {
     return (
       <div className="preview-view__centered">
-        Error loading data. Please try again.
+        {i18n.t("preview:error_loading_data")}
       </div>
     );
   }
@@ -210,6 +221,7 @@ export default function PreviewView({
               <RowView
                 langtag={langtag}
                 tableId={tableId}
+                rowId={rowId}
                 columnId={columnId}
                 row={row}
                 columnsAndRow={columnsAndRow}

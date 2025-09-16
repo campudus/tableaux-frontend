@@ -4,6 +4,7 @@ import { GRUDStore, Row } from "../../types/grud";
 import DetailViewRichtext from "./detailViews/DetailViewRichtext";
 import DetailViewLink from "./detailViews/DetailViewLink";
 import { ColumnAndRow } from "./helper";
+import i18n from "i18next";
 
 type PreviewDetailViewProps = {
   langtag: string;
@@ -14,16 +15,24 @@ type PreviewDetailViewProps = {
 };
 
 const getNoColumnContent = () => {
-  return <div className="preview-view__centered">No column selected.</div>;
+  return (
+    <div className="preview-view__centered">
+      {i18n.t("preview:warning_no_column_selected")}
+    </div>
+  );
 };
 const getNoDetailTableContent = () => {
   return (
-    <div className="preview-view__centered">No detail table selected.</div>
+    <div className="preview-view__centered">
+      {i18n.t("preview:warning_no_detail_table_selected")}
+    </div>
   );
 };
 const getNoLinkedEntriesContent = () => {
   return (
-    <div className="preview-view__centered">No linked entries available.</div>
+    <div className="preview-view__centered">
+      {i18n.t("preview:warning_no_linked_entries")}
+    </div>
   );
 };
 
@@ -86,5 +95,9 @@ export default function PreviewDetailView(
     );
   }
 
-  return <div className={cssClass}>No preview available.</div>;
+  return (
+    <div className="preview-view__centered">
+      {i18n.t("preview:error_no_preview_available")}
+    </div>
+  );
 }

@@ -151,7 +151,9 @@ export default function DetailViewLink({
 
   if (columnsToDisplay && columnsToDisplay.length === 0) {
     return (
-      <div className="preview-view__centered">No linked entries found.</div>
+      <div className="preview-view__centered">
+        {i18n.t("preview:warning_no_linked_entries")}
+      </div>
     );
   }
 
