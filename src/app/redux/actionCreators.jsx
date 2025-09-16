@@ -395,16 +395,40 @@ const loadTableView = (tableId, customFilters) => (dispatch, getState) => {
   const { filters = [], sortColumnName, sortDirection } = rowsFilter;
   const colName = sortColumnName;
   const direction = sortDirection || SortValue.asc;
-  const sorting = { colName, direction };
+  const sorting = !f.isEmpty(colName) ? { colName, direction } : {};
   const cols = f.get([tableId, "data"], columns) ?? [];
   const baseVisibleColumns = f.map("id", cols);
   const baseColumnOrdering = mapIndexed(({ id }, idx) => ({ id, idx }))(cols);
 
-  dispatch({
-    type: SET_FILTERS_AND_SORTING,
-    filters: !f.isEmpty(customFilters) ? customFilters : filters,
-    sorting: !f.isEmpty(colName) ? sorting : {}
-  });
+  if (!f.isEmpty(customFilters)) {
+    const extractRowIds = filter =>
+      f.isArray(filter) &&
+      filter[0] === "value" &&
+      filter[1] === "rowId" &&
+      filter[2] === "equals"
+        ? filter[3]
+        : [];
+    const rowIds = f.flatMap(extractRowIds, customFilters);
+
+    // rows in custom filter might be archived
+    // so we need to make sure they are loaded and displayed
+    for (const selectedRowId of rowIds) {
+      dispatch(fetchSingleRow({ tableId, selectedRowId }));
+    }
+
+    dispatch({
+      type: SET_FILTERS_AND_SORTING,
+      filters: customFilters,
+      sorting: sorting,
+      showArchived: ShowArchived.show
+    });
+  } else {
+    dispatch({
+      type: SET_FILTERS_AND_SORTING,
+      filters: filters,
+      sorting: sorting
+    });
+  }
 
   dispatch({
     type: SET_COLUMN_ORDERING,
