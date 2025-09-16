@@ -122,7 +122,7 @@ export default function PreviewView({
 }: PreviewViewProps): ReactElement {
   const history = useHistory();
   const dispatch = useDispatch();
-  const isDragging = useRef(false);
+  const [isDragging, setIsDragging] = useState(false);
   const [leftWidth, setLeftWidth] = useState(50);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -171,15 +171,13 @@ export default function PreviewView({
   };
 
   const handleMouseDown = () => {
-    isDragging.current = true;
+    setIsDragging(true);
 
     document.addEventListener("mousemove", handleMouseMove);
     document.addEventListener("mouseup", handleMouseUp);
   };
 
   const handleMouseMove = (e: MouseEvent) => {
-    if (!isDragging.current) return;
-
     const container = containerRef.current;
     if (!container) return;
 
@@ -190,7 +188,7 @@ export default function PreviewView({
   };
 
   const handleMouseUp = () => {
-    isDragging.current = false;
+    setIsDragging(false);
 
     document.removeEventListener("mousemove", handleMouseMove);
     document.removeEventListener("mouseup", handleMouseUp);
@@ -206,7 +204,7 @@ export default function PreviewView({
       <div
         ref={containerRef}
         className="preview-view"
-        style={{ userSelect: isDragging.current ? "none" : "auto" }}
+        style={{ userSelect: isDragging ? "none" : "auto" }}
       >
         {loadingData ? (
           <Spinner isLoading />
