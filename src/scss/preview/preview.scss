@@ -50,6 +50,14 @@
       height: 15px;
     }
   }
+
+  button > * {
+    cursor: pointer;
+  }
+
+  button:disabled > * {
+    cursor: not-allowed;
+  }
 }
 
 .preview-row-view__column-name,
