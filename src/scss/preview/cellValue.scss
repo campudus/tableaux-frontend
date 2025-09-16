@@ -131,7 +131,8 @@
   .swiper-image-wrapper {
     position: relative;
     width: 70%;
-    height: 70%;
+    height: auto;
+    min-height: 500px;
     max-height: 750px;
     background-color: lightgray;
 
