@@ -1,5 +1,5 @@
 import f from "lodash/fp";
-import { Column } from "../../types/grud";
+import { Column, ColumnKind } from "../../types/grud";
 import { ColumnAndRow, ColumnAndRows } from "./helper";
 
 export const attributeKeys = {
@@ -9,8 +9,17 @@ export const attributeKeys = {
   PREVIEW_DETAIL_VIEW_STICKY_COLUMN: "previewDetailViewStickyColumn"
 };
 
+const invalidPreviewTitleColumnKinds: ColumnKind[] = [
+  "boolean",
+  "currency",
+  "attachment"
+];
+
 export function isPreviewTitle(column: Column): boolean {
-  return !!column.attributes?.[attributeKeys.PREVIEW_TITLE];
+  return (
+    !!column.attributes?.[attributeKeys.PREVIEW_TITLE] &&
+    !invalidPreviewTitleColumnKinds.includes(column.kind)
+  );
 }
 
 export function isPreviewImage(column: Column): boolean {
