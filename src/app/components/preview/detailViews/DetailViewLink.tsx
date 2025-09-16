@@ -166,26 +166,24 @@ export default function DetailViewLink({
 
         {linkedCells.length > 1 && (
           <div className="detail-view-link__actions">
-            <div className="detail-view-link__checkbox">
-              <input
-                type="checkbox"
-                checked={selectAll}
-                onChange={() => handleSelectAll(!selectAll)}
-              />
+            <button
+              className="detail-view-link__checkbox"
+              onClick={() => handleSelectAll(!selectAll)}
+            >
+              <input type="checkbox" checked={selectAll} />
               <label>{i18n.t("preview:select_all")}</label>
-            </div>
+            </button>
 
-            <div className="detail-view-link__checkbox">
-              <input
-                type="checkbox"
-                checked={showDifferences}
-                disabled={
-                  !(selectedLinkedEntries && selectedLinkedEntries.length >= 2)
-                }
-                onChange={() => setShowDifferences(!showDifferences)}
-              />
+            <button
+              className="detail-view-link__checkbox"
+              onClick={() => setShowDifferences(!showDifferences)}
+              disabled={
+                !(selectedLinkedEntries && selectedLinkedEntries.length >= 2)
+              }
+            >
+              <input type="checkbox" checked={showDifferences} />
               <label>{i18n.t("preview:show_differences")}</label>
-            </div>
+            </button>
           </div>
         )}
       </div>
