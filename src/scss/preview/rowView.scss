@@ -4,6 +4,12 @@
   // but show the content from left to right
   direction: ltr;
 
+  &__notifier {
+    button {
+      padding: 5px 10px;
+    }
+  }
+
   &__header {
     display: flex;
     flex-direction: column;
