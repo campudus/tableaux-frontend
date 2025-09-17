@@ -14,6 +14,7 @@ import { useHistory } from "react-router-dom";
 import { getDefaultSelectedColumnId } from "./attributes";
 import SvgIcon from "../helperComponents/SvgIcon";
 import i18n from "i18next";
+import getDisplayValue from "../../helpers/getDisplayValue";
 
 type RowViewProps = {
   langtag: string;
@@ -22,6 +23,7 @@ type RowViewProps = {
   columnId: number | undefined;
   row: Row | undefined;
   columnsAndRow: ColumnAndRow[];
+  defaultTitle?: string;
 };
 
 const RowView = ({
@@ -30,7 +32,8 @@ const RowView = ({
   rowId,
   columnId,
   row,
-  columnsAndRow
+  columnsAndRow,
+  defaultTitle
 }: RowViewProps) => {
   if (!row) {
     return (
@@ -53,6 +56,7 @@ const RowView = ({
       columnId={columnId}
       row={row}
       columnsAndRow={columnsAndRow}
+      defaultTitle={defaultTitle}
     />
   );
 };
@@ -131,6 +135,10 @@ export default function PreviewView({
 
   const rowMeta = useSelector((store: GRUDStore) => store.rows[tableId]);
   const row = rowMeta?.data.find(row => row.id === rowId);
+
+  const idColumnDisplayValue = columns?.some(c => c.id === 0 && c.name === "ID")
+    ? getDisplayValue(columns.at(0))(row?.values.at(0))[langtag]
+    : undefined;
 
   const loadingData =
     !columnsMeta ||
@@ -223,6 +231,7 @@ export default function PreviewView({
                 columnId={columnId}
                 row={row}
                 columnsAndRow={columnsAndRow}
+                defaultTitle={idColumnDisplayValue}
               />
             </div>
 
