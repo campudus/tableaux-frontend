@@ -130,10 +130,12 @@
 
   .swiper-image-wrapper {
     position: relative;
-    width: 70%;
-    height: auto;
+    height: 70%;
     min-height: 500px;
     max-height: 750px;
+    width: auto;
+    min-width: 500px;
+    max-width: 70%;
     background-color: lightgray;
 
     img {
