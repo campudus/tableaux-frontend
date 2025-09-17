@@ -22,6 +22,7 @@ type PreviewRowViewProps = {
   columnId: number | undefined;
   row: Row;
   columnsAndRow: ColumnAndRow[];
+  defaultTitle?: string;
 };
 
 export default function PreviewRowView({
@@ -29,7 +30,8 @@ export default function PreviewRowView({
   tableId,
   row,
   columnId,
-  columnsAndRow
+  columnsAndRow,
+  defaultTitle
 }: PreviewRowViewProps): ReactElement {
   const dispatch = useDispatch();
 
@@ -98,7 +100,7 @@ export default function PreviewRowView({
     );
   };
 
-  const previewTitle = getPreviewTitle(columnsAndRow);
+  const previewTitle = getPreviewTitle(columnsAndRow) || defaultTitle;
 
   return (
     <div className="preview-row-view">
