@@ -17,10 +17,10 @@ export type ColumnAndRows = {
   rows: Row[];
 };
 
-export function combineColumnsAndRow(
+export const combineColumnsAndRow = (
   columns: Column[] | undefined,
   row: Row | undefined
-): ColumnAndRow[] {
+): ColumnAndRow[] => {
   if (!columns || !row) return [];
 
   return columns
@@ -32,12 +32,12 @@ export function combineColumnsAndRow(
       }
     }))
     .filter(({ column }) => column.id !== 0);
-}
+};
 
-export function combineColumnsAndRows(
+export const combineColumnsAndRows = (
   columns: Column[] | undefined,
   rows: Row[] | undefined
-): ColumnAndRows[] {
+): ColumnAndRows[] => {
   if (!columns || !rows) return [];
 
   return columns
@@ -53,9 +53,9 @@ export function combineColumnsAndRows(
       };
     })
     .filter(({ column }) => column.id !== 0);
-}
+};
 
-export function getEmptyClassName(value?: unknown): string {
+export const getEmptyClassName = (value?: unknown): string => {
   if (f.isBoolean(value)) return "";
 
   if (!value) return "empty";
@@ -63,4 +63,4 @@ export function getEmptyClassName(value?: unknown): string {
   if (Array.isArray(value) && value.length === 0) return "empty";
 
   return "";
-}
+};
