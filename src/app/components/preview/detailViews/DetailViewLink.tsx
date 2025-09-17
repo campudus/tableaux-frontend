@@ -80,10 +80,10 @@ export default function DetailViewLink({
   const columnsAndRows = combineColumnsAndRows(columns, selectedLinkedRows);
   const columnsAndRowsSorted = sortColumnsAndRows(columnsAndRows);
 
-  function getColumnsWithDifferences(
+  const getColumnsWithDifferences = (
     columnsAndRows: ColumnAndRows[],
     langtag: string
-  ): ColumnAndRows[] {
+  ): ColumnAndRows[] => {
     return columnsAndRows.filter(({ column, rows }) => {
       const firstValue = getDisplayValue(column)(rows[0]?.values);
       const firstDisplay = Array.isArray(firstValue)
@@ -101,7 +101,7 @@ export default function DetailViewLink({
 
       return hasDifference;
     });
-  }
+  };
 
   const columnsToDisplay = showDifferences
     ? getColumnsWithDifferences(columnsAndRowsSorted, langtag)
@@ -132,7 +132,7 @@ export default function DetailViewLink({
     });
   }, [columnsToDisplay]);
 
-  function handleSelectAll(selectAll: boolean): void {
+  const handleSelectAll = (selectAll: boolean): void => {
     if (selectAll) {
       dispatch({
         type: actionTypes.preview.PREVIEW_SET_LINKED_SELECTION,
@@ -147,7 +147,7 @@ export default function DetailViewLink({
     }
 
     setSelectAll(selectAll);
-  }
+  };
 
   if (columnsToDisplay && columnsToDisplay.length === 0) {
     return (

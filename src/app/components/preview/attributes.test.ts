@@ -9,22 +9,22 @@ import { ColumnAndRow, ColumnAndRows } from "./helper";
 import { Column, ColumnAttributeMap, ColumnKind } from "../../types/grud";
 
 // Helper function for valid Row objects
-function createRow(id: number): any {
+const createRow = (id: number): any => {
   return { id, values: {} };
-}
+};
 
-function createColumn(
+const createColumn = (
   id: number,
   kind: ColumnKind,
   attributes: ColumnAttributeMap = {}
-): any {
+): any => {
   return { id, kind, attributes };
-}
+};
 
-function createColumnAndRow(column: Column): ColumnAndRow {
+const createColumnAndRow = (column: Column): ColumnAndRow => {
   // Use the column ID for the row ID to match types
   return { column, row: { id: column.id, values: {} } };
-}
+};
 
 describe("getDefaultSelectedColumnId", () => {
   it("returns id of column set as default selected", () => {
