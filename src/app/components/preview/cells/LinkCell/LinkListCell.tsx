@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { ReactElement, ReactNode, useState } from "react";
+import React, { ReactElement, useState } from "react";
 import { ConcatColumn, LinkColumn } from "../../../../types/grud";
 import LinkCellItem from "./LinkCellItem";
 import i18n from "i18next";
 import apiUrl from "../../../../helpers/apiUrl";
+import { getColumnDisplayName } from "../../../../helpers/multiLanguage";
 
 type LinkListCellProps = {
   langtag: string;
@@ -13,6 +14,46 @@ type LinkListCellProps = {
 
 const MAX_ENTRIES_LENGTH = 10;
 
+const LinkValues = ({
+  langtag,
+  linkColumn,
+  values,
+  entryId
+}: {
+  langtag: string;
+  linkColumn: LinkColumn;
+  values: any[];
+  entryId: number;
+}) => {
+  const concatColumn = linkColumn.toColumn as ConcatColumn;
+  return (
+    <>
+      {values.map((value: any, index: number) => {
+        const currentColumn = concatColumn.concats.at(index)!;
+        return (
+          <LinkCellItem
+            key={`${entryId}-${index}`}
+            langtag={langtag}
+            column={currentColumn}
+            value={value}
+            link={apiUrl({
+              langtag,
+              tableId: linkColumn.toTable,
+              columnId: currentColumn.id,
+              rowId: entryId
+            })}
+            path={[
+              getColumnDisplayName(linkColumn, langtag),
+              getColumnDisplayName(currentColumn, langtag)
+            ]}
+            isLast={index === values.length - 1}
+          />
+        );
+      })}
+    </>
+  );
+};
+
 export default function LinkListCell({
   langtag,
   linkColumn,
@@ -20,45 +61,14 @@ export default function LinkListCell({
 }: LinkListCellProps): ReactElement {
   const [showAll, setShowAll] = useState(false);
 
-  function addIndexNumber(index: number): string {
+  const addIndexNumber = (index: number): string => {
     return index >= 10 ? index.toString() : `0${index}`;
-  }
+  };
 
   const showToggleButton = values.length > MAX_ENTRIES_LENGTH;
   const displayedValues = showAll
     ? values
     : values.slice(0, MAX_ENTRIES_LENGTH);
-
-  function renderLinkValues(
-    concatColumn: ConcatColumn,
-    values: any,
-    toTable: number,
-    entryId: number
-  ): ReactNode {
-    return values.map((value: any, index: number) => {
-      const currentColumn = concatColumn.concats.at(index)!;
-
-      return (
-        <LinkCellItem
-          key={`${entryId}-${index}`}
-          langtag={langtag}
-          column={currentColumn}
-          value={value}
-          link={apiUrl({
-            langtag,
-            tableId: toTable,
-            columnId: currentColumn.id,
-            rowId: entryId
-          })}
-          path={[
-            linkColumn.displayName[langtag],
-            currentColumn.displayName[langtag]
-          ]}
-          isLast={index === values.length - 1}
-        />
-      );
-    });
-  }
 
   return (
     <div className="link-list-cell">
@@ -66,12 +76,12 @@ export default function LinkListCell({
         return (
           <div key={entry.id} className="link-list-cell__entry">
             {addIndexNumber(entryIndex + 1)}. &nbsp;
-            {renderLinkValues(
-              linkColumn.toColumn as ConcatColumn,
-              entry.value,
-              linkColumn.toTable,
-              entry.id
-            )}
+            <LinkValues
+              langtag={langtag}
+              linkColumn={linkColumn}
+              values={entry.value}
+              entryId={entry.id}
+            />
           </div>
         );
       })}
