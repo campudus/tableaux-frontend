@@ -401,14 +401,19 @@ const loadTableView = (tableId, customFilters) => (dispatch, getState) => {
   const baseColumnOrdering = mapIndexed(({ id }, idx) => ({ id, idx }))(cols);
 
   if (!f.isEmpty(customFilters)) {
-    const extractRowIds = filter =>
-      f.isArray(filter) &&
-      filter[0] === "value" &&
-      filter[1] === "rowId" &&
-      filter[2] === "equals"
-        ? filter[3]
-        : [];
-    const rowIds = f.flatMap(extractRowIds, customFilters);
+    const extractIds = filter => {
+      const hasRowId = f.startsWith(["value", "rowId", "equals"], filter);
+
+      if (hasRowId) {
+        const rowId = filter[3];
+        return [rowId];
+      } else if (Array.isArray(filter)) {
+        return f.flatMap(extractIds, filter);
+      }
+      return [];
+    };
+
+    const rowIds = f.flatMap(extractIds, customFilters);
 
     // rows in custom filter might be archived
     // so we need to make sure they are loaded and displayed
