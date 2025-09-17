@@ -15,27 +15,26 @@ const invalidPreviewTitleColumnKinds: ColumnKind[] = [
   "attachment"
 ];
 
-export function isPreviewTitle(column: Column): boolean {
+export const isPreviewTitle = (column: Column): boolean => {
   return (
     !!column.attributes?.[attributeKeys.PREVIEW_TITLE] &&
     !invalidPreviewTitleColumnKinds.includes(column.kind)
   );
-}
+};
 
-export function isPreviewImage(column: Column): boolean {
+export const isPreviewImage = (column: Column): boolean => {
   return (
     column.kind === "attachment" &&
     column.attributes?.[attributeKeys.PREVIEW_DETAIL_VIEW_IMAGE]?.value === true
   );
-}
+};
 
-export function isStickyColumn(column: Column): boolean {
-  return !!column.attributes?.[attributeKeys.PREVIEW_DETAIL_VIEW_STICKY_COLUMN];
-}
+export const isStickyColumn = (column: Column): boolean =>
+  !!column.attributes?.[attributeKeys.PREVIEW_DETAIL_VIEW_STICKY_COLUMN];
 
-export function sortColumnsAndRows(
+export const sortColumnsAndRows = (
   columnsAndRows: ColumnAndRows[]
-): ColumnAndRows[] {
+): ColumnAndRows[] => {
   const sortedColumnsAndRows = f.sortBy(
     (item: ColumnAndRows) =>
       item.column.attributes?.[attributeKeys.PREVIEW_DETAIL_VIEW_STICKY_COLUMN]
@@ -44,15 +43,15 @@ export function sortColumnsAndRows(
   );
 
   return sortedColumnsAndRows;
-}
+};
 
-export function isValidPreviewColumn(column: Column): boolean {
+export const isValidPreviewColumn = (column: Column): boolean => {
   return column.kind === "link" || column.kind === "richtext";
-}
+};
 
-export function getDefaultSelectedColumnId(
+export const getDefaultSelectedColumnId = (
   columnsAndRow: ColumnAndRow[]
-): number | undefined {
+): number | undefined => {
   const columnSetAsDefaultSelected = columnsAndRow.find(
     ({ column }) => column.attributes?.[attributeKeys.PREVIEW_DEFAULT_SELECTED]
   )?.column;
@@ -66,4 +65,4 @@ export function getDefaultSelectedColumnId(
   )?.column;
 
   return validPreviewDetailColumn?.id;
-}
+};

@@ -57,7 +57,7 @@ export default function PreviewRowView({
     }
   };
 
-  function getPreviewTitle(columnsAndRows: ColumnAndRow[]) {
+  const getPreviewTitle = (columnsAndRows: ColumnAndRow[]) => {
     const previewTitles = columnsAndRows.filter(({ column }) =>
       isPreviewTitle(column)
     );
@@ -80,9 +80,9 @@ export default function PreviewRowView({
         link={`/${langtag}/tables/${tableId}/columns/${column.id}/rows/${row.id}`}
       />
     ));
-  }
+  };
 
-  function handleUpdateRowFinalStatus() {
+  const handleUpdateRowFinalStatus = () => {
     if (!canUserEditRowAnnotations({ row })) return;
 
     dispatch(
@@ -96,7 +96,7 @@ export default function PreviewRowView({
         }
       })
     );
-  }
+  };
 
   const previewTitle = getPreviewTitle(columnsAndRow);
 
