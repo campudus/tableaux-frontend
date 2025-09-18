@@ -99,7 +99,12 @@ export default function PreviewRowView({
           langtag={langtag}
           column={column}
           row={row}
-          link={`/${langtag}/tables/${tableId}/columns/${column.id}/rows/${row.id}`}
+          link={apiUrl({
+            langtag,
+            tableId,
+            columnId: column.id,
+            rowId: row.id
+          })}
         />
       );
     });
@@ -165,7 +170,12 @@ export default function PreviewRowView({
           {columnsAndRow
             .filter(({ column }) => !isPreviewTitle(column))
             .map(({ column, row }) => {
-              const cellLink = `/${langtag}/tables/${tableId}/columns/${column.id}/rows/${row.id}`;
+              const cellLink = apiUrl({
+                langtag,
+                tableId,
+                columnId: column.id,
+                rowId: row.id
+              });
 
               return (
                 <tr
