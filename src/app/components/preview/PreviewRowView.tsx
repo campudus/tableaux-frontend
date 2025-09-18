@@ -11,8 +11,9 @@ import Notifier from "./Notifier";
 import { setRowFlag } from "../../redux/actions/annotationActions";
 import { Row } from "../../types/grud";
 import i18n from "i18next";
-import { previewUrl } from "../../helpers/apiUrl";
+import apiUrl, { previewUrl } from "../../helpers/apiUrl";
 import { canUserEditRowAnnotations } from "../../helpers/accessManagementHelper";
+import getDisplayValue from "../../helpers/getDisplayValue";
 
 const { PREVIEW_TITLE } = attributeKeys;
 
@@ -73,15 +74,35 @@ export default function PreviewRowView({
       previewTitles
     );
 
-    return previewTitlesSorted.map(({ column, row }) => (
-      <PreviewCellValue
-        key={column.id}
-        langtag={langtag}
-        column={column}
-        row={row}
-        link={`/${langtag}/tables/${tableId}/columns/${column.id}/rows/${row.id}`}
-      />
-    ));
+    return previewTitlesSorted.map(({ column, row }) => {
+      if (column.kind === "boolean") {
+        const displayValue = getDisplayValue(column)(row.values)[langtag];
+        return displayValue ? (
+          <a
+            key={column.id}
+            className="preview-cell-value"
+            href={apiUrl({
+              langtag,
+              tableId,
+              columnId: column.id,
+              rowId: row.id
+            })}
+          >
+            {displayValue}
+          </a>
+        ) : null;
+      }
+
+      return (
+        <PreviewCellValue
+          key={column.id}
+          langtag={langtag}
+          column={column}
+          row={row}
+          link={`/${langtag}/tables/${tableId}/columns/${column.id}/rows/${row.id}`}
+        />
+      );
+    });
   };
 
   const handleUpdateRowFinalStatus = () => {
