@@ -9,11 +9,7 @@ export const attributeKeys = {
   PREVIEW_DETAIL_VIEW_STICKY_COLUMN: "previewDetailViewStickyColumn"
 };
 
-const invalidPreviewTitleColumnKinds: ColumnKind[] = [
-  "boolean",
-  "currency",
-  "attachment"
-];
+const invalidPreviewTitleColumnKinds: ColumnKind[] = ["currency", "attachment"];
 
 export const isPreviewTitle = (column: Column): boolean => {
   return (
