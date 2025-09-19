@@ -903,4 +903,12 @@
       }
     }
   }
+
+  &__navigation {
+    .attachment-dirent {
+      &__action--folder {
+        display: none;
+      }
+    }
+  }
 }

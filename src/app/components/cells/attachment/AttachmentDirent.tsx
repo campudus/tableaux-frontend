@@ -14,7 +14,7 @@ import apiUrl from "../../../helpers/apiUrl";
 import MediaThumbnail, {
   MediaThumbnailFolder
 } from "../../media/MediaThumbnail";
-import { Layout } from "./AttachmentOverlay";
+import { Layout, ToggleAction } from "./AttachmentOverlay";
 import ButtonAction from "../../helperComponents/ButtonAction";
 import SvgIcon from "../../helperComponents/SvgIcon";
 
@@ -26,8 +26,8 @@ type AttachmentDirentProps = {
   layout: Layout;
   onNavigate: (id?: FolderID | null) => void;
   width?: number;
-  onToggle?: (dirent: Attachment, action: "add" | "remove") => void;
-  toggleAction?: "add" | "remove";
+  onToggle?: (file: Attachment, action: ToggleAction) => void;
+  onFindAction?: (file: Attachment) => ToggleAction;
 };
 
 function AttachmentDirent(
@@ -40,13 +40,14 @@ function AttachmentDirent(
     onNavigate,
     width = 1000,
     onToggle,
-    toggleAction
+    onFindAction
   }: AttachmentDirentProps,
   direntRef: ForwardedRef<HTMLDivElement>
 ): ReactElement {
   const isFile = isAttachment(dirent);
   const translate = retrieveTranslation(langtag);
   const direntKey = isFile ? "file" : "folder";
+  const toggleAction = isFile ? onFindAction?.(dirent) : undefined;
 
   const label = isFile ? (translate(dirent.title) as string) : dirent.name;
   const labelTruncated = useMemo(() => {

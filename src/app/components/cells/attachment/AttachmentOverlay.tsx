@@ -24,6 +24,8 @@ export const ORDER_MODE_DEFAULT: OrderMode = ORDER_MODE.TITLE;
 
 export type Layout = "list" | "tiles";
 
+export type ToggleAction = "add" | "remove";
+
 export type SharedData = {
   folder?: Folder;
   filterValue?: string;
