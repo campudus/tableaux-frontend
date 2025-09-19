@@ -8,7 +8,7 @@ import {
 import { createCellPositioner } from "react-virtualized/dist/es/Masonry";
 import { Attachment, Folder, FolderID } from "../../../types/grud";
 import { buildClassName as cn } from "../../../helpers/buildClassName";
-import { Layout } from "./AttachmentOverlay";
+import { Layout, ToggleAction } from "./AttachmentOverlay";
 import AttachmentDirent from "./AttachmentDirent";
 import AttachmentDirentNav from "./AttachmentDirentNav";
 
@@ -20,8 +20,8 @@ type AttachmentDirentsProps = {
   layout: Layout;
   onNavigate: (id?: FolderID | null) => void;
   onNavigateBack?: () => void;
-  onToggle?: (file: Attachment, action: "add" | "remove") => void;
-  toggleAction?: "add" | "remove";
+  onToggle?: (file: Attachment, action: ToggleAction) => void;
+  onFindAction?: (file: Attachment) => ToggleAction;
 };
 
 export default function AttachmentDirents({
@@ -33,7 +33,7 @@ export default function AttachmentDirents({
   onNavigate,
   onNavigateBack,
   onToggle,
-  toggleAction
+  onFindAction
 }: AttachmentDirentsProps): ReactElement {
   const [dimensions, setDimensions] = useState({ width: 100, height: 100 });
   const masonryRef = useRef<Masonry>(null);
@@ -126,7 +126,7 @@ export default function AttachmentDirents({
                         onNavigate={onNavigate}
                         width={width}
                         onToggle={onToggle}
-                        toggleAction={toggleAction}
+                        onFindAction={onFindAction}
                       />
                     ) : (
                       <div style={{ ...style, width: cellWidth }}></div>
