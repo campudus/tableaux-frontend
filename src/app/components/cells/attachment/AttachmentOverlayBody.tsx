@@ -28,7 +28,8 @@ import {
   FILTER_MODE_DEFAULT,
   Layout,
   ORDER_MODE_DEFAULT,
-  SharedProps
+  SharedProps,
+  ToggleAction
 } from "./AttachmentOverlay";
 import SearchFunctions from "../../../helpers/searchFunctions";
 import { retrieveTranslation } from "../../../helpers/multiLanguage";
@@ -79,12 +80,11 @@ export default function AttachmentOverlayBody({
     f.propEq("name", i18n.t("media:new_folder")),
     folder?.subfolders
   );
-  const nonAttachedFiles = f.differenceBy("uuid", folder?.files, attachedFiles);
   const filter = SearchFunctions[filterMode];
   const filteredFiles = f.filter(file => {
     const targetValue = translate(file.title);
     return filter(filterValue, targetValue) as boolean;
-  }, nonAttachedFiles);
+  }, folder?.files);
   const files = f.orderBy(f.prop(orderMode), "desc", filteredFiles);
 
   // sort new folder to top
@@ -147,6 +147,11 @@ export default function AttachmentOverlayBody({
   const handleUploadDone = async () => {
     // refresh folder
     await handleNavigate(folder?.id);
+  };
+
+  const handleFindAction = (file: Attachment): ToggleAction => {
+    const isAdd = !f.some(({ uuid }) => uuid === file.uuid, attachedFiles);
+    return isAdd ? "add" : "remove";
   };
 
   useEffect(() => {
@@ -227,7 +232,7 @@ export default function AttachmentOverlayBody({
             onNavigate={handleNavigate}
             onNavigateBack={handleNavigateBack}
             onToggle={handleToggleLink}
-            toggleAction="add"
+            onFindAction={handleFindAction}
           />
         )}
 
@@ -275,7 +280,7 @@ export default function AttachmentOverlayBody({
           layout={layoutState.content}
           onNavigate={handleNavigate}
           onToggle={handleToggleLink}
-          toggleAction="remove"
+          onFindAction={handleFindAction}
         />
       </div>
     </div>
