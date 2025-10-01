@@ -23,8 +23,8 @@
     "@codemirror/language-data": "6.3.1",
     "@codemirror/state": "6.3.3",
     "@codemirror/view": "6.22.1",
-    "@grud/devtools": "npm:@jsr/grud__devtools@0.3.6",
     "@floating-ui/react-dom": "^2.1.5",
+    "@grud/devtools": "npm:@jsr/grud__devtools@0.3.6",
     "@types/lodash": "4.17.16",
     "@types/node": "22.13.10",
     "@types/react": "16.14.62",
@@ -107,6 +107,7 @@
     "node-http-proxy-json": "0.1.9",
     "pragmatic-fp-ts": "^1.7.0",
     "serve-static": "^1.14.1",
+    "swiper": "11.2.10",
     "uuid": "3.3.3",
     "zod": "3.24.4"
   }
