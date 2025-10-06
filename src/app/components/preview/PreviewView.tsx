@@ -15,6 +15,9 @@ import { getDefaultSelectedColumnId } from "./attributes";
 import SvgIcon from "../helperComponents/SvgIcon";
 import i18n from "i18next";
 import getDisplayValue from "../../helpers/getDisplayValue";
+import { getColumnDisplayName } from "../../helpers/multiLanguage";
+import apiUrl from "../../helpers/apiUrl";
+import { PreviewDefaultTitle } from "./PreviewTitle";
 
 type RowViewProps = {
   langtag: string;
@@ -23,7 +26,7 @@ type RowViewProps = {
   columnId: number | undefined;
   row: Row | undefined;
   columnsAndRow: ColumnAndRow[];
-  defaultTitle?: string;
+  defaultTitle: PreviewDefaultTitle | undefined;
 };
 
 const RowView = ({
@@ -136,8 +139,18 @@ export default function PreviewView({
   const rowMeta = useSelector((store: GRUDStore) => store.rows[tableId]);
   const row = rowMeta?.data.find(row => row.id === rowId);
 
-  const idColumnDisplayValue = columns?.some(c => c.id === 0 && c.name === "ID")
-    ? getDisplayValue(columns.at(0))(row?.values.at(0))[langtag]
+  const defaultTitle: PreviewDefaultTitle | undefined = columns?.some(
+    c => c.id === 0 && c.name === "ID"
+  )
+    ? {
+        value: getDisplayValue(columns.at(0))(row?.values.at(0))[langtag],
+        link: apiUrl({
+          langtag,
+          tableId,
+          rowId: rowId
+        }),
+        columnDisplayName: getColumnDisplayName(columns.at(0), langtag)
+      }
     : undefined;
 
   const loadingData =
@@ -231,7 +244,7 @@ export default function PreviewView({
                 columnId={columnId}
                 row={row}
                 columnsAndRow={columnsAndRow}
-                defaultTitle={idColumnDisplayValue}
+                defaultTitle={defaultTitle}
               />
             </div>
 

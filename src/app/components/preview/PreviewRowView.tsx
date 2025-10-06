@@ -5,17 +5,14 @@ import { getColumnDisplayName } from "../../helpers/multiLanguage";
 import PreviewCellValue from "./PreviewCellValue";
 import { buildClassName } from "../../helpers/buildClassName";
 import { ColumnAndRow } from "./helper";
-import { attributeKeys, isPreviewTitle } from "./attributes";
-import f from "lodash/fp";
+import { isPreviewTitle } from "./attributes";
 import Notifier from "./Notifier";
 import { setRowFlag } from "../../redux/actions/annotationActions";
 import { Row } from "../../types/grud";
 import i18n from "i18next";
 import apiUrl, { previewUrl } from "../../helpers/apiUrl";
 import { canUserEditRowAnnotations } from "../../helpers/accessManagementHelper";
-import getDisplayValue from "../../helpers/getDisplayValue";
-
-const { PREVIEW_TITLE } = attributeKeys;
+import PreviewTitle, { PreviewDefaultTitle } from "./PreviewTitle";
 
 type PreviewRowViewProps = {
   langtag: string;
@@ -23,7 +20,7 @@ type PreviewRowViewProps = {
   columnId: number | undefined;
   row: Row;
   columnsAndRow: ColumnAndRow[];
-  defaultTitle?: string;
+  defaultTitle: PreviewDefaultTitle | undefined;
 };
 
 export default function PreviewRowView({
@@ -60,56 +57,6 @@ export default function PreviewRowView({
     }
   };
 
-  const getPreviewTitle = (columnsAndRows: ColumnAndRow[]) => {
-    const previewTitles = columnsAndRows.filter(({ column }) =>
-      isPreviewTitle(column)
-    );
-
-    if (previewTitles.length === 0) {
-      return undefined;
-    }
-
-    const previewTitlesSorted = f.sortBy(
-      item => item.column.attributes?.[PREVIEW_TITLE]?.value,
-      previewTitles
-    );
-
-    return previewTitlesSorted.map(({ column, row }) => {
-      if (column.kind === "boolean") {
-        const displayValue = getDisplayValue(column)(row.values)[langtag];
-        return displayValue ? (
-          <a
-            key={column.id}
-            className="preview-cell-value"
-            href={apiUrl({
-              langtag,
-              tableId,
-              columnId: column.id,
-              rowId: row.id
-            })}
-          >
-            {displayValue}
-          </a>
-        ) : null;
-      }
-
-      return (
-        <PreviewCellValue
-          key={column.id}
-          langtag={langtag}
-          column={column}
-          row={row}
-          link={apiUrl({
-            langtag,
-            tableId,
-            columnId: column.id,
-            rowId: row.id
-          })}
-        />
-      );
-    });
-  };
-
   const handleUpdateRowFinalStatus = () => {
     if (!canUserEditRowAnnotations({ row })) return;
 
@@ -125,8 +72,6 @@ export default function PreviewRowView({
       })
     );
   };
-
-  const previewTitle = getPreviewTitle(columnsAndRow) || defaultTitle;
 
   return (
     <div className="preview-row-view">
@@ -161,9 +106,12 @@ export default function PreviewRowView({
         )}
       </div>
 
-      {previewTitle && (
-        <div className="preview-row-view__title">{previewTitle}</div>
-      )}
+      <PreviewTitle
+        langtag={langtag}
+        tableId={tableId}
+        columnsAndRow={columnsAndRow}
+        defaultTitle={defaultTitle}
+      />
 
       <table>
         <tbody>
