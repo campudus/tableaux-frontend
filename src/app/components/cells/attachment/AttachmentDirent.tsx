@@ -1,11 +1,5 @@
 import i18n from "i18next";
-import {
-  CSSProperties,
-  ForwardedRef,
-  forwardRef,
-  ReactElement,
-  useMemo
-} from "react";
+import { CSSProperties, ForwardedRef, forwardRef, ReactElement } from "react";
 import { isAttachment } from "../../../types/guards";
 import { Attachment, Folder, FolderID } from "../../../types/grud";
 import { buildClassName as cn } from "../../../helpers/buildClassName";
@@ -17,6 +11,7 @@ import MediaThumbnail, {
 import { Layout, ToggleAction } from "./AttachmentOverlay";
 import ButtonAction from "../../helperComponents/ButtonAction";
 import SvgIcon from "../../helperComponents/SvgIcon";
+import LabelTruncated from "../../helperComponents/LabelTruncated";
 
 type AttachmentDirentProps = {
   className?: string;
@@ -50,29 +45,9 @@ function AttachmentDirent(
   const toggleAction = isFile ? onFindAction?.(dirent) : undefined;
 
   const label = isFile ? (translate(dirent.title) as string) : dirent.name;
-  const labelTruncated = useMemo(() => {
-    let charLimit;
-
-    if (layout === "tiles") {
-      charLimit = 26;
-    } else {
-      const pxPerChar = 7.5;
-      const wThumb = 45;
-      const actionCount = toggleAction === "add" ? 3 : 4;
-      const wActs = actionCount * 30;
-      const wGaps = 16;
-      charLimit = Math.floor((width - wThumb - wActs - wGaps) / pxPerChar);
-    }
-
-    if (label.length <= charLimit) {
-      return label;
-    }
-
-    const labelStart = label.slice(0, charLimit - 10);
-    const labelEnd = label.slice(-8);
-
-    return `${labelStart}...${labelEnd}`;
-  }, [dirent, layout, width]);
+  const labelActionCount = toggleAction === "add" ? 3 : 4;
+  const labelFixedCharLimit = layout === "tiles" ? 26 : undefined;
+  const labelReservedSpace = 45 + 24 + labelActionCount * 30; // wThumb + wGaps + wActs
 
   const handleClick = () => {
     if (isFile) {
@@ -138,7 +113,12 @@ function AttachmentDirent(
         }
         label={
           <span className="attachment-dirent__label" title={label}>
-            {labelTruncated}
+            <LabelTruncated
+              label={label}
+              width={width}
+              fixedCharLimit={labelFixedCharLimit}
+              reservedSpace={labelReservedSpace}
+            />
           </span>
         }
         onClick={handleClick}

@@ -39,6 +39,7 @@ import {
   canUserEditFiles,
   canUserEditFolders
 } from "../../../helpers/accessManagementHelper";
+import LabelTruncated from "../../helperComponents/LabelTruncated";
 
 type FolderDirentProps = {
   className?: string;
@@ -79,28 +80,8 @@ function FolderDirent(
   const canDelete = isFile ? canUserDeleteFiles() : canUserDeleteFolders();
 
   const label = isFile ? (translate(dirent.title) as string) : dirent.name;
-  const labelTruncated = useMemo(() => {
-    let charLimit;
-
-    if (layout === "tiles") {
-      charLimit = 50;
-    } else {
-      const pxPerChar = 7.2;
-      const wThumb = 45;
-      const wGaps = 24;
-      const wActs = 4 * 45 + 120; // 4 icons + dependencyCount-label
-      charLimit = Math.floor((width - wThumb - wActs - wGaps) / pxPerChar);
-    }
-
-    if (label.length <= charLimit) {
-      return label;
-    }
-
-    const labelStart = label.slice(0, charLimit - 10);
-    const labelEnd = label.slice(-8);
-
-    return `${labelStart}...${labelEnd}`;
-  }, [dirent, layout, width]);
+  const labelFixedCharLimit = layout === "tiles" ? 50 : undefined;
+  const labelReservedSpace = 45 + 24 + 4 * 45 + 120; // wThumb + wGaps + 4 icons + dependencyCount-label
 
   const handleClick = () => {
     if (isFile) {
@@ -210,7 +191,12 @@ function FolderDirent(
         }
         label={
           <span className="folder-dirent__label" title={label}>
-            {labelTruncated}
+            <LabelTruncated
+              label={label}
+              width={width}
+              fixedCharLimit={labelFixedCharLimit}
+              reservedSpace={labelReservedSpace}
+            />
           </span>
         }
         onClick={handleClick}
