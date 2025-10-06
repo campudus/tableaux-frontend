@@ -19,6 +19,7 @@ type PreviewCellValueProps = {
   column: Column;
   row: Row;
   link: string;
+  isTitle?: boolean;
 };
 
 const ColumnKind = {
@@ -34,12 +35,14 @@ const PreviewContent = ({
   column,
   langtag,
   link,
-  value
+  value,
+  isTitle
 }: {
   column: Column;
   langtag: string;
   link: string;
   value: any;
+  isTitle?: boolean;
 }) => {
   const displayValue = getDisplayValue(column)(value);
 
@@ -72,7 +75,14 @@ const PreviewContent = ({
         />
       );
     default:
-      return <TextCell langtag={langtag} multilangValue={displayValue} />;
+      return (
+        <TextCell
+          langtag={langtag}
+          column={column}
+          multilangValue={displayValue}
+          isTitle={isTitle}
+        />
+      );
   }
 };
 
@@ -96,7 +106,8 @@ export default function PreviewCellValue({
   langtag,
   column,
   row,
-  link
+  link,
+  isTitle
 }: PreviewCellValueProps): ReactElement {
   const preventLink = [ColumnKind.link, ColumnKind.attachment].includes(
     column.kind
@@ -110,6 +121,7 @@ export default function PreviewCellValue({
         langtag={langtag}
         link={link}
         value={row.values}
+        isTitle={isTitle}
       />
     </Preview>
   );

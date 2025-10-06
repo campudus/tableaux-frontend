@@ -81,3 +81,25 @@
     width: 100%;
   }
 }
+
+.preview-title {
+  position: relative;
+  width: fit-content;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 32px;
+  font-weight: 500;
+  margin: 0 0 24px 8px;
+
+  &__element:hover {
+    color: $color-primary;
+  }
+
+  .tooltip {
+    &:after {
+      display: none; // hide tooltip arrow
+    }
+  }
+}
