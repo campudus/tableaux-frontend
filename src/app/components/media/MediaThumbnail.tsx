@@ -1,4 +1,5 @@
 import { ReactElement, useState } from "react";
+import { useIntersectionObserver } from "usehooks-ts";
 import { Attachment } from "../../types/grud";
 import { retrieveTranslation } from "../../helpers/multiLanguage";
 import { buildClassName as cn } from "../../helpers/buildClassName";
@@ -52,6 +53,7 @@ export default function MediaThumbnail({
   layout = "list",
   width = 40
 }: MediaThumbnailProps): ReactElement {
+  const { isIntersecting, ref } = useIntersectionObserver();
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
 
@@ -68,14 +70,17 @@ export default function MediaThumbnail({
   const canShowImage = !isError && (isValidMimeType || isSVG);
 
   return (
-    <div className={cn("media-thumbnail", { [layout]: true }, className)}>
+    <div
+      ref={ref}
+      className={cn("media-thumbnail", { [layout]: true }, className)}
+    >
       <span className="media-thumbnail__overlay">
         <i className="icon fa fa-external-link" />
       </span>
 
       {isLoading && <div className="media-thumbnail__skeleton"></div>}
 
-      {canShowImage && (
+      {isIntersecting && canShowImage && (
         <img
           className={cn("media-thumbnail__image", {
             icon: isSVG,
@@ -87,14 +92,14 @@ export default function MediaThumbnail({
         />
       )}
 
-      {!canShowImage && hasFallback && (
+      {isIntersecting && !canShowImage && hasFallback && (
         <img
           className={cn("media-thumbnail__image", { icon: true })}
           src={fallbackUrl}
         />
       )}
 
-      {!canShowImage && !hasFallback && (
+      {isIntersecting && !canShowImage && !hasFallback && (
         <svg
           className={cn("media-thumbnail__image", { icon: true })}
           width="20"
