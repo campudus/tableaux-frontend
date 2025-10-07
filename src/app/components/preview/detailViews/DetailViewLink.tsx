@@ -215,7 +215,7 @@ export default function DetailViewLink({
                     <div className="detail-view-link__column-image-wrapper">
                       <img
                         className="detail-view-link__column-image"
-                        src={"/api" + row.values.at(0).url[langtag]}
+                        src={"/api" + row.values.at(0)?.url[langtag]}
                         alt="Preview"
                         onError={e => {
                           (e.currentTarget as HTMLImageElement).src =
@@ -233,7 +233,7 @@ export default function DetailViewLink({
                       )}
                     </div>
 
-                    <div>{row.values.at(0).title[langtag]}</div>
+                    <div>{row.values.at(0)?.title[langtag]}</div>
                   </th>
                 ))}
               </tr>
