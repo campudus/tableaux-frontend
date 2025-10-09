@@ -17,21 +17,40 @@ export type ColumnAndRows = {
   rows: Row[];
 };
 
+const getGroupColumnGroupIds = (columns: Column[] | undefined): number[] => {
+  if (!columns) return [];
+
+  const groupColumnGroupIds: number[] = [];
+
+  columns.forEach(column => {
+    if (column.kind === "group") {
+      groupColumnGroupIds.push(...column.groups.map(g => g.id));
+    }
+  });
+
+  return groupColumnGroupIds;
+};
+
 export const combineColumnsAndRow = (
   columns: Column[] | undefined,
   row: Row | undefined
 ): ColumnAndRow[] => {
   if (!columns || !row) return [];
 
+  const groupColumnGroupIds = getGroupColumnGroupIds(columns);
+
   return columns
-    ?.map((column, index) => ({
+    .map((column, index) => ({
       column,
       row: {
         id: row.id,
         values: row.values[index]
       }
     }))
-    .filter(({ column }) => column.id !== 0);
+    .filter(
+      ({ column }) =>
+        column.id !== 0 && !groupColumnGroupIds.includes(column.id)
+    );
 };
 
 export const combineColumnsAndRows = (
@@ -40,8 +59,10 @@ export const combineColumnsAndRows = (
 ): ColumnAndRows[] => {
   if (!columns || !rows) return [];
 
+  const groupColumnGroupIds = getGroupColumnGroupIds(columns);
+
   return columns
-    ?.map((column, index) => {
+    .map((column, index) => {
       return {
         column,
         rows: rows?.map(row => {
@@ -52,7 +73,10 @@ export const combineColumnsAndRows = (
         })
       };
     })
-    .filter(({ column }) => column.id !== 0);
+    .filter(
+      ({ column }) =>
+        column.id !== 0 && !groupColumnGroupIds.includes(column.id)
+    );
 };
 
 export const getEmptyClassName = (value?: unknown): string => {
