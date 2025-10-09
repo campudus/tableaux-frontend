@@ -9,14 +9,15 @@ import PreviewRowView from "./PreviewRowView";
 import PreviewDetailView from "./PreviewDetailView";
 import Spinner from "../header/Spinner";
 import actionTypes from "../../redux/actionTypes";
-import { ColumnAndRow, combineColumnsAndRow } from "./helper";
+import {
+  ColumnAndRow,
+  combineColumnsAndRow,
+  getPreviewDefaultTitle
+} from "./helper";
 import { useHistory } from "react-router-dom";
 import { getDefaultSelectedColumnId } from "./attributes";
 import SvgIcon from "../helperComponents/SvgIcon";
 import i18n from "i18next";
-import getDisplayValue from "../../helpers/getDisplayValue";
-import { getColumnDisplayName } from "../../helpers/multiLanguage";
-import apiUrl from "../../helpers/apiUrl";
 import { PreviewDefaultTitle } from "./PreviewTitle";
 
 type RowViewProps = {
@@ -139,20 +140,6 @@ export default function PreviewView({
   const rowMeta = useSelector((store: GRUDStore) => store.rows[tableId]);
   const row = rowMeta?.data.find(row => row.id === rowId);
 
-  const defaultTitle: PreviewDefaultTitle | undefined = columns?.some(
-    c => c.id === 0 && c.name === "ID"
-  )
-    ? {
-        value: getDisplayValue(columns.at(0))(row?.values.at(0))[langtag],
-        link: apiUrl({
-          langtag,
-          tableId,
-          rowId: rowId
-        }),
-        columnDisplayName: getColumnDisplayName(columns.at(0), langtag)
-      }
-    : undefined;
-
   const loadingData =
     !columnsMeta ||
     !rowMeta ||
@@ -244,7 +231,13 @@ export default function PreviewView({
                 columnId={columnId}
                 row={row}
                 columnsAndRow={columnsAndRow}
-                defaultTitle={defaultTitle}
+                defaultTitle={getPreviewDefaultTitle(
+                  langtag,
+                  tableId,
+                  rowId,
+                  columns,
+                  row
+                )}
               />
             </div>
 
