@@ -1,6 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import getDisplayValue from "../../helpers/getDisplayValue";
 import { Column } from "../../types/grud";
 import f from "lodash/fp";
+import apiUrl from "../../helpers/apiUrl";
+import { getColumnDisplayName } from "../../helpers/multiLanguage";
+import { PreviewDefaultTitle } from "./PreviewTitle";
 
 type Row = {
   id: number;
@@ -77,6 +81,26 @@ export const combineColumnsAndRows = (
       ({ column }) =>
         column.id !== 0 && !groupColumnGroupIds.includes(column.id)
     );
+};
+
+export const getPreviewDefaultTitle = (
+  langtag: string,
+  tableId: number,
+  rowId: number,
+  columns: Column[] | undefined,
+  row: Row | undefined
+): PreviewDefaultTitle | undefined => {
+  return columns?.some(c => c.id === 0 && c.name === "ID")
+    ? {
+        value: getDisplayValue(columns.at(0))(row?.values.at(0))[langtag],
+        link: apiUrl({
+          langtag,
+          tableId,
+          rowId: rowId
+        }),
+        columnDisplayName: getColumnDisplayName(columns.at(0), langtag)
+      }
+    : undefined;
 };
 
 export const getEmptyClassName = (value?: unknown): string => {
