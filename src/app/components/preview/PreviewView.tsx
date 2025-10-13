@@ -69,19 +69,22 @@ type DetailViewProps = {
   langtag: string;
   tableId: number;
   columnId: number | undefined;
-  currentDetailTable: number | null;
   columnsAndRow: ColumnAndRow[];
-  detailTableColumnsMeta: GRUDStore["columns"][number] | undefined;
 };
 
 const DetailView = ({
   langtag,
   tableId,
   columnId,
-  currentDetailTable,
-  columnsAndRow,
-  detailTableColumnsMeta
+  columnsAndRow
 }: DetailViewProps) => {
+  const currentDetailTable = useSelector(
+    (store: GRUDStore) => store.preview.currentDetailTable
+  );
+  const detailTableColumnsMeta = useSelector((store: GRUDStore) =>
+    currentDetailTable ? store.columns[currentDetailTable] : undefined
+  );
+
   if (detailTableColumnsMeta && !detailTableColumnsMeta.finishedLoading) {
     return <Spinner isLoading />;
   }
@@ -150,13 +153,6 @@ export default function PreviewView({
   const idOfSelectedColumn =
     useSelector((store: GRUDStore) => store.preview.currentColumn) ||
     getDefaultSelectedColumnId(columnsAndRow);
-
-  const currentDetailTable = useSelector(
-    (store: GRUDStore) => store.preview.currentDetailTable
-  );
-  const detailTableColumnsMeta = useSelector((store: GRUDStore) =>
-    currentDetailTable ? store.columns[currentDetailTable] : undefined
-  );
 
   useEffect(() => {
     const selectedColumnAndRow = columnsAndRow.find(
@@ -272,9 +268,7 @@ export default function PreviewView({
                 langtag={langtag}
                 tableId={tableId}
                 columnId={idOfSelectedColumn}
-                currentDetailTable={currentDetailTable}
                 columnsAndRow={columnsAndRow}
-                detailTableColumnsMeta={detailTableColumnsMeta}
               />
             </div>
           </>
