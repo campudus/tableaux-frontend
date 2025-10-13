@@ -130,9 +130,10 @@
 
   .swiper-image-wrapper {
     position: relative;
+    height: 100%;
     max-height: 70%;
-    max-width: 1500px;
-    background-color: $color-background-very-light-grey;
+    width: 100%;
+    max-width: 80%;
 
     img {
       display: block;
@@ -163,13 +164,16 @@
   .swiper-pagination {
     display: flex;
     justify-content: center;
+    max-height: 120px;
+    flex-wrap: wrap;
+    overflow-y: auto;
     gap: 16px;
 
     img {
-      height: 150px;
-      width: 150px;
+      min-height: 120px;
+      min-width: 120px;
       object-fit: cover;
-      background-color: $color-background-very-light-grey;
+      background-color: $color-grey-dark;
     }
   }
 
