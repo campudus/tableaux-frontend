@@ -1,6 +1,6 @@
 import { ReactElement } from "react";
 import actionTypes from "../../redux/actionTypes";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { getColumnDisplayName } from "../../helpers/multiLanguage";
 import PreviewCellValue from "./PreviewCellValue";
 import { buildClassName } from "../../helpers/buildClassName";
@@ -8,11 +8,12 @@ import { ColumnAndRow } from "./helper";
 import { isPreviewTitle } from "./attributes";
 import Notifier from "./Notifier";
 import { setRowFlag } from "../../redux/actions/annotationActions";
-import { Row } from "../../types/grud";
+import { GRUDStore, LinkColumn, Row } from "../../types/grud";
 import i18n from "i18next";
 import apiUrl, { previewUrl } from "../../helpers/apiUrl";
 import { canUserEditRowAnnotations } from "../../helpers/accessManagementHelper";
 import PreviewTitle, { PreviewDefaultTitle } from "./PreviewTitle";
+import actions from "../../redux/actionCreators";
 
 type PreviewRowViewProps = {
   langtag: string;
@@ -33,22 +34,48 @@ export default function PreviewRowView({
 }: PreviewRowViewProps): ReactElement {
   const dispatch = useDispatch();
 
+  const reduxColumns = useSelector((store: GRUDStore) => store.columns);
+  const reduxRows = useSelector((store: GRUDStore) => store.rows);
+
   const handleColumnSelection = (columnId: number, rowId: number) => {
+    const newColumnAndRow = columnsAndRow.find(c => c.column.id === columnId);
     const newUrl = previewUrl({ langtag, tableId, columnId, rowId });
     window.history.replaceState({}, "", newUrl);
+
+    if (!newColumnAndRow) return;
 
     dispatch({
       type: actionTypes.preview.PREVIEW_SET_CURRENT_COLUMN,
       currentColumn: columnId
     });
 
-    const newColumn = columnsAndRow.find(c => c.column.id === columnId)?.column;
+    if (newColumnAndRow.column.kind === "link") {
+      const linkedRowIds: number[] =
+        newColumnAndRow.row.values.map((r: Row) => r.id) || [];
 
-    if (newColumn?.kind === "link") {
       dispatch({
         type: actionTypes.preview.PREVIEW_SET_CURRENT_DETAIL_TABLE,
-        currentDetailTable: newColumn.toTable
+        currentDetailTable: newColumnAndRow.column.toTable
       });
+      dispatch({
+        type: actionTypes.preview.PREVIEW_SET_LINKED_SELECTION,
+        selectedLinkedEntries: linkedRowIds
+      });
+
+      if (!reduxColumns[newColumnAndRow.column.toTable]) {
+        dispatch(actions.loadColumns(newColumnAndRow.column.toTable));
+      }
+
+      if (!reduxRows[newColumnAndRow.column.toTable]) {
+        linkedRowIds.forEach(rowId => {
+          dispatch(
+            actions.fetchSingleRow({
+              tableId: (newColumnAndRow.column as LinkColumn).toTable,
+              selectedRowId: rowId
+            })
+          );
+        });
+      }
     } else {
       dispatch({
         type: actionTypes.preview.PREVIEW_SET_CURRENT_DETAIL_TABLE,
