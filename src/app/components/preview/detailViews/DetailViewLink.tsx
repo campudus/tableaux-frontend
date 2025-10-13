@@ -48,27 +48,6 @@ export default function DetailViewLink({
     (store: GRUDStore) => store.preview.selectedLinkedEntries
   );
 
-  // load all linked rows that are not yet loaded
-  useEffect(() => {
-    linkedCells.forEach(row => {
-      if (!rows?.find(r => r.id === row.id)) {
-        dispatch(
-          actions.fetchSingleRow({
-            tableId: currentDetailTable,
-            selectedRowId: row.id
-          })
-        );
-      }
-    });
-  }, [currentDetailTable, linkedCells]);
-
-  useEffect(() => {
-    dispatch({
-      type: actionTypes.preview.PREVIEW_SET_LINKED_SELECTION,
-      selectedLinkedEntries: linkedCells.map(entry => entry.id)
-    });
-  }, [linkedCells]);
-
   const linkedCellIds = new Set(f.map("id", linkedCells));
   const linkedRows = rows?.filter(row => linkedCellIds.has(row.id));
 
