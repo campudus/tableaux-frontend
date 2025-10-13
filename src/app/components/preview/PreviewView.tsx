@@ -3,7 +3,7 @@ import f from "lodash/fp";
 import GrudHeader from "../GrudHeader";
 import { switchLanguageHandler } from "../Router";
 import { useSelector, useDispatch } from "react-redux";
-import { GRUDStore, Row } from "../../types/grud";
+import { GRUDStore, LinkColumn, Row } from "../../types/grud";
 import actions from "../../redux/actionCreators";
 import PreviewRowView from "./PreviewRowView";
 import PreviewDetailView from "./PreviewDetailView";
@@ -147,8 +147,8 @@ export default function PreviewView({
     rowMeta?.finishedLoading === false;
 
   const columnsAndRow = combineColumnsAndRow(columns, row);
-  const columnId =
-    useSelector((store: GRUDStore) => store.preview.currentColumn) ??
+  const idOfSelectedColumn =
+    useSelector((store: GRUDStore) => store.preview.currentColumn) ||
     getDefaultSelectedColumnId(columnsAndRow);
 
   const currentDetailTable = useSelector(
@@ -159,20 +159,36 @@ export default function PreviewView({
   );
 
   useEffect(() => {
-    const column = columns?.find(c => c.id === columnId);
+    const selectedColumnAndRow = columnsAndRow.find(
+      entry => entry.column.id === idOfSelectedColumn
+    );
 
-    if (column?.kind === "link") {
-      if (column.toTable !== currentDetailTable) {
-        dispatch({
-          type: actionTypes.preview.PREVIEW_SET_CURRENT_DETAIL_TABLE,
-          currentDetailTable: column.toTable
-        });
-      }
-      if (!detailTableColumnsMeta?.data) {
-        dispatch(actions.loadColumns(column.toTable));
-      }
+    if (selectedColumnAndRow?.column.kind === "link") {
+      const linkedRowIds: number[] =
+        selectedColumnAndRow.row.values.map((r: Row) => r.id) || [];
+
+      dispatch({
+        type: actionTypes.preview.PREVIEW_SET_CURRENT_DETAIL_TABLE,
+        currentDetailTable: selectedColumnAndRow.column.toTable
+      });
+
+      linkedRowIds.forEach(id => {
+        dispatch(
+          actions.fetchSingleRow({
+            tableId: (selectedColumnAndRow.column as LinkColumn).toTable,
+            selectedRowId: id
+          })
+        );
+      });
+
+      dispatch({
+        type: actionTypes.preview.PREVIEW_SET_LINKED_SELECTION,
+        selectedLinkedEntries: linkedRowIds
+      });
+
+      dispatch(actions.loadColumns(selectedColumnAndRow.column.toTable));
     }
-  }, [columnId, columns]);
+  }, [columnsAndRow.join("-")]);
 
   const handleLanguageSwitch = (newLangtag: string) => {
     switchLanguageHandler(history, newLangtag);
@@ -228,7 +244,7 @@ export default function PreviewView({
                 langtag={langtag}
                 tableId={tableId}
                 rowId={rowId}
-                columnId={columnId}
+                columnId={idOfSelectedColumn}
                 row={row}
                 columnsAndRow={columnsAndRow}
                 defaultTitle={getPreviewDefaultTitle(
@@ -255,7 +271,7 @@ export default function PreviewView({
               <DetailView
                 langtag={langtag}
                 tableId={tableId}
-                columnId={columnId}
+                columnId={idOfSelectedColumn}
                 currentDetailTable={currentDetailTable}
                 columnsAndRow={columnsAndRow}
                 detailTableColumnsMeta={detailTableColumnsMeta}
