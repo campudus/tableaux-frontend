@@ -16,7 +16,6 @@ import {
 } from "../attributes";
 import Chip from "../../Chip/Chip";
 import i18n from "i18next";
-import actions from "../../../redux/actionCreators";
 import apiUrl from "../../../helpers/apiUrl";
 
 type DetailViewLinkProps = {
