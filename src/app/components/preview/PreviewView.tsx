@@ -258,10 +258,12 @@ export default function PreviewView({
               style={{ width: `${100 - leftWidth}%` }}
             >
               <div
-                onMouseDown={handleMouseDown}
                 className="preview-view__resizer"
+                onMouseDown={handleMouseDown}
               >
-                <SvgIcon icon={"grabber"} />
+                <div className="preview-view__resizer-icon">
+                  <SvgIcon icon={"grabber"} />
+                </div>
               </div>
 
               <DetailView
