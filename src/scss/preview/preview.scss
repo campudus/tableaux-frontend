@@ -22,12 +22,23 @@
 
   &__resizeable-right {
     position: relative;
-    background-color: #f8f8f8;
+    background-color: $color-background-very-light-grey;
   }
 
   &__resizer {
     position: absolute;
-    top: 20%;
+    top: 0;
+    left: -6px;
+    width: 6px;
+    height: 100%;
+    background: $color-background-very-light-grey;
+    cursor: col-resize;
+    z-index: 10;
+  }
+
+  &__resizer-icon {
+    position: absolute;
+    top: calc(50% - $space-height-header);
     left: -8px;
     width: 16px;
     height: 24px;
@@ -39,7 +50,7 @@
     background: $color-subtle-grey;
 
     cursor: col-resize;
-    z-index: 10;
+    z-index: 11;
 
     .svg-icon {
       max-width: none;
