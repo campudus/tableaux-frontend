@@ -3,7 +3,8 @@ import { isRowArchived } from "../archivedRows/helpers";
 import {
   ImmutableColumnKinds,
   Langtags,
-  LanguageType
+  LanguageType,
+  TableType
 } from "../constants/TableauxConstants";
 import store from "../redux/store";
 import { shouldCheckPermissions } from "./authenticate";
@@ -62,7 +63,12 @@ const _lookUpPermissions = params => {
 const getPermission = pathToPermission =>
   f.compose(f.propOr(false, pathToPermission), lookUpPermissions);
 
-// (cell | {tableId: number, columnId: number}) -> (langtag | nil) -> boolean
+export const isSettingsTable = table => table.type === TableType.settings;
+export const isCellInSettingsColumn = cell =>
+  isSettingsTable(cell.table) &&
+  (cell.column.name === "key" || cell.column.name === "displayKey");
+
+//      (cell | {tableId: number, columnId: number}) -> (langtag | nil) -> boolean
 export const canUserChangeCell = f.curry((cell, langtag) => {
   const { kind, row } = cell ?? {};
   const editCellValue = getPermission(["column", "editCellValue"])(cell);
@@ -75,10 +81,11 @@ export const canUserChangeCell = f.curry((cell, langtag) => {
     : f.isPlainObject(editCellValue) && editCellValue[language];
 
   return (
+    !isCellInSettingsColumn(cell ?? {}) &&
     !isRowArchived(row) &&
     !f.contains(kind, ImmutableColumnKinds) &&
     (allowed || !shouldCheckPermissions)
-  ); // this special case is not caught by ALLOW_ANYTHING
+  ); //    this special case is not caught by ALLOW_ANYTHING
 });
 
 export const canUserChangeAllLangsOfCell = cellInfo => {
