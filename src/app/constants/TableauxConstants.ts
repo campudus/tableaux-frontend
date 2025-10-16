@@ -42,6 +42,12 @@ export const ColumnKinds = {
   text: "text"
 } as const;
 
+export const TableType = {
+  taxonomy: "taxonomy",
+  settings: "settings",
+  default: "default"
+};
+
 export const ImmutableColumnKinds = ["status", "concat"] as const;
 
 export const LanguageType = {

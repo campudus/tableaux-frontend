@@ -3,6 +3,7 @@ import * as t from "../../helpers/transduce";
 // eslint-disable-next-line lodash-fp/use-fp
 import { memoize } from "lodash";
 import f from "lodash/fp";
+import { TableType } from "../../constants/TableauxConstants";
 import getDisplayValue from "../../helpers/getDisplayValue";
 import { retrieveTranslation } from "../../helpers/multiLanguage";
 
@@ -92,7 +93,8 @@ export const findTreeNodes = langtag => searchFn => nodes => {
 export const isLeaf = node => node && f.isEmpty(node.children);
 
 // isTaxonomyTable : Table -> Boolean
-export const isTaxonomyTable = table => table && table.type === "taxonomy";
+export const isTaxonomyTable = table =>
+  table && table.type === TableType.taxonomy;
 
 // countVisibleChildren : TreeNode -> Int
 export const countVisibleChildren = node =>
