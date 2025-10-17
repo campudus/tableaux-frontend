@@ -9,6 +9,7 @@ import { retrieveTranslation } from "../../../helpers/multiLanguage";
 import { when } from "../../../helpers/functools";
 import Empty from "../../helperComponents/emptyEntry";
 import LinkList from "../../helperComponents/LinkList";
+import { canUserChangeCell } from "../../../helpers/accessManagementHelper";
 
 const LinkView = ({
   langtag,
@@ -32,6 +33,7 @@ const LinkView = ({
         actions={actions}
         value={value}
         sortable
+        showToggleButton={canUserChangeCell(cell, langtag)}
       />
       {children}
     </div>
