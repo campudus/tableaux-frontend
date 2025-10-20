@@ -155,6 +155,7 @@ export default function PreviewView({
     getDefaultSelectedColumnId(columnsAndRow);
 
   useEffect(() => {
+    let cancelled = false;
     const selectedColumnAndRow = columnsAndRow.find(
       entry => entry.column.id === idOfSelectedColumn
     );
@@ -162,28 +163,39 @@ export default function PreviewView({
     if (selectedColumnAndRow?.column.kind === "link") {
       const linkedRowIds: number[] =
         selectedColumnAndRow.row.values.map((r: Row) => r.id) || [];
+      const toTable = (selectedColumnAndRow.column as LinkColumn).toTable;
 
       dispatch({
         type: actionTypes.preview.PREVIEW_SET_CURRENT_DETAIL_TABLE,
-        currentDetailTable: selectedColumnAndRow.column.toTable
+        currentDetailTable: toTable
       });
-
-      linkedRowIds.forEach(id => {
-        dispatch(
-          actions.fetchSingleRow({
-            tableId: (selectedColumnAndRow.column as LinkColumn).toTable,
-            selectedRowId: id
-          })
-        );
-      });
-
       dispatch({
         type: actionTypes.preview.PREVIEW_SET_LINKED_SELECTION,
         selectedLinkedEntries: linkedRowIds
       });
 
-      dispatch(actions.loadColumns(selectedColumnAndRow.column.toTable));
+      actions
+        .loadColumns(toTable)(dispatch)
+        .then(() => {
+          if (cancelled) return;
+          linkedRowIds.forEach(id => {
+            dispatch(
+              actions.fetchSingleRow({
+                tableId: toTable,
+                selectedRowId: id
+              })
+            );
+          });
+        })
+        .catch((err: unknown) => {
+          if (cancelled) return;
+          console.error("Error loading columns:", err);
+        });
     }
+
+    return () => {
+      cancelled = true;
+    };
   }, [columnsAndRow.join("-")]);
 
   const handleLanguageSwitch = (newLangtag: string) => {

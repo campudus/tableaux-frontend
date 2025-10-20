@@ -472,7 +472,7 @@ const loadPreviewView = (tableId, rowId, columnId) => async (
   });
 
   if (tableId && f.isEmpty(columnsData)) {
-    dispatch(loadColumns(tableId));
+    await dispatch(loadColumns(tableId));
   }
 
   if (tableId && rowId && f.isEmpty(row)) {
