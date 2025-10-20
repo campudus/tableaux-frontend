@@ -103,6 +103,29 @@ export const getPreviewDefaultTitle = (
     : undefined;
 };
 
+export const getColumnsWithDifferences = (
+  columnsAndRows: ColumnAndRows[],
+  langtag: string
+): ColumnAndRows[] => {
+  return columnsAndRows.filter(({ column, rows }) => {
+    const firstValue = getDisplayValue(column)(rows[0]?.values);
+    const firstDisplay = Array.isArray(firstValue)
+      ? firstValue.map(v => v[langtag]).join(", ")
+      : firstValue[langtag];
+
+    const hasDifference = rows.some(row => {
+      const value = getDisplayValue(column)(row.values);
+      const display = Array.isArray(value)
+        ? value.map(v => v[langtag]).join(", ")
+        : value[langtag];
+
+      return display !== firstDisplay;
+    });
+
+    return hasDifference;
+  });
+};
+
 export const getEmptyClassName = (value?: unknown): string => {
   if (f.isBoolean(value)) return "";
 
