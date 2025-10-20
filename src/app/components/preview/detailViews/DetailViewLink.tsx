@@ -2,12 +2,15 @@ import { ReactElement, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import f from "lodash/fp";
 import { GRUDStore, Row } from "../../../types/grud";
-import { ColumnAndRow, ColumnAndRows, combineColumnsAndRows } from "../helper";
+import {
+  ColumnAndRow,
+  combineColumnsAndRows,
+  getColumnsWithDifferences
+} from "../helper";
 import LinkedEntrySelection from "../LinkedEntrySelection";
 import { buildClassName } from "../../../helpers/buildClassName";
 import { getColumnDisplayName } from "../../../helpers/multiLanguage";
 import PreviewCellValue from "../PreviewCellValue";
-import getDisplayValue from "../../../helpers/getDisplayValue";
 import actionTypes from "../../../redux/actionTypes";
 import {
   isPreviewImage,
@@ -36,6 +39,7 @@ export default function DetailViewLink({
   const dispatch = useDispatch();
   const [selectAll, setSelectAll] = useState(true);
   const [showDifferences, setShowDifferences] = useState(false);
+
   const columns = useSelector(
     (store: GRUDStore) => store.columns[currentDetailTable]?.data
   );
@@ -45,13 +49,6 @@ export default function DetailViewLink({
   const selectedLinkedEntries = useSelector(
     (store: GRUDStore) => store.preview.selectedLinkedEntries
   );
-
-  useEffect(() => {
-    const allSelected =
-      selectedLinkedEntries &&
-      linkedCells.length === selectedLinkedEntries.length;
-    setSelectAll(allSelected || false);
-  }, [selectedLinkedEntries]);
 
   const linkedCellIds = new Set(f.map("id", linkedCells));
   const linkedRows = rows?.filter(row => linkedCellIds.has(row.id));
@@ -64,29 +61,6 @@ export default function DetailViewLink({
   const columnsAndRows = combineColumnsAndRows(columns, selectedLinkedRows);
   const columnsAndRowsSorted = sortColumnsAndRows(columnsAndRows);
 
-  const getColumnsWithDifferences = (
-    columnsAndRows: ColumnAndRows[],
-    langtag: string
-  ): ColumnAndRows[] => {
-    return columnsAndRows.filter(({ column, rows }) => {
-      const firstValue = getDisplayValue(column)(rows[0]?.values);
-      const firstDisplay = Array.isArray(firstValue)
-        ? firstValue.map(v => v[langtag]).join(", ")
-        : firstValue[langtag];
-
-      const hasDifference = rows.some(row => {
-        const value = getDisplayValue(column)(row.values);
-        const display = Array.isArray(value)
-          ? value.map(v => v[langtag]).join(", ")
-          : value[langtag];
-
-        return display !== firstDisplay;
-      });
-
-      return hasDifference;
-    });
-  };
-
   const columnsToDisplay = showDifferences
     ? getColumnsWithDifferences(columnsAndRowsSorted, langtag)
     : columnsAndRowsSorted;
@@ -95,9 +69,12 @@ export default function DetailViewLink({
     isPreviewImage(columnAndRow.column)
   );
 
-  function isArchivedRow(row: Row): boolean {
-    return linkedCells.find(c => c.id === row.id)?.archived || false;
-  }
+  useEffect(() => {
+    const allSelected =
+      selectedLinkedEntries &&
+      linkedCells.length === selectedLinkedEntries.length;
+    setSelectAll(allSelected || false);
+  }, [selectedLinkedEntries]);
 
   // with this code we dynamically set the top offset for sticky rows
   // to ensure they are positioned correctly in the viewport
@@ -131,6 +108,10 @@ export default function DetailViewLink({
     }
 
     setSelectAll(selectAll);
+  };
+
+  const isArchivedRow = (row: Row): boolean => {
+    return linkedCells.find(c => c.id === row.id)?.archived || false;
   };
 
   if (columnsToDisplay && columnsToDisplay.length === 0) {
