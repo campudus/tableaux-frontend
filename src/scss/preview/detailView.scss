@@ -5,9 +5,9 @@
 }
 
 .detail-view-richtext {
- &__content {
+  &__content {
     padding: 16px 40px 16px 0;
- }
+  }
 }
 
 .detail-view-link {
@@ -33,6 +33,20 @@
     display: flex;
     align-items: center;
     gap: 2px;
+    cursor: pointer;
+
+    &--disabled {
+      cursor: not-allowed;
+      opacity: 0.5;
+
+      input {
+        pointer-events: none;
+      }
+    }
+
+    input {
+      cursor: pointer;
+    }
   }
 
   &__table-wrapper {

@@ -36,7 +36,6 @@ export default function DetailViewLink({
   const dispatch = useDispatch();
   const [selectAll, setSelectAll] = useState(true);
   const [showDifferences, setShowDifferences] = useState(false);
-
   const columns = useSelector(
     (store: GRUDStore) => store.columns[currentDetailTable]?.data
   );
@@ -46,6 +45,13 @@ export default function DetailViewLink({
   const selectedLinkedEntries = useSelector(
     (store: GRUDStore) => store.preview.selectedLinkedEntries
   );
+
+  useEffect(() => {
+    const allSelected =
+      selectedLinkedEntries &&
+      linkedCells.length === selectedLinkedEntries.length;
+    setSelectAll(allSelected || false);
+  }, [selectedLinkedEntries]);
 
   const linkedCellIds = new Set(f.map("id", linkedCells));
   const linkedRows = rows?.filter(row => linkedCellIds.has(row.id));
@@ -144,24 +150,38 @@ export default function DetailViewLink({
 
         {linkedCells.length > 1 && (
           <div className="detail-view-link__actions">
-            <button
+            <label
               className="detail-view-link__checkbox"
-              onClick={() => handleSelectAll(!selectAll)}
+              htmlFor={`detail-link-select-all-${currentDetailTable}`}
             >
-              <input type="checkbox" defaultChecked={selectAll} />
-              <label>{i18n.t("preview:select_all")}</label>
-            </button>
+              <input
+                id={`detail-link-select-all-${currentDetailTable}`}
+                type="checkbox"
+                checked={selectAll}
+                onChange={e => handleSelectAll(e.currentTarget.checked)}
+              />
+              <span>{i18n.t("preview:select_all")}</span>
+            </label>
 
-            <button
-              className="detail-view-link__checkbox"
-              onClick={() => setShowDifferences(!showDifferences)}
-              disabled={
-                !(selectedLinkedEntries && selectedLinkedEntries.length >= 2)
-              }
+            <label
+              className={buildClassName("detail-view-link__checkbox", {
+                disabled: !(
+                  selectedLinkedEntries && selectedLinkedEntries.length >= 2
+                )
+              })}
+              htmlFor={`detail-link-show-differences-${currentDetailTable}`}
             >
-              <input type="checkbox" defaultChecked={showDifferences} />
-              <label>{i18n.t("preview:show_differences")}</label>
-            </button>
+              <input
+                id={`detail-link-show-differences-${currentDetailTable}`}
+                type="checkbox"
+                checked={showDifferences}
+                onChange={e => setShowDifferences(e.currentTarget.checked)}
+                disabled={
+                  !(selectedLinkedEntries && selectedLinkedEntries.length >= 2)
+                }
+              />
+              <span>{i18n.t("preview:show_differences")}</span>
+            </label>
           </div>
         )}
       </div>
