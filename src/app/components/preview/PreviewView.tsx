@@ -241,7 +241,7 @@ export default function PreviewView({
         {loadingData ? (
           <Spinner isLoading />
         ) : columnsMeta?.error || rowMeta?.error ? (
-          <div>Error loading data. Please try again.</div>
+          <div>{i18n.t("preview:error_loading_data")}</div>
         ) : (
           <>
             <div
