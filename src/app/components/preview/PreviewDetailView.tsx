@@ -38,16 +38,13 @@ const getNoLinkedEntriesContent = () => {
 
 const cssClass = "preview-detail-view";
 
-export default function PreviewDetailView(
-  props: PreviewDetailViewProps
-): ReactElement {
-  const {
-    langtag,
-    currentTable,
-    currentColumnId,
-    currentDetailTable,
-    selectedColumnAndRow
-  } = props;
+export default function PreviewDetailView({
+  langtag,
+  currentTable,
+  currentColumnId,
+  currentDetailTable,
+  selectedColumnAndRow
+}: PreviewDetailViewProps): ReactElement {
   const title = useSelector(
     (store: GRUDStore) =>
       store.columns[currentTable]?.data.find(
