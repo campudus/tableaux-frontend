@@ -37,7 +37,7 @@ export default function PreviewRowView({
   const reduxColumns = useSelector((store: GRUDStore) => store.columns);
   const reduxRows = useSelector((store: GRUDStore) => store.rows);
 
-  const handleColumnSelection = (columnId: number, rowId: number) => {
+  const handleColumnSelection = async (columnId: number, rowId: number) => {
     const newColumnAndRow = columnsAndRow.find(c => c.column.id === columnId);
     const newUrl = previewUrl({ langtag, tableId, columnId, rowId });
     window.history.replaceState({}, "", newUrl);
@@ -52,25 +52,31 @@ export default function PreviewRowView({
     if (newColumnAndRow.column.kind === "link") {
       const linkedRowIds: number[] =
         newColumnAndRow.row.values.map((r: Row) => r.id) || [];
+      const toTable = (newColumnAndRow.column as LinkColumn).toTable;
 
       dispatch({
         type: actionTypes.preview.PREVIEW_SET_CURRENT_DETAIL_TABLE,
-        currentDetailTable: newColumnAndRow.column.toTable
+        currentDetailTable: toTable
       });
       dispatch({
         type: actionTypes.preview.PREVIEW_SET_LINKED_SELECTION,
         selectedLinkedEntries: linkedRowIds
       });
 
-      if (!reduxColumns[newColumnAndRow.column.toTable]) {
-        dispatch(actions.loadColumns(newColumnAndRow.column.toTable));
+      if (!reduxColumns[toTable]) {
+        try {
+          await actions.loadColumns(toTable)(dispatch);
+        } catch (err) {
+          console.error("Error loading columns:", err);
+          return;
+        }
       }
 
-      if (!reduxRows[newColumnAndRow.column.toTable]) {
+      if (!reduxRows[toTable]) {
         linkedRowIds.forEach(rowId => {
           dispatch(
             actions.fetchSingleRow({
-              tableId: (newColumnAndRow.column as LinkColumn).toTable,
+              tableId: toTable,
               selectedRowId: rowId
             })
           );
