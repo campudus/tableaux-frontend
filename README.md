@@ -44,8 +44,8 @@ npm run
   lint:changes      # lint all differences to master
   lint:fix          # apply automated lint fixes to all project source files
   lint:fix:changes  # fix all changes to master
-  storybook         # start storybook
-  test              # run tests with jest
+  test              # run tests with vitest
+  test:ci           # run tests with vitest in CI mode + coverage
   clean             # clean build cache and out directory
   clean:project     # clean build cache and out directory, reinstall all dependencies
 ```
@@ -112,6 +112,20 @@ permissions found at the first match when running it against the API path.
 ```
 
 Will allow editing all cells.
+
+## Overwriting Favicons in Production Docker Containers
+
+We deliver a default set of favicons located in the `out/img/favicon` resp. `public/img/favicon` directory. If you want to use your own custom favicons, you can replace the files in the container via volume mounts.
+
+To do that, create a folder `<favicon-folder>` on your host machine and place your custom favicon files there. Mount this folder to the container path where the favicons are expected.
+
+```yaml
+services:
+  the-frontend:
+    image: the-frontend
+    volumes:
+      - <favicon-folder>:/usr/app/out/img/favicon:ro
+```
 
 ## Troubleshooting
 
