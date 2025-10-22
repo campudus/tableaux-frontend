@@ -1,4 +1,4 @@
-# Tableaux Frontend [![Codacy Badge](https://api.codacy.com/project/badge/Grade/f0d9aa2ca53f415f91d355ed713ae405)](https://www.codacy.com/app/Campudus/tableaux-frontend?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=campudus/tableaux-frontend&amp;utm_campaign=Badge_Grade)
+# Tableaux Frontend [![Codacy Badge](https://app.codacy.com/project/badge/Grade/9fa0f51dbe554f3696b9b4b63da55346)](https://app.codacy.com/gh/campudus/tableaux-frontend/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 
 Tableaux (pronounced /ta.blo/) is a restful service for storing data in tables. This project contains a generic React-based HTML5 client for the [tableaux backend](https://github.com/campudus/tableaux).
 
@@ -67,7 +67,7 @@ Default project configuration can be overwritten via a `config.json` in the base
   "authServerUrl": "http://localhost:8081/auth",  // Keycloak
   "authRealm": "GRUD",                            // Keycloak realm
   "authClientId": "grud-frontend",                // Keycloak clientId
-  "disableAuth": true                             // disable authentication for frontends behind old proxy (default: false),
+  "disableAuth": true,                            // disable authentication for frontends behind old proxy (default: false),
   "injectPermissions": "path/to/perm.json"        // in dev mode, add permissions as if given by authentication and user role
 }
 ```
