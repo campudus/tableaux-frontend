@@ -40,3 +40,17 @@ export const getVisibleLinkCount = (
     ? max(n, 1)
     : getVisibleLinkCount(values, availableWidth - vWidth, n + 1, 0);
 };
+
+export const getVisibleAttachmentCount = (
+  values,
+  fullWidth,
+  n = 0,
+  reservedWidth = 2 * cellPaddingInPx + ellipsisWidthInPx
+) => {
+  const availableWidth = max(0, fullWidth - reservedWidth);
+  if (n >= values.length) return max(n, 1);
+  const vWidth = 40 + gapWidthInPx;
+  return vWidth >= availableWidth
+    ? max(n, 1)
+    : getVisibleAttachmentCount(values, availableWidth - vWidth, n + 1, 0);
+};
