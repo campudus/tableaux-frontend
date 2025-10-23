@@ -37,7 +37,8 @@ const iconUrls = {
   layoutH: "/img/icons/layout-horizontal.svg",
   layoutPlain: "/img/icons/layout-single.svg",
   trash: "/img/icons/trash.svg",
-  move: "/img/icons/move.svg"
+  move: "/img/icons/move.svg",
+  grabber: "/img/icons/grabber.svg"
 };
 
 class ImageCache {
