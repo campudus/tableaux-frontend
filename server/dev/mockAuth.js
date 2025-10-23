@@ -78,7 +78,7 @@ const basePath = {
   service: /\/services\//,
   table: tableBaseRE,
   tableGroup: tableBaseRE,
-  tables: /\/tables\/$/
+  tables: /\/tables\/?$/
 };
 
 export const toSearchable = permissions =>
@@ -97,7 +97,32 @@ export const injectPermissions = permissions => {
   {
     const permAtPath = toSearchable(permissions);
 
+    const injectIndividualTablePermissionsM = jsonBody => {
+      jsonBody.tables?.forEach(table => {
+        const permission = findInSearchable(permAtPath, `/tables/${table.id}`);
+        if (permission) table.permission = permission;
+      });
+    };
+
+    const injectIndividualColumnPermissionsM = (jsonBody, baseUrl) => {
+      jsonBody.columns?.forEach(column => {
+        const pathToColumn = `${baseUrl}/${column.id}`;
+        const permission = findInSearchable(permAtPath, pathToColumn);
+        if (permission) column.permission = permission;
+      });
+    };
+
     const injectPermissionsM = req => jsonBody => {
+      const pathToColumnsOfTable = /\/tables\/\d+\/columns\/?$/;
+      if (pathToColumnsOfTable.test(req.url)) {
+        injectIndividualColumnPermissionsM(
+          jsonBody,
+          req.url.replace(/\/+$/, "")
+        );
+      }
+      if (basePath.tables.test(req.url)) {
+        injectIndividualTablePermissionsM(jsonBody);
+      }
       const permission = findInSearchable(permAtPath, req.url);
       if (permission && jsonBody && typeof jsonBody === "object") {
         jsonBody.permission = permission;

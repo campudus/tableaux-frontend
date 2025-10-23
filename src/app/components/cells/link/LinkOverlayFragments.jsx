@@ -1,3 +1,7 @@
+import i18n from "i18next";
+import f from "lodash/fp";
+import React, { useCallback } from "react";
+import { useSelector } from "react-redux";
 import { AutoSizer, List } from "react-virtualized";
 import {
   branch,
@@ -8,14 +12,11 @@ import {
   withHandlers,
   withProps
 } from "recompose";
-import React from "react";
-import f from "lodash/fp";
-import i18n from "i18next";
-
+import { canUserCreateRow } from "../../../helpers/accessManagementHelper";
 import { retrieveTranslation } from "../../../helpers/multiLanguage";
-import DragSortList from "./DragSortList";
 import Spinner from "../../header/Spinner";
 import SvgIcon from "../../helperComponents/SvgIcon";
+import DragSortList from "./DragSortList";
 
 // ---------------------------------------------------------------------------------------
 // "Linked items" section
@@ -115,17 +116,38 @@ export const LinkStatus = branch(
 // ---------------------------------------------------------------------------------------
 // Link count
 
-const RowCreatorFrag = props => {
+export const RowCreator = props => {
   const {
-    addAndLinkRow,
+    canAddLinks,
     shiftUp,
     cell: {
-      column: { displayName }
+      column: { displayName, toTable: toTableId }
     },
     langtag
   } = props;
+
+  const toTable = useSelector(store => store.tables.data[toTableId]);
+  const addAndLinkRow = useCallback(() => {
+    const {
+      cacheNewForeignRow,
+      cell,
+      cell: {
+        column: { toTable }
+      },
+      langtag,
+      actions: { addEmptyRowAndOpenEntityView }
+    } = props;
+
+    addEmptyRowAndOpenEntityView(
+      toTable,
+      langtag,
+      cell,
+      cacheNewForeignRow /* onSuccess */
+    );
+  }, []);
+
   const linkTableName = retrieveTranslation(langtag, displayName);
-  return (
+  return canAddLinks && canUserCreateRow({ table: toTable }) ? (
     <div
       className={`row-creator-button${shiftUp ? " shift-up" : ""}`}
       onClick={addAndLinkRow}
@@ -135,32 +157,8 @@ const RowCreatorFrag = props => {
         {i18n.t("table:link-overlay-add-new-row", { tableName: linkTableName })}
       </span>
     </div>
-  );
+  ) : null;
 };
-
-export const RowCreator = compose(
-  branch(({ canAddLinks }) => !canAddLinks, renderNothing),
-  withHandlers({
-    addAndLinkRow: props => () => {
-      const {
-        cacheNewForeignRow,
-        cell,
-        cell: {
-          column: { toTable }
-        },
-        langtag,
-        actions: { addEmptyRowAndOpenEntityView }
-      } = props;
-
-      addEmptyRowAndOpenEntityView(
-        toTable,
-        langtag,
-        cell,
-        cacheNewForeignRow /* onSuccess */
-      );
-    }
-  })
-)(RowCreatorFrag);
 
 export const SwitchSortingButton = compose(
   pure,

@@ -13,6 +13,7 @@ import { ColumnKinds } from "../../constants/TableauxConstants";
 import { canUserChangeCell } from "../../helpers/accessManagementHelper.js";
 import apiUrl from "../../helpers/apiUrl";
 import { retrieveTranslation } from "../../helpers/multiLanguage";
+import { isLocked } from "../../helpers/rowUnlock";
 import LinkItem from "../cells/link/LinkItem";
 import { LinkedRows } from "../cells/link/LinkOverlayFragments";
 
@@ -28,7 +29,8 @@ const LinkList = props => {
     showToggleButton
   } = props;
   const { column, row, table, value } = cell;
-  const changeCellAuthorized = canUserChangeCell(props.cell, props.langtag);
+  const changeCellAuthorized =
+    canUserChangeCell(props.cell, props.langtag) && !isLocked(props.cell.row);
   const sortable = props.sortable && cell && changeCellAuthorized;
   const nLinks = links.length;
   const canExpand = nLinks > MAX_DISPLAYED_LINKS;
