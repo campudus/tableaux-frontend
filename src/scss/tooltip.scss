@@ -45,6 +45,12 @@ $bubble-background: transparentize(black, 0.3);
       z-index: 9999;
     }
   }
+
+  &:not(&--arrow) {
+    &:after {
+      display: none;
+    }
+  }
 }
 
 .status-cell {
