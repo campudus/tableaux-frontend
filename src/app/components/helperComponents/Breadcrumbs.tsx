@@ -14,7 +14,7 @@ type BreadcrumbsLink = {
     }
 );
 
-function BreadcrumsbLink({ path, label, onClick, isActive }: BreadcrumbsLink) {
+function BreadcrumbsLink({ path, label, onClick, isActive }: BreadcrumbsLink) {
   return path ? (
     <NavLink
       to={path}
@@ -57,7 +57,7 @@ export default function Breadcrumbs({
 
     return (
       <div className={cn("breadcrumbs", {}, className)}>
-        <BreadcrumsbLink {...firstLink!} />
+        <BreadcrumbsLink {...firstLink!} />
         <i className="fa fa-angle-right breadcrumbs__icon" />
         <ButtonAction
           variant="text"
@@ -70,7 +70,7 @@ export default function Breadcrumbs({
           })}
         />
         <i className="fa fa-angle-right breadcrumbs__icon" />
-        <BreadcrumsbLink {...lastLink!} isActive />
+        <BreadcrumbsLink {...lastLink!} isActive />
       </div>
     );
   }
@@ -85,7 +85,7 @@ export default function Breadcrumbs({
           <Fragment key={link.path ?? index}>
             {!isFirst && <i className="fa fa-angle-right breadcrumbs__icon" />}
 
-            <BreadcrumsbLink {...link} isActive={isActive} />
+            <BreadcrumbsLink {...link} isActive={isActive} />
           </Fragment>
         );
       })}
