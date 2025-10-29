@@ -21,4 +21,25 @@
       color: #9E9E9E;
     }
   }
+
+  .button-action__button {
+    min-height: auto;
+    padding: 0 2px;
+
+    &:hover {
+      color: $color-primary;
+    }
+
+    &--active {
+      background: transparent;
+
+      &:hover {
+        background: transparent;
+      }
+
+      &>.svg-icon {
+        fill: inherit;
+      }
+    }
+  }
 }
