@@ -66,6 +66,12 @@
     gap: 8px;
   }
 
+  &.selected, &.editing {
+    .media-thumbnail__image--icon {
+      padding: 0 0 0 4px;
+    }
+  }
+
   &:not(&.selected, &.editing) {
     .button-action {
       pointer-events: none;
@@ -73,7 +79,7 @@
     }
 
     .button-action__button {
-      min-height: 25px;
+      min-height: 23px; // height 25px - (2 * 1px border)
     }
 
     .media-thumbnail {
@@ -95,8 +101,6 @@
     border: 1px solid #dedede;
 
     &:hover {
-      border: 1px solid #333333;
-
       .media-thumbnail__overlay .icon {
         font-size: 12px;
       }

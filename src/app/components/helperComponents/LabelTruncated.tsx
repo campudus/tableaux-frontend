@@ -11,7 +11,7 @@ type LabelTruncatedProps = {
 
 /**
  * truncates label but leaves some chars at the end
- * @example veryLongFileName.jpg -> veryLong...Name.jpg
+ * @example veryLongFileName.jpg -> veryLong...me.jpg
  * @returns string
  */
 export default function LabelTruncated({
@@ -32,8 +32,9 @@ export default function LabelTruncated({
     return <>{label}</>;
   }
 
-  const labelStart = label.slice(0, charLimit - 10);
-  const labelEnd = label.slice(-8);
+  const startCharCount = Math.max(charLimit - 10, 3);
+  const labelStart = label.slice(0, startCharCount);
+  const labelEnd = label.slice(-6);
 
   return <>{`${labelStart}...${labelEnd}`}</>;
 }

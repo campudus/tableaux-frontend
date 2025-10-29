@@ -260,6 +260,11 @@
     display: none;
   }
 
+  &__label {
+    padding: 0px 6px;
+    color: $color-text-medium-grey;
+  }
+
   &--table,
   &--list {
     width: 40px;

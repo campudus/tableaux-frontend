@@ -1,4 +1,4 @@
-import { ReactElement, useState } from "react";
+import { ReactElement, ReactNode, useEffect, useState } from "react";
 import { useIntersectionObserver } from "usehooks-ts";
 import { Attachment } from "../../types/grud";
 import { retrieveTranslation } from "../../helpers/multiLanguage";
@@ -29,6 +29,9 @@ type MediaThumbnailProps = {
   dirent?: Attachment;
   layout?: Layout | "table";
   width?: number;
+  fallbackLabel?: ReactNode;
+  loadStrategy?: "on-mount" | "on-intersect";
+  onVisibilityChange?: (isVisible: boolean) => void;
 };
 
 export function MediaThumbnailFolder({
@@ -51,9 +54,13 @@ export default function MediaThumbnail({
   langtag,
   dirent,
   layout = "list",
-  width = 40
+  width = 40,
+  fallbackLabel,
+  loadStrategy = "on-intersect",
+  onVisibilityChange
 }: MediaThumbnailProps): ReactElement {
   const { isIntersecting, ref } = useIntersectionObserver();
+  const shouldLoad = loadStrategy === "on-intersect" ? isIntersecting : true;
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
 
@@ -69,6 +76,10 @@ export default function MediaThumbnail({
   const fallbackUrl = `/img/fileicons/${extension}.svg`;
   const canShowImage = !isError && (isValidMimeType || isSVG);
 
+  useEffect(() => {
+    onVisibilityChange?.(isIntersecting);
+  }, [isIntersecting]);
+
   return (
     <div
       ref={ref}
@@ -80,7 +91,7 @@ export default function MediaThumbnail({
 
       {isLoading && <div className="media-thumbnail__skeleton"></div>}
 
-      {isIntersecting && canShowImage && (
+      {shouldLoad && canShowImage && (
         <img
           className={cn("media-thumbnail__image", {
             icon: isSVG,
@@ -92,14 +103,14 @@ export default function MediaThumbnail({
         />
       )}
 
-      {isIntersecting && !canShowImage && hasFallback && (
+      {shouldLoad && !canShowImage && hasFallback && (
         <img
           className={cn("media-thumbnail__image", { icon: true })}
           src={fallbackUrl}
         />
       )}
 
-      {isIntersecting && !canShowImage && !hasFallback && (
+      {shouldLoad && !canShowImage && !hasFallback && (
         <svg
           className={cn("media-thumbnail__image", { icon: true })}
           width="20"
@@ -144,6 +155,10 @@ export default function MediaThumbnail({
             </clipPath>
           </defs>
         </svg>
+      )}
+
+      {shouldLoad && !canShowImage && !!fallbackLabel && (
+        <div className="media-thumbnail__label">{fallbackLabel}</div>
       )}
     </div>
   );
