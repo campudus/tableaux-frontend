@@ -126,7 +126,7 @@ const withCachedLinks = Component => props => {
         f.uniqBy(f.prop("id")),
         f.map(addDisplayValues)
       ),
-    [[...displayValues, ...cell.value].length]
+    [[...displayValues, ...cell.value, ...(foreignRows || [])].length]
   );
 
   const rowResults = loading
