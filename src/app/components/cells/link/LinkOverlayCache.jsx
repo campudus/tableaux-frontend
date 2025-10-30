@@ -79,7 +79,8 @@ const withCachedLinks = Component => props => {
       });
   });
 
-  const displayValues = f.prop(["displayValues", column.toTable], grudData);
+  const displayValues =
+    f.prop(["displayValues", column.toTable], grudData) ?? [];
   const dvLookupTable = f.keyBy("id", displayValues);
 
   const lookupDisplayValue = link =>
