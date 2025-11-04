@@ -1,8 +1,6 @@
-import { markdown, markdownLanguage } from "@codemirror/lang-markdown";
-import { languages } from "@codemirror/language-data";
-import CodeMirror from "@uiw/react-codemirror";
+import CodeMirror, { EditorView } from "@uiw/react-codemirror";
+import { markdown } from "@codemirror/lang-markdown";
 import classNames from "classnames";
-import { EditorView } from "codemirror";
 import i18n from "i18next";
 import PropTypes from "prop-types";
 import React from "react";
@@ -114,10 +112,7 @@ const PlainMarkdownEditor = ({
             onChange={handleChange}
             autoFocus={true}
             basicSetup={{ lineNumbers: false, foldGutter: false }}
-            extensions={[
-              EditorView.lineWrapping,
-              markdown({ base: markdownLanguage, codeLanguages: languages })
-            ]}
+            extensions={[EditorView.lineWrapping, markdown()]}
             readOnly={readOnly}
           />
           <div className="length-limits">
