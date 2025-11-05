@@ -343,6 +343,9 @@
         span {
           white-space: nowrap;
         }
+        &.hidden:not(.active) {
+          display: none;
+        }
       }
     }
   }

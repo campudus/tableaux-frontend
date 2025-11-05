@@ -5,5 +5,6 @@ export const isLinkArchived = link => Boolean(link.archived);
 export const ShowArchived = {
   hide: "hide",
   show: "show",
-  exclusive: "exclusive"
+  exclusive: "exclusive",
+  linked: "linked"
 };

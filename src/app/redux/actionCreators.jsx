@@ -425,7 +425,7 @@ const loadTableView = (tableId, customFilters) => (dispatch, getState) => {
       type: SET_FILTERS_AND_SORTING,
       filters: customFilters,
       sorting: sorting,
-      showArchived: ShowArchived.show
+      showArchived: ShowArchived.linked
     });
   } else {
     dispatch({

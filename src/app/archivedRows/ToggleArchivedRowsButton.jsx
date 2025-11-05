@@ -3,6 +3,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import SvgIcon from "../components/helperComponents/SvgIcon";
 import { buildClassName } from "../helpers/buildClassName";
+import classNames from "classnames";
 import { outsideClickEffect } from "../helpers/useOutsideClick";
 import actionCreators from "../redux/actionCreators";
 import Action from "../redux/actionCreators";
@@ -21,11 +22,17 @@ const StateCfg = {
   [ShowArchived.exclusive]: {
     icon: <SvgIcon icon="/img/icons/database-archived.svg" />,
     trnKey: "exclusive"
+  },
+  [ShowArchived.linked]: {
+    icon: <SvgIcon icon="/img/icons/database-current-archived.svg" />,
+    trnKey: "linked",
+    hidden: true // only displayed if active
   }
 };
 
 const Item = ({ onClick, active, content }) => {
-  const cssClass = `list-item ${active ? "active" : ""}`;
+  const { hidden } = content;
+  const cssClass = classNames("list-item", { active, hidden });
   return (
     <button
       className={cssClass}

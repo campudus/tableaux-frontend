@@ -81,7 +81,8 @@
     "hide": "Only current",
     "exclusive": "Only archived",
     "show": "Current and archived",
-    "popup-title": "Show rows"
+    "popup-title": "Show rows",
+    "linked": "Linked data"
   },
   "translations": {
     "dialog_headline": "Multi language cell modified",
