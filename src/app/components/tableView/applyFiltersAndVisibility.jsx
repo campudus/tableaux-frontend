@@ -142,7 +142,9 @@ const filterRows = (
 ) => {
   const showArchived = selectShowArchivedState(store);
   const nothingToFilter =
-    f.isEmpty(filters) && showArchived === ShowArchived.show;
+    f.isEmpty(filters) &&
+    (showArchived === ShowArchived.show ||
+      showArchived === ShowArchived.linked);
   const tableId = table.id;
   const rows = store.rows[tableId]?.data || [];
   const visibleColumnIds = store.tableView.visibleColumns || [];
