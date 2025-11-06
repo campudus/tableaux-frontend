@@ -1,4 +1,5 @@
 import f from "lodash/fp";
+import T from "../helpers/table";
 
 const shouldStartForTable = ({
   allDisplayValues,
@@ -21,7 +22,13 @@ const startForTable = ({
   rows,
   table
 }) => {
-  generateDisplayValues(rows, columns, table.id, langtag);
+  generateDisplayValues(
+    rows,
+    columns,
+    table.id,
+    langtag,
+    T.isUnionTable(table)
+  );
 };
 
 export default {
