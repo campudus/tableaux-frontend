@@ -139,6 +139,13 @@ export const AnnotationKind = {
   data: "data"
 } as const;
 
+export const TableKind = {
+  generic: "generic",
+  taxonomy: "taxonomy",
+  union: "union"
+} as const;
+export type TableKind = typeof TableKind[keyof typeof TableKind];
+
 type AnnotationConfig = {
   name: string;
   kind: AnnotationKind;
