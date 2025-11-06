@@ -1,14 +1,14 @@
 import f from "lodash/fp";
-
+import { buildOriginColumnLookup } from "../../helpers/columnHelper";
+import { doto, when } from "../../helpers/functools";
 import { addCellId } from "../../helpers/getCellId";
+import actionTypes from "../actionTypes";
 import {
   calcConcatValues,
   getUpdatedCellValueToSet,
   idsToIndices
 } from "../redux-helpers";
-import { doto, when } from "../../helpers/functools";
 import { performRowDeletion } from "../updateDependentTables";
-import actionTypes from "../actionTypes";
 
 const {
   ALL_ROWS_LOADING_DATA,
@@ -94,28 +94,32 @@ const annotationsToObject = annotations => {
   return annObj;
 };
 
-export const rowValuesToCells = (table, columns) => rows => {
-  const rowsWithCells = rows.map(row => {
-    const fakeRow = { id: row.id };
-    return {
+export const rowValuesToCells = (table, columns) => {
+  const getOriginColumn = buildOriginColumnLookup(table, columns);
+  return rows => {
+    const buildCell = row => (_, idx) => {
+      const column = columns[idx];
+      const originColumn = getOriginColumn(column.id, row.tableId);
+      return addCellId({
+        table,
+        kind: column?.kind,
+        column: originColumn ? { ...column, originColumn } : column,
+        row: { id: row.id, tableId: row.tableId },
+        annotations:
+          row.annotations && annotationsToObject(row.annotations[idx])
+      });
+    };
+    return rows.map(row => ({
       id: row.id,
+      tableId: row.tableId,
+      rowId: row.id,
       final: row.final,
       archived: row.archived,
       annotations: row.annotations,
       values: row.values,
-      cells: row.values.map((cellValue, idx) =>
-        addCellId({
-          kind: columns[idx] && columns[idx].kind,
-          column: columns[idx],
-          table,
-          row: fakeRow,
-          annotations:
-            row.annotations && annotationsToObject(row.annotations[idx])
-        })
-      )
-    };
-  });
-  return rowsWithCells;
+      cells: row.values.map(buildCell(row))
+    }));
+  };
 };
 
 const updateCellAnnotation = (state, action, completeState) => {
