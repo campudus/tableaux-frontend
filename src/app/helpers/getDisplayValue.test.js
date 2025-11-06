@@ -1,6 +1,36 @@
+import { buildOriginColumnLookup } from "./columnHelper";
 import getDisplayValue from "./getDisplayValue";
 
 describe("getDisplayValue", () => {
+  it("should format union table values", () => {
+    const originTableId = 101;
+    const minimalTable = { id: 112, type: "union" };
+    const row = {
+      id: 101000001,
+      tableId: originTableId,
+      values: [
+        [
+          {
+            id: 1,
+            value: ["singleLang", { "de-DE": "mehrsprachig" }]
+          }
+        ]
+      ]
+    };
+    const originColumn = buildOriginColumnLookup(minimalTable, [
+      unionLinkColumn
+    ])(unionLinkColumn.id, originTableId);
+
+    const result = getDisplayValue(
+      { ...unionLinkColumn, originColumn, originColumns: undefined },
+      row.values[0]
+    );
+    expect(result).toEqual([
+      {
+        "de-DE": "singleLang mehrsprachig"
+      }
+    ]);
+  });
   it("should format concatFormatPattern correctly", () => {
     const column = {
       id: 0,
@@ -85,3 +115,275 @@ describe("getDisplayValue", () => {
     });
   });
 });
+
+const unionLinkColumn = {
+  id: 4,
+  ordering: 4,
+  name: "variant",
+  kind: "link",
+  multilanguage: true,
+  identifier: false,
+  displayName: {},
+  description: {},
+  separator: true,
+  attributes: {},
+  hidden: false,
+  languageType: "language",
+  originColumns: [
+    {
+      tableId: 101,
+      column: {
+        id: 5,
+        ordering: 40,
+        name: "variants",
+        kind: "link",
+        multilanguage: true,
+        identifier: false,
+        displayName: {
+          "de-DE": "Variante",
+          "en-GB": "Variant",
+          "fr-FR": "Variante",
+          "es-ES": "Variante"
+        },
+        description: {},
+        separator: false,
+        attributes: {},
+        hidden: false,
+        languageType: "language",
+        toTable: 100,
+        toColumn: {
+          id: 0,
+          ordering: 0,
+          name: "ID",
+          kind: "concat",
+          multilanguage: true,
+          identifier: true,
+          displayName: {},
+          description: {},
+          separator: false,
+          attributes: {},
+          hidden: false,
+          languageType: "language",
+          concats: [
+            {
+              id: 1,
+              ordering: 10,
+              name: "articleNumber",
+              kind: "shorttext",
+              multilanguage: false,
+              identifier: true,
+              displayName: {
+                "de-DE": "Artikelnummer",
+                "en-GB": "Article number",
+                "fr-FR": "Réf. article",
+                "es-ES": "N° de artículo"
+              },
+              description: {},
+              separator: true,
+              attributes: {},
+              hidden: false
+            },
+            {
+              id: 4,
+              ordering: 30,
+              name: "identifier",
+              kind: "shorttext",
+              multilanguage: true,
+              identifier: true,
+              displayName: {
+                "de-DE": "Bezeichnung",
+                "en-GB": "Identifier",
+                "fr-FR": "Désignation",
+                "es-ES": "Descripción"
+              },
+              description: {},
+              separator: true,
+              attributes: {},
+              hidden: false,
+              languageType: "language"
+            }
+          ]
+        },
+        constraint: {
+          cardinality: {
+            from: 1,
+            to: 0
+          },
+          deleteCascade: false,
+          archiveCascade: false,
+          finalCascade: false
+        }
+      }
+    },
+    {
+      tableId: 103,
+      column: {
+        id: 5,
+        ordering: 40,
+        name: "variants",
+        kind: "link",
+        multilanguage: true,
+        identifier: false,
+        displayName: {
+          "de-DE": "Variante",
+          "en-GB": "Variant",
+          "fr-FR": "Variante",
+          "es-ES": "Variante"
+        },
+        description: {},
+        separator: false,
+        attributes: {},
+        hidden: false,
+        languageType: "language",
+        toTable: 102,
+        toColumn: {
+          id: 0,
+          ordering: 0,
+          name: "ID",
+          kind: "concat",
+          multilanguage: true,
+          identifier: true,
+          displayName: {},
+          description: {},
+          separator: false,
+          attributes: {},
+          hidden: false,
+          languageType: "language",
+          concats: [
+            {
+              id: 1,
+              ordering: 10,
+              name: "articleNumber",
+              kind: "shorttext",
+              multilanguage: false,
+              identifier: true,
+              displayName: {
+                "de-DE": "Artikelnummer",
+                "en-GB": "Article number",
+                "fr-FR": "Réf. article",
+                "es-ES": "N° de artículo"
+              },
+              description: {},
+              separator: true,
+              attributes: {},
+              hidden: false
+            },
+            {
+              id: 4,
+              ordering: 30,
+              name: "identifier",
+              kind: "shorttext",
+              multilanguage: true,
+              identifier: true,
+              displayName: {
+                "de-DE": "Bezeichnung",
+                "en-GB": "Identifier",
+                "fr-FR": "Désignation",
+                "es-ES": "Descripción"
+              },
+              description: {},
+              separator: true,
+              attributes: {},
+              hidden: false,
+              languageType: "language"
+            }
+          ]
+        },
+        constraint: {
+          cardinality: {
+            from: 1,
+            to: 0
+          },
+          deleteCascade: false,
+          archiveCascade: false,
+          finalCascade: false
+        }
+      }
+    },
+    {
+      tableId: 105,
+      column: {
+        id: 5,
+        ordering: 40,
+        name: "variants",
+        kind: "link",
+        multilanguage: true,
+        identifier: false,
+        displayName: {
+          "de-DE": "Variante",
+          "en-GB": "Variant",
+          "fr-FR": "Variante",
+          "es-ES": "Variante"
+        },
+        description: {},
+        separator: false,
+        attributes: {},
+        hidden: false,
+        languageType: "language",
+        toTable: 104,
+        toColumn: {
+          id: 0,
+          ordering: 0,
+          name: "ID",
+          kind: "concat",
+          multilanguage: true,
+          identifier: true,
+          displayName: {},
+          description: {},
+          separator: false,
+          attributes: {},
+          hidden: false,
+          languageType: "language",
+          concats: [
+            {
+              id: 1,
+              ordering: 10,
+              name: "articleNumber",
+              kind: "shorttext",
+              multilanguage: false,
+              identifier: true,
+              displayName: {
+                "de-DE": "Artikelnummer",
+                "en-GB": "Article number",
+                "fr-FR": "Réf. article",
+                "es-ES": "N° de artículo"
+              },
+              description: {},
+              separator: true,
+              attributes: {},
+              hidden: false
+            },
+            {
+              id: 4,
+              ordering: 30,
+              name: "identifier",
+              kind: "shorttext",
+              multilanguage: true,
+              identifier: true,
+              displayName: {
+                "de-DE": "Bezeichnung",
+                "en-GB": "Identifier",
+                "fr-FR": "Désignation",
+                "es-ES": "Descripción"
+              },
+              description: {},
+              separator: true,
+              attributes: {},
+              hidden: false,
+              languageType: "language"
+            }
+          ]
+        },
+        constraint: {
+          cardinality: {
+            from: 1,
+            to: 0
+          },
+          deleteCascade: false,
+          archiveCascade: false,
+          finalCascade: false
+        }
+      }
+    }
+  ]
+};
