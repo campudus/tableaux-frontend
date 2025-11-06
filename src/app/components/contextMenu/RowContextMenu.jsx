@@ -23,6 +23,7 @@ import {
   initiateEntityView,
   initiateRowDependency
 } from "../../helpers/rowHelper";
+import T from "../../helpers/table";
 import { clearSelectedCellValue } from "../../redux/actions/cellActions";
 import ContextMenuServices from "../frontendService/ContextMenuEntries";
 import SvgIcon from "../helperComponents/SvgIcon";
@@ -30,7 +31,7 @@ import { openHistoryOverlay } from "../history/HistoryOverlay";
 import AnnotationContextMenu from "./AnnotationContextMenu";
 import GenericContextMenu from "./GenericContextMenu";
 
-// Distance between clicked coordinate and the left upper corner of the context menu
+//  Distance between clicked coordinate and the left upper corner of the context menu
 const CLICK_OFFSET = 3;
 
 class RowContextMenu extends React.Component {
@@ -316,7 +317,9 @@ class RowContextMenu extends React.Component {
           {this.props.table.type === "settings"
             ? ""
             : this.mkItem(showEntityView, "show_entity_view", "server")}
-          {this.mkItem(showDependency, "show_dependency", "code-fork")}
+          {!T.isUnionTable(this.props.cell.table)
+            ? this.mkItem(showDependency, "show_dependency", "code-fork")
+            : null}
           {this.mkItem(showTranslations, "show_translation", "flag")}
           {this.setFinalItem()}
           {this.setArchivedItem()}
