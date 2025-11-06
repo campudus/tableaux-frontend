@@ -1,15 +1,14 @@
 import f from "lodash/fp";
 import { initLangtags } from "../../constants/TableauxConstants";
+import { buildOriginColumnLookup } from "../../helpers/columnHelper";
 import getDisplayValue from "../../helpers/getDisplayValue";
 import identifyUniqueLinkedRows from "../../helpers/linkHelper";
 
 const mapWithIndex = f.map.convert({ cap: false });
 
 onmessage = function(e) {
-  const rows = e.data[0];
-  const columns = e.data[1];
-  const langtags = e.data[2];
-  const tableId = e.data[3];
+  const [rows, columns, langtags, table] = e.data;
+  const tableId = table.id;
   initLangtags(langtags);
   const uniqueLinks = identifyUniqueLinkedRows(rows, columns);
   const linkDisplayValues = f.map(outer => {
@@ -20,17 +19,19 @@ onmessage = function(e) {
       }, outer.values)
     };
   }, uniqueLinks);
+  const getOriginColumn = buildOriginColumnLookup(table, columns);
   const displayValues = {
     tableId,
     values: f.map(row => {
       return {
         ...row,
-        values: mapWithIndex((value, id) => {
-          const column = columns[id];
+        values: mapWithIndex((value, idx) => {
+          const column = columns[idx];
+          const originColumn = getOriginColumn(column.id, row.tableId);
           if (column.kind === "link") {
             return { tableId: column.toTable, rowIds: f.map("id", value) };
           }
-          return getDisplayValue(column)(value);
+          return getDisplayValue(originColumn ?? column)(value);
         }, row.values)
       };
     })(rows)

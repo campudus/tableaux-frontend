@@ -20,7 +20,7 @@ import {
 //
 // return value: object-map of {langtag: string} for all langtag in {Langtags}
 const getDisplayValue = f.curryN(2)((column = {}, value) => {
-  return retrieveDisplayValue(column)(value);
+  return retrieveDisplayValue(column?.originColumn ?? column)(value);
 });
 
 const retrieveDisplayValue = column => value => {
