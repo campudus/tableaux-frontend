@@ -253,16 +253,16 @@ const dispatchCellValueChange = action => (dispatch, getState) => {
   // ask if cell should be marked with translation_needed, when
   // there's a change in the main language
   if (!action.skipTranslationDialog && mainLangChecks && hasTranslations) {
-    openTranslationDialog(
-      null,
-      () => addTranslationNeeded(f.tail(Langtags), cell),
-      () => null
-    );
+    // openTranslationDialog(
+    //   null,
+    //   () => addTranslationNeeded(f.tail(Langtags), cell),
+    //   () => null
+    // );
   }
 
   // automatically add translation_needed if cell is new
   if (mainLangChecks && !hasTranslations) {
-    addTranslationNeeded(f.tail(Langtags), cell);
+    // addTranslationNeeded(f.tail(Langtags), cell);
   }
 
   const annotations = f.compose(
