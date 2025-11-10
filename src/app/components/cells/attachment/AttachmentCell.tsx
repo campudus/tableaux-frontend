@@ -70,7 +70,7 @@ export default function AttachmentCell({
                       dirent={attachment}
                       layout="table"
                       width={150}
-                      loadStrategy={"on-mount"} // load thumbnail on mount, because we have virtualization in table
+                      loadStrategy={"eager"} // load thumbnail eagerly, because we have virtualization in table
                       onVisibilityChange={isVisible => {
                         const previousAttachmentIndex = attachmentIndex - 1;
 

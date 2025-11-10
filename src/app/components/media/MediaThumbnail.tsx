@@ -30,7 +30,7 @@ type MediaThumbnailProps = {
   layout?: Layout | "table";
   width?: number;
   fallbackLabel?: ReactNode;
-  loadStrategy?: "on-mount" | "on-intersect";
+  loadStrategy?: "eager" | "lazy";
   onVisibilityChange?: (isVisible: boolean) => void;
 };
 
@@ -39,11 +39,15 @@ export function MediaThumbnailFolder({
   layout = "list",
   icon = "folder"
 }: MediaThumbnailProps & { icon?: "folder" | "folder-back" }): ReactElement {
+  const [isLoading, setIsLoading] = useState(true);
+
   return (
     <div className={cn("media-thumbnail", { [layout]: true }, className)}>
+      {isLoading && <div className="media-thumbnail__skeleton"></div>}
       <img
         className={cn("media-thumbnail__image", { icon: true, [icon]: true })}
         src={`/img/icons/${icon}.svg`}
+        onLoad={() => setIsLoading(false)}
       />
     </div>
   );
@@ -56,11 +60,10 @@ export default function MediaThumbnail({
   layout = "list",
   width = 40,
   fallbackLabel,
-  loadStrategy = "on-intersect",
+  loadStrategy = "lazy",
   onVisibilityChange
 }: MediaThumbnailProps): ReactElement {
   const { isIntersecting, ref } = useIntersectionObserver();
-  const shouldLoad = loadStrategy === "on-intersect" ? isIntersecting : true;
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
 
@@ -91,26 +94,30 @@ export default function MediaThumbnail({
 
       {isLoading && <div className="media-thumbnail__skeleton"></div>}
 
-      {shouldLoad && canShowImage && (
+      {canShowImage && (
         <img
           className={cn("media-thumbnail__image", {
             icon: isSVG,
             custom: isSVG
           })}
+          loading={loadStrategy}
           src={thumbnailUrl}
           onLoad={() => setIsLoading(false)}
           onError={() => setIsError(true)}
         />
       )}
 
-      {shouldLoad && !canShowImage && hasFallback && (
+      {!canShowImage && hasFallback && (
         <img
           className={cn("media-thumbnail__image", { icon: true })}
+          loading={loadStrategy}
           src={fallbackUrl}
+          onLoad={() => setIsLoading(false)}
+          onError={() => setIsError(true)}
         />
       )}
 
-      {shouldLoad && !canShowImage && !hasFallback && (
+      {!canShowImage && !hasFallback && (
         <svg
           className={cn("media-thumbnail__image", { icon: true })}
           width="20"
@@ -157,7 +164,7 @@ export default function MediaThumbnail({
         </svg>
       )}
 
-      {shouldLoad && !canShowImage && !!fallbackLabel && (
+      {!canShowImage && !!fallbackLabel && (
         <div className="media-thumbnail__label">{fallbackLabel}</div>
       )}
     </div>
