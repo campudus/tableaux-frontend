@@ -69,7 +69,7 @@ export default function AttachmentCell({
                       langtag={langtag}
                       dirent={attachment}
                       layout="table"
-                      width={150}
+                      width={200}
                       loadStrategy={"eager"} // load thumbnail eagerly, because we have virtualization in table
                       onVisibilityChange={isVisible => {
                         const previousAttachmentIndex = attachmentIndex - 1;
