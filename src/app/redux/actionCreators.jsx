@@ -409,8 +409,9 @@ const loadTableView = (tableId, customFilters) => (dispatch, getState) => {
         return [rowId];
       } else if (Array.isArray(filter)) {
         return f.flatMap(extractIds, filter);
+      } else {
+        return [];
       }
-      return [];
     };
 
     const rowIds = f.flatMap(extractIds, customFilters);

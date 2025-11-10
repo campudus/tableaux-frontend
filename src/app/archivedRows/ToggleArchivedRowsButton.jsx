@@ -96,16 +96,16 @@ const ToggleArchivedRowsButton = ({ table, langtag }) => {
 
             if (isLinkedMode && !active) {
               return null;
+            } else {
+              return (
+                <Item
+                  key={mode}
+                  onClick={showArchived(mode)}
+                  active={active}
+                  content={StateCfg[mode]}
+                />
+              );
             }
-
-            return (
-              <Item
-                key={mode}
-                onClick={showArchived(mode)}
-                active={active}
-                content={StateCfg[mode]}
-              />
-            );
           })}
         </div>
       ) : null}
