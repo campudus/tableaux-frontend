@@ -92,7 +92,9 @@ export default function MediaThumbnail({
         <i className="icon fa fa-external-link" />
       </span>
 
-      {isLoading && <div className="media-thumbnail__skeleton"></div>}
+      {(canShowImage || hasFallback) && isLoading && (
+        <div className="media-thumbnail__skeleton"></div>
+      )}
 
       {canShowImage && (
         <img
