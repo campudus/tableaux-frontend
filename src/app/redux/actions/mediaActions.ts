@@ -46,7 +46,9 @@ export const getMediaFolder = (
 };
 
 export const createMediaFolder = (
-  data: Pick<Folder, "name"> & Partial<Pick<Folder, "description" | "parentId">>
+  data: Pick<Folder, "name"> &
+    Partial<Pick<Folder, "description" | "parentId">>,
+  onSuccess?: () => void
 ) => {
   return {
     promise: makeRequest({
@@ -58,7 +60,8 @@ export const createMediaFolder = (
       MEDIA_FOLDER_CREATE,
       MEDIA_FOLDER_CREATE_SUCCESS,
       MEDIA_FOLDER_CREATE_ERROR
-    ]
+    ],
+    onSuccess
   };
 };
 
