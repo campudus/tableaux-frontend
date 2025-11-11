@@ -28,9 +28,14 @@ export default function AttachmentCell({
   width
 }: AttachmentCellProps): ReactElement {
   const contentRef = useRef<HTMLDivElement>(null);
-  const [ellipsisIndex, setEllipsisIndex] = useState(-1);
   const translate = retrieveTranslation(langtag);
   const attachments = (cell.value as unknown) as Attachment[];
+  const [visibilityByUuid, setVisibilityByUuid] = useState(
+    f.flow(
+      f.keyBy("uuid"),
+      f.mapValues(() => false)
+    )(attachments)
+  );
   const isPreview = !selected && !editing;
   const folderIds = f.uniq(f.map(a => a.folder, attachments));
   const folderId = folderIds.length === 1 ? folderIds.at(0) : undefined;
@@ -56,6 +61,12 @@ export default function AttachmentCell({
         {attachments.map((attachment, attachmentIndex) => {
           const title = translate(attachment.title);
           const isLastAttachment = attachments.length - 1 === attachmentIndex;
+          const isVisible = visibilityByUuid[attachment.uuid];
+          const nextAttachmentUuid = attachments[attachmentIndex + 1]?.uuid;
+          const isNextVisible =
+            !!nextAttachmentUuid && visibilityByUuid[nextAttachmentUuid];
+          const shouldShowEllipsis =
+            isPreview && !isLastAttachment && isVisible && !isNextVisible;
 
           return (
             <>
@@ -72,19 +83,10 @@ export default function AttachmentCell({
                       width={200}
                       loadStrategy={"eager"} // load thumbnail eagerly, because we have virtualization in table
                       onVisibilityChange={isVisible => {
-                        const previousAttachmentIndex = attachmentIndex - 1;
-
-                        if (
-                          !isVisible &&
-                          ellipsisIndex > previousAttachmentIndex
-                        ) {
-                          setEllipsisIndex(previousAttachmentIndex);
-                        } else if (
-                          isVisible &&
-                          ellipsisIndex < attachmentIndex
-                        ) {
-                          setEllipsisIndex(attachmentIndex);
-                        }
+                        setVisibilityByUuid(oldVisibilityByUuid => ({
+                          ...oldVisibilityByUuid,
+                          [attachment.uuid]: isVisible
+                        }));
                       }}
                       fallbackLabel={
                         <LabelTruncated
@@ -96,10 +98,7 @@ export default function AttachmentCell({
                   </Tooltip>
                 }
               />
-              {!isLastAttachment &&
-                isPreview &&
-                attachmentIndex === ellipsisIndex &&
-                "..."}
+              {shouldShowEllipsis && <span>{"..."}</span>}
             </>
           );
         })}
