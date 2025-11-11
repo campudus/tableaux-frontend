@@ -121,7 +121,8 @@ class View extends PureComponent {
       [ColumnKinds.text]: TextView,
       [ColumnKinds.richtext]: TextView,
       [ColumnKinds.group]: GroupView,
-      [ColumnKinds.status]: StatusView
+      [ColumnKinds.status]: StatusView,
+      [ColumnKinds.origintable]: ShortTextView
     };
 
     const isDisabled = match(kind)(

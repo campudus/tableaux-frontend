@@ -39,7 +39,8 @@ export const ColumnKinds = {
   richtext: "richtext",
   shorttext: "shorttext",
   status: "status",
-  text: "text"
+  text: "text",
+  origintable: "origintable"
 } as const;
 
 export const TableType = {
