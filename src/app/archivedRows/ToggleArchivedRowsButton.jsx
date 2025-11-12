@@ -21,11 +21,16 @@ const StateCfg = {
   [ShowArchived.exclusive]: {
     icon: <SvgIcon icon="/img/icons/database-archived.svg" />,
     trnKey: "exclusive"
+  },
+  [ShowArchived.linked]: {
+    icon: <SvgIcon icon="/img/icons/database-linked.svg" />,
+    trnKey: "linked"
   }
 };
 
 const Item = ({ onClick, active, content }) => {
   const cssClass = `list-item ${active ? "active" : ""}`;
+
   return (
     <button
       className={cssClass}
@@ -85,14 +90,23 @@ const ToggleArchivedRowsButton = ({ table, langtag }) => {
       {showPopup ? (
         <div className="archive-mode-toggle__popup" ref={containerRef}>
           <span className="title">{t("table:archived.popup-title")}</span>
-          {Object.keys(StateCfg).map(mode => (
-            <Item
-              key={mode}
-              onClick={showArchived(mode)}
-              active={mode === showArchivedMode}
-              content={StateCfg[mode]}
-            />
-          ))}
+          {Object.keys(StateCfg).map(mode => {
+            const active = mode === showArchivedMode;
+            const isLinkedMode = mode === ShowArchived.linked;
+
+            if (isLinkedMode && !active) {
+              return null;
+            } else {
+              return (
+                <Item
+                  key={mode}
+                  onClick={showArchived(mode)}
+                  active={active}
+                  content={StateCfg[mode]}
+                />
+              );
+            }
+          })}
         </div>
       ) : null}
     </div>
