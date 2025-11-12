@@ -23,7 +23,7 @@ const StateCfg = {
     trnKey: "exclusive"
   },
   [ShowArchived.linked]: {
-    icon: <SvgIcon icon="/img/icons/database-current-archived.svg" />,
+    icon: <SvgIcon icon="/img/icons/database-linked.svg" />,
     trnKey: "linked"
   }
 };
