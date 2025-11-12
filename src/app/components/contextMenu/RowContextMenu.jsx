@@ -14,6 +14,7 @@ import {
   canUserEditRowAnnotations
 } from "../../helpers/accessManagementHelper";
 import { setRowArchived, setRowFinal } from "../../helpers/annotationHelper";
+import { urlToTableDestination } from "../../helpers/apiUrl";
 import { canConvert } from "../../helpers/cellValueConverter";
 import { hasHistory } from "../../helpers/history";
 import { isTextInRange } from "../../helpers/limitTextLength";
@@ -251,7 +252,8 @@ class RowContextMenu extends React.Component {
         t,
         cell: {
           table,
-          row: { final }
+          row: { final },
+          column: { originColumn }
         }
       },
       closeRowContextMenu
@@ -314,6 +316,19 @@ class RowContextMenu extends React.Component {
           )}
           <ContextMenuServices cell={cell} langtag={this.props.langtag} />
           <div className="separator with-line">{t("menus.data_set")}</div>
+          {T.isUnionTable(this.props.table) ? (
+            <a
+              href={urlToTableDestination({
+                langtag: this.props.langtag,
+                table: { id: cell.row.tableId },
+                column: originColumn,
+                row: { id: T.getOriginRowId(cell.row) }
+              })}
+            >
+              <i className="fa fa-external-link" />
+              <div className="item-label">{t("open-dataset")}</div>
+            </a>
+          ) : null}
           {this.props.table.type === "settings"
             ? ""
             : this.mkItem(showEntityView, "show_entity_view", "server")}
