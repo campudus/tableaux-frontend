@@ -64,7 +64,8 @@ const cellRenderers = {
   [ColumnKinds.text]: TextCell,
   [ColumnKinds.richtext]: TextCell,
   [ColumnKinds.group]: IdentifierCell,
-  [ColumnKinds.integer]: NumericCell
+  [ColumnKinds.integer]: NumericCell,
+  [ColumnKinds.origintable]: ShortTextCell
 };
 
 const CellPreview = props => {
