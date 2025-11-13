@@ -1,94 +1,51 @@
 import f from "lodash/fp";
 import { ColumnKinds } from "../constants/TableauxConstants";
+import { buildOriginColumnLookup } from "./columnHelper";
+import getDisplayValue from "./getDisplayValue";
 
-const mapIndexed = f.map.convert({ cap: false });
-const getLinkColumns = columns =>
-  f.compose(
-    f.compact,
-    mapIndexed((column, index) => {
-      const { kind } = column;
-      if (kind === ColumnKinds.link) {
-        const { toTable } = column;
-        return { index: index, tableId: toTable };
-      }
-      return null;
-    })
-  )(columns);
+export const buildLinkDisplayValueCache = (table, columns, rows) => {
+  const getOriginColumn = buildOriginColumnLookup(table, columns);
 
-const mergeSameTables = allElements => {
-  const { mergedValues } = f.reduce(
-    (acc, val) => {
-      const { tableId } = val;
-      const { mergedValues, mergedIds } = acc;
-      if (f.contains(tableId, mergedIds)) {
-        return acc;
-      }
-      const merged = {
-        ...val,
-        values: f.compose(
-          f.flatMap("values"),
-          f.filter(element => element.tableId === tableId)
-        )(allElements)
-      };
-      return {
-        mergedValues: f.concat(mergedValues, [merged]),
-        mergedIds: f.concat(mergedIds, [tableId])
-      };
-    },
-    { mergedValues: [], mergedIds: [] },
-    allElements
-  );
-  return f.flatten(mergedValues);
-};
+  const linkColumns = columns
+    .map((col, idx) => ({ col, idx }))
+    .filter(({ col: { kind } }) => kind === ColumnKinds.link);
 
-const identifyUniqueLinkedRows = (rows, columns) => {
-  const linkColumns = getLinkColumns(columns);
-  const linkIndexes = f.map("index", linkColumns);
-  return f.compose(
-    mergeSameTables,
-    f.sortBy(["tableId"]),
-    mapIndexed((arr, index) => {
-      const { tableId } = linkColumns[index];
-      return { tableId, values: arr, column: columns[linkIndexes[index]] };
-    }),
-    f.map(element => f.sortedUniqBy("id", f.sortBy("id", element))),
-    f.map(f.flatten),
-    f.zipAll,
-    f.map(f.props(linkIndexes)),
-    f.map("values")
-  )(rows);
-};
-
-const combineDisplayValuesWithLinks = (allDisplayValues, columns, tableId) => {
-  if (f.isEmpty(allDisplayValues)) {
-    return null;
-  }
-  const findCells = (tableId, rowIds) => {
-    const rows = f.get([tableId], allDisplayValues);
-    return f.map(
-      id =>
-        f.head(
-          f.get(
-            "values",
-            f.find(element => element.id === id, rows)
-          )
-        ),
-      rowIds
+  const getIndividualLinkValues = row =>
+    linkColumns.flatMap(({ idx, col }) =>
+      row.values[idx].map(value => {
+        const originColumn = getOriginColumn(col.id, row.tableId);
+        return {
+          values: [value],
+          column: originColumn || col,
+          tableId: row.tableId
+        };
+      })
     );
+
+  const toDisplayValueLookup = (acc, { values, column, tableId }) => {
+    const linkRowId = values[0].id;
+    const existingDV = f.get([tableId, linkRowId], acc);
+    if (f.isNil(existingDV)) {
+      acc[tableId] = acc[tableId] || {};
+      acc[tableId][linkRowId] = {
+        value: getDisplayValue(column, values),
+        column,
+        id: linkRowId
+      };
+    }
+    return acc;
   };
-  const currentDisplayValues = f.get([tableId], allDisplayValues);
-  return f.map(row => {
-    return {
-      id: row.id,
-      values: mapIndexed((cell, index) => {
-        if (columns[index].kind !== "link") {
-          return cell;
-        }
-        const { tableId, rowIds } = cell;
-        return findCells(tableId, rowIds);
-      }, row.values)
-    };
-  }, currentDisplayValues);
+
+  const toReduxFormat = f.mapValues(f.values);
+
+  const go = f.compose(
+    toReduxFormat,
+    f.reduce(toDisplayValueLookup, {}),
+    f.flatMap(getIndividualLinkValues)
+  );
+  const linkDisplayValues = go(rows);
+
+  return linkDisplayValues;
 };
 
 const reduce = f.reduce.convert({ cap: false });
@@ -124,7 +81,7 @@ const calcDistanceTable = ({ original, changed }) =>
     original
   );
 
-//if there was a location: "after", this would look way better
+// if there was a location: "after", this would look way better
 const buildRequestParam = ({ original }) => ({ originalIdx, distance, id }) => {
   if (originalIdx + distance < original.length - 1) {
     return {
@@ -141,13 +98,9 @@ const buildRequestParam = ({ original }) => ({ originalIdx, distance, id }) => {
   }
 };
 
-const createLinkOrderRequest = data =>
+export const createLinkOrderRequest = data =>
   f.compose(
     buildRequestParam(data),
     getShiftedElement,
     calcDistanceTable
   )(data);
-
-export { combineDisplayValuesWithLinks, createLinkOrderRequest };
-
-export default identifyUniqueLinkedRows;
