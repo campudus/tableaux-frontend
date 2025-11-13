@@ -73,13 +73,23 @@ const mediaReducer = (state = initialState, action: MediaAction) => {
     case MEDIA_FILE_EDIT_ERROR:
     case MEDIA_FILE_DELETE_ERROR:
       return { ...state, error: true, finishedLoading: true };
-    case MEDIA_FOLDER_GET_SUCCESS:
+    case MEDIA_FOLDER_GET_SUCCESS: {
+      const folder = action.result as Partial<Folder>;
+
       return {
         ...state,
         error: false,
         finishedLoading: true,
-        data: action.result as Partial<Folder>
+        data: {
+          ...folder,
+          subfolders: f.orderBy(
+            ({ name }: Folder) => f.toLower(name),
+            ["asc"],
+            folder.subfolders ?? []
+          )
+        }
       };
+    }
     case MEDIA_FOLDER_CREATE_SUCCESS: {
       const createdFolder = f.isPlainObject(action.result)
         ? (action.result as Folder)
