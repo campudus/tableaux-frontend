@@ -285,7 +285,7 @@ const setCurrentTable = tableId => {
   };
 };
 
-const generateDisplayValues = (rows, columns, tableId) => (
+const generateDisplayValues = (rows, columns, table) => (
   dispatch,
   getState
 ) => {
@@ -293,17 +293,15 @@ const generateDisplayValues = (rows, columns, tableId) => (
   const {
     tableView: { worker }
   } = getState();
-  worker.postMessage([rows, columns, Langtags, tableId]);
+  worker.postMessage([rows, columns, Langtags, table]);
   worker.onmessage = e => {
-    const returnedTableId = e.data[1];
-    if (returnedTableId !== tableId) {
-      return;
+    const [displayValues, returnedTableId] = e.data;
+    if (returnedTableId === table?.id) {
+      dispatch({
+        type: GENERATED_DISPLAY_VALUES,
+        displayValues
+      });
     }
-    const displayValues = e.data[0];
-    dispatch({
-      type: GENERATED_DISPLAY_VALUES,
-      displayValues
-    });
   };
 };
 
