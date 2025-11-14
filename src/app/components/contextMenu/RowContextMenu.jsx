@@ -212,7 +212,7 @@ class RowContextMenu extends React.Component {
       return null;
     }
     const linkedIds = f.join(":", cell.value.map(f.get("id")));
-    const toTable = cell.column.toTable;
+    const toTable = cell.column.originColumn?.toTable ?? cell.column.toTable;
     const url = `/${langtag}/tables/${toTable}?filter:id:${linkedIds}`;
     const doOpen = () => {
       window.open(url);
