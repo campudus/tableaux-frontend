@@ -3,6 +3,10 @@
     color: $color-red;
   }
 
+  .item-separator {
+    margin: 0 6px;
+  }
+
   .boolean-cell {
     display: flex;
     align-items: baseline;
@@ -49,10 +53,6 @@
         position: relative;
         text-wrap: nowrap;
       }
-
-      &__separator {
-        margin: 0 6px;
-      }
     }
 
     .link-list-cell {
@@ -76,10 +76,22 @@
   }
 
   .attachment-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .attachment-cell__images {
     &__link {
       color: $color-primary;
       padding: 0;
     }
+  }
+
+  .attachment-cell__others {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
   }
 
   .attachment-slider-overlay {
