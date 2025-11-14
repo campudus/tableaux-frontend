@@ -57,7 +57,7 @@ export default function LinkCellItem({
         )}
       </a>
 
-      {!isLast && <span className="link-cell-item__separator">&bull;</span>}
+      {!isLast && <span className="item-separator">&bull;</span>}
     </div>
   );
 }
