@@ -80,7 +80,8 @@
     "hide": "Nur aktuelle",
     "exclusive": "Nur archivierte",
     "show": "Aktuelle und archivierte",
-    "popup-title": "Datensatzansicht"
+    "popup-title": "Datensatzansicht",
+    "linked": "Verknüpfungen"
   },
   "translations": {
     "dialog_headline": "Änderung einer mehrsprachigen Zelle",

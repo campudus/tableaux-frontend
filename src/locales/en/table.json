@@ -75,13 +75,14 @@
   },
 
   "archived": {
-    "is-archived": "Data set is archived",
+    "is-archived": "Dataset is archived",
     "set-archived": "Archive",
     "unset-archived": "Retrieve from archive",
     "hide": "Only current",
     "exclusive": "Only archived",
     "show": "Current and archived",
-    "popup-title": "Show rows"
+    "popup-title": "Dataset view",
+    "linked": "Linked data"
   },
   "translations": {
     "dialog_headline": "Multi language cell modified",
