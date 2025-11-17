@@ -44,10 +44,12 @@ export const ColumnKinds = {
 } as const;
 
 export const TableType = {
+  union: "union",
   taxonomy: "taxonomy",
   settings: "settings",
   default: "default"
-};
+} as const;
+export type TableType = typeof TableType[keyof typeof TableType];
 
 export const ImmutableColumnKinds = ["status", "concat"] as const;
 
@@ -139,13 +141,6 @@ export const AnnotationKind = {
   rowProp: "row-prop",
   data: "data"
 } as const;
-
-export const TableKind = {
-  generic: "generic",
-  taxonomy: "taxonomy",
-  union: "union"
-} as const;
-export type TableKind = typeof TableKind[keyof typeof TableKind];
 
 type AnnotationConfig = {
   name: string;
