@@ -1,98 +1,54 @@
-.attachment-overlay-filter-container {
-  height: 40px;
+.overlay .attachment-overlay-header {
+  grid-column-start: 2;
+  grid-column-end: 5;
+  grid-row-start: 3;
+  height: 30px;
   display: flex;
-  align-items: center;
-  background-color: $color-overlay-background;
-  border-bottom: 1px solid lighten($color-text-light-grey, 5);
-  padding: 3px 7px;
+  gap: 8px;
 
-  &>* {
-    margin: 0 8px;
-  }
-
-  .attachment-overlay-filter-bar {
-    flex: 1 1 auto;
+  .attachment-filter {
+    flex: 1;
     display: flex;
-    align-items: center;
-    position: relative;
 
-    .attachment-overlay-filter-input {
+    &__input {
+      width: 100%;
       padding: 8px;
       border-radius: 3px;
-      border: none !important;
-      background-color: white !important;
-      margin: 0 !important;
-      flex: 1 1 auto;
+      border: none;
+      box-sizing: border-box;
     }
+  }
 
-    .popup-wrapper {
-      position: absolute;
-      right: 0;
+  .attachment-order {
+    flex: 0 1 auto;
+    min-width: 35px;
 
-      .popup-button {
-        @include flex-centered();
-        width: 30px;
-        height: 25px;
-        margin-left: 5px;
-        position: relative;
-        background-color: $color-primary-contrast-text;
-        color: $color-text-medium-grey;
-        border-radius: 3px;
+    .button-action__button {
+      justify-content: center;
+      color: #999;
+      background: #ffffff;
 
-        i {
-          margin: 0 !important;
-        }
-      }
-    }
-
-    .attachment-overlay-filter-mode-popup {
-      position: absolute;
-      top: 100%;
-      right: 10px;
-      display: flex;
-      flex-direction: column;
-      z-index: 1;
-      box-shadow: 3px 2px 10px black;
-
-      .filter-mode-item {
-        width: 100%;
-        background-color: white;
-        color: $color-text-medium-grey;
-        padding: 5px;
-        white-space: nowrap;
-        text-wrap: none;
-
-        &.selected {
-          background-color: $color-primary;
-          color: $color-primary-contrast-text;
-        }
-
-        &:hover {
-          background-color: $color-hover-background;
-          color: $color-hover-foreground;
-        }
+      &--active {
+        background: #ffffff;
       }
     }
   }
 
-  .attachment-overlay-sort-button {
-    @include flex-centered();
-    flex-direction: row;
-    height: 31px;
-    width: 35px;
-    border-radius: 3px;
-    margin-left: 0;
+  input.attachment-filter__input {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+  }
 
-    background-color: $color-primary-contrast-text;
-    color: $color-text-medium-grey;
+  .attachment-filter__mode {
+    .button-action__button {
+      color: #999;
+      background: #ffffff;
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0;
 
-    &:hover {
-      background-color: $color-primary;
-      color: $color-primary-contrast-text;
-    }
-
-    i {
-      margin: 0 !important;
+      &--active {
+        background: #ffffff;
+      }
     }
   }
 }

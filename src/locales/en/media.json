@@ -20,6 +20,7 @@
   "file_link_name_label": "Link name",
   "file_title_label": "Title",
   "new_folder": "New folder",
+  "new_folder_exists": "New folder already exists",
   "upload_file": "Upload file",
   "open_file": "Open file",
   "rename_folder": "Rename folder",
@@ -38,5 +39,12 @@
   "open_dependent_row": "Open 1 linked dependency",
   "open_dependent_rows": "Open {{count}} linked dependencies",
   "show_all": "Show all {{count}} items",
-  "show_less": "Show less"
+  "show_less": "Show less",
+  "layout_list": "List with thumbnails",
+  "layout_tiles": "Tiles",
+  "download_file": "Download file",
+  "folder_file": "Show folder",
+  "files_selected": "All selected files",
+  "link_add": "Add link",
+  "link_remove": "Remove link"
 }

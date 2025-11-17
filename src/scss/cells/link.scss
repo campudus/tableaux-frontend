@@ -3,6 +3,7 @@
 
 .cell.cell-link,
 .cell.cell-attachment {
+
   //Overwrite editing styling because editing mode is with overlay
   &.cell-link.editing .cell-content {
     @include box-shadow(none);
@@ -29,11 +30,18 @@
     &--archived {
       background: $color-archived-bg;
       color: $color-archived-fg;
+
       ::before {
         content: "\f187";
         font-family: FontAwesome;
         padding-right: 8px;
       }
+    }
+  }
+
+  &:not(&.selected, &.editing) {
+    .link-label {
+      pointer-events: none;
     }
   }
 
@@ -46,6 +54,60 @@
       .link-label {
         margin-bottom: 6px;
       }
+    }
+  }
+}
+
+.cell.cell-attachment {
+
+  .cell-content {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  &.selected, &.editing {
+    .media-thumbnail__image--icon {
+      padding: 0 0 0 4px;
+    }
+  }
+
+  &:not(&.selected, &.editing) {
+    .button-action {
+      pointer-events: none;
+      height: 25px;
+    }
+
+    .button-action__button {
+      min-height: 23px; // height 25px - (2 * 1px border)
+    }
+
+    .media-thumbnail {
+      max-height: 25px;
+    }
+
+    .media-thumbnail__image--icon {
+      width: 20px;
+      height: 20px;
+
+      &.icon {
+        font-size: 20px;
+      }
+    }
+  }
+
+  .button-action {
+    overflow: hidden;
+    border: 1px solid #dedede;
+
+    &:hover {
+      .media-thumbnail__overlay .icon {
+        font-size: 12px;
+      }
+    }
+
+    &__button {
+      padding: 0;
     }
   }
 }

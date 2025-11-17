@@ -31,13 +31,19 @@ const iconUrls = {
   edit: "/img/icons/edit.svg",
   addTranslation: "/img/icons/translation-add.svg",
   compareTranslation: "/img/icons/translation-compare.svg",
+  hdots: "/img/icons/horizontal-dots.svg",
   vdots: "/img/icons/vertical-dots.svg",
   deletedFile: "/img/icons/icon-deleted-file.svg",
   layoutV: "/img/icons/layout-vertical.svg",
   layoutH: "/img/icons/layout-horizontal.svg",
   layoutPlain: "/img/icons/layout-single.svg",
   trash: "/img/icons/trash.svg",
-  move: "/img/icons/move.svg"
+  move: "/img/icons/move.svg",
+  list: "/img/icons/list.svg",
+  tiles: "/img/icons/tiles.svg",
+  download: "/img/icons/download.svg",
+  folder: "/img/icons/folder.svg",
+  folderBack: "/img/icons/folder-back.svg"
 };
 
 class ImageCache {
