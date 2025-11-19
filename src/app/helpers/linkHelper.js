@@ -14,10 +14,12 @@ export const buildLinkDisplayValueCache = (table, columns, rows) => {
     linkColumns.flatMap(({ idx, col }) =>
       row.values[idx].map(value => {
         const originColumn = getOriginColumn(col.id, row.tableId);
+        const column = originColumn || col;
+        const originTableId = column.toTable;
         return {
           values: [value],
           column: originColumn || col,
-          tableId: row.tableId
+          tableId: originTableId ?? row.id ?? table.id
         };
       })
     );
