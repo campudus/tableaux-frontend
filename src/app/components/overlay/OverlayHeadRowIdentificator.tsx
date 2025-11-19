@@ -19,8 +19,13 @@ function OverlayHeadRowIdentificator({
   }
 
   const firstColumn = useSelector<GRUDStore, Column | undefined>(state => {
-    const columns = state.columns[cell.table.id]?.data;
-    return columns?.at(0);
+    const column = state.columns[cell.table.id]?.data?.at(0) as Column & {
+      originColumns: Array<{ tableId: number; column: Column }>;
+    };
+    return (
+      column?.originColumns?.find(oc => oc.tableId === cell.row.id)?.column ??
+      column
+    );
   });
   const firstCellValue = useSelector<GRUDStore, CellValue["value"] | undefined>(
     state => {
