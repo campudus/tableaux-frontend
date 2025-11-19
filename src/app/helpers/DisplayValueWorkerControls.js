@@ -21,7 +21,7 @@ const startForTable = ({
   rows,
   table
 }) => {
-  generateDisplayValues(rows, columns, table.id, langtag);
+  generateDisplayValues(rows, columns, table, langtag);
 };
 
 export default {

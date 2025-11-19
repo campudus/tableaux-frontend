@@ -227,7 +227,9 @@ class AnnotationPopup extends Component {
                     {i18n.t("common:add")}
                   </div>
                 </footer>
-              ) : null}
+              ) : (
+                <footer tabIndex="1" />
+              )}
             </div>
           </div>
         </FocusTrap>

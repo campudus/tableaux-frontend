@@ -10,6 +10,7 @@ import store from "../redux/store";
 import { shouldCheckPermissions } from "./authenticate";
 import { doto, memoizeWith, unless } from "./functools";
 import { getCountryOfLangtag } from "./multiLanguage";
+import T from "./table";
 
 // Table data editing permissions
 
@@ -60,8 +61,9 @@ const _lookUpPermissions = params => {
     : ALLOW_ANYTHING;
 };
 
-const getPermission = pathToPermission =>
-  f.compose(f.propOr(false, pathToPermission), lookUpPermissions);
+const getPermission = pathToPermission => cell =>
+  !T.isUnionTable(cell.table ?? {}) &&
+  f.compose(f.propOr(false, pathToPermission), lookUpPermissions)(cell);
 
 export const isSettingsTable = table => table.type === TableType.settings;
 export const isCellInSettingsColumn = cell =>
@@ -70,7 +72,7 @@ export const isCellInSettingsColumn = cell =>
 
 //      (cell | {tableId: number, columnId: number}) -> (langtag | nil) -> boolean
 export const canUserChangeCell = f.curry((cell, langtag) => {
-  const { kind, row } = cell ?? {};
+  const { table, kind, row } = cell ?? {};
   const editCellValue = getPermission(["column", "editCellValue"])(cell);
   const language = f.propEq("column.languageType", LanguageType.country)(cell)
     ? getCountryOfLangtag(langtag)
@@ -82,6 +84,7 @@ export const canUserChangeCell = f.curry((cell, langtag) => {
 
   return (
     !isCellInSettingsColumn(cell ?? {}) &&
+    !T.isUnionTable(table) &&
     !isRowArchived(row) &&
     !f.contains(kind, ImmutableColumnKinds) &&
     (allowed || !shouldCheckPermissions)

@@ -39,14 +39,17 @@ export const ColumnKinds = {
   richtext: "richtext",
   shorttext: "shorttext",
   status: "status",
-  text: "text"
+  text: "text",
+  origintable: "origintable"
 } as const;
 
 export const TableType = {
+  union: "union",
   taxonomy: "taxonomy",
   settings: "settings",
   default: "default"
-};
+} as const;
+export type TableType = typeof TableType[keyof typeof TableType];
 
 export const ImmutableColumnKinds = ["status", "concat"] as const;
 
