@@ -23,6 +23,12 @@ const FALLBACK_EXTENSIONS = [
   "docx"
 ];
 
+export const THUMBNAIL_VIEW_MODE_KEY = "thumbnailMode";
+
+export type ThumbnailViewMode =
+  | "image" // only thumbnail
+  | "text"; // fallback-icon and fallback-label
+
 type MediaThumbnailProps = {
   className?: string;
   langtag: string;
@@ -31,6 +37,7 @@ type MediaThumbnailProps = {
   width?: number;
   fallbackLabel?: ReactNode;
   loadStrategy?: "eager" | "lazy";
+  viewMode?: ThumbnailViewMode;
   onVisibilityChange?: (isVisible: boolean) => void;
 };
 
@@ -61,6 +68,7 @@ export default function MediaThumbnail({
   width = 40,
   fallbackLabel,
   loadStrategy = "lazy",
+  viewMode = "image",
   onVisibilityChange
 }: MediaThumbnailProps): ReactElement {
   const { isIntersecting, ref } = useIntersectionObserver();
@@ -77,7 +85,8 @@ export default function MediaThumbnail({
   const thumbnailUrl = isSVG ? imageUrl : `${imageUrl}?width=${width}`;
   const hasFallback = FALLBACK_EXTENSIONS.includes(extension);
   const fallbackUrl = `/img/fileicons/${extension}.svg`;
-  const canShowImage = !isError && (isValidMimeType || isSVG);
+  const isImageMode = viewMode === "image";
+  const canShowImage = isImageMode && !isError && (isValidMimeType || isSVG);
 
   useEffect(() => {
     onVisibilityChange?.(isIntersecting);

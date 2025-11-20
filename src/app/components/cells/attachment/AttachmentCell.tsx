@@ -1,13 +1,17 @@
 import f from "lodash/fp";
 import cns from "classnames";
+import { useSelector } from "react-redux";
 import { ReactElement, useEffect, useRef, useState } from "react";
 import apiUrl from "../../../helpers/apiUrl";
 import { isLocked } from "../../../helpers/rowUnlock";
 import { canUserChangeCell } from "../../../helpers/accessManagementHelper";
 import { retrieveTranslation } from "../../../helpers/multiLanguage";
-import { Attachment, Cell } from "../../../types/grud";
+import { Attachment, Cell, GRUDStore } from "../../../types/grud";
 import ButtonAction from "../../helperComponents/ButtonAction";
-import MediaThumbnail from "../../media/MediaThumbnail";
+import MediaThumbnail, {
+  THUMBNAIL_VIEW_MODE_KEY,
+  ThumbnailViewMode
+} from "../../media/MediaThumbnail";
 import { openAttachmentOverlay } from "./AttachmentOverlay";
 import LabelTruncated from "../../helperComponents/LabelTruncated";
 import Tooltip from "../../helperComponents/Tooltip/TooltipWithState";
@@ -39,6 +43,18 @@ export default function AttachmentCell({
   const isPreview = !selected && !editing;
   const folderIds = f.uniq(f.map(a => a.folder, attachments));
   const folderId = folderIds.length === 1 ? folderIds.at(0) : undefined;
+  const thumbnailViewMode = useSelector<
+    GRUDStore,
+    ThumbnailViewMode | undefined
+  >(state => {
+    const columns = state.columns[cell.table.id]?.data;
+    const column = columns?.find(c => c.id === cell.column.id);
+    const attribute = column?.attributes[THUMBNAIL_VIEW_MODE_KEY];
+
+    return attribute?.type === "string"
+      ? (attribute.value as ThumbnailViewMode)
+      : undefined;
+  });
 
   const handleClickAttachment = (attachment: Attachment) => {
     window.open(apiUrl(translate(attachment.url)), "_blank");
@@ -82,6 +98,7 @@ export default function AttachmentCell({
                       layout="table"
                       width={200}
                       loadStrategy={"eager"} // load thumbnail eagerly, because we have virtualization in table
+                      viewMode={thumbnailViewMode}
                       onVisibilityChange={isVisible => {
                         setVisibilityByUuid(oldVisibilityByUuid => ({
                           ...oldVisibilityByUuid,
