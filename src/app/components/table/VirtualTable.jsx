@@ -624,8 +624,18 @@ VirtualTable.propTypes = {
   visibleColumns: PropTypes.string.isRequired
 };
 
-const mapStateToProps = state => {
+const mapStateToProps = (state, props) => {
+  const tableId = f.get("table.id", props);
+  const rowIds = f.map("id", props.rows);
+  const tableView = f.get("tableView", state);
+  const tableDisplayValues = f.get(`displayValues.${tableId}`, tableView);
+  const displayValuesLookup = f.compose(
+    f.mapValues("values"),
+    f.keyBy("id")
+  )(tableDisplayValues);
+
   return {
+    displayValues: rowIds.map(id => displayValuesLookup[id]),
     columnWidths: f.propOr({}, "tableView.columnWidths", state),
     selectedCell: f.propOr({}, "selectedCell.selectedCell", state)
   };

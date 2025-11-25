@@ -7,7 +7,6 @@ import i18n from "i18next";
 import PropTypes from "prop-types";
 
 import {
-  doto,
   maybe,
   preventDefault,
   stopPropagation
@@ -149,15 +148,6 @@ class Table extends PureComponent {
       renderNewRowButton
     } = this.props;
     const { rowContextMenu } = this.state;
-    const rowIds = f.map("id", rows);
-
-    const displayValues = doto(
-      tableView,
-      f.prop(["displayValues", table.id]),
-      allDisplayValues =>
-        rowIds.map(id => f.find(f.propEq("id", id), allDisplayValues)),
-      f.map("values")
-    );
 
     const isTaxonomy = table && isTaxonomyTable(table);
     const isSettings = table && table.type === "settings";
@@ -185,7 +175,6 @@ class Table extends PureComponent {
               ref={this.findAndStoreTableDiv}
               rows={rows}
               tableView={tableView}
-              displayValues={displayValues}
               table={table}
               tables={tables}
               langtag={langtag}
