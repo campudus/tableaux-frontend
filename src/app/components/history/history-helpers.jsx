@@ -64,12 +64,14 @@ export const getCreationDay = f.compose(
 );
 
 // Add current display values to link items
-export const maybeAddLabels = (column, langtag) =>
-  column.kind === ColumnKinds.link
+export const maybeAddLabels = (rawColumn, langtag) => {
+  const column = rawColumn.originColumn || rawColumn;
+  return column.kind === ColumnKinds.link
     ? addLinkLabels(column, langtag)
     : column.kind === ColumnKinds.attachment
     ? addAttachmentLabels(column, langtag)
     : f.identity;
+};
 
 const addLinkLabels = (column, langtag) => async revisions => {
   const linkIdColumn = await composeP(
