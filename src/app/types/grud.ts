@@ -19,6 +19,7 @@ export type Annotation = {
 
 export type Row = {
   id: number;
+  tableId?: number;
   final?: boolean;
   archived?: boolean;
   values: CellValue["value"][];

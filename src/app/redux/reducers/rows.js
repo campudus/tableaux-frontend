@@ -1,5 +1,8 @@
 import f from "lodash/fp";
-import { buildOriginColumnLookup } from "../../helpers/columnHelper";
+import {
+  buildOriginColumnLookup,
+  getConcatOrigin
+} from "../../helpers/columnHelper";
 import { doto, when } from "../../helpers/functools";
 import { addCellId } from "../../helpers/getCellId";
 import actionTypes from "../actionTypes";
@@ -9,6 +12,7 @@ import {
   idsToIndices
 } from "../redux-helpers";
 import { performRowDeletion } from "../updateDependentTables";
+import { ColumnKind } from "@grud/devtools/types";
 
 const {
   ALL_ROWS_LOADING_DATA,
@@ -100,10 +104,17 @@ export const rowValuesToCells = (table, columns) => {
     const buildCell = row => (_, idx) => {
       const column = columns[idx];
       const originColumn = getOriginColumn(column.id, row.tableId);
+
+      const updatedColumn =
+        column.kind === ColumnKind.concat
+          ? getConcatOrigin(table.id, column, row.tableId)
+          : originColumn
+          ? { ...column, originColumn }
+          : column;
       return addCellId({
         table,
         kind: column?.kind,
-        column: originColumn ? { ...column, originColumn } : column,
+        column: updatedColumn,
         row: { id: row.id, tableId: row.tableId },
         annotations:
           row.annotations && annotationsToObject(row.annotations[idx])

@@ -48,3 +48,29 @@ export const buildOriginColumnLookup = (table, columns) => {
   return (columnId, originTableId) =>
     f.prop([columnId, originTableId], originColumnLookup);
 };
+
+const memoizeWith = (keyFn, fn) => {
+  const cache = new Map();
+  return (...args) => {
+    const key = keyFn(...args);
+    if (!cache.has(key)) cache.set(key, fn(...args));
+    return cache.get(key);
+  };
+};
+const toConcatOriginKey = (tableId, column, toTableId) =>
+  `${tableId}-${column.id}-${toTableId}`;
+const extractConcatOriginColumns = (_, column, toTableId) => {
+  const concats = column.concats.map(concatColumn => {
+    const originColumn = concatColumn.originColumns?.find(
+      ({ tableId }) => tableId === toTableId
+    )?.column;
+
+    return originColumn || concatColumn;
+  });
+  console.log({ concats });
+  return { ...column, concats };
+};
+export const getConcatOrigin = memoizeWith(
+  toConcatOriginKey,
+  extractConcatOriginColumns
+);
