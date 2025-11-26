@@ -1,49 +1,77 @@
 import f from "lodash/fp";
-import { ReactElement } from "react";
+import React from "react";
 import { useSelector } from "react-redux";
-import { Cell, CellValue, Column, GRUDStore } from "../../types/grud";
-import { retrieveTranslation } from "../../helpers/multiLanguage";
 import getDisplayValue from "../../helpers/getDisplayValue";
+import { retrieveTranslation } from "../../helpers/multiLanguage";
+import { Cell, Column, GRUDStore, Row } from "../../types/grud";
 
 type OverlayHeadRowIdentificatorProps = {
   langtag: string;
   cell?: Pick<Cell, "table" | "row"> & Partial<Pick<Cell, "column">>;
 };
 
-function OverlayHeadRowIdentificator({
-  langtag,
-  cell
-}: OverlayHeadRowIdentificatorProps): ReactElement | null {
-  if (!cell) {
-    return null;
-  }
+type DisplayValue = Record<string, string> | Array<Record<string, string>>;
 
-  const firstColumn = useSelector<GRUDStore, Column | undefined>(state => {
-    const columns = state.columns[cell.table.id]?.data;
-    return columns?.at(0);
-  });
-  const firstCellValue = useSelector<GRUDStore, CellValue["value"] | undefined>(
-    state => {
-      const rows = state.rows[cell.table.id]?.data;
-      const row = rows?.find(r => r.id === cell.row.id) ?? cell.row;
-      return row?.values.at(0);
-    }
+const OverlayHeadRowsIdentificator = ({
+  cell,
+  langtag
+}: Required<OverlayHeadRowIdentificatorProps>) => {
+  if (!cell) return null;
+
+  const tableId = cell.table.id;
+  const rowId = cell.row.id;
+
+  const row = useSelector<GRUDStore, Row | undefined>(
+    f.compose(
+      f.find((row: Row) => row.id === rowId),
+      f.prop(["rows", tableId, "data"])
+    )
   );
+
+  const firstColumn = f.prop(["cells", 0, "column"], row) as Column;
+  const firstValue = f.prop(["values", 0], row);
+  const displayValue = getDisplayValue(firstColumn)(firstValue);
+
+  const columnName = retrieveTranslation(langtag)(cell.column?.displayName);
+
+  return firstColumn ? (
+    <Identificator
+      displayValue={displayValue}
+      columnName={columnName}
+      langtag={langtag}
+    />
+  ) : (
+    <Identificator
+      displayValue={{ [langtag]: "ERROR: NO DISPLAY VALUE" }}
+      columnName={columnName}
+      langtag={langtag}
+    />
+  );
+};
+
+const Identificator = ({
+  langtag,
+  displayValue,
+  columnName
+}: {
+  langtag: string;
+  displayValue: DisplayValue;
+  columnName: string;
+}) => {
   const translate = retrieveTranslation(langtag);
-  const displayValue = getDisplayValue(firstColumn)(firstCellValue);
-  const title = f.isArray(displayValue)
+  const title = Array.isArray(displayValue)
     ? displayValue.map(translate).join(" ")
     : translate(displayValue);
-  const columnName = translate(cell.column?.displayName);
-
   return (
     <span>
       <span className="column-name">
         {!f.isEmpty(columnName) ? `${columnName}: ` : ""}
       </span>
-      <span className="row-title">{title}</span>
+      <span className="row-title" title={title}>
+        {title}
+      </span>
     </span>
   );
-}
+};
 
-export default OverlayHeadRowIdentificator;
+export default OverlayHeadRowsIdentificator;

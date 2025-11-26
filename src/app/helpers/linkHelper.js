@@ -19,7 +19,7 @@ export const buildLinkDisplayValueCache = (table, columns, rows) => {
         return {
           values: [value],
           column: originColumn || col,
-          tableId: originTableId ?? row.id ?? table.id
+          tableId: originTableId ?? row.tableId ?? table.id
         };
       })
     );
