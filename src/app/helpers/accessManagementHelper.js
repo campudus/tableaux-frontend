@@ -100,13 +100,14 @@ export const canUserChangeAllLangsOfCell = cellInfo => {
 };
 
 export const canUserChangeAnyCountryTypeCell = cellInfo => {
+  const { table } = cellInfo ?? {};
   const allowed = doto(
     cellInfo,
     getPermission(["column", "editCellValue"]),
     f.values,
     f.any(f.identity)
   );
-  return allowed || !shouldCheckPermissions;
+  return !T.isUnionTable(table) && (allowed || !shouldCheckPermissions);
 };
 
 export const canUserChangeCountryTypeCell = canUserChangeCell;
