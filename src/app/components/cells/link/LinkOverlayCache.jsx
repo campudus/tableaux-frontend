@@ -116,19 +116,14 @@ const withCachedLinks = Component => props => {
     sortMode
   ];
 
-  const rowsWithDisplayValues = useMemo(
-    () =>
-      doto(
-        [
-          ...(cell.value || []),
-          ...(cell.value.length < maxLinks ? foreignRows || [] : [])
-        ],
-        f.uniqBy(f.prop("id")),
-        f.map(addDisplayValues)
-      ),
-    [[...displayValues, ...cell.value, ...(foreignRows || [])].length]
+  const rowsWithDisplayValues = doto(
+    [
+      ...(cell.value || []),
+      ...(cell.value.length < maxLinks ? foreignRows || [] : [])
+    ],
+    f.uniqBy(f.prop("id")),
+    f.map(addDisplayValues)
   );
-
   const rowResults = loading
     ? {}
     : f.update(
