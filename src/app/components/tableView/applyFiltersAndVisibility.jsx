@@ -82,9 +82,15 @@ const withFiltersAndVisibility = Component => props => {
     };
   });
   const visibleColumnById = f.indexBy("id", columnsWithVisibility);
-  const visibleColumnOrdering = columnOrdering
-    .filter(({ id }) => visibleColumnById[id]?.visible)
-    .map(({ id }) => id);
+  const visibleColumnOrdering = f.compose(
+    f.map(({ id }) => id),
+    f.filter(({ id }) => visibleColumnById[id]?.visible),
+    f.sortBy(column => column.idx),
+    f.map(column => ({
+      ...column,
+      idx: columnOrdering.find(({ id }) => id === column.id)?.idx
+    }))
+  )(columns);
 
   const visibleRowIDs = useMemo(() => f.map("id", visibleRows), [visibleRows]);
 
