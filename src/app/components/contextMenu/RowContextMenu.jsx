@@ -318,6 +318,8 @@ class RowContextMenu extends React.Component {
           <div className="separator with-line">{t("menus.data_set")}</div>
           {T.isUnionTable(this.props.table) ? (
             <a
+              target="_blank"
+              rel="noopener noreferrer"
               href={urlToTableDestination({
                 langtag: this.props.langtag,
                 table: { id: cell.row.tableId },
