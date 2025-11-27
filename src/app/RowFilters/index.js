@@ -15,7 +15,10 @@ import FilterText from "./Text";
 import FilterRowProp from "./RowProp";
 import getDisplayValue from "../helpers/getDisplayValue";
 import { buildLinkDisplayValueCache } from "../helpers/linkHelper";
-import { buildOriginColumnLookup } from "../helpers/columnHelper";
+import {
+  buildOriginColumnLookup,
+  getConcatOrigin
+} from "../helpers/columnHelper";
 
 export const Annotation = FilterAnnotation.Mode;
 export const Boolean = FilterBoolean.Mode;
@@ -186,10 +189,13 @@ const buildContext = (tableId, langtag, store) => {
   const retrieveConcatValue = name => {
     // There will be only one, and that one is one of the first
     const concatColumn = columns.find(col => col.name === name);
+
     const idx = columnIdxLookup[concatColumn.name];
     return row => {
+      const column = getConcatOrigin(tableId, concatColumn, row.tableId);
       const value = f.get(`values.${idx}`, row);
-      return getDisplayValue(concatColumn, value);
+      const dv = getDisplayValue(column, value);
+      return dv[langtag];
     };
   };
 
