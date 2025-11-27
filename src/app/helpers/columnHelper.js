@@ -67,7 +67,6 @@ const extractConcatOriginColumns = (_, column, toTableId) => {
 
     return originColumn || concatColumn;
   });
-  console.log({ concats });
   return { ...column, concats };
 };
 export const getConcatOrigin = memoizeWith(

@@ -1,5 +1,9 @@
 import f from "lodash/fp";
-import { ColumnKinds, SortValue } from "../constants/TableauxConstants";
+import {
+  ColumnKinds,
+  SortValue,
+  TableType
+} from "../constants/TableauxConstants";
 import FilterAnnotation from "./Annotation";
 import FilterAnyColumn from "./AnyColumn";
 import FilterBoolean from "./Boolean";
@@ -10,6 +14,8 @@ import FilterNumber from "./Number";
 import FilterText from "./Text";
 import FilterRowProp from "./RowProp";
 import getDisplayValue from "../helpers/getDisplayValue";
+import { buildLinkDisplayValueCache } from "../helpers/linkHelper";
+import { buildOriginColumnLookup } from "../helpers/columnHelper";
 
 export const Annotation = FilterAnnotation.Mode;
 export const Boolean = FilterBoolean.Mode;
@@ -156,6 +162,18 @@ const buildContext = (tableId, langtag, store) => {
   const rowIdxLookup = buildIdxLookup("id", rows);
   const displayValueIdxLookup = buildIdxLookup("id", displayValues);
 
+  const minimumTable = {
+    id: tableId,
+    type: columns.some(col => col.originColumns)
+      ? TableType.union
+      : TableType.default
+  };
+  const linkDisplayValueCache = f.mapValues(
+    f.indexBy("id"),
+    buildLinkDisplayValueCache(minimumTable, columns, rows)
+  );
+  const getOriginColumn = buildOriginColumnLookup(minimumTable, columns);
+
   const getDisplayValueEntry = (name, row) => {
     const displayValueIdx = displayValueIdxLookup[row.id];
     const colIdx = columnIdxLookup[name];
@@ -171,22 +189,23 @@ const buildContext = (tableId, langtag, store) => {
     const idx = columnIdxLookup[concatColumn.name];
     return row => {
       const value = f.get(`values.${idx}`, row);
-      return getDisplayValue(concatColumn, value)[langtag];
+      return getDisplayValue(concatColumn, value);
     };
   };
 
-  const retrieveLinkDisplayValue = name => row => {
-    const dvDefinition = getDisplayValueEntry(name, row);
-    const toTableId = dvDefinition.tableId;
-    const rowIds = new Set(dvDefinition.rowIds);
-    // TODO: use lookup instead
-    const linkedDisplayValues = f.compose(
-      f.map(langtag),
-      f.flatMap("values"),
-      f.filter(({ id }) => rowIds.has(id)),
-      f.get(`tableView.displayValues.${toTableId}`)
-    )(store);
-    return linkedDisplayValues;
+  const retrieveLinkDisplayValue = name => {
+    const columnIdx = columnIdxLookup[name];
+    const column = columns[columnIdx];
+    return row => {
+      const originColumn = getOriginColumn(column.id, row.tableId);
+      const toTableId = originColumn?.toTable || column.toTable;
+      return row.values[columnIdx].map(value =>
+        f.prop(
+          [toTableId, value.id, "value", 0, langtag],
+          linkDisplayValueCache
+        )
+      );
+    };
   };
 
   const retrieveRawValue = name => row => {
