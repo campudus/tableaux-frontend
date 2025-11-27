@@ -1,14 +1,13 @@
-import React from "react";
-import f from "lodash/fp";
 import classNames from "classnames";
-
+import f from "lodash/fp";
 import PropTypes from "prop-types";
-
+import React from "react";
 import { ColumnKinds } from "../../../constants/TableauxConstants";
-import { isLocked } from "../../../helpers/rowUnlock";
-import { openEntityView } from "../../overlay/EntityViewOverlay";
-import { withForeignDisplayValues } from "../../helperComponents/withForeignDisplayValues";
 import { format } from "../../../helpers/getDisplayValue";
+import { isLocked } from "../../../helpers/rowUnlock";
+import T from "../../../helpers/table";
+import { withForeignDisplayValues } from "../../helperComponents/withForeignDisplayValues";
+import { openEntityView } from "../../overlay/EntityViewOverlay";
 
 const IdentifierCell = props => {
   const {
@@ -39,6 +38,7 @@ const IdentifierCell = props => {
   return (
     <div className={className} onClick={openEditor}>
       {cell.column.kind === ColumnKinds.concat &&
+      !T.isUnionTable(cell.table) &&
       !f.isEmpty(foreignDisplayValues) &&
       !cell.column.formatPattern
         ? foreignDisplayValues

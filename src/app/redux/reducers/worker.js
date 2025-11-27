@@ -1,8 +1,12 @@
 import f from "lodash/fp";
 import { initLangtags } from "../../constants/TableauxConstants";
-import { buildOriginColumnLookup } from "../../helpers/columnHelper";
+import {
+  buildOriginColumnLookup,
+  getConcatOrigin
+} from "../../helpers/columnHelper";
 import getDisplayValue from "../../helpers/getDisplayValue";
 import { buildLinkDisplayValueCache } from "../../helpers/linkHelper";
+import { ColumnKind } from "@grud/devtools/types";
 
 const mapWithIndex = f.map.convert({ cap: false });
 
@@ -40,9 +44,20 @@ onmessage = function(e) {
       const column = columns[idx];
       const originColumn = getOriginColumn(column.id, row.tableId);
       const toTableId = row.tableId ?? originColumn?.toTable ?? column.toTable;
-      return column.kind === "link"
-        ? value.map(link => getLinkDisplayValue(toTableId, link.id))
-        : getDisplayValue(originColumn ?? column, value);
+      switch (column.kind) {
+        case ColumnKind.link:
+          return value.map(link => getLinkDisplayValue(toTableId, link.id));
+        case ColumnKind.concat: {
+          const concatColumn = getConcatOrigin(
+            tableId,
+            column,
+            row.tableId ?? tableId
+          );
+          return getDisplayValue(concatColumn, value);
+        }
+        default:
+          return getDisplayValue(originColumn ?? column, value);
+      }
     }, row.values);
 
     return {
