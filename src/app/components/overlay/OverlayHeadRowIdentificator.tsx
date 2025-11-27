@@ -12,7 +12,7 @@ type OverlayHeadRowIdentificatorProps = {
 
 type DisplayValue = Record<string, string> | Array<Record<string, string>>;
 
-const OverlayHeadRowsIdentificator = ({
+const OverlayHeadRowIdentificator = ({
   cell,
   langtag
 }: Required<OverlayHeadRowIdentificatorProps>) => {
@@ -68,4 +68,4 @@ const Identificator = ({
   );
 };
 
-export default OverlayHeadRowsIdentificator;
+export default OverlayHeadRowIdentificator;
