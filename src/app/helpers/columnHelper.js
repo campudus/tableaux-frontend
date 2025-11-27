@@ -1,5 +1,6 @@
 import f from "lodash/fp";
 import { ColumnKinds } from "../constants/TableauxConstants";
+import T from "./table";
 
 const yearNameRegex = /year/i;
 
@@ -34,3 +35,41 @@ export const getDecimalDigits = column => {
       return 3;
   }
 };
+
+export const buildOriginColumnLookup = (table, columns) => {
+  const toColumnMap = f.compose(
+    f.mapValues("column"),
+    f.indexBy("tableId"),
+    f.prop("originColumns")
+  );
+  const originColumnLookup = T.isUnionTable(table)
+    ? f.compose(f.mapValues(toColumnMap), f.indexBy("id"))(columns)
+    : null;
+  return (columnId, originTableId) =>
+    f.prop([columnId, originTableId], originColumnLookup);
+};
+
+const memoizeWith = (keyFn, fn) => {
+  const cache = new Map();
+  return (...args) => {
+    const key = keyFn(...args);
+    if (!cache.has(key)) cache.set(key, fn(...args));
+    return cache.get(key);
+  };
+};
+const toConcatOriginKey = (tableId, column, toTableId) =>
+  `${tableId}-${column.id}-${toTableId}`;
+const extractConcatOriginColumns = (_, column, toTableId) => {
+  const concats = column.concats.map(concatColumn => {
+    const originColumn = concatColumn.originColumns?.find(
+      ({ tableId }) => tableId === toTableId
+    )?.column;
+
+    return originColumn || concatColumn;
+  });
+  return { ...column, concats };
+};
+export const getConcatOrigin = memoizeWith(
+  toConcatOriginKey,
+  extractConcatOriginColumns
+);
