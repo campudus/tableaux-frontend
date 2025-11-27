@@ -34,15 +34,9 @@ const OverlayHeadRowsIdentificator = ({
 
   const columnName = retrieveTranslation(langtag)(cell.column?.displayName);
 
-  return firstColumn ? (
+  return (
     <Identificator
       displayValue={displayValue}
-      columnName={columnName}
-      langtag={langtag}
-    />
-  ) : (
-    <Identificator
-      displayValue={{ [langtag]: "ERROR: NO DISPLAY VALUE" }}
       columnName={columnName}
       langtag={langtag}
     />
