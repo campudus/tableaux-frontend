@@ -14,10 +14,6 @@ import { toFolder } from "../../../helpers/apiRoutes";
 import { makeRequest } from "../../../helpers/apiHelper";
 import Breadcrumbs from "../../helperComponents/Breadcrumbs";
 import { createMediaFolder } from "../../../redux/actions/mediaActions";
-import {
-  canUserCreateFiles,
-  canUserCreateFolders
-} from "../../../helpers/accessManagementHelper";
 import FileUpload from "../../media/folder/FileUpload";
 import ButtonAction from "../../helperComponents/ButtonAction";
 import SvgIcon from "../../helperComponents/SvgIcon";
@@ -86,6 +82,7 @@ export default function AttachmentOverlayBody({
     return filter(filterValue, targetValue) as boolean;
   }, folder?.files);
   const files = f.orderBy(f.prop(orderMode), "desc", filteredFiles);
+  const hasCreatePermission = !!folder?.permission?.create;
 
   // sort new folder to top
   const subfolders = f.orderBy(
@@ -189,7 +186,7 @@ export default function AttachmentOverlayBody({
             ]}
           />
 
-          {canUserCreateFolders() && (
+          {hasCreatePermission && (
             <ButtonAction
               variant="outlined"
               icon={<i className="icon fa fa-plus" />}
@@ -199,7 +196,7 @@ export default function AttachmentOverlayBody({
             />
           )}
 
-          {canUserCreateFiles() && (
+          {hasCreatePermission && (
             <ButtonAction
               variant="outlined"
               icon={<i className="icon fa fa-upload" />}
@@ -236,7 +233,7 @@ export default function AttachmentOverlayBody({
           />
         )}
 
-        {canUserCreateFiles() && folder && langtag && (
+        {hasCreatePermission && folder && langtag && (
           <FileUpload
             className="attachment-overlay__upload"
             ref={dropzoneRef}

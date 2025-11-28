@@ -45,6 +45,11 @@ export type Folder = {
   parents: Folder[];
   subfolders: Folder[];
   files: Attachment[];
+  permission?: {
+    create: boolean;
+    delete: boolean;
+    edit: boolean;
+  };
 };
 
 export type FileDependentRowItem = {
