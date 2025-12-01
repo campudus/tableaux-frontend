@@ -5,6 +5,7 @@ import { ViewNames } from "../constants/TableauxConstants";
 import DashboardView from "./dashboard/DashboardView";
 import FrontendServiceView from "./frontendService/FrontendServiceView";
 import MediaView from "../components/media/MediaView";
+import PreviewView from "../components/preview/PreviewView";
 import TableView from "./tableView/TableView.jsx";
 import reduxActionHoc from "../helpers/reduxActionHoc";
 import TaxonomyDashboard from "./taxonomy/TaxonomyDashboard";
@@ -19,6 +20,10 @@ const renderTableView = props => {
 
 const renderMediaView = ({ params }) => (
   <MediaView {...params} overlayOpen={!!params.overlayOpen} />
+);
+
+const renderPreviewView = ({ params }) => (
+  <PreviewView {...params} overlayOpen={!!params.overlayOpen} />
 );
 
 const renderDashboard = ({ params }) => <DashboardView {...params} />;
@@ -36,6 +41,7 @@ const renderProfile = ({ params }) => <ProfileView {...params} />;
 const ViewRenderer = f.cond([
   [viewNameIs(ViewNames.TABLE_VIEW), renderTableView],
   [viewNameIs(ViewNames.MEDIA_VIEW), renderMediaView],
+  [viewNameIs(ViewNames.PREVIEW_VIEW), renderPreviewView],
   [viewNameIs(ViewNames.DASHBOARD_VIEW), renderDashboard],
   [viewNameIs(ViewNames.FRONTEND_SERVICE_VIEW), renderFrontendService],
   [viewNameIs(ViewNames.TAXONOMY_DASHBOARD_VIEW), renderTaxonomyDashboard],
