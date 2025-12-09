@@ -29,7 +29,13 @@ const ColumnFilterPopup = ({
 }) => {
   const { selectedCell = {} } = useSelector(store => store.selectedCell ?? {});
   const { rowId } = selectedCell;
-  const allColumns = columnOrdering.map(({ idx }) => rawColumns[idx]);
+  const allColumns = f.compose(
+    f.sortBy(column => column.idx),
+    f.map(column => ({
+      ...column,
+      idx: columnOrdering.find(({ id }) => id === column.id)?.idx
+    }))
+  )(rawColumns);
   const groupMemberIds = findGroupMemberIds(allColumns);
   const idColumn = allColumns[0];
   const dispatch = useDispatch();
