@@ -21,6 +21,7 @@ export type Row = {
   id: number;
   tableId?: number;
   final?: boolean;
+  cells?: Cell[];
   archived?: boolean;
   values: CellValue["value"][];
   annotations?: Annotation[][];
@@ -84,6 +85,13 @@ export type GRUDStore = {
   media: Record<string, unknown>;
   multiSelect: Array<Cell>;
   overlays: { toast: unknown; overlays: Array<OverlayEntry> };
+  preview: {
+    currentTable: number;
+    currentColumn: number | null;
+    currentRow: number;
+    currentDetailTable: number | null;
+    selectedLinkedEntries: number[] | null;
+  };
   rows: Record<
     number,
     {
