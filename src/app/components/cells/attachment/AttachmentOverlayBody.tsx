@@ -3,6 +3,9 @@ import i18n from "i18next";
 import Dropzone from "react-dropzone";
 import { useDispatch, useSelector } from "react-redux";
 import { ReactElement, useEffect, useRef, useState } from "react";
+import { DndContext } from "@dnd-kit/core";
+import { SortableContext } from "@dnd-kit/sortable";
+import { restrictToFirstScrollableAncestor } from "@dnd-kit/modifiers";
 import {
   Attachment,
   Cell,
@@ -63,7 +66,7 @@ export default function AttachmentOverlayBody({
       store
     );
   });
-
+  const sortableFiles = attachedFiles.map(file => ({ id: file.uuid, ...file }));
   const dispatch = useDispatch();
   const [layoutState, setLayoutState] = useState<LayoutState>({
     nav: "list",
@@ -227,7 +230,7 @@ export default function AttachmentOverlayBody({
             subfolders={subfolders}
             layout={layoutState.nav}
             onNavigate={handleNavigate}
-            onNavigateBack={handleNavigateBack}
+            onNavigateBack={isRoot ? undefined : handleNavigateBack}
             onToggle={handleToggleLink}
             onFindAction={handleFindAction}
           />
@@ -270,15 +273,20 @@ export default function AttachmentOverlayBody({
           />
         </div>
 
-        <AttachmentDirents
-          className="attachment-overlay__dirents"
-          langtag={langtag}
-          files={attachedFiles}
-          layout={layoutState.content}
-          onNavigate={handleNavigate}
-          onToggle={handleToggleLink}
-          onFindAction={handleFindAction}
-        />
+        <DndContext modifiers={[restrictToFirstScrollableAncestor]}>
+          <SortableContext items={sortableFiles}>
+            <AttachmentDirents
+              className="attachment-overlay__dirents"
+              langtag={langtag}
+              files={sortableFiles}
+              layout={layoutState.content}
+              onNavigate={handleNavigate}
+              onToggle={handleToggleLink}
+              onFindAction={handleFindAction}
+              sortable
+            />
+          </SortableContext>
+        </DndContext>
       </div>
     </div>
   );

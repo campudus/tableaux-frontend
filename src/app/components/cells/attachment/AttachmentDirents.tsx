@@ -1,16 +1,15 @@
-import { ReactElement, useEffect, useMemo, useRef, useState } from "react";
-import {
-  AutoSizer,
-  CellMeasurer,
-  CellMeasurerCache,
-  Masonry
-} from "react-virtualized";
-import { createCellPositioner } from "react-virtualized/dist/es/Masonry";
+import { ReactElement } from "react";
+import { AutoSizer } from "react-virtualized";
+import { Virtuoso, VirtuosoGrid } from "react-virtuoso";
 import { Attachment, Folder, FolderID } from "../../../types/grud";
 import { buildClassName as cn } from "../../../helpers/buildClassName";
 import { Layout, ToggleAction } from "./AttachmentOverlay";
 import AttachmentDirent from "./AttachmentDirent";
 import AttachmentDirentNav from "./AttachmentDirentNav";
+import List from "./LayoutComponents/List";
+import ListItem from "./LayoutComponents/ListItem";
+import Grid from "./LayoutComponents/Grid";
+import GridItem from "./LayoutComponents/GridItem";
 
 type AttachmentDirentsProps = {
   className?: string;
@@ -22,6 +21,7 @@ type AttachmentDirentsProps = {
   onNavigateBack?: () => void;
   onToggle?: (file: Attachment, action: ToggleAction) => void;
   onFindAction?: (file: Attachment) => ToggleAction;
+  sortable?: boolean;
 };
 
 export default function AttachmentDirents({
@@ -33,107 +33,63 @@ export default function AttachmentDirents({
   onNavigate,
   onNavigateBack,
   onToggle,
-  onFindAction
+  onFindAction,
+  sortable
 }: AttachmentDirentsProps): ReactElement {
-  const [dimensions, setDimensions] = useState({ width: 100, height: 100 });
-  const masonryRef = useRef<Masonry>(null);
-  // add dummy folder for back action
   const dirents = [
+    // add dummy folder for back action
     ...(onNavigateBack ? [{} as Folder] : []),
     ...subfolders,
     ...files
   ];
 
-  const cellHeight = layout === "list" ? 48 : 130;
-  const cellWidth = layout === "list" ? dimensions.width : 200;
-  const gutterSize = layout === "list" ? 3 : 6;
-
-  const cellMeasurerCache = useMemo(() => {
-    return new CellMeasurerCache({
-      defaultHeight: cellHeight,
-      defaultWidth: cellWidth,
-      fixedWidth: true,
-      fixedHeight: true
-    });
-  }, [layout]);
-
-  const cellPositioner = createCellPositioner({
-    cellMeasurerCache,
-    columnCount: 0,
-    columnWidth: cellWidth,
-    spacer: gutterSize
-  });
-
-  const calculateColumnCount = () => {
-    return Math.floor(dimensions.width / (cellWidth + gutterSize));
-  };
-
-  useEffect(() => {
-    cellMeasurerCache.clearAll();
-    cellPositioner.reset({
-      columnCount: calculateColumnCount(),
-      columnWidth: cellWidth,
-      spacer: gutterSize
-    });
-    masonryRef.current?.clearCellPositions();
-    masonryRef.current?.recomputeCellPositions();
-  }, [dirents.length, layout, dimensions]);
-
   return (
     <div className={cn("attachment-dirents", {}, className)}>
-      <AutoSizer
-        key={dirents.length}
-        onResize={({ height, width }) => {
-          // subtract width of scrollbar
-          setDimensions({ width: width - 15, height });
-        }}
-      >
+      <AutoSizer key={dirents.length}>
         {({ height, width }) => {
-          return (
-            <Masonry
-              ref={masonryRef}
-              height={height}
-              width={width}
-              autoHeight={false}
-              overscanByPixels={200}
-              cellCount={dirents.length}
-              cellMeasurerCache={cellMeasurerCache}
-              cellPositioner={cellPositioner}
-              cellRenderer={({ index, key, parent, style }) => {
-                const dirent = dirents[index];
+          const itemContent = (index: number, dirent: Folder | Attachment) => {
+            if (onNavigateBack && index === 0) {
+              return (
+                <AttachmentDirentNav
+                  langtag={langtag}
+                  icon="folder-back"
+                  layout={layout}
+                  onClick={onNavigateBack}
+                />
+              );
+            }
 
-                return (
-                  <CellMeasurer
-                    key={key}
-                    index={index}
-                    parent={parent}
-                    cache={cellMeasurerCache}
-                  >
-                    {onNavigateBack && index === 0 ? (
-                      <AttachmentDirentNav
-                        style={{ ...style, width: cellWidth }}
-                        langtag={langtag}
-                        icon="folder-back"
-                        layout={layout}
-                        onClick={onNavigateBack}
-                      />
-                    ) : dirent ? (
-                      <AttachmentDirent
-                        style={{ ...style, width: cellWidth }}
-                        langtag={langtag}
-                        dirent={dirent}
-                        layout={layout}
-                        onNavigate={onNavigate}
-                        width={width}
-                        onToggle={onToggle}
-                        onFindAction={onFindAction}
-                      />
-                    ) : (
-                      <div style={{ ...style, width: cellWidth }}></div>
-                    )}
-                  </CellMeasurer>
-                );
-              }}
+            return (
+              <AttachmentDirent
+                index={index}
+                langtag={langtag}
+                dirent={dirent}
+                layout={layout}
+                onNavigate={onNavigate}
+                width={width}
+                onToggle={onToggle}
+                onFindAction={onFindAction}
+              />
+            );
+          };
+
+          return layout === "list" ? (
+            <Virtuoso
+              style={{ height, width }}
+              data={dirents}
+              increaseViewportBy={200}
+              context={{ dirents, sortable }}
+              components={{ List: List, Item: ListItem }}
+              itemContent={itemContent}
+            />
+          ) : (
+            <VirtuosoGrid
+              style={{ height, width }}
+              data={dirents}
+              increaseViewportBy={200}
+              context={{ dirents, sortable }}
+              components={{ List: Grid, Item: GridItem }}
+              itemContent={itemContent}
             />
           );
         }}
