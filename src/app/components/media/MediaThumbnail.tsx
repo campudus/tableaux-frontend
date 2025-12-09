@@ -26,8 +26,8 @@ const FALLBACK_EXTENSIONS = [
 export const THUMBNAIL_VIEW_MODE_KEY = "thumbnailMode";
 
 export type ThumbnailViewMode =
-  | "image" // only thumbnail
-  | "text"; // fallback-icon and fallback-label
+  | "image-only" // thumbnail only (default)
+  | "text-fallback"; // fallback-icon and fallback-label (if provided)
 
 type MediaThumbnailProps = {
   className?: string;
@@ -68,7 +68,7 @@ export default function MediaThumbnail({
   width = 40,
   fallbackLabel,
   loadStrategy = "lazy",
-  viewMode = "image",
+  viewMode = "image-only",
   onVisibilityChange
 }: MediaThumbnailProps): ReactElement {
   const { isIntersecting, ref } = useIntersectionObserver();
@@ -85,7 +85,7 @@ export default function MediaThumbnail({
   const thumbnailUrl = isSVG ? imageUrl : `${imageUrl}?width=${width}`;
   const hasFallback = FALLBACK_EXTENSIONS.includes(extension);
   const fallbackUrl = `/img/fileicons/${extension}.svg`;
-  const isImageMode = viewMode === "image";
+  const isImageMode = viewMode === "image-only";
   const canShowImage = isImageMode && !isError && (isValidMimeType || isSVG);
 
   useEffect(() => {
