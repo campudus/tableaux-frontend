@@ -15,7 +15,6 @@ import LabelTruncated from "../../helperComponents/LabelTruncated";
 
 type AttachmentDirentProps = {
   className?: string;
-  index?: number;
   langtag: string;
   dirent: Attachment | Folder;
   layout: Layout;

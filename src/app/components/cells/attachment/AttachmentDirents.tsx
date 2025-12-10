@@ -61,7 +61,6 @@ export default function AttachmentDirents({
 
             return (
               <AttachmentDirent
-                index={index}
                 langtag={langtag}
                 dirent={dirent}
                 layout={layout}
