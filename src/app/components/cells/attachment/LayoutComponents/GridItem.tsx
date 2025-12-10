@@ -23,11 +23,17 @@ export default function GridItem({
   const id = isAttachment(dirent) ? dirent.uuid : dirent.id;
 
   return context.sortable ? (
-    <AttachmentSortable {...props} id={id} layout={layout} style={style}>
+    <AttachmentSortable
+      {...props}
+      key={id}
+      id={id}
+      layout={layout}
+      style={style}
+    >
       {children}
     </AttachmentSortable>
   ) : (
-    <div {...props} style={style}>
+    <div {...props} key={id} style={style}>
       {children}
     </div>
   );

@@ -95,6 +95,7 @@ function AttachmentDirent(
         icon={
           isFile ? (
             <MediaThumbnail
+              key={dirent.uuid}
               className="attachment-dirent__thumbnail"
               langtag={langtag}
               dirent={dirent}
