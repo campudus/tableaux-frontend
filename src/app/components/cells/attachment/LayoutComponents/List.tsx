@@ -20,6 +20,7 @@ function List(
       ref={ref}
       style={{
         ...style,
+        overflow: "auto",
         width: "100%",
         display: "grid",
         gridTemplateColumns: "1fr",

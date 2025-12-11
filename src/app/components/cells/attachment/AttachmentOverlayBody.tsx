@@ -157,26 +157,25 @@ export default function AttachmentOverlayBody({
   const handleReorder = (event: DragEndEvent) => {
     const attachmentId: string = event.active.id as string;
     const attachment = attachedFiles.find(({ uuid }) => uuid === attachmentId)!;
-    const targetIndex: number | undefined =
-      event.over?.data.current?.sortable.index;
+    const lastIndex = attachedFiles.length - 1;
+    const targetIndex: number =
+      event.over?.data.current?.sortable.index ?? lastIndex;
 
-    if (!f.isNil(targetIndex)) {
-      const reorderedFiles = attachedFiles
-        .filter(({ uuid }) => uuid !== attachmentId)
-        .toSpliced(targetIndex, 0, attachment);
+    const reorderedFiles = attachedFiles
+      .filter(({ uuid }) => uuid !== attachmentId)
+      .toSpliced(targetIndex, 0, attachment);
 
-      dispatch(
-        changeCellValue({
-          cell,
-          columnId: cell.column.id,
-          rowId: cell.row.id,
-          tableId: cell.table.id,
-          oldValue: attachedFiles,
-          newValue: reorderedFiles,
-          method: "PUT"
-        })
-      );
-    }
+    dispatch(
+      changeCellValue({
+        cell,
+        columnId: cell.column.id,
+        rowId: cell.row.id,
+        tableId: cell.table.id,
+        oldValue: attachedFiles,
+        newValue: reorderedFiles,
+        method: "PUT"
+      })
+    );
   };
 
   useEffect(() => {
