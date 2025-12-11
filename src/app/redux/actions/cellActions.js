@@ -371,90 +371,81 @@ const maybeUpdateStatusColumnValue = (tableId, columnId, rowId) => (
 };
 
 export const calculateCellUpdate = action => {
-  const cellIs = kind => f.propEq(["column", "kind"], kind);
-  return f.cond([
-    [cellIs(ColumnKinds.link), calculateLinkCellUpdate],
-    [f.stubTrue, calculateDefaultCellUpdate]
-  ])(action);
-};
+  const { column, oldValue, newValue, method } = action;
 
-const calculateDefaultCellUpdate = context => {
-  const { column, oldValue, newValue, method } = context;
-  const reduceLangs = f.flow(
-    reduceValuesToAllowedLanguages(context),
-    merge(oldValue)
-  );
-  const reduceCountries = f.flow(
-    reduceValuesToAllowedCountries(context),
-    merge(oldValue)
-  );
+  if (
+    column.kind === ColumnKinds.link ||
+    column.kind === ColumnKinds.attachment
+  ) {
+    const idKey = column.kind === ColumnKinds.attachment ? "uuid" : "id";
+    const oldIds = f.map(idKey, oldValue);
+    const newIds = f.map(idKey, newValue);
+    const isSame = f.equals(newIds, oldIds);
+    const isReordering =
+      newIds.length === oldIds.length &&
+      newIds.length > 1 &&
+      f.intersection(oldIds, newIds).length === newIds.length;
+    const isReset =
+      f.xor(newIds, oldIds).length > 1 ||
+      //Backend fails sometimes on a patch with the first link
+      (f.isEmpty(oldIds) && newIds.length === 1);
 
-  const allowedChangeValue = f.cond([
-    [f.complement(f.isObject), f.identity],
-    [() => column.languageType === "country", reduceCountries],
-    [() => column.multilanguage, reduceLangs],
-    [f.always, f.identity]
-  ])(newValue);
+    const [swapee, successor, location] = f.props(
+      ["id", "successorId", "location"],
+      createLinkOrderRequest({ original: oldIds, changed: newIds })
+    );
+    const reorderAction = {
+      method: "PUT",
+      value: { location, id: successor },
+      pathPostfix: `/${column.kind}/${swapee}/order`
+    };
 
-  return {
-    value: { value: allowedChangeValue },
-    method: method || "POST"
-  };
-};
+    const resetAction = {
+      value: { value: newIds },
+      method: "PUT"
+    };
 
-const calculateLinkCellUpdate = ({ oldValue, newValue }) => {
-  const oldIds = f.map("id", oldValue);
-  const newIds = f.map("id", newValue);
-  const isReordering = linkList =>
-    linkList.length === oldIds.length &&
-    linkList.length > 1 &&
-    f.intersection(oldIds, linkList).length === linkList.length;
-  const isMultiSet = linkList => f.xor(linkList, oldIds).length > 1;
-  //Backend fails sometimes on a patch with the first link
-  const isFirstLink = linkList => f.isEmpty(oldIds) && linkList.length === 1;
+    const toggleId = f.xor(oldIds, newIds)[0];
+    const toggleAction = f.contains(toggleId, oldIds)
+      ? {
+          method: "DELETE",
+          pathPostfix: `/${column.kind}/${toggleId}`,
+          value: {}
+        }
+      : {
+          method: "PATCH",
+          value: { value: toggleId }
+        };
 
-  const action = f.cond([
-    [f.equals(oldIds), f.noop],
-    [isReordering, reorderLinks(oldIds)],
-    [isMultiSet, resetLinkValue],
-    [isFirstLink, resetLinkValue],
-    [f.stubTrue, toggleLink(oldIds)]
-  ])(newIds);
+    return isSame
+      ? null
+      : isReordering
+      ? reorderAction
+      : isReset
+      ? resetAction
+      : toggleAction;
+  } else {
+    const reduceLangs = f.flow(
+      reduceValuesToAllowedLanguages(action),
+      merge(oldValue)
+    );
+    const reduceCountries = f.flow(
+      reduceValuesToAllowedCountries(action),
+      merge(oldValue)
+    );
 
-  return action;
-};
+    const allowedChangeValue = f.cond([
+      [f.complement(f.isObject), f.identity],
+      [() => column.languageType === "country", reduceCountries],
+      [() => column.multilanguage, reduceLangs],
+      [f.always, f.identity]
+    ])(newValue);
 
-const resetLinkValue = newIds => {
-  return {
-    value: { value: newIds },
-    method: "PUT"
-  };
-};
-
-const reorderLinks = oldIds => newIds => {
-  const [swapee, successor, location] = f.props(
-    ["id", "successorId", "location"],
-    createLinkOrderRequest({ original: oldIds, changed: newIds })
-  );
-  return {
-    method: "PUT",
-    value: { location, id: successor },
-    pathPostfix: `/link/${swapee}/order`
-  };
-};
-
-const toggleLink = oldIds => newIds => {
-  const toggler = f.xor(oldIds, newIds)[0];
-  return f.contains(toggler, oldIds)
-    ? {
-        method: "DELETE",
-        pathPostfix: `/link/${toggler}`,
-        value: {}
-      }
-    : {
-        method: "PATCH",
-        value: { value: toggler }
-      };
+    return {
+      value: { value: allowedChangeValue },
+      method: method || "POST"
+    };
+  }
 };
 
 export const modifyHistory = (modifyAction, tableId, rowId) => (

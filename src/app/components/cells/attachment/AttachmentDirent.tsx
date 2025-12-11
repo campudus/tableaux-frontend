@@ -1,5 +1,5 @@
 import i18n from "i18next";
-import { CSSProperties, ForwardedRef, forwardRef, ReactElement } from "react";
+import { ForwardedRef, forwardRef, ReactElement } from "react";
 import { isAttachment } from "../../../types/guards";
 import { Attachment, Folder, FolderID } from "../../../types/grud";
 import { buildClassName as cn } from "../../../helpers/buildClassName";
@@ -15,11 +15,10 @@ import LabelTruncated from "../../helperComponents/LabelTruncated";
 
 type AttachmentDirentProps = {
   className?: string;
-  style: CSSProperties;
   langtag: string;
   dirent: Attachment | Folder;
   layout: Layout;
-  onNavigate: (id?: FolderID | null) => void;
+  onNavigate?: (id?: FolderID | null) => void;
   width?: number;
   onToggle?: (file: Attachment, action: ToggleAction) => void;
   onFindAction?: (file: Attachment) => ToggleAction;
@@ -28,7 +27,6 @@ type AttachmentDirentProps = {
 function AttachmentDirent(
   {
     className,
-    style,
     langtag,
     dirent,
     layout,
@@ -53,7 +51,7 @@ function AttachmentDirent(
     if (isFile) {
       window.open(apiUrl(translate(dirent.url)), "_blank");
     } else {
-      onNavigate(dirent?.id);
+      onNavigate?.(dirent?.id);
     }
   };
 
@@ -74,7 +72,7 @@ function AttachmentDirent(
 
   const handleNavigateToMediaFolder = () => {
     if (isFile) {
-      onNavigate(dirent?.folder);
+      onNavigate?.(dirent?.folder);
     }
   };
 
@@ -89,7 +87,6 @@ function AttachmentDirent(
   return (
     <div
       ref={direntRef}
-      style={style}
       className={cn("attachment-dirent", { [layout]: true }, className)}
     >
       <ButtonAction
@@ -97,6 +94,7 @@ function AttachmentDirent(
         icon={
           isFile ? (
             <MediaThumbnail
+              key={dirent.uuid}
               className="attachment-dirent__thumbnail"
               langtag={langtag}
               dirent={dirent}

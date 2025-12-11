@@ -3,6 +3,9 @@ import i18n from "i18next";
 import Dropzone from "react-dropzone";
 import { useDispatch, useSelector } from "react-redux";
 import { ReactElement, useEffect, useRef, useState } from "react";
+import { DndContext, DragEndEvent } from "@dnd-kit/core";
+import { SortableContext } from "@dnd-kit/sortable";
+import { restrictToFirstScrollableAncestor } from "@dnd-kit/modifiers";
 import {
   Attachment,
   Cell,
@@ -63,7 +66,7 @@ export default function AttachmentOverlayBody({
       store
     );
   });
-
+  const sortableFiles = attachedFiles.map(file => ({ id: file.uuid, ...file }));
   const dispatch = useDispatch();
   const [layoutState, setLayoutState] = useState<LayoutState>({
     nav: "list",
@@ -151,6 +154,30 @@ export default function AttachmentOverlayBody({
     return isAdd ? "add" : "remove";
   };
 
+  const handleReorder = (event: DragEndEvent) => {
+    const attachmentId: string = event.active.id as string;
+    const attachment = attachedFiles.find(({ uuid }) => uuid === attachmentId)!;
+    const lastIndex = attachedFiles.length - 1;
+    const targetIndex: number =
+      event.over?.data.current?.sortable.index ?? lastIndex;
+
+    const reorderedFiles = attachedFiles
+      .filter(({ uuid }) => uuid !== attachmentId)
+      .toSpliced(targetIndex, 0, attachment);
+
+    dispatch(
+      changeCellValue({
+        cell,
+        columnId: cell.column.id,
+        rowId: cell.row.id,
+        tableId: cell.table.id,
+        oldValue: attachedFiles,
+        newValue: reorderedFiles,
+        method: "PUT"
+      })
+    );
+  };
+
   useEffect(() => {
     void handleNavigate(folderId);
   }, []);
@@ -227,7 +254,7 @@ export default function AttachmentOverlayBody({
             subfolders={subfolders}
             layout={layoutState.nav}
             onNavigate={handleNavigate}
-            onNavigateBack={handleNavigateBack}
+            onNavigateBack={isRoot ? undefined : handleNavigateBack}
             onToggle={handleToggleLink}
             onFindAction={handleFindAction}
           />
@@ -270,15 +297,23 @@ export default function AttachmentOverlayBody({
           />
         </div>
 
-        <AttachmentDirents
-          className="attachment-overlay__dirents"
-          langtag={langtag}
-          files={attachedFiles}
-          layout={layoutState.content}
-          onNavigate={handleNavigate}
-          onToggle={handleToggleLink}
-          onFindAction={handleFindAction}
-        />
+        <DndContext
+          modifiers={[restrictToFirstScrollableAncestor]}
+          onDragEnd={handleReorder}
+        >
+          <SortableContext items={sortableFiles}>
+            <AttachmentDirents
+              className="attachment-overlay__dirents"
+              langtag={langtag}
+              files={sortableFiles}
+              layout={layoutState.content}
+              onNavigate={handleNavigate}
+              onToggle={handleToggleLink}
+              onFindAction={handleFindAction}
+              sortable
+            />
+          </SortableContext>
+        </DndContext>
       </div>
     </div>
   );

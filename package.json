@@ -15,11 +15,16 @@
     "test": "NODE_ICU_DATA=./node_modules/full-icu vitest run",
     "test:ci": "NODE_ICU_DATA=./node_modules/full-icu vitest run --coverage",
     "clean": "rm -fr .cache out",
-    "clean:project": "rm -fr .cache out node_modules; npm install && npm ci"
+    "clean:project": "rm -fr .cache out node_modules; npm install && npm ci",
+    "postinstall": "patch-package"
   },
   "license": "Apache license 2.0",
   "devDependencies": {
     "@codemirror/lang-markdown": "6.5.0",
+    "@dnd-kit/core": "6.3.1",
+    "@dnd-kit/modifiers": "9.0.0",
+    "@dnd-kit/sortable": "10.0.0",
+    "@dnd-kit/utilities": "3.2.2",
     "@floating-ui/react-dom": "^2.1.5",
     "@grud/devtools": "npm:@jsr/grud__devtools@0.3.6",
     "@types/lodash": "4.17.16",
@@ -60,6 +65,7 @@
     "markdown-draft-js": "2.4.0",
     "match-iz": "4.0.2",
     "moment": "2.29.4",
+    "patch-package": "^8.0.1",
     "postcss": "^8.5.3",
     "prettier": "1.19.1",
     "react": "16.14.0",
@@ -84,6 +90,7 @@
     "react-smooth-dnd": "0.11.1",
     "react-transition-group": "4.4.2",
     "react-virtualized": "9.22.6",
+    "react-virtuoso": "4.17.0",
     "recompose": "^0.30.0",
     "redux": "^4.0.1",
     "regenerator-runtime": "0.13.7",

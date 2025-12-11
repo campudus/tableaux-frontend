@@ -1,0 +1,13 @@
+diff --git a/node_modules/@dnd-kit/sortable/dist/sortable.esm.js b/node_modules/@dnd-kit/sortable/dist/sortable.esm.js
+index ef8429f..1b92f7b 100644
+--- a/node_modules/@dnd-kit/sortable/dist/sortable.esm.js
++++ b/node_modules/@dnd-kit/sortable/dist/sortable.esm.js
+@@ -504,7 +504,7 @@ function useSortable(_ref) {
+   });
+   const setNodeRef = useCombinedRefs(setDroppableNodeRef, setDraggableNodeRef);
+   const isSorting = Boolean(active);
+-  const displaceItem = isSorting && !disableTransforms && isValidIndex(activeIndex) && isValidIndex(overIndex);
++  const displaceItem = isSorting && !disableTransforms && isValidIndex(activeIndex);
+   const shouldDisplaceDragSource = !useDragOverlay && isDragging;
+   const dragSourceDisplacement = shouldDisplaceDragSource && displaceItem ? transform : null;
+   const strategy = localStrategy != null ? localStrategy : globalStrategy;
