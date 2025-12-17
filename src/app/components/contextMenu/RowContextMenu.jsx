@@ -339,16 +339,18 @@ class RowContextMenu extends React.Component {
             ? this.mkItem(showDependency, "show_dependency", "code-fork")
             : null}
           {this.mkItem(showTranslations, "show_translation", "flag")}
-          <Link
-            to={previewUrl({
-              langtag: this.props.langtag,
-              tableId: table.id,
-              rowId: cell.row.id
-            })}
-          >
-            <i className="fa fa-eye" />
-            <div className="item-label">{t("preview:open_preview_view")}</div>
-          </Link>
+          {!T.isUnionTable(this.props.table) && (
+            <Link
+              to={previewUrl({
+                langtag: this.props.langtag,
+                tableId: table.id,
+                rowId: cell.row.id
+              })}
+            >
+              <i className="fa fa-eye" />
+              <div className="item-label">{t("preview:open_preview_view")}</div>
+            </Link>
+          )}
           {this.setFinalItem()}
           {this.setArchivedItem()}
           {isDeletingRowAllowed || isDuplicatingRowAllowed ? (
