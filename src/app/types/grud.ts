@@ -17,6 +17,13 @@ export type Annotation = {
   createdAt: string; // ISOString
 };
 
+export type UnionColumn = Column & {
+  originColumns?: Array<{
+    tableId: number;
+    column: Column;
+  }>;
+};
+
 export type Row = {
   id: number;
   tableId?: number;

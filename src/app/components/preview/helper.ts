@@ -5,10 +5,12 @@ import f from "lodash/fp";
 import apiUrl from "../../helpers/apiUrl";
 import { getColumnDisplayName } from "../../helpers/multiLanguage";
 import { PreviewDefaultTitle } from "./PreviewTitle";
+import { getConcatOrigin } from "../../helpers/columnHelper";
 
 type Row = {
   id: number;
   values: any | any[];
+  tableId?: number;
 };
 
 export type ColumnAndRow = {
@@ -48,7 +50,8 @@ export const combineColumnsAndRow = (
       column,
       row: {
         id: row.id,
-        values: row.values[index]
+        values: row.values[index],
+        tableId: row.tableId
       }
     }))
     .filter(
@@ -90,17 +93,22 @@ export const getPreviewDefaultTitle = (
   columns: Column[] | undefined,
   row: Row | undefined
 ): PreviewDefaultTitle | undefined => {
-  return columns?.some(c => c.id === 0 && c.name === "ID")
-    ? {
-        value: getDisplayValue(columns.at(0))(row?.values.at(0))[langtag],
-        link: apiUrl({
-          langtag,
-          tableId,
-          rowId: rowId
-        }),
-        columnDisplayName: getColumnDisplayName(columns.at(0), langtag)
-      }
-    : undefined;
+  const idColumn = columns?.find(c => c.id === 0 && c.name === "ID");
+
+  if (!idColumn) {
+    return undefined;
+  }
+
+  const column = getConcatOrigin(tableId, idColumn, row?.tableId) || idColumn;
+  return {
+    value: getDisplayValue(column)(row?.values.at(0))[langtag],
+    link: apiUrl({
+      langtag,
+      tableId,
+      rowId: rowId
+    }),
+    columnDisplayName: getColumnDisplayName(column, langtag)
+  };
 };
 
 export const getColumnsWithDifferences = (

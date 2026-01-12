@@ -3,7 +3,7 @@ import f from "lodash/fp";
 import GrudHeader from "../GrudHeader";
 import { switchLanguageHandler } from "../Router";
 import { useSelector, useDispatch } from "react-redux";
-import { GRUDStore, LinkColumn, Row } from "../../types/grud";
+import { GRUDStore, LinkColumn, Row, UnionColumn } from "../../types/grud";
 import actions from "../../redux/actionCreators";
 import PreviewRowView from "./PreviewRowView";
 import PreviewDetailView from "./PreviewDetailView";
@@ -142,6 +142,7 @@ export default function PreviewView({
 
   const rowMeta = useSelector((store: GRUDStore) => store.rows[tableId]);
   const row = rowMeta?.data.find(row => row.id === rowId);
+  const originTableId = row?.tableId;
 
   const loadingData =
     !columnsMeta ||
@@ -163,7 +164,11 @@ export default function PreviewView({
     if (selectedColumnAndRow?.column.kind === "link") {
       const linkedRowIds: number[] =
         selectedColumnAndRow.row.values.map((r: Row) => r.id) || [];
-      const toTable = (selectedColumnAndRow.column as LinkColumn).toTable;
+      const toTable =
+        (selectedColumnAndRow.column as LinkColumn).toTable ||
+        ((selectedColumnAndRow.column as UnionColumn).originColumns?.find(
+          col => col.tableId === originTableId
+        )?.column as LinkColumn)?.toTable;
 
       dispatch({
         type: actionTypes.preview.PREVIEW_SET_CURRENT_DETAIL_TABLE,

@@ -4,7 +4,8 @@ import {
   Column,
   CurrencyColumn,
   LinkColumn,
-  Row
+  Row,
+  UnionColumn
 } from "../../types/grud";
 import getDisplayValue from "../../helpers/getDisplayValue";
 import BooleanCell from "./cells/BooleanCell";
@@ -33,12 +34,14 @@ const cssClass = "preview-cell-value";
 
 const PreviewContent = ({
   column,
+  row,
   langtag,
   link,
   value,
   isTitle
 }: {
   column: Column;
+  row: Row;
   langtag: string;
   link: string;
   value: any;
@@ -58,6 +61,16 @@ const PreviewContent = ({
         />
       );
     case ColumnKind.link:
+      if ((column as UnionColumn).originColumns) {
+        const originColumn = (column as UnionColumn).originColumns?.find(
+          oc => oc.tableId === row.tableId
+        )?.column;
+
+        if (originColumn) {
+          column = originColumn;
+        }
+      }
+
       return (
         <LinkCell
           langtag={langtag}
@@ -118,6 +131,7 @@ export default function PreviewCellValue({
     <Preview href={link}>
       <PreviewContent
         column={column}
+        row={row}
         langtag={langtag}
         link={link}
         value={row.values}
