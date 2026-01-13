@@ -17,6 +17,7 @@ export type Annotation = {
   createdAt: string; // ISOString
 };
 
+// TODO: remove this type when the grud-sdk is getting used
 export type UnionColumn = Column & {
   originColumns?: Array<{
     tableId: number;
