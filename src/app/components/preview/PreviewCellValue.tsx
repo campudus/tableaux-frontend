@@ -60,25 +60,23 @@ const PreviewContent = ({
           values={value as Record<string, number>}
         />
       );
-    case ColumnKind.link:
+    case ColumnKind.link: {
+      let originColumn;
       if ((column as UnionColumn).originColumns) {
-        const originColumn = (column as UnionColumn).originColumns?.find(
+        originColumn = (column as UnionColumn).originColumns?.find(
           oc => oc.tableId === row.tableId
         )?.column;
-
-        if (originColumn) {
-          column = originColumn;
-        }
       }
 
       return (
         <LinkCell
           langtag={langtag}
-          column={column as LinkColumn}
+          column={(originColumn || column) as LinkColumn}
           values={value as Record<string, any>[]}
           link={link}
         />
       );
+    }
     case ColumnKind.attachment:
       return (
         <AttachmentCell
