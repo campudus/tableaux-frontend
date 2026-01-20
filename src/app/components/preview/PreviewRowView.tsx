@@ -22,6 +22,7 @@ type PreviewRowViewProps = {
   row: Row;
   columnsAndRow: ColumnAndRow[];
   defaultTitle: PreviewDefaultTitle | undefined;
+  isUnionTable?: boolean;
 };
 
 export default function PreviewRowView({
@@ -30,7 +31,8 @@ export default function PreviewRowView({
   row,
   columnId,
   columnsAndRow,
-  defaultTitle
+  defaultTitle,
+  isUnionTable = false
 }: PreviewRowViewProps): ReactElement {
   const dispatch = useDispatch();
 
@@ -118,14 +120,16 @@ export default function PreviewRowView({
               : i18n.t("preview:row_is_not_final")
           }
           button={
-            <button
-              onClick={handleUpdateRowFinalStatus}
-              disabled={!canUserEditRowAnnotations({ row })}
-            >
-              {row.final
-                ? i18n.t("preview:unlock_row")
-                : i18n.t("preview:lock_row")}
-            </button>
+            !isUnionTable && (
+              <button
+                onClick={handleUpdateRowFinalStatus}
+                disabled={!canUserEditRowAnnotations({ row })}
+              >
+                {row.final
+                  ? i18n.t("preview:unlock_row")
+                  : i18n.t("preview:lock_row")}
+              </button>
+            )
           }
           color={row.final ? "dark" : "orange"}
         />

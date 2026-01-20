@@ -28,6 +28,7 @@ type RowViewProps = {
   row: Row | undefined;
   columnsAndRow: ColumnAndRow[];
   defaultTitle: PreviewDefaultTitle | undefined;
+  isUnionTable?: boolean;
 };
 
 const RowView = ({
@@ -37,7 +38,8 @@ const RowView = ({
   columnId,
   row,
   columnsAndRow,
-  defaultTitle
+  defaultTitle,
+  isUnionTable = false
 }: RowViewProps) => {
   if (!row) {
     return (
@@ -60,6 +62,7 @@ const RowView = ({
       columnId={columnId}
       row={row}
       columnsAndRow={columnsAndRow}
+      isUnionTable={isUnionTable}
       defaultTitle={defaultTitle}
     />
   );
@@ -260,6 +263,7 @@ export default function PreviewView({
                 columnId={idOfSelectedColumn}
                 row={row}
                 columnsAndRow={columnsAndRow}
+                isUnionTable={!!originTableId}
                 defaultTitle={getPreviewDefaultTitle(
                   langtag,
                   tableId,
