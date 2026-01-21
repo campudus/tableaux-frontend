@@ -7,6 +7,7 @@ import { getEmptyClassName } from "../../helper";
 import { useDebouncedValue } from "../../../../helpers/useDebouncedValue";
 import Tooltip from "../../../../components/helperComponents/Tooltip/Tooltip";
 import i18n from "i18next";
+import BooleanCell from "../BooleanCell";
 
 type LinkCellItemProps = {
   langtag: string;
@@ -34,7 +35,9 @@ export default function LinkCellItem({
   const displayValue = f.cond([
     [
       () => isBoolean(value),
-      () => i18n.t(value ? "preview:true" : "preview:false")
+      () =>
+        column.displayName?.[langtag] ||
+        i18n.t(value ? "preview:yes" : "preview:no")
     ],
     [(v: any) => Array.isArray(v), (v: any) => f.map(langtag, v).join(" ")],
     [() => true, (v: any) => v[langtag]]
@@ -48,7 +51,11 @@ export default function LinkCellItem({
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
-        {displayValue || i18n.t("preview:empty")}
+        {isBoolean(value) ? (
+          <BooleanCell value={value} displayValue={displayValue} />
+        ) : (
+          displayValue || i18n.t("preview:empty")
+        )}
 
         {isVisible && (
           <Tooltip defaultInvert style={{ left: "10px", fontSize: "13px" }}>

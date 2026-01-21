@@ -4,16 +4,22 @@ import i18n from "i18next";
 
 type BooleanCellProps = {
   value: boolean;
+  displayValue?: string;
 };
 
-export default function BooleanCell({ value }: BooleanCellProps): ReactElement {
+export default function BooleanCell({
+  value,
+  displayValue
+}: BooleanCellProps): ReactElement {
   return (
     <div className="boolean-cell">
       <SvgIcon
         icon={value ? "check" : "cross"}
         containerClasses={value ? "color-success" : "color-red"}
       />
-      <span>{value ? i18n.t("preview:yes") : i18n.t("preview:no")}</span>
+      <span>
+        {displayValue || (value ? i18n.t("preview:yes") : i18n.t("preview:no"))}
+      </span>
     </div>
   );
 }
