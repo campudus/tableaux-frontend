@@ -1,7 +1,7 @@
 import { connect } from "react-redux";
 import { withRouter, Redirect } from "react-router-dom";
 import IFrame from "react-iframe";
-import React from "react";
+import React, { useEffect } from "react";
 import f from "lodash/fp";
 
 import PropTypes from "prop-types";
@@ -38,6 +38,40 @@ const FrontendServiceView = ({
 
   const permissions = `clipboard-read; clipboard-write self ${serviceUrl}`;
 
+  // Handle different target types
+  useEffect(() => {
+    if (!f.isEmpty(service) && service.active && serviceUrl) {
+      const target = service.config.target || "iframe";
+
+      switch (target) {
+        case "blank":
+          // Open in new tab
+          window.open(serviceUrl, "_blank");
+          history.goBack();
+          break;
+        case "self":
+          // Open in same tab
+          window.location.href = serviceUrl;
+          history.goBack();
+          break;
+        case "void":
+          // Fire and forget without opening anything
+          fetch(serviceUrl).catch(error => {
+            console.error(
+              `Error executing service action at ${serviceUrl}:`,
+              error
+            );
+          });
+          history.goBack();
+          break;
+        case "iframe":
+        default:
+          // iframe handling is done in render
+          break;
+      }
+    }
+  }, [service, serviceUrl]);
+
   return (
     <>
       <GrudHeader
@@ -46,12 +80,14 @@ const FrontendServiceView = ({
       />
       <div className="frontend-service-main-view wrapper">
         {!f.isEmpty(service) && service.active ? (
-          <IFrame
-            src={serviceUrl}
-            width="100%"
-            height="100%"
-            allow={permissions}
-          />
+          service.config?.target === "iframe" ? (
+            <IFrame
+              src={serviceUrl}
+              width="100%"
+              height="100%"
+              allow={permissions}
+            />
+          ) : null
         ) : (
           <FrontendServiceNotFound />
         )}
