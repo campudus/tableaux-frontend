@@ -149,6 +149,8 @@
 }
 
 .linked-entry-selection {
+  max-height: 140px;
+  overflow-y: auto;
   margin-bottom: 16px;
 
   &__chip {
