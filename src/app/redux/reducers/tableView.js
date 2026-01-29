@@ -394,8 +394,12 @@ export default (state = initialState, action, completeState) => {
         worker: new Worker()
       };
     case ALL_ROWS_DATA_LOADED: {
-      const { currentTable } = state.currentTable;
-      const { rows } = f.get(["rows", currentTable, "data"]);
+      const currentTable = state.currentTable;
+      if (!currentTable) return state;
+      const { rows } = f.get(
+        ["rows", currentTable, "data"],
+        completeState || {}
+      );
       return {
         ...state,
         visibleRows: f.flow(f.keys, f.map(f.toInteger))(rows)

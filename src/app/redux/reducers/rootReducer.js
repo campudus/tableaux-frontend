@@ -10,6 +10,7 @@ import tables from "./table";
 import selectedCell from "./selectedCell";
 import multiSelect from "./multiSelect";
 import userSettings from "./userSettings";
+import preview from "./preview";
 
 const rootReducer = omniscentReducer({
   tables,
@@ -22,7 +23,8 @@ const rootReducer = omniscentReducer({
   frontendServices,
   selectedCell,
   multiSelect,
-  userSettings
+  userSettings,
+  preview
 });
 
 export default rootReducer;

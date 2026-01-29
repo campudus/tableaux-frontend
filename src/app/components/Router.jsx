@@ -91,6 +91,17 @@ const GRUDRouter = React.memo(() => {
     return renderView(ViewNames.MEDIA_VIEW)(routeProps);
   });
 
+  const renderPreviewView = React.useCallback(routeProps => {
+    const { tableId, columnId, rowId } = validateRouteParams(
+      routeProps.match.params,
+      tables
+    );
+
+    store.dispatch(actionCreators.loadPreviewView(tableId, rowId, columnId));
+
+    return renderView(ViewNames.PREVIEW_VIEW)(routeProps);
+  });
+
   const routerProps = { langtags: Langtags, tables };
 
   const location = useLocation();
@@ -167,6 +178,17 @@ const GRUDRouter = React.memo(() => {
         <CompatRoute path="/:langtag/media" render={renderMediaView} />
         <Route path="/media/*" render={() => <Redirect to={withLangtag} />} />
         <Route path="/media" render={() => <Redirect to={withLangtag} />} />
+
+        <CompatRoute
+          path="/:langtag/preview/:tableId/rows/:rowId"
+          render={renderPreviewView}
+        />
+        <CompatRoute
+          path="/:langtag/preview/:tableId/columns/:columnId/rows/:rowId"
+          render={renderPreviewView}
+        />
+        <Route path="/preview/*" render={() => <Redirect to={withLangtag} />} />
+        <Route path="/preview" render={() => <Redirect to={withLangtag} />} />
 
         <Route
           path="*"

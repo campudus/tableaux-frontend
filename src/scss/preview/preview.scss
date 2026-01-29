@@ -1,0 +1,79 @@
+.preview-view {
+  box-sizing: border-box;
+  background-color: $color-white;
+  height: 100%;
+  padding-top: ($space-height-header);
+  display: flex;
+  flex-direction: row;
+  overflow: hidden;
+
+  &__centered {
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  &__resizeable-left {
+    overflow-y: auto;
+    // to move the scrollbar to the left side
+    direction: rtl;
+  }
+
+  &__resizeable-right {
+    position: relative;
+    background-color: $color-background-very-light-grey;
+  }
+
+  &__resizer {
+    position: absolute;
+    top: 0;
+    left: -6px;
+    width: 6px;
+    height: 100%;
+    background: $color-background-very-light-grey;
+    cursor: col-resize;
+    z-index: 10;
+  }
+
+  &__resizer-icon {
+    position: absolute;
+    top: calc(50% - $space-height-header);
+    left: -8px;
+    width: 16px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    border: 1px solid $color-subtle-grey;
+    background: $color-subtle-grey;
+
+    cursor: col-resize;
+    z-index: 11;
+
+    .svg-icon {
+      max-width: none;
+    }
+
+    svg {
+      width: 15px;
+      height: 15px;
+    }
+  }
+
+  button > * {
+    cursor: pointer;
+  }
+
+  button:disabled > * {
+    cursor: not-allowed;
+  }
+}
+
+.preview-row-view__column-name,
+.detail-view-link__column-name {
+  a:hover {
+    color: $color-primary;
+  }
+}

@@ -16,4 +16,12 @@
   &.color-white svg {
     fill: $color-white;
   }
+
+  &.color-success svg {
+    fill: $color-success;
+  }
+
+  &.color-red svg {
+    fill: $color-red;
+  }
 }

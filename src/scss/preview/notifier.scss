@@ -1,0 +1,29 @@
+.notifier {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background-color: #f8f8f8;
+  border-radius: 4px;
+  height: 48px;
+  box-sizing: border-box;
+  border-left: 6px solid $color-very-dark;
+
+  &--orange {
+    border-left: 6px solid $color-orange;
+
+    .notifier__icon {
+      color: $color-orange;
+    }
+  }
+
+  &__icon {
+    font-size: 14px;
+  }
+
+  &__button {
+    margin-left: auto;
+    border: 1px solid $color-very-dark;
+    border-radius: 4px;
+  }
+}
