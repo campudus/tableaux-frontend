@@ -1,7 +1,8 @@
+import i18n from "i18next";
 import { connect } from "react-redux";
 import { withRouter, Redirect } from "react-router-dom";
 import IFrame from "react-iframe";
-import React from "react";
+import React, { useEffect } from "react";
 import f from "lodash/fp";
 
 import PropTypes from "prop-types";
@@ -10,6 +11,9 @@ import { expandServiceUrl } from "../../frontendServiceRegistry/frontendServiceH
 import { switchLanguageHandler } from "../Router";
 import GrudHeader from "../GrudHeader";
 import FrontendServiceNotFound from "./FrontendServiceNotFound";
+import actionCreators from "../../redux/actionCreators";
+
+const { showToast } = actionCreators;
 
 const FrontendServiceView = ({
   serviceId,
@@ -18,7 +22,8 @@ const FrontendServiceView = ({
   tableId,
   columnId,
   rowId,
-  history
+  history,
+  showToast
 }) => {
   const handleLanguageSwitch = React.useCallback(newLangtag =>
     switchLanguageHandler(history, newLangtag)
@@ -38,6 +43,67 @@ const FrontendServiceView = ({
 
   const permissions = `clipboard-read; clipboard-write self ${serviceUrl}`;
 
+  // Handle different target types
+  useEffect(() => {
+    if (!f.isEmpty(service) && service.active && serviceUrl) {
+      const target = service.config.target || "iframe";
+
+      switch (target) {
+        case "blank":
+          // Open in new tab
+          window.open(serviceUrl, "_blank");
+          history.goBack();
+          break;
+        case "self":
+          // Open in same tab
+          window.location.href = serviceUrl;
+          history.goBack();
+          break;
+        case "void": {
+          // Fire and forget with toast notifications
+          const serviceName =
+            service.displayName?.[langtag] || service.name || "Service";
+          fetch(serviceUrl)
+            .then(() => {
+              showToast({
+                content: (
+                  <div id="cell-jump-toast">
+                    {i18n.t("frontend-service:message.void-success", {
+                      serviceName
+                    })}
+                  </div>
+                ),
+                duration: 2000
+              });
+              history.goBack();
+            })
+            .catch(error => {
+              console.error(
+                `Error executing service action at ${serviceUrl}:`,
+                error
+              );
+              showToast({
+                content: (
+                  <div id="cell-jump-toast">
+                    {i18n.t("frontend-service:message.void-error", {
+                      serviceName
+                    })}
+                  </div>
+                ),
+                duration: 5000
+              });
+              history.goBack();
+            });
+          break;
+        }
+        case "iframe":
+        default:
+          // iframe handling is done in render
+          break;
+      }
+    }
+  }, [service, serviceUrl, langtag, showToast]);
+
   return (
     <>
       <GrudHeader
@@ -46,12 +112,14 @@ const FrontendServiceView = ({
       />
       <div className="frontend-service-main-view wrapper">
         {!f.isEmpty(service) && service.active ? (
-          <IFrame
-            src={serviceUrl}
-            width="100%"
-            height="100%"
-            allow={permissions}
-          />
+          service.config?.target === "iframe" ? (
+            <IFrame
+              src={serviceUrl}
+              width="100%"
+              height="100%"
+              allow={permissions}
+            />
+          ) : null
         ) : (
           <FrontendServiceNotFound />
         )}
@@ -67,6 +135,6 @@ FrontendServiceView.propTypes = {
 };
 
 export default f.pipe(
-  connect(f.pick(["frontendServices"])),
+  connect(f.pick(["frontendServices"]), { showToast }),
   withRouter
 )(FrontendServiceView);

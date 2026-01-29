@@ -1,5 +1,7 @@
 {
   "message": {
-    "not-found": "Service nicht gefunden"
+    "not-found": "Service nicht gefunden",
+    "void-success": "Service '{{serviceName}}' erfolgreich ausgeführt",
+    "void-error": "Fehler beim Ausführen von Service '{{serviceName}}'"
   }
 }
