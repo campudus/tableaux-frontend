@@ -15,7 +15,8 @@ import DragSortList from "../cells/link/DragSortList";
 export const countHiddenColumns = columns => {
   const groupMemberIds = findGroupMemberIds(columns);
   return columns.filter(
-    column => !groupMemberIds.has(column.id) && !column.visible
+    column =>
+      !groupMemberIds.has(column.id) && !column.visible && !column.hidden
   ).length;
 };
 
@@ -45,7 +46,7 @@ const ColumnFilterPopup = ({
   };
   const getFilteredColumns = f.compose(
     f.filter(columnNameMatchesQuery(search, langtag)),
-    f.reject(f.where({ id: id => groupMemberIds.has(id) })),
+    f.reject(column => groupMemberIds.has(column.id) || column.hidden),
     f.tail
   );
 
