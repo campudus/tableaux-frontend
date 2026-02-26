@@ -11,11 +11,13 @@ import SearchFunctions from "../../helpers/searchFunctions";
 import { outsideClickEffect } from "../../helpers/useOutsideClick";
 import actions from "../../redux/actionCreators";
 import DragSortList from "../cells/link/DragSortList";
+import { mapIndexed } from "../../helpers/functools";
 
 export const countHiddenColumns = columns => {
   const groupMemberIds = findGroupMemberIds(columns);
   return columns.filter(
-    column => !groupMemberIds.has(column.id) && !column.visible
+    column =>
+      !groupMemberIds.has(column.id) && !column.visible && !column.hidden
   ).length;
 };
 
@@ -45,7 +47,7 @@ const ColumnFilterPopup = ({
   };
   const getFilteredColumns = f.compose(
     f.filter(columnNameMatchesQuery(search, langtag)),
-    f.reject(f.where({ id: id => groupMemberIds.has(id) })),
+    f.reject(column => groupMemberIds.has(column.id) || column.hidden),
     f.tail
   );
 
@@ -71,14 +73,10 @@ const ColumnFilterPopup = ({
     setSelected({ idx, id });
   };
   const applyColumnOrdering = newOrdering => {
-    const mapOrderingToIndices = f.map(colId => ({
-      id: colId,
-      idx: f.findIndex(({ id }) => id === colId, allColumns)
-    }));
-
     void f.compose(
       columnActions.setColumnOrdering,
-      mapOrderingToIndices,
+      f.sortBy(({ idx }) => idx),
+      mapIndexed((id, idx) => ({ id, idx })),
       f.concat(idColumn.id)
     )(newOrdering);
     void dispatch(actions.rerenderTable());

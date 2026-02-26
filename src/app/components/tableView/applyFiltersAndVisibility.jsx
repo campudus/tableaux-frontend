@@ -73,9 +73,10 @@ const withFiltersAndVisibility = Component => props => {
   ]);
   const columnsWithVisibility = columns.map((col, idx) => {
     const visible =
-      idx === 0 ||
-      col.id === selectedCell?.columnId ||
-      visibleColumnIDs.has(col.id);
+      (idx === 0 ||
+        col.id === selectedCell?.columnId ||
+        visibleColumnIDs.has(col.id)) &&
+      !col.hidden;
     return {
       ...col,
       visible
