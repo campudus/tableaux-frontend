@@ -15,7 +15,7 @@ const GreeterWidget = ({ langtag }) => {
         <span className="default-text">
           {i18n.t("dashboard:greeter.hello")}
         </span>
-        <UserName username={userName} />,
+        <UserName userName={userName} />,
       </div>
       <div className="default-text">{motd}</div>
       <div className="info-text">{i18n.t("dashboard:greeter.info")}</div>
