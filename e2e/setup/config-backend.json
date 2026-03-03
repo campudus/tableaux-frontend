@@ -1,0 +1,14 @@
+{
+  "host": "0.0.0.0",
+  "port": 8181,
+  "uploadsDirectory": "uploads/",
+  "workingDirectory": "/",
+  "isRowPermissionCheckEnabled": false,
+  "database": {
+    "host": "grud-postgres",
+    "port": 5432,
+    "username": "test",
+    "password": "test",
+    "database": "test"
+  }
+}

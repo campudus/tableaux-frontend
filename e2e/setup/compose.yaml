@@ -1,0 +1,74 @@
+services:
+  grud-backend:
+    image: campudus/grud-backend:latest
+    container_name: grud-e2e-test_grud-backend
+    ports:
+      - "${GRUD_API_PORT:-8080}:8181"
+    depends_on:
+      - grud-postgres
+      - grud-db-init
+    volumes:
+      # - "./${ENV?err}/data/uploads:/uploads:cached"
+      - "./config-backend.json:/config.json"
+    environment:
+      - ENV=development
+    command:
+      ["java", "-Xmx2G", "-jar", "./tableaux-fat.jar", "-conf /config.json"]
+
+  # reset grud-backend schema on startup
+  grud-backend-init:
+    image: curlimages/curl:8.11.1
+    container_name: "grud-e2e-test_grud-backend-init"
+    depends_on:
+      - grud-backend
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - >-
+        for i in $(seq 1 30); do
+          if curl -fsS http://grud-backend:8181/system/versions >/dev/null; then
+            break; fi;
+          echo "waiting for grud-backend ($i/30)...";
+          sleep 2;
+        done;
+        curl -fsS -X POST http://grud-backend:8181/system/reset;
+        echo "schema reset done";
+
+  grud-postgres:
+    image: postgres:18.1-alpine
+    container_name: "grud-e2e-test_grud-backend-postgres"
+    environment:
+      - POSTGRES_USER=test
+      - POSTGRES_PASSWORD=test
+      - POSTGRES_DB=test
+      - POSTGRES_HOST_AUTH_METHOD=trust
+    ports:
+      - "${GRUD_DB_PORT:-5432}:5432"
+    shm_size: "1g" # prevents ERROR: out of shared memory
+    command: postgres -c shared_buffers=256MB -c max_locks_per_transaction=128 # adapt config to prevents ERROR: out of shared memory
+
+  # initialize database schema
+  grud-db-init:
+    image: postgres:18.1-alpine
+    container_name: "grud-e2e-test_grud-db-init"
+    depends_on:
+      - grud-postgres
+    entrypoint:
+      - sh
+      - -c
+      - >-
+        until pg_isready -h grud-postgres -U test -d test; do sleep 1; done;
+        psql -h grud-postgres -U test -d test -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public;"
+
+  grud-frontend:
+    image: campudus/grud-frontend:latest
+    container_name: grud-e2e-test_grud-frontend
+    ports:
+      - "${GRUD_FRONTEND_PORT:-5000}:3000"
+    depends_on:
+      - grud-backend
+    volumes:
+      - "./config-frontend.json:/usr/app/config.json"
+    environment:
+      - ENV=development
+    command:
+      ["npm", "run", "start"]

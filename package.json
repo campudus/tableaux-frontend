@@ -14,8 +14,12 @@
     "lint:fix:changes": "git diff master --name-only | grep -E \"src\\/.*\\.(j|t)sx?$\" | xargs -I{} sh -c \"test -f '{}' && echo '{}'\" | xargs eslint --fix",
     "test": "NODE_ICU_DATA=./node_modules/full-icu vitest run",
     "test:ci": "NODE_ICU_DATA=./node_modules/full-icu vitest run --coverage",
+    "test:e2e": "playwright test",
     "clean": "rm -fr .cache out",
     "clean:project": "rm -fr .cache out node_modules; npm install && npm ci",
+    "compose": "./e2e/setup/compose.sh",
+    "compose:up": "npm run compose -- up -d",
+    "compose:down": "npm run compose -- down",
     "postinstall": "patch-package"
   },
   "license": "Apache license 2.0",
