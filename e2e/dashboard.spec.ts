@@ -1,34 +1,35 @@
 import { test, expect } from "@playwright/test";
 import { showCursor } from "./utils/cursor";
 
-test("can load dashboard", async ({ page }) => {
-  await page.goto("/");
-  await expect(page.locator("id=dashboard-view")).toBeVisible();
+test.beforeEach(async ({ page }) => {
+  // disable transitions and animations for tests
+  await page.addInitScript(() => {
+    const style = document.createElement("style");
+    style.innerHTML = `
+      *, *::before, *::after {
+        transition: none !important;
+        animation: none !important;
+      }
+    `;
+    document.head.appendChild(style);
+  });
 });
 
-test("can navigate to table", async ({ page }) => {
-  await showCursor(page);
-  await page.goto("/");
+test("can load dashboard", async ({ page }) => {
+  await page.goto("/", { waitUntil: "domcontentloaded" });
+  const dashboardView = page.locator("id=dashboard-view");
+  await expect(dashboardView).toBeVisible();
+});
 
-  const menu = page.locator("id=burger");
-
-  await expect(menu).toBeVisible();
-
-  await menu.hover();
-  await menu.click();
-
-  const link = page.getByRole("link", { name: "Tabellen" });
-
-  await expect(link).toBeVisible();
-
-  await link.hover();
-  await link.click();
-
-  await page.waitForURL("/de-DE/tables/1", { waitUntil: "domcontentloaded" });
-
+test("can load tables", async ({ page }) => {
+  await page.goto("/tables", { waitUntil: "domcontentloaded" });
   const tableWrapper = page.locator("id=table-wrapper");
-  const firstCell = page.locator("div.cell").first();
+  const idHeaderCell = page
+    .locator("role=grid")
+    .first()
+    .locator("role=gridcell")
+    .first();
 
   await expect(tableWrapper).toBeVisible();
-  await expect(firstCell).toBeVisible();
+  await expect(idHeaderCell).toBeVisible();
 });

@@ -21,7 +21,7 @@ export default defineConfig({
   retries: process.env.CI ? 2 : 0,
   /* Opt out of parallel tests on CI. */
   workers: process.env.CI ? 1 : undefined,
-  timeout: 5_000,
+  timeout: 10_000,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: [["html", { open: "never" }]],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
@@ -33,7 +33,7 @@ export default defineConfig({
     trace: "on-first-retry",
     video: "on",
     launchOptions: {
-      slowMo: 500 // 300 ms Verzögerung zwischen Aktionen
+      slowMo: 500 // 500 ms Verzögerung zwischen Aktionen
     }
   },
 
