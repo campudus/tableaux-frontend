@@ -25,11 +25,9 @@ const GreeterWidget = ({ langtag }) => {
 
 // User name component dependent on feature flag
 const UserName = ({ userName }) => {
-  if (!SHOW_DASHBOARD_USER_NAME) {
-    return null;
-  }
-
-  return <span className="user-name">{userName}</span>;
+  return (
+    SHOW_DASHBOARD_USER_NAME && <span className="user-name">{userName}</span>
+  );
 };
 
 GreeterWidget.propTypes = {
