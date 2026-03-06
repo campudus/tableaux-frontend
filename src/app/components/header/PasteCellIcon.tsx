@@ -42,7 +42,9 @@ const CellMap: Record<
 > = {
   link: LinkCell,
   attachment: AttachmentCell,
+  // @ts-expect-error type mismatch between PropTypes and actual TS-type
   numeric: NumericCell,
+  // @ts-expect-error type mismatch between PropTypes and actual TS-type
   boolean: BooleanCell,
   date: DateCell,
   datetime: DateCell,
