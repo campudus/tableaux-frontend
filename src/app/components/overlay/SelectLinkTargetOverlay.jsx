@@ -281,7 +281,7 @@ const SortMode = [
 ];
 
 const SelectLinkTargetOverlayHeader = props => {
-  const { id, langtag, updateSharedData, sharedData } = props;
+  const { id, langtag, updateSharedData, sharedData, cell } = props;
   const setFilterValue = value =>
     updateSharedData(f.assoc("filterValue", value));
   const setFilterMode = mode => updateSharedData(f.assoc("filterMode", mode));
@@ -300,7 +300,7 @@ const SelectLinkTargetOverlayHeader = props => {
     <Header
       {...props}
       context={i18n.t("table:select-link-target.context")}
-      title={<OverlayHeadRowIdentificator {...props} />}
+      title={<OverlayHeadRowIdentificator cell={cell} langtag={langtag} />}
     >
       <SearchBar
         id={id}

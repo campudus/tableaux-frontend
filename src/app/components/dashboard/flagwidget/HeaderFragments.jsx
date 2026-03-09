@@ -1,5 +1,3 @@
-import React from "react";
-import { branch, renderComponent } from "recompose";
 import { doto } from "../../../helpers/functools";
 import f from "lodash/fp";
 import classNames from "classnames";
@@ -61,7 +59,12 @@ const HeaderWithLangTabs = ({
   </DefaultHeader>
 );
 
-export default branch(
-  props => props.flag === "needs_translation",
-  renderComponent(HeaderWithLangTabs)
-)(DefaultHeader);
+const Header = props => {
+  return props.flag === "needs_translation" ? (
+    <HeaderWithLangTabs {...props} />
+  ) : (
+    <DefaultHeader {...props} />
+  );
+};
+
+export default Header;

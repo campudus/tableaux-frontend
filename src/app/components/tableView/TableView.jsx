@@ -1,9 +1,8 @@
 import i18n from "i18next";
 import f from "lodash/fp";
 import PropTypes from "prop-types";
-import React, { PureComponent } from "react";
-import { Redirect, withRouter } from "react-router-dom";
-import { branch, renderComponent } from "recompose";
+import { PureComponent } from "react";
+import { withRouter } from "react-router-dom";
 import ToggleArchivedRowsButton from "../../archivedRows/ToggleArchivedRowsButton";
 import {
   initLangtags,
@@ -30,7 +29,6 @@ import HistoryButtons from "../table/undo/HistoryButtons";
 import { isTaxonomyTable } from "../taxonomy/taxonomy";
 import applyFiltersAndVisibility from "./applyFiltersAndVisibility";
 import JumpSpinner from "./JumpSpinner";
-import SearchOverlay from "./SearchOverlay";
 import RowCount from "../header/RowCount";
 import NewRowButton from "../header/NewRowButton";
 import { canUserCreateRow } from "../../helpers/accessManagementHelper";
@@ -279,11 +277,11 @@ class TableView extends PureComponent {
       tableId,
       actions,
       allDisplayValues,
-      filtering,
       tableView,
       columnOrdering,
       rowCount,
-      rowCountAll
+      rowCountAll,
+      showCellJumpOverlay
     } = this.props;
     const columnActions = f.pick(
       [
@@ -353,11 +351,7 @@ class TableView extends PureComponent {
               ) : null}
               <ToggleArchivedRowsButton table={table} langtag={langtag} />
               <AnnotationHighlightToggle table={table} langtag={langtag} />
-              <HistoryButtons
-                tableId={tableId}
-                actions={actions}
-                tableView={tableView}
-              />
+              <HistoryButtons tableId={tableId} history={tableView.history} />
               {this.renderNewRowButton()}
               {showResetTableViewButton && (
                 <ResetTableViewButton
@@ -381,33 +375,11 @@ class TableView extends PureComponent {
           )}
         </GrudHeader>
         {this.renderTableOrSpinner()}
-        <JumpSpinner isOpen={!!this.props.showCellJumpOverlay && !filtering} />
-        <SearchOverlay isOpen={filtering} />
+        {showCellJumpOverlay && <JumpSpinner />}
       </div>
     );
   };
 }
-
-const EmptyTableView = withRouter(({ langtag, history }) => {
-  const handleLanguageSwitch = React.useCallback(langtag =>
-    switchLanguageHandler(history, langtag)
-  );
-
-  return (
-    <>
-      <GrudHeader
-        langtag={langtag}
-        handleLanguageSwitch={handleLanguageSwitch}
-      />
-      <div className="initial-loader">
-        <div className="centered-user-message">
-          {i18n.t("table:no-tables-found")}
-        </div>
-      </div>
-      <Redirect to={`/${langtag}/tables`} />
-    </>
-  );
-});
 
 TableView.propTypes = {
   langtag: PropTypes.string.isRequired,
@@ -416,12 +388,7 @@ TableView.propTypes = {
   projection: PropTypes.object
 };
 
-export default branch(
-  props => f.isNil(props.tableId),
-  renderComponent(EmptyTableView)
-)(
-  reduxActionHoc(
-    f.flow(applyFiltersAndVisibility, withRouter)(TableView),
-    mapStatetoProps
-  )
+export default reduxActionHoc(
+  f.flow(applyFiltersAndVisibility, withRouter)(TableView),
+  mapStatetoProps
 );

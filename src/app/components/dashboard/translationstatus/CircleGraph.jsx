@@ -1,4 +1,3 @@
-import { pure } from "recompose";
 import React, { useRef, useState } from "react";
 
 import PropTypes from "prop-types";
@@ -107,4 +106,4 @@ CircleGraph.propTypes = {
   percent: PropTypes.number.isRequired
 };
 
-export default pure(CircleGraph);
+export default CircleGraph;

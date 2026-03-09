@@ -106,10 +106,9 @@ const EntityViewHeader = props => {
       />
       {canSwitchRows && !f.isEmpty(rows) ? <RowSwitcher {...props} /> : null}
       <HistoryButtons
-        tableView={tableView}
         tableId={tableId}
         rowId={row.id}
-        actions={actions}
+        history={tableView.history}
       />
       <FilterBar id={id} />
       <HeaderPopupMenu

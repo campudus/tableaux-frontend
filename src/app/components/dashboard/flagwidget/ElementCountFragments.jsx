@@ -1,5 +1,3 @@
-import React from "react";
-import { branch, renderComponent } from "recompose";
 import i18n from "i18next";
 
 const ElementCountWithPercents = ({ n, flag, selected, perc }) => {
@@ -35,7 +33,12 @@ const DefaultElementCount = ({ n, flag, selected }) => {
   );
 };
 
-export default branch(
-  props => props.flag === "needs_translation",
-  renderComponent(ElementCountWithPercents)
-)(DefaultElementCount);
+const ElementCount = props => {
+  return props.flag === "needs_translation" ? (
+    <ElementCountWithPercents {...props} />
+  ) : (
+    <DefaultElementCount {...props} />
+  );
+};
+
+export default ElementCount;

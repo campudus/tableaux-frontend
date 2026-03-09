@@ -1,4 +1,3 @@
-import { withHandlers } from "recompose";
 import React, { useState } from "react";
 import i18n from "i18next";
 
@@ -79,7 +78,7 @@ const RevisionItem = props => {
   );
 };
 
-export default withHandlers({ revertHere: () => () => null })(RevisionItem);
+export default RevisionItem;
 RevisionItem.propTypes = {
   langtag: PropTypes.string.isRequired,
   revision: PropTypes.object.isRequired,

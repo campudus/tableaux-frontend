@@ -1,14 +1,14 @@
-import { branch, compose, pure, renderNothing, withProps } from "recompose";
-import React from "react";
 import i18n from "i18next";
-
 import PropTypes from "prop-types";
 
 import { SHOW_DASHBOARD_USER_NAME } from "../../../FeatureFlags";
 import { getUserName } from "../../../helpers/userNameHelper";
 import getMotd from "./Messages";
 
-const GreeterWidget = ({ userName, motd }) => {
+const GreeterWidget = ({ langtag }) => {
+  const userName = getUserName(true /* onlyFirstName */);
+  const motd = getMotd(langtag);
+
   return (
     <div className="greeter tile wide">
       <div className="heading">
@@ -24,21 +24,14 @@ const GreeterWidget = ({ userName, motd }) => {
 };
 
 // User name component dependent on feature flag
-const UserName = branch(
-  () => !SHOW_DASHBOARD_USER_NAME,
-  renderNothing
-)(({ userName }) => <span className="user-name">{userName}</span>);
-
-const enhance = compose(
-  pure,
-  withProps(props => ({
-    userName: getUserName(true /* onlyFirstName */),
-    motd: getMotd(props.langtag)
-  }))
-);
+const UserName = ({ userName }) => {
+  return (
+    SHOW_DASHBOARD_USER_NAME && <span className="user-name">{userName}</span>
+  );
+};
 
 GreeterWidget.propTypes = {
   langtag: PropTypes.string.isRequired
 };
 
-export default enhance(GreeterWidget);
+export default GreeterWidget;
