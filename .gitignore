@@ -15,3 +15,9 @@ devAccessSettings.json
 output/
 coverage/
 .vscode/
+
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/

@@ -1,0 +1,44 @@
+services:
+  grud-backend:
+    image: campudus/grud-backend:latest
+    container_name: grud-e2e-test_grud-backend
+    ports:
+      - "${GRUD_API_PORT:-8080}:8181"
+    depends_on:
+      - grud-postgres
+    volumes:
+      # - "./${ENV?err}/data/uploads:/uploads:cached"
+      - "./config-backend.json:/config.json"
+    environment:
+      - ENV=development
+    command:
+      ["java", "-Xmx2G", "-jar", "./tableaux-fat.jar", "-conf /config.json"]
+
+  grud-postgres:
+    image: postgres:18.1-alpine
+    container_name: "grud-e2e-test_grud-backend-postgres"
+    environment:
+      - POSTGRES_USER=test
+      - POSTGRES_PASSWORD=test
+      - POSTGRES_DB=test
+      - POSTGRES_HOST_AUTH_METHOD=trust
+    ports:
+      - "${GRUD_DB_PORT:-5432}:5432"
+    shm_size: "1g" # prevents ERROR: out of shared memory
+    command: postgres -c shared_buffers=256MB -c max_locks_per_transaction=128 # adapt config to prevents ERROR: out of shared memory
+    volumes:
+      - "./dump.sql:/docker-entrypoint-initdb.d/dump.sql"
+
+  grud-frontend:
+    image: campudus/grud-frontend:latest
+    container_name: grud-e2e-test_grud-frontend
+    ports:
+      - "${GRUD_FRONTEND_PORT:-5000}:3000"
+    depends_on:
+      - grud-backend
+    volumes:
+      - "./config-frontend.json:/usr/app/config.json"
+    environment:
+      - ENV=development
+    command:
+      ["npm", "run", "start"]
