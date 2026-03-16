@@ -113,6 +113,17 @@ permissions found at the first match when running it against the API path.
 
 Will allow editing all cells.
 
+### PreviewCenter configuration via column attributes
+
+The preview of a row can be configured via column attributes. These attributes can be set both through the backend API and in the frontend UI (edit column).
+
+| Attribute (key) | Type | Description |
+|---|---|---|
+| `previewTitle` | `number` | Marks the column as a title for the PreviewCenter view. Multiple columns can be marked as title. The `value` determines the display order. Not allowed for columns of type `currency` and `attachment`. |
+| `previewDefaultSelected` | `boolean` | Determines which column is initially selected when opening the PreviewCenter. Only columns of type `link` or `richtext` are valid. |
+| `previewDetailViewImage` | `boolean` | Displays an `attachment` column as an image at the top of the preview detail table (on the right side). |
+| `previewDetailViewStickyColumn` | `number` | Pins the column to the top of the preview detail table so it remains visible while scrolling. The `value` determines the sort order of pinned columns. |
+
 ## Overwriting Favicons in Production Docker Containers
 
 We deliver a default set of favicons located in the `out/img/favicon` resp. `public/img/favicon` directory. If you want to use your own custom favicons, you can replace the files in the container via volume mounts.
