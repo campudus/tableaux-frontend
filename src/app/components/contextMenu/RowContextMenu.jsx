@@ -31,7 +31,6 @@ import SvgIcon from "../helperComponents/SvgIcon";
 import { openHistoryOverlay } from "../history/HistoryOverlay";
 import AnnotationContextMenu from "./AnnotationContextMenu";
 import GenericContextMenu from "./GenericContextMenu";
-import { Link } from "react-router-dom";
 import { previewUrl } from "../../helpers/apiUrl";
 
 //  Distance between clicked coordinate and the left upper corner of the context menu
@@ -339,16 +338,18 @@ class RowContextMenu extends React.Component {
             ? this.mkItem(showDependency, "show_dependency", "code-fork")
             : null}
           {this.mkItem(showTranslations, "show_translation", "flag")}
-          <Link
-            to={previewUrl({
+          <a
+            href={previewUrl({
               langtag: this.props.langtag,
               tableId: table.id,
               rowId: cell.row.id
             })}
+            target="_blank"
+            rel="noopener noreferrer"
           >
             <i className="fa fa-eye" />
             <div className="item-label">{t("preview:open_preview_view")}</div>
-          </Link>
+          </a>
           {this.setFinalItem()}
           {this.setArchivedItem()}
           {isDeletingRowAllowed || isDuplicatingRowAllowed ? (
