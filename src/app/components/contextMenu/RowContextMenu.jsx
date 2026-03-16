@@ -341,8 +341,10 @@ class RowContextMenu extends React.Component {
           <a
             href={previewUrl({
               langtag: this.props.langtag,
-              tableId: table.id,
-              rowId: cell.row.id
+              tableId: T.isUnionTable(table) ? cell.row.tableId : table.id,
+              rowId: T.isUnionTable(table)
+                ? T.getOriginRowId(cell.row)
+                : cell.row.id
             })}
             target="_blank"
             rel="noopener noreferrer"
