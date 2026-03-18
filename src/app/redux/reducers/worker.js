@@ -29,7 +29,7 @@ onmessage = function(e) {
     ([toTableIdStr, rows]) => {
       const toTableId = parseInt(toTableIdStr);
       const rowValues = Object.entries(rows).map(([rowId, value]) => ({
-        id: rowId,
+        id: parseInt(rowId),
         values: [getLinkDisplayValue(toTableId, value.id)]
       }));
       return {
