@@ -57,7 +57,7 @@
     "fast-diff": "^1.2.0",
     "focus-trap-react": "^6.0.0",
     "full-icu": "1.5.0",
-    "happy-dom": "20.0.10",
+    "happy-dom": "20.8.9",
     "i18next": "^10.5.0",
     "keycloak-js": "^26.0.0",
     "localforage": "1.7.3",
