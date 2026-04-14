@@ -7,6 +7,7 @@ import {
   getTableDisplayName,
   retrieveTranslation
 } from "../../helpers/multiLanguage";
+import { loadAllRows } from "../../redux/actions/rowActions";
 import actionCreator from "../../redux/actionCreators";
 import { idsToIndices } from "../../redux/redux-helpers";
 import Spinner from "../header/Spinner";
@@ -254,7 +255,9 @@ const DataLoader = Component => props => {
   }, [toTableId]);
   useEffect(() => {
     if (isDone(columnState) && !isDone(rowState))
-      dispatch(actionCreator.loadAllRows(toTableId));
+      // do not use actionCreator.loadAllRows because it also applies cell-selection logic
+      // which is not relevant in this overlay and causes unwanted side effects
+      dispatch(loadAllRows(toTableId));
   }, [toTableId, columnState.tag]);
 
   const componentState = combineStates(columnState, rowState);
