@@ -7,7 +7,7 @@ import path from "path";
 import serveStatic from "serve-static";
 import { fileURLToPath } from "url";
 import { parseArgs } from "util";
-import uuid from "uuid";
+import { v4 as uuid } from "uuid";
 import loadConfig from "./config.js";
 import * as mockAuth from "./dev/mockAuth.js";
 
