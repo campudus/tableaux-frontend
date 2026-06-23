@@ -472,20 +472,25 @@ export default withPropsOnChange(["grudData"], ({ grudData, table, row }) => {
       f.prop(["rows", table.id, "data"]),
       f.find(f.propEq("id", row.id))
     ) || {};
+  const filteredRowData = {
+    ...rowData,
+    cells: f.propOr([], "cells", rowData).filter(isNotHidden),
+    values: f.propOr([], "values", rowData).filter(isNotHidden)
+  };
 
   const cells = f
-    .zip(rowData.cells, rowData.values)
+    .zip(rowData.cells, rowData.values) // use index of unfiltered cells for dv lookup!
     .map(([cell, cellValue], idx) => {
       return addCellId({
         ...cell,
         value: cellValue,
-        row: rowData,
+        row: filteredRowData,
         displayValue: retrieveDisplayValue(cell.column, idx, cellValue)
       });
     })
     .filter(isNotHidden);
 
-  return { cells, row: rowData };
+  return { cells, row: filteredRowData };
 })(EntityViewBody);
 
 EntityViewBody.propTypes = {
