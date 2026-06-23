@@ -470,12 +470,7 @@ export default withPropsOnChange(["grudData"], ({ grudData, table, row }) => {
     doto(
       grudData,
       f.prop(["rows", table.id, "data"]),
-      f.find(f.propEq("id", row.id)),
-      data => ({
-        ...data,
-        cells: f.propOr([], "cells", data).filter(isNotHidden),
-        values: f.propOr([], "values", data).filter(isNotHidden)
-      })
+      f.find(f.propEq("id", row.id))
     ) || {};
 
   const cells = f
@@ -487,7 +482,8 @@ export default withPropsOnChange(["grudData"], ({ grudData, table, row }) => {
         row: rowData,
         displayValue: retrieveDisplayValue(cell.column, idx, cellValue)
       });
-    });
+    })
+    .filter(isNotHidden);
 
   return { cells, row: rowData };
 })(EntityViewBody);
