@@ -2,21 +2,14 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { setDefaultResultOrder } from "dns";
-import checker from "vite-plugin-checker";
 
 setDefaultResultOrder("verbatim");
 
 export default defineConfig({
-  plugins: [
-    react(),
-    checker({
-      typescript: true
-    })
-  ],
+  plugins: [react()],
   css: {
     preprocessorOptions: {
       scss: {
-        api: "modern-compiler",
         // TODO: fix deprecations!
         silenceDeprecations: [
           "slash-div",
@@ -38,7 +31,6 @@ export default defineConfig({
     outDir: "out",
     chunkSizeWarningLimit: 4000,
     rollupOptions: {
-      maxParallelFileOps: 100,
       onLog(level, log, handler) {
         if (log.code === "EMPTY_BUNDLE") {
           return;
