@@ -38,7 +38,7 @@
     "@typescript-eslint/eslint-plugin": "^8.26.1",
     "@typescript-eslint/parser": "^8.26.1",
     "@uiw/react-codemirror": "4.21.21",
-    "@vitejs/plugin-react": "4.3.4",
+    "@vitejs/plugin-react": "6.0.2",
     "@vitest/coverage-v8": "4.1.8",
     "@vitest/eslint-plugin": "^1.1.37",
     "autoprefixer": "^10.5.0",
@@ -99,8 +99,7 @@
     "superagent": "^4.0.0",
     "typescript": "^5.8.2",
     "usehooks-ts": "3.1.1",
-    "vite": "6.4.2",
-    "vite-plugin-checker": "0.9.0",
+    "vite": "8.1.5",
     "vitest": "4.1.8"
   },
   "dependencies": {
