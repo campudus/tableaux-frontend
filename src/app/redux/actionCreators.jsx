@@ -27,6 +27,8 @@ import {
 } from "./actions/userSettingActions";
 import actionTypes from "./actionTypes";
 import { overlayParamsSpec } from "./reducers/overlays";
+import { isLinkColumn } from "../types/guards";
+import { isTaxonomyTable } from "../components/taxonomy/taxonomy";
 
 const {
   getAllTables,
@@ -305,9 +307,28 @@ const generateDisplayValues = (rows, columns, table) => (
   };
 };
 
-const loadCompleteTable = ({ tableId, selectedRowId }) => async dispatch => {
+const loadCompleteTable = ({ tableId, selectedRowId }) => async (
+  dispatch,
+  getState
+) => {
   dispatch(setCurrentTable(tableId));
-  await dispatch(loadColumns(tableId));
+
+  const { columns } = await dispatch(loadColumns(tableId));
+
+  const tablesById = f.get(["tables", "data"], getState());
+
+  const taxonomyLinkColumns = columns.filter(
+    c => isLinkColumn(c) && isTaxonomyTable(tablesById[c.toTable])
+  );
+
+  // load data for taxonomy tables so it can be used as displayValue
+  for (const taxonomyLinkColumn of taxonomyLinkColumns) {
+    const taxonomyTableId = taxonomyLinkColumn.toTable;
+
+    await dispatch(loadColumns(taxonomyTableId));
+    await dispatch(Row.loadAllRows(taxonomyTableId));
+  }
+
   if (selectedRowId > 0) {
     dispatch(fetchSingleRow({ tableId, selectedRowId }));
   }

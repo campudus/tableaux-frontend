@@ -397,7 +397,7 @@ export default (state = initialState, action, completeState) => {
       const currentTable = state.currentTable;
       if (!currentTable) return state;
       const { rows } = f.get(
-        ["rows", currentTable, "data"],
+        ["rows", action.tableId, "data"],
         completeState || {}
       );
       return {
