@@ -24,10 +24,20 @@ const LinkCell = props => {
   } = props;
 
   const displayValue = foreignDisplayValues || props.displayValue;
+  const currentLangDisplayValues = useMemo(() => {
+    if (!displayValue) return [];
+    return f.map(
+      dv =>
+        f.isArray(dv)
+          ? f.join(" > ", f.compact(f.map(f.get(langtag), dv))) // taxonomy link with multiple displayValues
+          : f.get(langtag, dv),
+      displayValue
+    );
+  }, [displayValue, langtag]);
+
   const previewLinkCount = useMemo(() => {
-    const currentLangDisplayValues = f.map(f.get(langtag), displayValue);
     return getVisibleLinkCount(currentLangDisplayValues, width);
-  }, [width]);
+  }, [currentLangDisplayValues, width]);
 
   const isEditOrSelect = editing || selected;
   const hasMore = f.size(value) > previewLinkCount;
@@ -37,7 +47,7 @@ const LinkCell = props => {
       key={element.id}
       value={element}
       langtag={langtag}
-      displayValue={displayValue[index]}
+      displayValue={currentLangDisplayValues[index]}
       cell={cell}
     />
   ));

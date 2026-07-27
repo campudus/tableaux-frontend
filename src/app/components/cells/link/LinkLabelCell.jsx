@@ -7,6 +7,7 @@ import Empty from "../../helperComponents/emptyEntry";
 import PermissionDenied from "../../helperComponents/PermissionDenied";
 import { isLinkArchived } from "../../../archivedRows";
 import { buildClassName } from "../../../helpers/buildClassName";
+import Tooltip from "../../helperComponents/Tooltip/TooltipWithState";
 
 const LinkLabelCell = props => {
   const {
@@ -17,6 +18,8 @@ const LinkLabelCell = props => {
   } = props;
   const linkName = f.isEmpty(displayValue)
     ? retrieveTranslation(langtag, f.first(getDisplayValue(column, [value])))
+    : typeof displayValue === "string"
+    ? displayValue
     : retrieveTranslation(langtag, displayValue);
 
   const isArchived = isLinkArchived(value);
@@ -25,22 +28,22 @@ const LinkLabelCell = props => {
 
   return (
     <button className={cssClass}>
-      <div className="label-text">
-        {value.hiddenByRowPermissions ? (
-          <PermissionDenied />
-        ) : f.isEmpty(linkName) ? (
-          <Empty />
-        ) : (
-          linkName
-        )}
-      </div>
+      {value.hiddenByRowPermissions ? (
+        <PermissionDenied />
+      ) : f.isEmpty(linkName) ? (
+        <Empty />
+      ) : (
+        <Tooltip className="label-text" tooltip={linkName} offsetTop={5}>
+          {linkName}
+        </Tooltip>
+      )}
     </button>
   );
 };
 
 LinkLabelCell.propTypes = {
   value: PropTypes.object.isRequired,
-  displayValue: PropTypes.object,
+  displayValue: PropTypes.oneOfType([PropTypes.object, PropTypes.string]),
   displayValues: PropTypes.array,
   cell: PropTypes.object.isRequired,
   langtag: PropTypes.string.isRequired
