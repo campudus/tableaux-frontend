@@ -1,12 +1,6 @@
-// TODO: Keep in sync with link label spacings/font
+import { measureText } from "./measureText";
+
 const gapWidthInPx = 6;
-const linkLabelStyle = {
-  padding: "6px 8px",
-  fontFammily: "Roboto",
-  fontSize: "1.3rem",
-  fontWeight: "normal",
-  position: "absolute"
-};
 const outerCellPaddingInPx = 9;
 const innerLinkPaddingInPx = 8;
 const ellipsisWidthInPx = 8;
@@ -16,22 +10,13 @@ export const linkReservedWidth =
 
 const { max } = Math;
 
+// taxonomy links keep their path nodes as an array; measure the joined
+// (uncollapsed) text as the conservative worst case for this link's width
 const measureLinkWidth = displayValue => {
-  const label = document.createElement("div");
-  Object.keys(linkLabelStyle).forEach(
-    attr => (label.style[attr] = linkLabelStyle[attr])
-  );
-  // taxonomy links keep their path nodes as an array; measure the joined
-  // (uncollapsed) text as the conservative worst case for this link's width
-  label.innerText = Array.isArray(displayValue)
+  const text = Array.isArray(displayValue)
     ? displayValue.join(" > ")
     : displayValue;
-  const dom = document.body;
-  dom.appendChild(label);
-  const width = label.getBoundingClientRect().width + gapWidthInPx;
-  dom.removeChild(label);
-
-  return width;
+  return measureText(text) + gapWidthInPx;
 };
 
 export const getVisibleLinkCount = (

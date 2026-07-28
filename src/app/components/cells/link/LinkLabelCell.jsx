@@ -23,9 +23,7 @@ const LinkLabelCell = props => {
     ? retrieveTranslation(langtag, f.first(getDisplayValue(column, [value])))
     : isTaxonomyPath
     ? f.join(" > ", displayValue)
-    : typeof displayValue === "string"
-    ? displayValue
-    : retrieveTranslation(langtag, displayValue);
+    : displayValue;
 
   const isArchived = isLinkArchived(value);
 
@@ -37,17 +35,22 @@ const LinkLabelCell = props => {
         <PermissionDenied />
       ) : f.isEmpty(linkName) ? (
         <Empty />
-      ) : isTaxonomyPath ? (
+      ) : (
         <Tooltip
-          className="label-text label-text--taxonomy"
+          className={buildClassName("label-text", {
+            taxonomy: isTaxonomyPath
+          })}
           tooltip={linkName}
           offsetTop={5}
         >
-          <TaxonomyPath nodes={displayValue} availableWidth={availableWidth} />
-        </Tooltip>
-      ) : (
-        <Tooltip className="label-text" tooltip={linkName} offsetTop={5}>
-          {linkName}
+          {isTaxonomyPath ? (
+            <TaxonomyPath
+              nodes={displayValue}
+              availableWidth={availableWidth}
+            />
+          ) : (
+            linkName
+          )}
         </Tooltip>
       )}
     </button>
@@ -56,11 +59,7 @@ const LinkLabelCell = props => {
 
 LinkLabelCell.propTypes = {
   value: PropTypes.object.isRequired,
-  displayValue: PropTypes.oneOfType([
-    PropTypes.object,
-    PropTypes.string,
-    PropTypes.array
-  ]),
+  displayValue: PropTypes.oneOfType([PropTypes.string, PropTypes.array]),
   displayValues: PropTypes.array,
   cell: PropTypes.object.isRequired,
   langtag: PropTypes.string.isRequired,

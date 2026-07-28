@@ -1,7 +1,5 @@
-import { prepareWithSegments, measureNaturalWidth } from "@chenglou/pretext";
+import { measureText as measure } from "./measureText";
 
-// TODO: Keep in sync with .taxonomy-path-node/.link-label font styling
-const FONT = "13px Roboto";
 const SEPARATOR = " > ";
 const MIN_FIRST_NODE_WIDTH = 20;
 // pretext's canvas-based measurement can drift a few px from the actual
@@ -10,8 +8,6 @@ const MIN_FIRST_NODE_WIDTH = 20;
 const WIDTH_SAFETY_MARGIN = 8;
 
 export const TAXONOMY_ELLIPSIS = "...";
-
-const measure = text => measureNaturalWidth(prepareWithSegments(text, FONT));
 
 // Computes which taxonomy path nodes to show given the available width.
 // Collapses middle nodes right-to-left into a single "..." placeholder first;
@@ -34,7 +30,7 @@ export const getTaxonomyPathLayout = (nodes, rawAvailableWidth) => {
   const firstWidth = measure(first);
   const lastWidth = measure(last);
   const ellipsisWidth = measure(TAXONOMY_ELLIPSIS);
-  const middleWidths = middle.map(measure);
+  const middleWidths = middle.map(text => measure(text));
 
   for (let shown = middle.length; shown >= 0; shown--) {
     const collapsed = shown < middle.length;

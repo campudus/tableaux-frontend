@@ -16,6 +16,21 @@ import { openLinkOverlay } from "./LinkOverlay";
 // how much room the cell actually has.
 const LINK_LABEL_MAX_WIDTH_RATIO = 0.9;
 
+// Resolves each linked row's displayValue to the current language. A
+// taxonomy link's displayValue is an array of {langtag: text} path nodes
+// instead of a single one, so it resolves to an array of node texts.
+const resolveCurrentLangDisplayValues = (displayValue, langtag) => {
+  if (!displayValue) return [];
+  return f.map(
+    dv =>
+      f.isArray(dv) ? f.compact(f.map(f.get(langtag), dv)) : f.get(langtag, dv),
+    displayValue
+  );
+};
+
+const getAvailableLinkLabelWidth = width =>
+  (width - linkReservedWidth) * LINK_LABEL_MAX_WIDTH_RATIO;
+
 const LinkCell = props => {
   const {
     cell,
@@ -29,23 +44,17 @@ const LinkCell = props => {
   } = props;
 
   const displayValue = foreignDisplayValues || props.displayValue;
-  const currentLangDisplayValues = useMemo(() => {
-    if (!displayValue) return [];
-    return f.map(
-      dv =>
-        f.isArray(dv)
-          ? f.compact(f.map(f.get(langtag), dv)) // taxonomy link path nodes
-          : f.get(langtag, dv),
-      displayValue
-    );
-  }, [displayValue, langtag]);
+  const currentLangDisplayValues = useMemo(
+    () => resolveCurrentLangDisplayValues(displayValue, langtag),
+    [displayValue, langtag]
+  );
 
-  const previewLinkCount = useMemo(() => {
-    return getVisibleLinkCount(currentLangDisplayValues, width);
-  }, [currentLangDisplayValues, width]);
+  const previewLinkCount = useMemo(
+    () => getVisibleLinkCount(currentLangDisplayValues, width),
+    [currentLangDisplayValues, width]
+  );
 
-  const availableWidth =
-    (width - linkReservedWidth) * LINK_LABEL_MAX_WIDTH_RATIO;
+  const availableWidth = getAvailableLinkLabelWidth(width);
   const isEditOrSelect = editing || selected;
   const hasMore = f.size(value) > previewLinkCount;
   const linkValues = isEditOrSelect ? value : f.take(previewLinkCount, value);
