@@ -11,6 +11,11 @@ import { isLocked } from "../../../helpers/rowUnlock";
 import { canUserChangeCell } from "../../../helpers/accessManagementHelper";
 import { openLinkOverlay } from "./LinkOverlay";
 
+// .link-label has a CSS max-width of 90% of .cell-content, so a single
+// label's own text can never claim the full reserved width, regardless of
+// how much room the cell actually has.
+const LINK_LABEL_MAX_WIDTH_RATIO = 0.9;
+
 const LinkCell = props => {
   const {
     cell,
@@ -39,7 +44,8 @@ const LinkCell = props => {
     return getVisibleLinkCount(currentLangDisplayValues, width);
   }, [currentLangDisplayValues, width]);
 
-  const availableWidth = width - linkReservedWidth;
+  const availableWidth =
+    (width - linkReservedWidth) * LINK_LABEL_MAX_WIDTH_RATIO;
   const isEditOrSelect = editing || selected;
   const hasMore = f.size(value) > previewLinkCount;
   const linkValues = isEditOrSelect ? value : f.take(previewLinkCount, value);

@@ -7,10 +7,12 @@ const linkLabelStyle = {
   fontWeight: "normal",
   position: "absolute"
 };
-const cellPaddingInPx = 10;
+const outerCellPaddingInPx = 9;
+const innerLinkPaddingInPx = 8;
 const ellipsisWidthInPx = 8;
 
-export const linkReservedWidth = 2 * cellPaddingInPx + ellipsisWidthInPx;
+export const linkReservedWidth =
+  2 * outerCellPaddingInPx + 2 * innerLinkPaddingInPx + ellipsisWidthInPx;
 
 const { max } = Math;
 
@@ -36,7 +38,7 @@ export const getVisibleLinkCount = (
   values,
   fullWidth,
   n = 0,
-  reservedWidth = 2 * cellPaddingInPx + ellipsisWidthInPx
+  reservedWidth = linkReservedWidth
 ) => {
   const availableWidth = max(0, fullWidth - reservedWidth);
   if (n >= values.length) return max(n, 1);
@@ -51,7 +53,7 @@ export const getVisibleAttachmentCount = (
   values,
   fullWidth,
   n = 0,
-  reservedWidth = 2 * cellPaddingInPx + ellipsisWidthInPx
+  reservedWidth = linkReservedWidth
 ) => {
   const availableWidth = max(0, fullWidth - reservedWidth);
   if (n >= values.length) return max(n, 1);
