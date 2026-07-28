@@ -6,7 +6,11 @@ import { compose, lifecycle } from "recompose";
 
 import { withForeignDisplayValues } from "../../helperComponents/withForeignDisplayValues";
 import LinkLabelCell from "./LinkLabelCell.jsx";
-import { getVisibleLinkCount, linkReservedWidth } from "./getVisibleLinkCount";
+import {
+  cellReservedWidth,
+  getVisibleLinkCount,
+  linkReservedWidth
+} from "./getVisibleLinkCount";
 import { isLocked } from "../../../helpers/rowUnlock";
 import { canUserChangeCell } from "../../../helpers/accessManagementHelper";
 import { openLinkOverlay } from "./LinkOverlay";
@@ -29,7 +33,7 @@ const resolveCurrentLangDisplayValues = (displayValue, langtag) => {
 };
 
 const getAvailableLinkLabelWidth = width =>
-  (width - linkReservedWidth) * LINK_LABEL_MAX_WIDTH_RATIO;
+  (width - cellReservedWidth - linkReservedWidth) * LINK_LABEL_MAX_WIDTH_RATIO;
 
 const LinkCell = props => {
   const {
