@@ -1,6 +1,7 @@
 import React, { Fragment, useMemo } from "react";
 import PropTypes from "prop-types";
 
+import { buildClassName } from "../../../helpers/buildClassName";
 import { getTaxonomyPathLayout } from "./taxonomyPathLayout";
 
 const TaxonomyPath = ({ nodes, availableWidth }) => {
@@ -9,21 +10,35 @@ const TaxonomyPath = ({ nodes, availableWidth }) => {
     [nodes, availableWidth]
   );
 
-  return displayNodes.map((node, index) => (
-    <Fragment key={index}>
-      {index > 0 && <span className="taxonomy-path-separator"> &gt; </span>}
-      <span
-        className="taxonomy-path-node"
-        style={
-          index === 0 && firstNodeMaxWidth
-            ? { maxWidth: firstNodeMaxWidth }
-            : undefined
-        }
-      >
-        {node}
-      </span>
-    </Fragment>
-  ));
+  const lastIndex = displayNodes.length - 1;
+
+  return displayNodes.map((node, index) => {
+    const muted = index !== lastIndex;
+
+    return (
+      <Fragment key={index}>
+        {index > 0 && (
+          <span
+            className={buildClassName("taxonomy-path-separator", {
+              muted: true
+            })}
+          >
+            {" > "}
+          </span>
+        )}
+        <span
+          className={buildClassName("taxonomy-path-node", { muted })}
+          style={
+            index === 0 && firstNodeMaxWidth
+              ? { maxWidth: firstNodeMaxWidth }
+              : undefined
+          }
+        >
+          {node}
+        </span>
+      </Fragment>
+    );
+  });
 };
 
 TaxonomyPath.propTypes = {
