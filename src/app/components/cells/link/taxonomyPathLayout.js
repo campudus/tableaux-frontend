@@ -11,8 +11,9 @@ export const TAXONOMY_ELLIPSIS = "...";
 
 // Computes which taxonomy path nodes to show given the available width.
 // Collapses middle nodes right-to-left into a single "..." placeholder first;
-// if it still doesn't fit once fully collapsed, returns a maxWidth the first
-// node should be constrained to so CSS can ellipsis-truncate it further.
+// if it still doesn't fit once fully collapsed, shrinks the first node via a
+// maxWidth so CSS can ellipsis-truncate it further, unless that would shrink
+// it below a readable minimum, in which case the first node collapses too.
 export const getTaxonomyPathLayout = (nodes, rawAvailableWidth) => {
   const availableWidth = Number.isFinite(rawAvailableWidth)
     ? rawAvailableWidth - WIDTH_SAFETY_MARGIN
@@ -50,11 +51,20 @@ export const getTaxonomyPathLayout = (nodes, rawAvailableWidth) => {
         ? [first, ...middle.slice(0, shown), TAXONOMY_ELLIPSIS, last]
         : nodes;
       const overflow = totalWidth - availableWidth;
-      const firstNodeMaxWidth =
-        overflow > 0
-          ? Math.max(MIN_FIRST_NODE_WIDTH, firstWidth - overflow)
-          : null;
-      return { nodes: displayNodes, firstNodeMaxWidth };
+
+      if (overflow <= 0) {
+        return { nodes: displayNodes, firstNodeMaxWidth: null };
+      }
+
+      const shrunkFirstWidth = firstWidth - overflow;
+      if (shrunkFirstWidth < MIN_FIRST_NODE_WIDTH) {
+        return {
+          nodes: [TAXONOMY_ELLIPSIS, last],
+          firstNodeMaxWidth: null
+        };
+      }
+
+      return { nodes: displayNodes, firstNodeMaxWidth: shrunkFirstWidth };
     }
   }
 
