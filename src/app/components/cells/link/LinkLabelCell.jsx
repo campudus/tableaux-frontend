@@ -8,16 +8,21 @@ import PermissionDenied from "../../helperComponents/PermissionDenied";
 import { isLinkArchived } from "../../../archivedRows";
 import { buildClassName } from "../../../helpers/buildClassName";
 import Tooltip from "../../helperComponents/Tooltip/TooltipWithState";
+import TaxonomyPath from "./TaxonomyPath";
 
 const LinkLabelCell = props => {
   const {
     langtag,
     displayValue,
     cell: { column },
-    value
+    value,
+    availableWidth
   } = props;
+  const isTaxonomyPath = f.isArray(displayValue);
   const linkName = f.isEmpty(displayValue)
     ? retrieveTranslation(langtag, f.first(getDisplayValue(column, [value])))
+    : isTaxonomyPath
+    ? f.join(" > ", displayValue)
     : typeof displayValue === "string"
     ? displayValue
     : retrieveTranslation(langtag, displayValue);
@@ -32,6 +37,14 @@ const LinkLabelCell = props => {
         <PermissionDenied />
       ) : f.isEmpty(linkName) ? (
         <Empty />
+      ) : isTaxonomyPath ? (
+        <Tooltip
+          className="label-text label-text--taxonomy"
+          tooltip={linkName}
+          offsetTop={5}
+        >
+          <TaxonomyPath nodes={displayValue} availableWidth={availableWidth} />
+        </Tooltip>
       ) : (
         <Tooltip className="label-text" tooltip={linkName} offsetTop={5}>
           {linkName}
@@ -43,10 +56,15 @@ const LinkLabelCell = props => {
 
 LinkLabelCell.propTypes = {
   value: PropTypes.object.isRequired,
-  displayValue: PropTypes.oneOfType([PropTypes.object, PropTypes.string]),
+  displayValue: PropTypes.oneOfType([
+    PropTypes.object,
+    PropTypes.string,
+    PropTypes.array
+  ]),
   displayValues: PropTypes.array,
   cell: PropTypes.object.isRequired,
-  langtag: PropTypes.string.isRequired
+  langtag: PropTypes.string.isRequired,
+  availableWidth: PropTypes.number
 };
 
 export default LinkLabelCell;

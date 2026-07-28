@@ -10,6 +10,8 @@ const linkLabelStyle = {
 const cellPaddingInPx = 10;
 const ellipsisWidthInPx = 8;
 
+export const linkReservedWidth = 2 * cellPaddingInPx + ellipsisWidthInPx;
+
 const { max } = Math;
 
 const measureLinkWidth = displayValue => {
@@ -17,7 +19,11 @@ const measureLinkWidth = displayValue => {
   Object.keys(linkLabelStyle).forEach(
     attr => (label.style[attr] = linkLabelStyle[attr])
   );
-  label.innerText = displayValue;
+  // taxonomy links keep their path nodes as an array; measure the joined
+  // (uncollapsed) text as the conservative worst case for this link's width
+  label.innerText = Array.isArray(displayValue)
+    ? displayValue.join(" > ")
+    : displayValue;
   const dom = document.body;
   dom.appendChild(label);
   const width = label.getBoundingClientRect().width + gapWidthInPx;

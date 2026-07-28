@@ -26,6 +26,27 @@
       overflow: hidden;
       text-overflow: ellipsis;
       padding: 6px 8px;
+
+      // taxonomy paths control their own truncation per node (see
+      // .taxonomy-path-node); the container must not additionally clip with
+      // its own ellipsis, or it can hide the leaf node instead of the
+      // collapsed middle nodes.
+      &--taxonomy {
+        text-overflow: clip;
+      }
+    }
+
+    .taxonomy-path-node {
+      display: inline-block;
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      vertical-align: bottom;
+    }
+
+    .taxonomy-path-separator {
+      white-space: pre;
     }
 
     &--archived {

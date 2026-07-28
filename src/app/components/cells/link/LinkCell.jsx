@@ -6,7 +6,7 @@ import { compose, lifecycle } from "recompose";
 
 import { withForeignDisplayValues } from "../../helperComponents/withForeignDisplayValues";
 import LinkLabelCell from "./LinkLabelCell.jsx";
-import { getVisibleLinkCount } from "./getVisibleLinkCount";
+import { getVisibleLinkCount, linkReservedWidth } from "./getVisibleLinkCount";
 import { isLocked } from "../../../helpers/rowUnlock";
 import { canUserChangeCell } from "../../../helpers/accessManagementHelper";
 import { openLinkOverlay } from "./LinkOverlay";
@@ -29,7 +29,7 @@ const LinkCell = props => {
     return f.map(
       dv =>
         f.isArray(dv)
-          ? f.join(" > ", f.compact(f.map(f.get(langtag), dv))) // taxonomy link with multiple displayValues
+          ? f.compact(f.map(f.get(langtag), dv)) // taxonomy link path nodes
           : f.get(langtag, dv),
       displayValue
     );
@@ -39,6 +39,7 @@ const LinkCell = props => {
     return getVisibleLinkCount(currentLangDisplayValues, width);
   }, [currentLangDisplayValues, width]);
 
+  const availableWidth = width - linkReservedWidth;
   const isEditOrSelect = editing || selected;
   const hasMore = f.size(value) > previewLinkCount;
   const linkValues = isEditOrSelect ? value : f.take(previewLinkCount, value);
@@ -48,6 +49,7 @@ const LinkCell = props => {
       value={element}
       langtag={langtag}
       displayValue={currentLangDisplayValues[index]}
+      availableWidth={availableWidth}
       cell={cell}
     />
   ));
