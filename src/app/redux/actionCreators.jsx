@@ -313,20 +313,25 @@ const loadCompleteTable = ({ tableId, selectedRowId }) => async (
 ) => {
   dispatch(setCurrentTable(tableId));
 
-  const { columns } = await dispatch(loadColumns(tableId));
-
   const tablesById = f.get(["tables", "data"], getState());
-
-  const taxonomyLinkColumns = columns.filter(
-    c => isLinkColumn(c) && isTaxonomyTable(tablesById[c.toTable])
-  );
+  const columnsResponse = await dispatch(loadColumns(tableId));
+  const columns = columnsResponse.columns ?? [];
+  const taxonomyLinkColumns = f.compose(
+    f.uniqBy("id"),
+    f.filter(c => isLinkColumn(c) && isTaxonomyTable(tablesById[c.toTable]))
+  )(columns);
 
   // load data for taxonomy tables so it can be used as displayValue
   for (const taxonomyLinkColumn of taxonomyLinkColumns) {
     const taxonomyTableId = taxonomyLinkColumn.toTable;
 
-    await dispatch(loadColumns(taxonomyTableId));
-    await dispatch(Row.loadAllRows(taxonomyTableId));
+    // do not await taxonomy data, so table can render without having to wait.
+    // if taxonomy data takes longer than the rest, the fallback displayValue (only LeafNode) is used
+    // and will be replaced with full path as soon as data arrives
+    Promise.all([
+      dispatch(loadColumns(taxonomyTableId)),
+      dispatch(Row.loadAllRows(taxonomyTableId))
+    ]);
   }
 
   if (selectedRowId > 0) {
