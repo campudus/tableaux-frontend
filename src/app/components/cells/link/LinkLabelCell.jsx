@@ -43,7 +43,7 @@ const LinkLabelCell = props => {
           tooltip={linkName}
           offsetTop={5}
         >
-          {isTaxonomyPath ? (
+          {isTaxonomyPath && !f.isEmpty(displayValue) ? (
             <TaxonomyPath
               nodes={displayValue}
               availableWidth={availableWidth}
