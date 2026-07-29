@@ -27,33 +27,30 @@ const LinkLabelCell = props => {
 
   const isArchived = isLinkArchived(value);
 
-  const cssClass = buildClassName("link-label", { archived: isArchived });
+  const cssClass = buildClassName("link-label", {
+    archived: isArchived,
+    taxonomy: isTaxonomyPath
+  });
 
   return (
-    <button className={cssClass}>
-      {value.hiddenByRowPermissions ? (
-        <PermissionDenied />
-      ) : f.isEmpty(linkName) ? (
-        <Empty />
-      ) : (
-        <Tooltip
-          className={buildClassName("label-text", {
-            taxonomy: isTaxonomyPath
-          })}
-          tooltip={linkName}
-          offsetTop={5}
-        >
-          {isTaxonomyPath && !f.isEmpty(displayValue) ? (
+    <div className={cssClass}>
+      <div className="label-text">
+        {value.hiddenByRowPermissions ? (
+          <PermissionDenied />
+        ) : f.isEmpty(linkName) ? (
+          <Empty />
+        ) : isTaxonomyPath && !f.isEmpty(displayValue) ? (
+          <Tooltip className="taxonomy-label" tooltip={linkName} offsetTop={5}>
             <TaxonomyPath
               nodes={displayValue}
               availableWidth={availableWidth}
             />
-          ) : (
-            linkName
-          )}
-        </Tooltip>
-      )}
-    </button>
+          </Tooltip>
+        ) : (
+          linkName
+        )}
+      </div>
+    </div>
   );
 };
 
