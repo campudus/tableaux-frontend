@@ -395,9 +395,11 @@ export default (state = initialState, action, completeState) => {
       };
     case ALL_ROWS_DATA_LOADED: {
       const currentTable = state.currentTable;
-      if (!currentTable) return state;
+      if (!currentTable || action.tableId !== currentTable) {
+        return state;
+      }
       const { rows } = f.get(
-        ["rows", action.tableId, "data"],
+        ["rows", currentTable, "data"],
         completeState || {}
       );
       return {
