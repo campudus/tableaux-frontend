@@ -1,5 +1,6 @@
 import React, { useMemo } from "react";
 import * as f from "lodash/fp";
+import i18n from "i18next";
 
 import PropTypes from "prop-types";
 import { compose, lifecycle } from "recompose";
@@ -14,6 +15,7 @@ import {
 import { isLocked } from "../../../helpers/rowUnlock";
 import { canUserChangeCell } from "../../../helpers/accessManagementHelper";
 import { openLinkOverlay } from "./LinkOverlay";
+import { retrieveTranslation } from "../../../helpers/multiLanguage";
 
 // .link-label has a CSS max-width of 90% of .cell-content, so a single
 // label's own text can never claim the full reserved width, regardless of
@@ -24,10 +26,13 @@ const LINK_LABEL_MAX_WIDTH_RATIO = 0.9;
 // taxonomy link's displayValue is an array of {langtag: text} path nodes
 // instead of a single one, so it resolves to an array of node texts.
 const resolveCurrentLangDisplayValues = (displayValue, langtag) => {
+  const emptyValue = `(${i18n.t("common:empty").toUpperCase()})`;
   if (!displayValue) return [];
   return f.map(
     dv =>
-      f.isArray(dv) ? f.compact(f.map(f.get(langtag), dv)) : f.get(langtag, dv),
+      f.isArray(dv)
+        ? f.map(dv => retrieveTranslation(langtag, dv) || emptyValue, dv)
+        : f.get(langtag, dv),
     displayValue
   );
 };
