@@ -5,12 +5,13 @@ import f from "lodash/fp";
 import { ColumnKinds } from "../../constants/TableauxConstants";
 import { doto, memoizeWith } from "../../helpers/functools";
 import { retrieveTranslation } from "../../helpers/multiLanguage";
+import * as t from "../taxonomy/taxonomy";
 
 const isLinkColumn = f.propEq("kind", ColumnKinds.link);
 const isConcatColumn = f.propEq("kind", ColumnKinds.concat);
 
-const getTable = f.memoize(tableId =>
-  f.prop(["tableView", "displayValues", tableId])
+const getDisplayValuesForTable = f.memoize(tableId =>
+  f.propOr([], ["tableView", "displayValues", tableId])
 );
 
 const getRow = rowId => f.find(f.propEq("id", rowId));
@@ -29,16 +30,39 @@ const flattenAndTranslate = f.curryN(2, (langtag, value = []) => {
 });
 
 const getLinkDisplayValues = ({ value, column: { toTable } }) => state => {
-  const tableDisplayValues = getTable(toTable)(state);
+  const tableDisplayValues = getDisplayValuesForTable(toTable)(state);
+  const tableDisplayValuesMap = f.keyBy("id", tableDisplayValues);
+  const linkTable = state.tables.data[toTable];
+  const linkRowIds = f.map(f.prop("id"), value);
 
-  const foreignDisplayValues = f.isEmpty(tableDisplayValues)
-    ? null
-    : f.map(
-        ({ id }) => doto(tableDisplayValues, getRow(id), f.prop(["values", 0])),
-        value
-      );
+  if (t.isTaxonomyTable(linkTable)) {
+    const taxonomyLinkRows = f.prop(["rows", toTable, "data"], state);
+    const taxonomyTreeNodes = t.tableToTreeNodes({ rows: taxonomyLinkRows });
+    const taxonomyTreeMap = f.keyBy("id", taxonomyTreeNodes);
+    const taxonomyLinkNodes = f.map(id => taxonomyTreeMap[id], linkRowIds);
+    const getPathFn = t.getPathToNode(taxonomyTreeNodes);
+    const taxonomyDisplayValues = f.map(node => {
+      const fullPath = f.concat(getPathFn(node), node);
+      const displayValues = f.map(f.prop("displayValue"), fullPath);
 
-  return { foreignDisplayValues };
+      return displayValues;
+    }, taxonomyLinkNodes);
+
+    return {
+      foreignDisplayValues: taxonomyDisplayValues
+    };
+  }
+
+  const foreignDisplayValues = f.map(
+    id => f.prop([id, "values", 0], tableDisplayValuesMap),
+    linkRowIds
+  );
+
+  return {
+    foreignDisplayValues: f.isEmpty(foreignDisplayValues)
+      ? null
+      : foreignDisplayValues
+  };
 };
 
 const getConcatDisplayValues = (
@@ -48,7 +72,7 @@ const getConcatDisplayValues = (
   const tableId = table.id;
   const tableDisplayValues = doto(
     state,
-    getTable(tableId),
+    getDisplayValuesForTable(tableId),
     getRow(row.id),
     f.prop("values")
   );
@@ -86,7 +110,7 @@ export const withForeignDisplayValues = Component => props => {
   const mapStateToProps = isConcatColumn(cell.column)
     ? getConcatDisplayValues(cell, langtag)
     : isLinkColumn(cell.column)
-    ? getLinkDisplayValues(cell)
+    ? getLinkDisplayValues(cell, langtag)
     : () => ({ foreignDisplayValues: cell.displayValue });
   const ConnectedComponent = connect(mapStateToProps)(Component);
   return <ConnectedComponent {...props} />;

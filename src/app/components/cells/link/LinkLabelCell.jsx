@@ -7,43 +7,60 @@ import Empty from "../../helperComponents/emptyEntry";
 import PermissionDenied from "../../helperComponents/PermissionDenied";
 import { isLinkArchived } from "../../../archivedRows";
 import { buildClassName } from "../../../helpers/buildClassName";
+import Tooltip from "../../helperComponents/Tooltip/TooltipWithState";
+import TaxonomyPath from "./TaxonomyPath";
 
 const LinkLabelCell = props => {
   const {
     langtag,
     displayValue,
     cell: { column },
-    value
+    value,
+    availableWidth
   } = props;
+  const isTaxonomyPath = f.isArray(displayValue);
   const linkName = f.isEmpty(displayValue)
     ? retrieveTranslation(langtag, f.first(getDisplayValue(column, [value])))
-    : retrieveTranslation(langtag, displayValue);
+    : isTaxonomyPath
+    ? f.join(" > ", displayValue)
+    : displayValue;
 
   const isArchived = isLinkArchived(value);
 
-  const cssClass = buildClassName("link-label", { archived: isArchived });
+  const cssClass = buildClassName("link-label", {
+    archived: isArchived,
+    taxonomy: isTaxonomyPath
+  });
 
   return (
-    <button className={cssClass}>
+    <div className={cssClass}>
       <div className="label-text">
         {value.hiddenByRowPermissions ? (
           <PermissionDenied />
         ) : f.isEmpty(linkName) ? (
           <Empty />
+        ) : isTaxonomyPath && !f.isEmpty(displayValue) ? (
+          <Tooltip className="taxonomy-label" tooltip={linkName} offsetTop={5}>
+            <TaxonomyPath
+              nodes={displayValue}
+              availableWidth={availableWidth}
+            />
+          </Tooltip>
         ) : (
           linkName
         )}
       </div>
-    </button>
+    </div>
   );
 };
 
 LinkLabelCell.propTypes = {
   value: PropTypes.object.isRequired,
-  displayValue: PropTypes.object,
+  displayValue: PropTypes.oneOfType([PropTypes.string, PropTypes.array]),
   displayValues: PropTypes.array,
   cell: PropTypes.object.isRequired,
-  langtag: PropTypes.string.isRequired
+  langtag: PropTypes.string.isRequired,
+  availableWidth: PropTypes.number
 };
 
 export default LinkLabelCell;

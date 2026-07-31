@@ -27,6 +27,8 @@ import {
 } from "./actions/userSettingActions";
 import actionTypes from "./actionTypes";
 import { overlayParamsSpec } from "./reducers/overlays";
+import { isLinkColumn } from "../types/guards";
+import { isTaxonomyTable } from "../components/taxonomy/taxonomy";
 
 const {
   getAllTables,
@@ -305,9 +307,33 @@ const generateDisplayValues = (rows, columns, table) => (
   };
 };
 
-const loadCompleteTable = ({ tableId, selectedRowId }) => async dispatch => {
+const loadCompleteTable = ({ tableId, selectedRowId }) => async (
+  dispatch,
+  getState
+) => {
   dispatch(setCurrentTable(tableId));
-  await dispatch(loadColumns(tableId));
+
+  const tablesById = f.get(["tables", "data"], getState());
+  const columnsResponse = await dispatch(loadColumns(tableId));
+  const columns = columnsResponse.columns ?? [];
+  const taxonomyLinkColumns = f.compose(
+    f.uniqBy("id"),
+    f.filter(c => isLinkColumn(c) && isTaxonomyTable(tablesById[c.toTable]))
+  )(columns);
+
+  // load data for taxonomy tables so it can be used as displayValue
+  for (const taxonomyLinkColumn of taxonomyLinkColumns) {
+    const taxonomyTableId = taxonomyLinkColumn.toTable;
+
+    // do not await taxonomy data, so table can render without having to wait.
+    // if taxonomy data takes longer than the rest, the fallback displayValue (only LeafNode) is used
+    // and will be replaced with full path as soon as data arrives
+    Promise.all([
+      dispatch(loadColumns(taxonomyTableId)),
+      dispatch(Row.loadAllRows(taxonomyTableId))
+    ]);
+  }
+
   if (selectedRowId > 0) {
     dispatch(fetchSingleRow({ tableId, selectedRowId }));
   }
