@@ -129,9 +129,8 @@ const HistoryDatePicker = props => {
 
   return (
     <div className="history-date-picker">
-      <a
+      <button
         className="history-date-picker__picker-button"
-        href=""
         onClick={toggleOpen}
       >
         <i className="fa fa-calendar history-date-picker__button-icon" />
@@ -149,14 +148,13 @@ const HistoryDatePicker = props => {
             handleClickOutside={closePopup}
           />
         )}
-      </a>
-      <a
+      </button>
+      <button
         className="history-date-picker__clear-button history-date-picker__button-icon"
-        href=""
         onClick={() => handleChange(null)}
       >
         <i className="fa fa-minus-circle history-date-picker__buton-icon" />
-      </a>
+      </button>
     </div>
   );
 };
