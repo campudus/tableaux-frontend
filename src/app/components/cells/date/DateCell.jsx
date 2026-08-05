@@ -9,7 +9,7 @@ import {
 } from "../../../constants/TableauxConstants";
 import { formatDate, formatDateTime } from "../../../helpers/multiLanguage";
 
-const Datetime = listensToClickOutside(ReactDatetime);
+const Datetime = listensToClickOutside(ReactDatetime.default);
 
 const DATE_PICKER_HEIGHT = 265;
 

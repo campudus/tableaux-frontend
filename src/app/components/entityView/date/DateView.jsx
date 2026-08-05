@@ -14,7 +14,7 @@ import {
 import { formatDate, formatTimeShort } from "../../../helpers/multiLanguage";
 import { stopPropagation } from "../../../helpers/functools";
 
-const Datetime = listensToClickOutside(ReactDatetime);
+const Datetime = listensToClickOutside(ReactDatetime.default);
 
 class DateView extends Component {
   constructor(props) {
