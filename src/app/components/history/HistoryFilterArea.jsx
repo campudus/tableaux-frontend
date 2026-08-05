@@ -125,7 +125,7 @@ const HistoryDatePicker = props => {
   const toggleOpen = () => setOpen(!open);
   const closePopup = () => setOpen(false);
 
-  const SelfClosingDatePicker = withClickOutside(DatePicker);
+  const SelfClosingDatePicker = withClickOutside(DatePicker.default);
 
   return (
     <div className="history-date-picker">
