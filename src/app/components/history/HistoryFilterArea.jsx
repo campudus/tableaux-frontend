@@ -1,4 +1,4 @@
-import DatePicker from "react-datetime";
+import ReactDatetime from "react-datetime";
 import React, { useState } from "react";
 import f from "lodash/fp";
 import i18n from "i18next";
@@ -125,7 +125,7 @@ const HistoryDatePicker = props => {
   const toggleOpen = () => setOpen(!open);
   const closePopup = () => setOpen(false);
 
-  const SelfClosingDatePicker = withClickOutside(DatePicker.default);
+  const Datetime = withClickOutside(ReactDatetime.default ?? ReactDatetime);
 
   return (
     <div className="history-date-picker">
@@ -140,7 +140,7 @@ const HistoryDatePicker = props => {
             : i18n.t(placeholder)}
         </div>
         {open && (
-          <SelfClosingDatePicker
+          <Datetime
             open={true}
             onChange={handleChange}
             value={value}
