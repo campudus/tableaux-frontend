@@ -4,13 +4,13 @@ import React from "react";
 import { batch, Provider, useSelector } from "react-redux";
 import {
   BrowserRouter as Router,
-  Redirect,
+  Navigate,
   Route,
-  Switch,
-  useHistory,
-  useLocation
+  Routes,
+  useLocation,
+  useNavigate,
+  useParams
 } from "react-router-dom";
-import { CompatRoute, CompatRouter } from "react-router-dom-v5-compat";
 import { bindActionCreators } from "redux";
 import {
   DefaultLangtag,
@@ -31,182 +31,175 @@ const tablesSelector = state => state.tables;
 const currentTableSelector = state => state.tableView.currentTable;
 const currentLanguageSelector = state => state.tableView.currentLanguage;
 
-const GRUDRouter = React.memo(() => {
-  const isInitialized = useGrudInit();
+const createRouteView = viewName => () => {
+  const params = useParams();
+  const location = useLocation();
   const tables = useSelector(tablesSelector);
 
-  const renderView = viewName => routeProps =>
-    renderComponent(routerProps, routeProps, viewName);
+  return renderComponent(params, location, tables, viewName);
+};
 
-  const renderDashboard = React.useCallback(
-    renderView(ViewNames.DASHBOARD_VIEW)
-  );
+const DashboardRouteView = createRouteView(ViewNames.DASHBOARD_VIEW);
+const ProfileRouteView = createRouteView(ViewNames.PROFILE_VIEW);
+const TaxonomyRouteView = createRouteView(ViewNames.TAXONOMY_DASHBOARD_VIEW);
+const ServiceRouteView = createRouteView(ViewNames.FRONTEND_SERVICE_VIEW);
 
-  const renderProfile = React.useCallback(renderView(ViewNames.PROFILE_VIEW));
+const TableRouteView = () => {
+  const params = useParams();
+  const location = useLocation();
+  const tables = useSelector(tablesSelector);
 
-  const renderTaxonomyDashboard = renderView(ViewNames.TAXONOMY_DASHBOARD_VIEW);
-  const history = useHistory();
+  const validParams = validateRouteParams(params, tables);
+  const { tableId, langtag, rowId } = validParams;
+  const currentTable = currentTableSelector(store.getState());
+  const currentLanguage = currentLanguageSelector(store.getState());
+  const { filter } = parseOptions(location.search);
 
-  const renderTableView = React.useCallback(routeProps => {
-    const validParams = validateRouteParams(routeProps.match.params, tables);
-    const { tableId, langtag, rowId } = validParams;
-    const currentTable = currentTableSelector(store.getState());
-    const currentLanguage = currentLanguageSelector(store.getState());
-    const { filter } = parseOptions(routeProps.location.search);
-
-    // only load table if we're allowed to see at least one
-    if ((!currentTable || tableId !== currentTable) && tableId) {
-      batch(() => {
-        switchTable(history, tableId);
-        store.dispatch(actionCreators.cleanUp(tableId));
-        store.dispatch(actionCreators.toggleCellSelection(validParams));
-        store.dispatch(
-          actionCreators.loadCompleteTable({ tableId, selectedRowId: rowId })
-        );
-        store.dispatch(actionCreators.applyUserSettings(tableId));
-        store.dispatch(actionCreators.loadTableView(tableId, filter));
-      });
-    }
-
-    if (tableId && tableId === currentTable && langtag === currentLanguage) {
+  // only load table if we're allowed to see at least one
+  if ((!currentTable || tableId !== currentTable) && tableId) {
+    batch(() => {
+      store.dispatch(actionCreators.setCurrentTable(tableId));
+      store.dispatch(actionCreators.cleanUp(tableId));
+      store.dispatch(actionCreators.toggleCellSelection(validParams));
+      store.dispatch(
+        actionCreators.loadCompleteTable({ tableId, selectedRowId: rowId })
+      );
       store.dispatch(actionCreators.applyUserSettings(tableId));
-      store.dispatch(actionCreators.loadTableView(tableId));
-    }
+      store.dispatch(actionCreators.loadTableView(tableId, filter));
+    });
+  }
 
-    if (langtag !== currentLanguage) {
-      store.dispatch(actionCreators.setCurrentLanguage(langtag));
-    }
+  if (tableId && tableId === currentTable && langtag === currentLanguage) {
+    store.dispatch(actionCreators.applyUserSettings(tableId));
+    store.dispatch(actionCreators.loadTableView(tableId));
+  }
 
-    return renderView(ViewNames.TABLE_VIEW)(routeProps);
-  });
+  if (langtag !== currentLanguage) {
+    store.dispatch(actionCreators.setCurrentLanguage(langtag));
+  }
 
-  const renderServiceView = React.useCallback(
-    renderView(ViewNames.FRONTEND_SERVICE_VIEW)
-  );
+  return renderComponent(params, location, tables, ViewNames.TABLE_VIEW);
+};
 
-  const renderMediaView = React.useCallback(routeProps => {
-    const { folderId, langtag } = validateRouteParams(routeProps.match.params);
-    store.dispatch(actionCreators.getMediaFolder(folderId, langtag));
+const MediaRouteView = () => {
+  const params = useParams();
+  const location = useLocation();
+  const tables = useSelector(tablesSelector);
+  const { folderId, langtag } = validateRouteParams(params);
+  store.dispatch(actionCreators.getMediaFolder(folderId, langtag));
 
-    return renderView(ViewNames.MEDIA_VIEW)(routeProps);
-  });
+  return renderComponent(params, location, tables, ViewNames.MEDIA_VIEW);
+};
 
-  const renderPreviewView = React.useCallback(routeProps => {
-    const { tableId, columnId, rowId } = validateRouteParams(
-      routeProps.match.params,
-      tables
-    );
+const PreviewRouteView = () => {
+  const params = useParams();
+  const location = useLocation();
+  const tables = useSelector(tablesSelector);
+  const { tableId, columnId, rowId } = validateRouteParams(params, tables);
 
-    store.dispatch(actionCreators.loadPreviewView(tableId, rowId, columnId));
+  store.dispatch(actionCreators.loadPreviewView(tableId, rowId, columnId));
 
-    return renderView(ViewNames.PREVIEW_VIEW)(routeProps);
-  });
+  return renderComponent(params, location, tables, ViewNames.PREVIEW_VIEW);
+};
 
-  const routerProps = { langtags: Langtags, tables };
-
+const GRUDRouter = React.memo(() => {
+  const isInitialized = useGrudInit();
   const location = useLocation();
   const withLangtag = `/${DefaultLangtag}${location.pathname}`;
 
   return isInitialized ? (
-    <CompatRouter>
-      <Switch>
-        <CompatRoute path="/:langtag/dashboard" render={renderDashboard} />
-        <Route path="/dashboard" render={() => <Redirect to={withLangtag} />} />
+    <Routes>
+      <Route path="/:langtag/dashboard" element={<DashboardRouteView />} />
+      <Route
+        path="/dashboard"
+        element={<Navigate to={withLangtag} replace />}
+      />
 
-        <CompatRoute
-          path="/:langtag/profile/:profileTab"
-          render={renderProfile}
-        />
-        <CompatRoute path="/:langtag/profile" render={renderProfile} />
-        <Route path="/profile/*" render={() => <Redirect to={withLangtag} />} />
-        <Route path="/profile" render={() => <Redirect to={withLangtag} />} />
+      <Route
+        path="/:langtag/profile/:profileTab"
+        element={<ProfileRouteView />}
+      />
+      <Route path="/:langtag/profile" element={<ProfileRouteView />} />
+      <Route
+        path="/profile/*"
+        element={<Navigate to={withLangtag} replace />}
+      />
+      <Route path="/profile" element={<Navigate to={withLangtag} replace />} />
 
-        <CompatRoute
-          path="/:langtag/taxonomies"
-          render={renderTaxonomyDashboard}
-        />
-        <Route
-          path="/taxonomies"
-          render={() => <Redirect to={withLangtag} />}
-        />
+      <Route path="/:langtag/taxonomies" element={<TaxonomyRouteView />} />
+      <Route
+        path="/taxonomies"
+        element={<Navigate to={withLangtag} replace />}
+      />
 
-        <CompatRoute
-          path="/:langtag/tables/:tableId/columns/:columnId/rows/:rowId"
-          render={renderTableView}
-        />
-        <CompatRoute
-          path="/:langtag/tables/:tableId/columns/:columnId"
-          render={renderTableView}
-        />
-        <CompatRoute
-          path="/:langtag/tables/:tableId/rows/:rowId"
-          render={renderTableView}
-        />
-        <CompatRoute
-          path="/:langtag/tables/:tableId"
-          render={renderTableView}
-        />
-        <CompatRoute path="/:langtag/tables" render={renderTableView} />
-        <Route path="/tables/*" render={() => <Redirect to={withLangtag} />} />
-        <Route path="/tables" render={() => <Redirect to={withLangtag} />} />
+      <Route
+        path="/:langtag/tables/:tableId/columns/:columnId/rows/:rowId"
+        element={<TableRouteView />}
+      />
+      <Route
+        path="/:langtag/tables/:tableId/columns/:columnId"
+        element={<TableRouteView />}
+      />
+      <Route
+        path="/:langtag/tables/:tableId/rows/:rowId"
+        element={<TableRouteView />}
+      />
+      <Route path="/:langtag/tables/:tableId" element={<TableRouteView />} />
+      <Route path="/:langtag/tables" element={<TableRouteView />} />
+      <Route path="/tables/*" element={<Navigate to={withLangtag} replace />} />
+      <Route path="/tables" element={<Navigate to={withLangtag} replace />} />
 
-        <CompatRoute
-          path="/:langtag/services/:serviceId/tables/:tableId/columns/:columnId/rows/:rowId"
-          render={renderServiceView}
-        />
-        <CompatRoute
-          path="/:langtag/services/:serviceId/tables/:tableId/columns/:columnId"
-          render={renderServiceView}
-        />
-        <CompatRoute
-          path="/:langtag/services/:serviceId/tables/:tableId/rows/:rowId"
-          render={renderServiceView}
-        />
-        <CompatRoute
-          path="/:langtag/services/:serviceId"
-          render={renderServiceView}
-        />
-        <Route
-          path="/services/*"
-          render={() => <Redirect to={withLangtag} />}
-        />
+      <Route
+        path="/:langtag/services/:serviceId/tables/:tableId/columns/:columnId/rows/:rowId"
+        element={<ServiceRouteView />}
+      />
+      <Route
+        path="/:langtag/services/:serviceId/tables/:tableId/columns/:columnId"
+        element={<ServiceRouteView />}
+      />
+      <Route
+        path="/:langtag/services/:serviceId/tables/:tableId/rows/:rowId"
+        element={<ServiceRouteView />}
+      />
+      <Route
+        path="/:langtag/services/:serviceId"
+        element={<ServiceRouteView />}
+      />
+      <Route
+        path="/services/*"
+        element={<Navigate to={withLangtag} replace />}
+      />
 
-        <CompatRoute
-          path="/:langtag/media/:folderId"
-          render={renderMediaView}
-        />
-        <CompatRoute path="/:langtag/media" render={renderMediaView} />
-        <Route path="/media/*" render={() => <Redirect to={withLangtag} />} />
-        <Route path="/media" render={() => <Redirect to={withLangtag} />} />
+      <Route path="/:langtag/media/:folderId" element={<MediaRouteView />} />
+      <Route path="/:langtag/media" element={<MediaRouteView />} />
+      <Route path="/media/*" element={<Navigate to={withLangtag} replace />} />
+      <Route path="/media" element={<Navigate to={withLangtag} replace />} />
 
-        <CompatRoute
-          path="/:langtag/preview/:tableId/rows/:rowId"
-          render={renderPreviewView}
-        />
-        <CompatRoute
-          path="/:langtag/preview/:tableId/columns/:columnId/rows/:rowId"
-          render={renderPreviewView}
-        />
-        <Route path="/preview/*" render={() => <Redirect to={withLangtag} />} />
-        <Route path="/preview" render={() => <Redirect to={withLangtag} />} />
+      <Route
+        path="/:langtag/preview/:tableId/rows/:rowId"
+        element={<PreviewRouteView />}
+      />
+      <Route
+        path="/:langtag/preview/:tableId/columns/:columnId/rows/:rowId"
+        element={<PreviewRouteView />}
+      />
+      <Route
+        path="/preview/*"
+        element={<Navigate to={withLangtag} replace />}
+      />
+      <Route path="/preview" element={<Navigate to={withLangtag} replace />} />
 
-        <Route
-          path="*"
-          render={() => <Redirect to={`/${DefaultLangtag}/dashboard`} />}
-        />
-      </Switch>
-    </CompatRouter>
+      <Route
+        path="*"
+        element={<Navigate to={`/${DefaultLangtag}/dashboard`} replace />}
+      />
+    </Routes>
   ) : (
     <Spinner isLoading={true} />
   );
 });
 
-const renderComponent = (routerProps, routingResult, viewName) => {
-  const {
-    location,
-    match: { params }
-  } = routingResult;
-  const { tables } = routerProps;
+const renderComponent = (params, location, tables, viewName) => {
   const validParams = validateRouteParams(params, tables);
   const tableauxParams = {
     ...validParams,
@@ -279,27 +272,34 @@ const isValidTableId = (tableId, tables) => {
 const isNumeric = str => /^\d+$/.test(str); // regex coerces nil values
 const validateNumber = str => (isNumeric(str) ? parseInt(str) : undefined);
 
-export const switchTable = ({ tableId } = {}) => {
-  store.dispatch(actionCreators.setCurrentTable(tableId));
-};
-
-export const switchFolderHandler = (history, langtag, folderId) => {
+export const switchFolderHandler = (navigate, langtag, folderId) => {
   const url = folderId ? `/${langtag}/media/${folderId}` : `/${langtag}/media`;
 
-  history.push(url);
+  navigate(url);
 };
 
 // Changes UI- and content language
-export const switchLanguageHandler = (history, langtag) => {
+export const switchLanguageHandler = (navigate, pathname, langtag) => {
   i18n.changeLanguage(langtag);
-  const newUrl = history.location.pathname.replace(/^\/.*?\//, `/${langtag}/`);
-  history.push(newUrl);
+  const newUrl = pathname.replace(/^\/.*?\//, `/${langtag}/`);
+  navigate(newUrl);
 };
 
 // navigates to path
-export const navigate = (history, path) => {
-  history.push(path);
+export const navigate = (navigateFn, path) => {
+  navigateFn(path);
 };
+
+// react-router v6 dropped withRouter; this recreates the v5-shaped prop
+// interface for the two remaining class components that relied on it.
+export function withRouter(Component) {
+  return function ComponentWithRouterProp(props) {
+    const location = useLocation();
+    const navigate = useNavigate();
+    const params = useParams();
+    return <Component {...props} router={{ location, navigate, params }} />;
+  };
+}
 
 export default withUserAuthentication(props => (
   <Router>

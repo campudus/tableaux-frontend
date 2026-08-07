@@ -1,5 +1,5 @@
 import React, { Fragment, MouseEvent, ReactNode } from "react";
-import { NavLink, useHistory } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { buildClassName as cn } from "../../helpers/buildClassName";
 import ButtonAction from "./ButtonAction";
 
@@ -19,7 +19,7 @@ function BreadcrumbsLink({ path, label, onClick, isActive }: BreadcrumbsLink) {
     <NavLink
       to={path}
       className={cn("breadcrumbs__link", {}, isActive ? "active" : "")}
-      exact
+      end
     >
       {label}
     </NavLink>
@@ -43,12 +43,8 @@ export default function Breadcrumbs({
   className,
   links = []
 }: BreadcrumbsProps) {
-  const history = useHistory();
+  const navigate = useNavigate();
   const needsDropdown = links.length > 3;
-
-  const navigate = (path: string) => {
-    history.push(path);
-  };
 
   if (needsDropdown) {
     const firstLink = links.at(0);

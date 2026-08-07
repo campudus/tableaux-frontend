@@ -10,7 +10,7 @@ import GrudHeader from "../GrudHeader";
 import { switchLanguageHandler } from "../Router";
 import * as t from "./taxonomy";
 import route from "../../helpers/apiRoutes";
-import { Link, withRouter } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { supportDetails } from "../dashboard/support/SupportWidget";
 
 const TaxonomyTableCard = ({ table, langtag }) => (
@@ -63,10 +63,12 @@ ${supportDetails.email}`}
 );
 
 const TaxonomyDashboard = props => {
-  const { history, langtag } = props;
+  const { langtag } = props;
+  const navigate = useNavigate();
+  const location = useLocation();
   const tables = useSelector(selectTaxonomyTables);
   const handleSwitchLangtag = useCallback(newLangtag => {
-    switchLanguageHandler(history, newLangtag);
+    switchLanguageHandler(navigate, location.pathname, newLangtag);
   });
   return (
     <div className="taxonomy-dashboard">
@@ -91,4 +93,4 @@ const TaxonomyDashboard = props => {
 };
 
 TaxonomyDashboard.displayName = "TaxonomyDashboard";
-export default withRouter(TaxonomyDashboard);
+export default TaxonomyDashboard;

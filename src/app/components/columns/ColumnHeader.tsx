@@ -1,7 +1,7 @@
 import f from "lodash/fp";
 import { Portal } from "react-portal";
 import { ReactElement, ReactNode, useRef, useState } from "react";
-import { NavigateFunction } from "react-router";
+import { NavigateFunction } from "react-router-dom";
 import classNames from "classnames";
 import { Column, Table } from "../../types/grud";
 import {

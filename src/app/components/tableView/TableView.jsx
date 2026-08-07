@@ -2,7 +2,6 @@ import i18n from "i18next";
 import f from "lodash/fp";
 import PropTypes from "prop-types";
 import { PureComponent } from "react";
-import { withRouter } from "react-router-dom";
 import ToggleArchivedRowsButton from "../../archivedRows/ToggleArchivedRowsButton";
 import {
   initLangtags,
@@ -23,7 +22,7 @@ import TableSettings from "../header/tableSettings/TableSettings";
 import TableSwitcher from "../header/tableSwitcher/TableSwitcher.jsx";
 import AnnotationHighlightToggle from "../header/AnnotationHighlightToggle.jsx";
 import { showDialog } from "../overlay/GenericOverlay";
-import { navigate, switchLanguageHandler } from "../Router";
+import { navigate, switchLanguageHandler, withRouter } from "../Router";
 import Table from "../table/Table.jsx";
 import HistoryButtons from "../table/undo/HistoryButtons";
 import { isTaxonomyTable } from "../taxonomy/taxonomy";
@@ -229,13 +228,17 @@ class TableView extends PureComponent {
   };
 
   onLanguageSwitch = newLangtag => {
-    const { history } = this.props;
-    switchLanguageHandler(history, newLangtag);
+    const { router } = this.props;
+    switchLanguageHandler(
+      router.navigate,
+      router.location.pathname,
+      newLangtag
+    );
   };
 
   onNavigate = path => {
-    const { history } = this.props;
-    navigate(history, path);
+    const { router } = this.props;
+    navigate(router.navigate, path);
   };
 
   renderNewRowButton = () => {

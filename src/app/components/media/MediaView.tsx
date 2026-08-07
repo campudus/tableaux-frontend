@@ -2,8 +2,7 @@ import f from "lodash/fp";
 import i18n from "i18next";
 import { ReactElement, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useHistory } from "react-router-dom";
-import { useSearchParams } from "react-router-dom-v5-compat";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import Dropzone from "react-dropzone";
 import { switchLanguageHandler } from "../Router";
 import GrudHeader from "../GrudHeader";
@@ -31,7 +30,8 @@ type MediaViewProps = {
 export default function MediaView({ langtag }: MediaViewProps): ReactElement {
   const [layout, setLayout] = useState<Layout>("list");
   const dropzoneRef = useRef<Dropzone>(null);
-  const history = useHistory();
+  const navigate = useNavigate();
+  const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   const searchParamUuid = searchParams.get("uuid");
   const dispatch = useDispatch();
@@ -50,7 +50,7 @@ export default function MediaView({ langtag }: MediaViewProps): ReactElement {
     folderIdPrev === folder.id ? f.difference(fileIds, fileIdsPrev) : [];
 
   const handleLanguageSwitch = (newLangtag: string) => {
-    switchLanguageHandler(history, newLangtag);
+    switchLanguageHandler(navigate, location.pathname, newLangtag);
   };
 
   const handleClickUpload = () => {

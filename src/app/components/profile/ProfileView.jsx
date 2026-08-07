@@ -1,5 +1,5 @@
 import React, { useCallback } from "react";
-import { NavLink, withRouter } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { t } from "i18next";
 import GrudHeader from "../GrudHeader";
 import { switchLanguageHandler as switchLang } from "../Router";
@@ -12,8 +12,12 @@ const TAB_COMPONENT = {
   [PROFILE_TAB.SETTINGS]: ProfileSettings
 };
 
-function ProfileView({ langtag, history, profileTab }) {
-  const handleLanguageSwitch = useCallback(value => switchLang(history, value));
+function ProfileView({ langtag, profileTab }) {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const handleLanguageSwitch = useCallback(value =>
+    switchLang(navigate, location.pathname, value)
+  );
   const TabContent = TAB_COMPONENT[profileTab] ?? ProfilePersonal;
 
   return (
@@ -28,7 +32,7 @@ function ProfileView({ langtag, history, profileTab }) {
             <NavLink
               to={`/${langtag}/profile`}
               className="profile-view__link"
-              exact
+              end
             >
               <i className="fa fa-user-circle" />
               {t("profile:navigation.personal-data")}
@@ -37,7 +41,7 @@ function ProfileView({ langtag, history, profileTab }) {
             <NavLink
               to={`/${langtag}/profile/${PROFILE_TAB.SETTINGS}`}
               className="profile-view__link"
-              exact
+              end
             >
               <i className="fa fa-sliders" />
               {t("profile:navigation.global-settings")}
@@ -53,4 +57,4 @@ function ProfileView({ langtag, history, profileTab }) {
   );
 }
 
-export default withRouter(ProfileView);
+export default ProfileView;
