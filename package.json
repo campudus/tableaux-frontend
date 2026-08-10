@@ -67,7 +67,7 @@
     "match-iz": "4.0.2",
     "moment": "2.29.4",
     "patch-package": "^8.0.1",
-    "postcss": "^8.5.14",
+    "postcss": "^8.5.26",
     "prettier": "1.19.1",
     "react": "16.14.0",
     "react-currency-input-field": "^3.10.0",
