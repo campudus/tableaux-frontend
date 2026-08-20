@@ -12,6 +12,7 @@ import {
   getCurrencyCode,
   getFallbackCurrencyValue
 } from "./multiLanguage";
+import { formatLinkLabel, usesLinkAttributeFormat } from "./linkAttributes";
 
 // (obj, obj) -> obj
 //
@@ -142,8 +143,27 @@ const getStatusValue = column => value =>
     .map(rule => rule.name)
     .join(",");
 
+// Per link entry (edge), resolve the target row's own displayValue as usual,
+// then -- if the column carries linkAttributes + formatPattern -- reformat it
+// per langtag using the edge's positional `attributes`. This is the same
+// {{value}}/{{attributes.x}} formatting LinkCell.jsx/LinkItem.jsx apply
+// against the target-row displayValue cache (see linkAttributes.ts); doing it
+// here as well means every direct caller of getDisplayValue(linkColumn) gets
+// formatted labels for free, without duplicating the formatting call.
 const getLinkValue = column =>
-  f.map(f.flow(f.get("value"), getDisplayValue(column.toColumn)));
+  f.map(link => {
+    const displayValue = getDisplayValue(column.toColumn)(link.value);
+    return usesLinkAttributeFormat(column)
+      ? applyToAllLangs(lt =>
+          formatLinkLabel({
+            column,
+            link,
+            displayValue: f.get(lt, displayValue),
+            langtag: lt
+          })
+        )
+      : displayValue;
+  });
 
 const getAttachmentFileName = () => links => {
   const getFileName = (lt, link) =>

@@ -4,11 +4,13 @@ import {
   Column,
   ColumnKind,
   FolderID,
+  LinkColumn,
   Locale,
   MultilangValue,
   Table
 } from "@grud/devtools/types";
 import { UserSettingsState } from "../redux/reducers/userSettings";
+import { LinkAttributeDefinition } from "../helpers/linkAttributes";
 
 export * from "@grud/devtools/types";
 
@@ -25,6 +27,13 @@ export type UnionColumn = Column & {
     tableId: number;
     column: Column;
   }>;
+};
+
+// @grud/devtools' LinkColumn doesn't know about linkAttributes/formatPattern
+// yet -- both are runtime-only fields today (see helpers/linkAttributes.ts).
+export type LinkAttributeColumn = LinkColumn & {
+  linkAttributes?: LinkAttributeDefinition[];
+  formatPattern?: string;
 };
 
 export type Row = {
