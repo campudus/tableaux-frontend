@@ -71,9 +71,9 @@ const LinkItem = props => {
     viewUrl,
     isPermissionDenied = false,
     archived = false,
-    attributes,
     enableLinkAttributes = false
   } = props;
+  const attributes = f.get(["row", "attributes"], props);
   const isAttachment = props.isAttachment || Boolean(viewUrl);
   const isDisabled = isPermissionDenied || !userCanEdit;
   const column = f.get(["cell", "column"], props);
@@ -216,7 +216,6 @@ LinkItem.propTypes = {
   userCanEdit: PropTypes.bool,
   viewUrl: PropTypes.string,
   isPermissionDenied: PropTypes.bool,
-  attributes: PropTypes.object,
   enableLinkAttributes: PropTypes.bool
 };
 
