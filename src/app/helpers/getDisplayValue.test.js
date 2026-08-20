@@ -1,5 +1,5 @@
 import { buildOriginColumnLookup } from "./columnHelper";
-import getDisplayValue from "./getDisplayValue";
+import getDisplayValue, { applyLinkAttributeFormat } from "./getDisplayValue";
 
 describe("getDisplayValue", () => {
   it("should format union table values", () => {
@@ -442,3 +442,68 @@ const unionLinkColumn = {
     }
   ]
 };
+
+// The display value worker builds link labels from the per-target-row cache
+// (which is attribute-free by design, see linkHelper.js) instead of going
+// through getDisplayValue(linkColumn), so it applies the format itself via
+// this shared helper.
+describe("applyLinkAttributeFormat()", () => {
+  const linkColumn = {
+    id: 5,
+    name: "material",
+    kind: "link",
+    toTable: 1,
+    linkAttributes: [{ name: "percentage", kind: "integer" }],
+    formatPattern: "{{value}} ({{attributes.percentage}}%)",
+    toColumn: {
+      id: 1,
+      name: "identifier",
+      kind: "shorttext",
+      multilanguage: true
+    }
+  };
+  const base = { "de-DE": "Grau" };
+
+  it("formats the target's label with the edge's attributes", () => {
+    expect(
+      applyLinkAttributeFormat(linkColumn, { id: 1, attributes: [12] }, base)
+    ).toEqual({ "de-DE": "Grau (12%)" });
+  });
+
+  it("returns the base untouched without linkAttributes/formatPattern", () => {
+    const plain = {
+      ...linkColumn,
+      linkAttributes: undefined,
+      formatPattern: undefined
+    };
+
+    expect(
+      applyLinkAttributeFormat(plain, { id: 1, attributes: [12] }, base)
+    ).toBe(base);
+  });
+
+  it("renders a missing attribute as placeholder but keeps a stored 0", () => {
+    expect(applyLinkAttributeFormat(linkColumn, { id: 1 }, base)).toEqual({
+      "de-DE": "Grau (_%)"
+    });
+    expect(
+      applyLinkAttributeFormat(linkColumn, { id: 1, attributes: [0] }, base)
+    ).toEqual({ "de-DE": "Grau (0%)" });
+  });
+
+  it("keeps two edges onto the same target row independent", () => {
+    const a = applyLinkAttributeFormat(
+      linkColumn,
+      { id: 1, attributes: [12] },
+      base
+    );
+    const b = applyLinkAttributeFormat(
+      linkColumn,
+      { id: 1, attributes: [75] },
+      base
+    );
+
+    expect(a["de-DE"]).toBe("Grau (12%)");
+    expect(b["de-DE"]).toBe("Grau (75%)");
+  });
+});
