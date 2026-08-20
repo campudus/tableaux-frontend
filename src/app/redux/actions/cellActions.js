@@ -22,6 +22,13 @@ import route from "../../helpers/apiRoutes";
 import { isValidDate } from "../../helpers/date";
 import { merge, when } from "../../helpers/functools";
 import { createLinkOrderRequest } from "../../helpers/linkHelper";
+import {
+  buildAttributesPayload,
+  getLinkAttributeDefinitions,
+  hasLinkAttributes,
+  readLinkAttributes,
+  setLinkAttributes
+} from "../../helpers/linkAttributes";
 import { getCountryOfLangtag } from "../../helpers/multiLanguage";
 import ActionTypes from "../actionTypes";
 import store from "../store";
@@ -400,8 +407,27 @@ export const calculateCellUpdate = action => {
       pathPostfix: `/${column.kind}/${swapee}/order`
     };
 
+    // Replacing the whole link cell value deletes and recreates every
+    // connection server-side, so an entry sent without `attributes` loses
+    // its stored attribute values. Read-Modify-Write: only for link columns
+    // that actually have a linkAttributes definition, send `{id, attributes}`
+    // per entry instead of a bare id -- preferring attributes already on the
+    // incoming entry, falling back to whatever was stored in oldValue.
+    // Attachments and link columns without linkAttributes are unaffected.
+    const columnHasLinkAttributes =
+      column.kind === ColumnKinds.link && hasLinkAttributes(column);
+    const toResetEntry = link => {
+      const id = f.isObject(link) ? link.id : link;
+      const attributes =
+        f.isObject(link) && f.has("attributes", link)
+          ? link.attributes
+          : readLinkAttributes(id, oldValue);
+      return f.isUndefined(attributes) ? { id } : { id, attributes };
+    };
     const resetAction = {
-      value: { value: newIds },
+      value: {
+        value: columnHasLinkAttributes ? f.map(toResetEntry, newValue) : newIds
+      },
       method: "PUT"
     };
 
@@ -446,6 +472,65 @@ export const calculateCellUpdate = action => {
       method: method || "POST"
     };
   }
+};
+
+// Sets the attribute values of a single link edge (identified by the linked
+// row's id) via the dedicated endpoint, instead of replacing the whole link
+// cell value. Kept separate from changeCellValue/dispatchCellValueChange
+// because we need the server's normalized response (datetime -> UTC,
+// date -> YYYY-MM-DD) to win over the optimistically sent value, and
+// dispatchCellValueChange doesn't expose the response body to its caller.
+export const changeLinkAttributes = ({
+  cell,
+  linkId,
+  attributes
+}) => dispatch => {
+  const { table, column, row } = cell;
+  const oldValue = cell.value;
+  const payload = {
+    attributes: buildAttributesPayload(
+      getLinkAttributeDefinitions(column),
+      attributes
+    )
+  };
+  const newValue = setLinkAttributes(linkId, payload.attributes, oldValue);
+  const cellIds = { tableId: table.id, columnId: column.id, rowId: row.id };
+
+  return new Promise((resolve, reject) => {
+    dispatch({
+      promise: makeRequest({
+        apiRoute: route.toLinkAttributes({ ...cellIds, linkId }),
+        method: "PUT",
+        data: payload
+      }).then(result => {
+        // Adopt the server-normalized value (esp. datetime -> UTC) instead
+        // of what we optimistically sent.
+        dispatch({
+          type: CELL_SET_VALUE,
+          ...cellIds,
+          column,
+          cell,
+          oldValue: newValue,
+          newValue: result.value
+        });
+        return result;
+      }),
+      actionTypes: [
+        CELL_SET_VALUE,
+        CELL_SAVED_SUCCESSFULLY,
+        CELL_ROLLBACK_VALUE
+      ],
+      ...cellIds,
+      column,
+      cell,
+      oldValue,
+      newValue,
+      onSuccess: resolve,
+      onError: reject
+    });
+  })
+    .then(() => refreshDependentRows(table.id, [row.id], store.getState()))
+    .then(state => dispatch({ type: SET_STATE, state }));
 };
 
 export const modifyHistory = (modifyAction, tableId, rowId) => (

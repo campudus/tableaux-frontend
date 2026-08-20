@@ -1,5 +1,9 @@
 import { ColumnKinds } from "../../constants/TableauxConstants";
-import { getEmptyValue, isEmptyValue } from "./cellActions";
+import {
+  calculateCellUpdate,
+  getEmptyValue,
+  isEmptyValue
+} from "./cellActions";
 
 describe("isEmptyValue()", () => {
   describe("date", () => {
@@ -41,4 +45,117 @@ describe("getEmptyValue()", () => {
       expect(getEmptyValue(kind)).toEqual(expected);
     }
   );
+});
+
+describe("calculateCellUpdate() - link reset branch with linkAttributes", () => {
+  const percentageDef = { name: "percentage", kind: "integer" };
+
+  test("link column with linkAttributes sends {id, attributes} per entry on reset", () => {
+    const column = { kind: ColumnKinds.link, linkAttributes: [percentageDef] };
+    const oldValue = [{ id: 1, value: "A", attributes: [50] }];
+    const newValue = [
+      { id: 2, value: "B" },
+      { id: 3, value: "C", attributes: [75] }
+    ];
+
+    const update = calculateCellUpdate({ column, oldValue, newValue });
+
+    expect(update.method).toBe("PUT");
+    expect(update.value).toEqual({
+      value: [{ id: 2 }, { id: 3, attributes: [75] }]
+    });
+  });
+
+  test("link column without linkAttributes still sends bare ids on reset", () => {
+    const column = { kind: ColumnKinds.link };
+    const oldValue = [{ id: 1, value: "A" }];
+    const newValue = [
+      { id: 2, value: "B" },
+      { id: 3, value: "C" }
+    ];
+
+    const update = calculateCellUpdate({ column, oldValue, newValue });
+
+    expect(update.value).toEqual({ value: [2, 3] });
+  });
+
+  test("attachment column is unaffected and still sends bare uuids on reset", () => {
+    const column = { kind: ColumnKinds.attachment };
+    const oldValue = [{ uuid: "a" }];
+    const newValue = [{ uuid: "b" }, { uuid: "c" }];
+
+    const update = calculateCellUpdate({ column, oldValue, newValue });
+
+    expect(update.value).toEqual({ value: ["b", "c"] });
+  });
+
+  test("recovers attributes stripped from an incoming entry from oldValue (read-modify-write)", () => {
+    const column = { kind: ColumnKinds.link, linkAttributes: [percentageDef] };
+    const oldValue = [
+      { id: 5, value: "Mehl", attributes: [50] },
+      { id: 7, value: "Salz" }
+    ];
+    const newValue = [
+      { id: 5, value: "Mehl" },
+      { id: 6, value: "Wasser" }
+    ];
+
+    const update = calculateCellUpdate({ column, oldValue, newValue });
+
+    expect(update.value).toEqual({
+      value: [{ id: 5, attributes: [50] }, { id: 6 }]
+    });
+  });
+
+  test("handles newValue given as bare ids without crashing", () => {
+    const column = { kind: ColumnKinds.link, linkAttributes: [percentageDef] };
+    const oldValue = [{ id: 1, attributes: [50] }];
+    const newValue = [2, 3];
+
+    const update = calculateCellUpdate({ column, oldValue, newValue });
+
+    expect(update.value).toEqual({ value: [{ id: 2 }, { id: 3 }] });
+  });
+});
+
+describe("calculateCellUpdate() - unaffected link branches", () => {
+  test("isSame returns null", () => {
+    const column = { kind: ColumnKinds.link };
+    const value = [{ id: 1 }, { id: 2 }];
+    expect(
+      calculateCellUpdate({ column, oldValue: value, newValue: value })
+    ).toBeNull();
+  });
+
+  test("reordering two linked rows still uses the /order endpoint", () => {
+    const column = { kind: ColumnKinds.link, linkAttributes: [] };
+    const oldValue = [{ id: 1 }, { id: 2 }];
+    const newValue = [{ id: 2 }, { id: 1 }];
+
+    const update = calculateCellUpdate({ column, oldValue, newValue });
+
+    expect(update.method).toBe("PUT");
+    expect(update.pathPostfix).toMatch(/\/link\/\d+\/order$/);
+  });
+
+  test("adding a single link still uses PATCH with a bare id", () => {
+    const column = { kind: ColumnKinds.link };
+    const oldValue = [{ id: 1 }, { id: 2 }];
+    const newValue = [{ id: 1 }, { id: 2 }, { id: 3 }];
+
+    const update = calculateCellUpdate({ column, oldValue, newValue });
+
+    expect(update).toEqual({ method: "PATCH", value: { value: 3 } });
+  });
+
+  test("removing a single link still uses DELETE", () => {
+    const column = { kind: ColumnKinds.link };
+    const oldValue = [{ id: 1 }, { id: 2 }];
+    const newValue = [{ id: 1 }];
+
+    const update = calculateCellUpdate({ column, oldValue, newValue });
+
+    expect(update.method).toBe("DELETE");
+    expect(update.pathPostfix).toBe("/link/2");
+  });
 });

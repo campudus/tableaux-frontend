@@ -26,7 +26,8 @@ const LinkList = props => {
     langtag,
     actions,
     isAttachment,
-    showToggleButton
+    showToggleButton,
+    enableLinkAttributes
   } = props;
   const { column, row, table, value } = cell;
   const changeCellAuthorized =
@@ -100,6 +101,8 @@ const LinkList = props => {
         viewUrl={getViewUrl(link)}
         isPermissionDenied={link.hiddenByRowPermissions}
         archived={isArchived}
+        attributes={link.attributes}
+        enableLinkAttributes={enableLinkAttributes}
       />
     );
   };
