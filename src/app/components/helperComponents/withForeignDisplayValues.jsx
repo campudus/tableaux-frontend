@@ -1,5 +1,4 @@
 import { connect } from "react-redux";
-import React from "react";
 import f from "lodash/fp";
 
 import { ColumnKinds } from "../../constants/TableauxConstants";
@@ -121,18 +120,25 @@ const getConcatDisplayValues = (
   return { foreignDisplayValues: partialValues.join(" ") };
 };
 
-// HOC ({ column, tableId }) -> (Component) -> Component
-export const withForeignDisplayValues = Component => props => {
+const mapStateToProps = (state, props) => {
   const { cell, langtag } = props;
   if (f.any(f.isEmpty, f.props(["column", "table", "row"], cell))) {
-    return <Component {...props} />;
+    return {};
   }
 
-  const mapStateToProps = isConcatColumn(cell.column)
-    ? getConcatDisplayValues(cell, langtag)
+  return isConcatColumn(cell.column)
+    ? getConcatDisplayValues(cell, langtag)(state)
     : isLinkColumn(cell.column)
-    ? getLinkDisplayValues(cell, langtag)
-    : () => ({ foreignDisplayValues: cell.displayValue });
-  const ConnectedComponent = connect(mapStateToProps)(Component);
-  return <ConnectedComponent {...props} />;
+    ? getLinkDisplayValues(cell, langtag)(state)
+    : { foreignDisplayValues: cell.displayValue };
 };
+
+// HOC ({ column, tableId }) -> (Component) -> Component
+//
+// connect() is applied once, at composition time. Building it inside render
+// instead would hand React a brand new component type on every render, which
+// unmounts and remounts the whole subtree -- that discarded any state below,
+// e.g. the open LinkAttributesPopover in the detail EntityView (and its
+// unsaved draft) as soon as a mouse move re-rendered the row.
+export const withForeignDisplayValues = Component =>
+  connect(mapStateToProps)(Component);
