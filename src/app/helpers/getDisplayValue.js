@@ -143,27 +143,38 @@ const getStatusValue = column => value =>
     .map(rule => rule.name)
     .join(",");
 
-// Per link entry (edge), resolve the target row's own displayValue as usual,
-// then -- if the column carries linkAttributes + formatPattern -- reformat it
-// per langtag using the edge's positional `attributes`. This is the same
-// {{value}}/{{attributes.x}} formatting LinkCell.jsx/LinkItem.jsx apply
-// against the target-row displayValue cache (see linkAttributes.ts); doing it
-// here as well means every direct caller of getDisplayValue(linkColumn) gets
-// formatted labels for free, without duplicating the formatting call.
+// Apply a link column's formatPattern to ONE edge, per langtag: `base` is the
+// target row's own displayValue ({langtag: text}), `link` the edge carrying the
+// positional `attributes`. Returned unchanged when the column has no
+// linkAttributes + formatPattern.
+//
+// Exported because the display value worker needs the identical formatting: it
+// builds link labels from the per-target-row cache rather than from
+// getDisplayValue(linkColumn) (see worker.js / linkHelper.js), and
+// applyToAllLangs is private to this module.
+export const applyLinkAttributeFormat = (column, link, base) =>
+  usesLinkAttributeFormat(column)
+    ? applyToAllLangs(lt =>
+        formatLinkLabel({
+          column,
+          link,
+          displayValue: f.get(lt, base),
+          langtag: lt
+        })
+      )
+    : base;
+
+// Per link entry (edge): the target row's own displayValue, formatted with that
+// edge's attributes. Doing it here means every direct caller of
+// getDisplayValue(linkColumn) gets formatted labels for free.
 const getLinkValue = column =>
-  f.map(link => {
-    const displayValue = getDisplayValue(column.toColumn)(link.value);
-    return usesLinkAttributeFormat(column)
-      ? applyToAllLangs(lt =>
-          formatLinkLabel({
-            column,
-            link,
-            displayValue: f.get(lt, displayValue),
-            langtag: lt
-          })
-        )
-      : displayValue;
-  });
+  f.map(link =>
+    applyLinkAttributeFormat(
+      column,
+      link,
+      getDisplayValue(column.toColumn)(link.value)
+    )
+  );
 
 const getAttachmentFileName = () => links => {
   const getFileName = (lt, link) =>

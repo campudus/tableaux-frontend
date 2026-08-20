@@ -29,7 +29,8 @@ const flattenAndTranslate = f.curryN(2, (langtag, value = []) => {
   return f.map(retrieveTranslation(langtag), value).join(" ");
 });
 
-const getLinkDisplayValues = ({ value, column: { toTable } }) => state => {
+const getLinkDisplayValues = ({ value, column, table, row }) => state => {
+  const { toTable } = column;
   const tableDisplayValues = getDisplayValuesForTable(toTable)(state);
   const tableDisplayValuesMap = f.keyBy("id", tableDisplayValues);
   const linkTable = state.tables.data[toTable];
@@ -51,6 +52,26 @@ const getLinkDisplayValues = ({ value, column: { toTable } }) => state => {
     return {
       foreignDisplayValues: taxonomyDisplayValues
     };
+  }
+
+  // Preferred source: this cell's own displayValue, which the worker/reducers
+  // compute per edge and therefore carries the link column's formatPattern
+  // applied with each edge's `attributes`. The per-target-row lookup below is
+  // shared across edges and holds the target's plain identifier only.
+  // `table`/`row` are absent when called from getConcatDisplayValues -- fall
+  // through to that lookup then.
+  const linkDisplayValues =
+    table && row
+      ? doto(
+          state,
+          getDisplayValuesForTable(table.id),
+          getRow(row.id),
+          f.prop(["values", getColumnIdx(table.id, column.id, state)])
+        )
+      : null;
+
+  if (!f.isEmpty(linkDisplayValues)) {
+    return { foreignDisplayValues: linkDisplayValues };
   }
 
   const foreignDisplayValues = f.map(

@@ -83,8 +83,33 @@ const withCachedLinks = Component => props => {
     f.prop(["displayValues", column.toTable], grudData) ?? [];
   const dvLookupTable = f.keyBy("id", displayValues);
 
+  // The linked items are this cell's edges, so their label comes from the
+  // cell's own displayValue -- computed per edge, hence carrying the link
+  // column's formatPattern/attributes. Keyed by target row id, which is unique
+  // per edge within one link cell.
+  const columnIdx = f.findIndex(
+    f.propEq("id", column.id),
+    f.prop(["columns", table.id, "data"], grudData) ?? []
+  );
+  const linkDvByRowId = f.zipObject(
+    f.map(f.prop("id"), cell.value || []),
+    f.propOr(
+      [],
+      ["values", columnIdx],
+      f.find(
+        f.propEq("id", row.id),
+        f.prop(["displayValues", table.id], grudData) ?? []
+      )
+    )
+  );
+
+  // Unlinked candidates from /foreignRows have no edge, so they keep the
+  // target row's plain identifier -- formatting them would render "_".
   const lookupDisplayValue = link =>
-    retrieveTranslation(langtag, f.prop([link.id, "values", 0], dvLookupTable));
+    retrieveTranslation(
+      langtag,
+      linkDvByRowId[link.id] ?? f.prop([link.id, "values", 0], dvLookupTable)
+    );
 
   const addDisplayValues = link =>
     f.assoc("label", lookupDisplayValue(link), link);

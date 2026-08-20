@@ -442,13 +442,11 @@ export default withPropsOnChange(["grudData"], ({ grudData, table, row }) => {
   });
 
   const retrieveDisplayValue = (column, columnIdx, value) => {
-    const displayValue =
-      column.kind === "link"
-        ? f.map(
-            linkedRow => findDisplayValue(column.toTable)(linkedRow.id)(0),
-            value
-          )
-        : findDisplayValue(table.id)(row.id)(columnIdx);
+    // Link columns included: this row's own displayValue for the link column
+    // is computed per edge and carries the formatPattern/attributes, whereas
+    // displayValues[toTable][linkedRowId] is shared by every edge pointing at
+    // that row and holds its plain identifier only.
+    const displayValue = findDisplayValue(table.id)(row.id)(columnIdx);
 
     // if displayValue was not found findDisplayValue returns either [] or [undefined]
     const displayValueFound = !f.isEmpty(displayValue) && f.head(displayValue);
