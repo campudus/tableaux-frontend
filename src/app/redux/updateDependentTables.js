@@ -42,7 +42,18 @@ export const calcColumnDependencies = columnCollection => {
   );
 };
 
-const listOfTableIds = f.compose(f.join(","), f.sortBy(f.identity), f.keys);
+// Key the memo on the tables whose columns have actually arrived, not on the
+// bare id list: COLUMNS_LOADING_DATA already registers a table id while its
+// `data` is still missing, and calcColumnDependencies then finds no link
+// columns for it. Keying on the id list alone would cache that incomplete map
+// under the very key the loaded state produces, leaving the dependency map --
+// and with it refreshDependentRows -- wrong for the rest of the session.
+const listOfTableIds = f.compose(
+  f.join(","),
+  f.sortBy(f.identity),
+  f.keys,
+  f.pickBy(f.has("data"))
+);
 
 const getCachedDependencyMap = memoizeWith(
   listOfTableIds,
@@ -192,11 +203,16 @@ export const refreshDependentRows = async (
     );
   };
 
-  if (hasTransitiveDependencies(changeOrigin, state.columns)) {
-    await mapPromise(
-      tableId => fetchChangedRows(tableId, changeOrigin, changedRows),
-      f.keys(dependentTables[changeOrigin])
-    );
-  }
+  // No hasTransitiveDependencies() gate here: that asks whether the *dependents*
+  // have dependents of their own, which says nothing about whether they need
+  // refreshing. Gating on it skipped the first level entirely whenever nothing
+  // linked back -- e.g. renaming a linked row never refreshed the row holding
+  // the link, so its displayValue stayed stale. The early return above already
+  // covers "no dependents at all", the recursion keeps its own guard, and
+  // `refreshedTables` breaks cycles.
+  await mapPromise(
+    tableId => fetchChangedRows(tableId, changeOrigin, changedRows),
+    f.keys(dependentTables[changeOrigin])
+  );
   return clonedState;
 };
