@@ -37,6 +37,7 @@ const LinkView = ({
       },
       id: link.id,
       value: link.value,
+      attributes: link.attributes,
       hiddenByRowPermissions: link.hiddenByRowPermissions
     };
   });
@@ -56,6 +57,7 @@ const LinkView = ({
         value={value}
         sortable
         showToggleButton={canUserChangeCell(cell, langtag)}
+        enableLinkAttributes
       />
       {children}
     </div>

@@ -260,6 +260,7 @@ class LinkOverlay extends PureComponent {
         style={style}
         selectedMode={selectedMode}
         isPermissionDenied={row.hiddenByRowPermissions}
+        enableLinkAttributes={isLinked}
       />
     ) : (
       undefined

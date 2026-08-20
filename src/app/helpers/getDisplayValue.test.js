@@ -115,6 +115,60 @@ describe("getDisplayValue", () => {
       "de-DE": "Reign Advanced E+ 0 _ Advanced Carbon Steel S 12x148mm"
     });
   });
+
+  it("should format link display values using linkAttributes + formatPattern", () => {
+    const linkColumn = {
+      id: 5,
+      name: "material",
+      kind: "link",
+      toTable: 1,
+      linkAttributes: [
+        {
+          name: "percentage",
+          kind: "integer",
+          displayName: { "de-DE": "Anteil" }
+        }
+      ],
+      formatPattern: "{{value}} ({{attributes.percentage}}%)",
+      toColumn: {
+        id: 1,
+        name: "identifier",
+        kind: "shorttext",
+        multilanguage: true
+      }
+    };
+    const linkedRows = [
+      { id: 10, value: { "de-DE": "Mehl" }, attributes: [50] },
+      { id: 11, value: { "de-DE": "Zucker" } } // no attributes stored -> "_"
+    ];
+
+    const result = getDisplayValue(linkColumn)(linkedRows);
+
+    expect(result).toEqual([
+      { "de-DE": "Mehl (50%)" },
+      { "de-DE": "Zucker (_%)" }
+    ]);
+  });
+
+  it("should leave link display values unformatted without linkAttributes/formatPattern", () => {
+    const linkColumn = {
+      id: 5,
+      name: "material",
+      kind: "link",
+      toTable: 1,
+      toColumn: {
+        id: 1,
+        name: "identifier",
+        kind: "shorttext",
+        multilanguage: true
+      }
+    };
+    const linkedRows = [{ id: 10, value: { "de-DE": "Mehl" } }];
+
+    const result = getDisplayValue(linkColumn)(linkedRows);
+
+    expect(result).toEqual([{ "de-DE": "Mehl" }]);
+  });
 });
 
 const unionLinkColumn = {
