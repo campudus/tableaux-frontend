@@ -22,11 +22,32 @@
     }
   }
 
+  // Label line: holds the label alone for the stacked inputs, and label plus
+  // right-aligned toggle for a boolean attribute (see
+  // LinkAttributesPopover.jsx); `gap` is the minimum distance for a label long
+  // enough to reach the toggle. The distance to whatever follows lives here
+  // rather than on the label, so a toggle next to it stays vertically centred.
+  &__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 6px;
+
+    // a boolean row ends with this line -- no input below it to space out
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
   &__label {
     display: block;
     font-weight: bold;
     color: $color-primary-text;
-    margin-bottom: 6px;
+  }
+
+  &__toggle {
+    flex: 0 0 auto;
   }
 
   &__description {
@@ -46,11 +67,6 @@
       color: $color-text-medium-grey;
       background: #f8f8f8;
     }
-  }
-
-  &__checkbox {
-    width: 18px;
-    height: 18px;
   }
 
   &__date-picker {
