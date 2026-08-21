@@ -169,6 +169,46 @@ describe("getDisplayValue", () => {
 
     expect(result).toEqual([{ "de-DE": "Mehl" }]);
   });
+
+  // A concat holds the full definition of each member column, so a link member
+  // carries its own linkAttributes + formatPattern and has to be formatted just
+  // like a standalone link column.
+  it("should format a link inside a concat column", () => {
+    const linkColumn = {
+      id: 5,
+      name: "material",
+      kind: "link",
+      toTable: 1,
+      linkAttributes: [{ name: "percentage", kind: "integer" }],
+      formatPattern: "{{value}} ({{attributes.percentage}}%)",
+      toColumn: {
+        id: 1,
+        name: "identifier",
+        kind: "shorttext",
+        multilanguage: true
+      }
+    };
+    const concatColumn = {
+      id: 0,
+      name: "ID",
+      kind: "concat",
+      concats: [
+        { id: 2, name: "name", kind: "shorttext", multilanguage: true },
+        linkColumn
+      ]
+    };
+    const rowValue = [
+      { "de-DE": "Trikot" },
+      [
+        { id: 10, value: { "de-DE": "Baumwolle" }, attributes: [80] },
+        { id: 11, value: { "de-DE": "Elastan" }, attributes: [20] }
+      ]
+    ];
+
+    expect(getDisplayValue(concatColumn)(rowValue)).toEqual({
+      "de-DE": "Trikot Baumwolle (80%) Elastan (20%)"
+    });
+  });
 });
 
 const unionLinkColumn = {

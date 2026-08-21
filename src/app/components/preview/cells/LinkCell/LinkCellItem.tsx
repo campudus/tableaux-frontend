@@ -6,6 +6,7 @@ import getDisplayValue from "../../../../helpers/getDisplayValue";
 import { getEmptyClassName } from "../../helper";
 import { useDebouncedValue } from "../../../../helpers/useDebouncedValue";
 import Tooltip from "../../../../components/helperComponents/Tooltip/Tooltip";
+import { stripFormattingTags } from "../../../../components/helperComponents/FormattedLabel";
 import i18n from "i18next";
 import BooleanCell from "../BooleanCell";
 
@@ -32,16 +33,20 @@ export default function LinkCellItem({
   const handleMouseEnter = useCallback(() => setTooltipVisible(true), []);
   const handleMouseLeave = useCallback(() => setTooltipVisible(false), []);
 
-  const displayValue = f.cond([
-    [
-      () => isBoolean(value),
-      () =>
-        column.displayName?.[langtag] ||
-        i18n.t(value ? "preview:yes" : "preview:no")
-    ],
-    [(v: any) => Array.isArray(v), (v: any) => f.map(langtag, v).join(" ")],
-    [() => true, (v: any) => v[langtag]]
-  ])(getDisplayValue(column)(value));
+  // A link column's formatPattern may carry emphasis markup, which only the
+  // link chips render (see FormattedLabel) -- here the label is plain text.
+  const displayValue = stripFormattingTags(
+    f.cond([
+      [
+        () => isBoolean(value),
+        () =>
+          column.displayName?.[langtag] ||
+          i18n.t(value ? "preview:yes" : "preview:no")
+      ],
+      [(v: any) => Array.isArray(v), (v: any) => f.map(langtag, v).join(" ")],
+      [() => true, (v: any) => v[langtag]]
+    ])(getDisplayValue(column)(value))
+  );
 
   return (
     <div className="link-cell-item">

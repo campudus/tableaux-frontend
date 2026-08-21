@@ -3,6 +3,7 @@ import f from "lodash/fp";
 
 import { ColumnKinds } from "../../constants/TableauxConstants";
 import { doto, memoizeWith } from "../../helpers/functools";
+import { applyLinkAttributeFormat } from "../../helpers/getDisplayValue";
 import { retrieveTranslation } from "../../helpers/multiLanguage";
 import * as t from "../taxonomy/taxonomy";
 
@@ -28,7 +29,15 @@ const flattenAndTranslate = f.curryN(2, (langtag, value = []) => {
   return f.map(retrieveTranslation(langtag), value).join(" ");
 });
 
-const getLinkDisplayValues = ({ value, column, table, row }) => state => {
+// Exported for tests: these two are the store-reading contract the whole
+// link-attribute display rests on, and there is no component-render test setup
+// in this project to reach them through connect().
+export const getLinkDisplayValues = ({
+  value,
+  column,
+  table,
+  row
+}) => state => {
   const { toTable } = column;
   const tableDisplayValues = getDisplayValuesForTable(toTable)(state);
   const tableDisplayValuesMap = f.keyBy("id", tableDisplayValues);
@@ -73,10 +82,18 @@ const getLinkDisplayValues = ({ value, column, table, row }) => state => {
     return { foreignDisplayValues: linkDisplayValues };
   }
 
-  const foreignDisplayValues = f.map(
-    id => f.prop([id, "values", 0], tableDisplayValuesMap),
-    linkRowIds
-  );
+  // Fallback: the target row's own identifier, shared by every edge pointing
+  // at it and therefore attribute-free. A label belongs to one edge, so the
+  // column's formatPattern is applied here with that edge's attributes -- this
+  // is also the path a link nested in a concat takes (see below), which has no
+  // per-edge slot of its own to read from.
+  const foreignDisplayValues = f.map(link => {
+    const identifier = f.prop([link.id, "values", 0], tableDisplayValuesMap);
+
+    return f.isEmpty(identifier)
+      ? identifier
+      : applyLinkAttributeFormat(column, link, identifier);
+  }, value);
 
   return {
     foreignDisplayValues: f.isEmpty(foreignDisplayValues)
@@ -85,7 +102,7 @@ const getLinkDisplayValues = ({ value, column, table, row }) => state => {
   };
 };
 
-const getConcatDisplayValues = (
+export const getConcatDisplayValues = (
   { value, column: { concats }, table, row },
   langtag
 ) => state => {
