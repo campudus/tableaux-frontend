@@ -7,6 +7,7 @@ import route from "../../../helpers/apiRoutes";
 import { doto, when } from "../../../helpers/functools";
 import getDisplayValue from "../../../helpers/getDisplayValue";
 import { retrieveTranslation } from "../../../helpers/multiLanguage";
+import { stripFormattingTags } from "../../helperComponents/FormattedLabel";
 import SearchFunctions from "../../../helpers/searchFunctions";
 import { connectOverlayToCellValue } from "../../helperComponents/connectOverlayToCellHOC";
 
@@ -111,8 +112,19 @@ const withCachedLinks = Component => props => {
       linkDvByRowId[link.id] ?? f.prop([link.id, "values", 0], dvLookupTable)
     );
 
-  const addDisplayValues = link =>
-    f.assoc("label", lookupDisplayValue(link), link);
+  // `label` keeps the emphasis tags a formatPattern may contain, since that is
+  // what gets rendered; `searchableLabel` is the plain-text form, so filtering
+  // and sorting match what the user actually sees instead of the markup.
+  const addDisplayValues = link => {
+    const label = lookupDisplayValue(link);
+    return f.flow(
+      f.assoc("label", label),
+      f.assoc(
+        "searchableLabel",
+        f.isString(label) ? stripFormattingTags(label) : label
+      )
+    )(link);
+  };
 
   const linkedIds = getLinkedIds(cell);
 
@@ -132,14 +144,16 @@ const withCachedLinks = Component => props => {
     const theFilterFn =
       loading || f.isEmpty(filterValue)
         ? f.stubTrue
-        : link => SearchFunctions[filterMode](filterValue)(link.label);
+        : link =>
+            SearchFunctions[filterMode](filterValue)(link.searchableLabel);
     setFilterFnDebounced(theFilterFn);
   }, [setFilterFn, loading, filterValue]);
 
   const sortMode = when(f.isNil, f.always(0), unlinkedOrder);
-  const sortValue = [f.prop("id"), el => el.label && f.toLower(el.label)][
-    sortMode
-  ];
+  const sortValue = [
+    f.prop("id"),
+    el => el.searchableLabel && f.toLower(el.searchableLabel)
+  ][sortMode];
 
   const rowsWithDisplayValues = doto(
     [

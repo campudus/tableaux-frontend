@@ -2,6 +2,7 @@ import { ReactElement, useCallback, useState } from "react";
 import f from "lodash/fp";
 import { useDebouncedValue } from "../../helpers/useDebouncedValue";
 import Tooltip from "../helperComponents/Tooltip/Tooltip";
+import { stripFormattingTags } from "../helperComponents/FormattedLabel";
 import { ColumnAndRow } from "./helper";
 
 import { attributeKeys, isPreviewTitle } from "./attributes";
@@ -73,7 +74,10 @@ function PreviewTitleContent({
         onMouseLeave={handleMouseLeave}
       >
         <a href={defaultTitle.link}>
-          <span>{defaultTitle.value}</span>
+          {/* the default title is the identifier concat, which takes in the
+              formatPattern of any link member -- markup included, and only the
+              link chips render that (see FormattedLabel) */}
+          <span>{stripFormattingTags(defaultTitle.value)}</span>
         </a>
 
         {isVisible && (
