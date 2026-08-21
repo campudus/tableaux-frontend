@@ -387,7 +387,7 @@ export const calculateCellUpdate = action => {
     const idKey = column.kind === ColumnKinds.attachment ? "uuid" : "id";
     const oldIds = f.map(idKey, oldValue);
     const newIds = f.map(idKey, newValue);
-    const isSame = f.equals(newIds, oldIds);
+    const idsAreSame = f.equals(newIds, oldIds);
     const isReordering =
       newIds.length === oldIds.length &&
       newIds.length > 1 &&
@@ -431,6 +431,30 @@ export const calculateCellUpdate = action => {
       method: "PUT"
     };
 
+    // Link attributes hang off the edge, so changing one leaves every id in
+    // place. Comparing ids alone reported "nothing to do" and swallowed the
+    // request -- which is what made undo/redo of an attribute change a silent
+    // no-op. Sends exactly what newValue carries: a slot the target state
+    // never had becomes null (cleared) rather than falling back to the value
+    // being undone, which is what `resetAction` above would do.
+    const definitions = getLinkAttributeDefinitions(column);
+    const toAttributes = f.compose(
+      attributes => buildAttributesPayload(definitions, attributes),
+      f.getOr([], "attributes")
+    );
+    const attributesAreSame =
+      !columnHasLinkAttributes ||
+      f.equals(f.map(toAttributes, oldValue), f.map(toAttributes, newValue));
+    const attributeResetAction = {
+      value: {
+        value: f.map(
+          link => ({ id: link.id, attributes: toAttributes(link) }),
+          newValue
+        )
+      },
+      method: "PUT"
+    };
+
     const toggleId = f.xor(oldIds, newIds)[0];
     const toggleAction = f.contains(toggleId, oldIds)
       ? {
@@ -443,8 +467,13 @@ export const calculateCellUpdate = action => {
           value: { value: toggleId }
         };
 
-    return isSame
+    // The attribute check has to come before isReordering: with every id in
+    // place and in order, that predicate is true for more than one link and
+    // would send a reorder request instead of the attribute update.
+    return idsAreSame && attributesAreSame
       ? null
+      : idsAreSame
+      ? attributeResetAction
       : isReordering
       ? reorderAction
       : isReset

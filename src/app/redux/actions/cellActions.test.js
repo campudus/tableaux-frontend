@@ -159,3 +159,84 @@ describe("calculateCellUpdate() - unaffected link branches", () => {
     expect(update.pathPostfix).toBe("/link/2");
   });
 });
+
+// Attribute values hang off the edge, so an attribute-only change leaves every
+// id in place. Comparing ids alone reported "nothing to do", which is what made
+// undo/redo of an attribute change a silent no-op.
+describe("calculateCellUpdate() - attribute-only link changes", () => {
+  const column = {
+    kind: ColumnKinds.link,
+    linkAttributes: [{ name: "percentage", kind: "integer" }],
+    formatPattern: "{{value}} ({{attributes.percentage}}%)"
+  };
+
+  test("sends a PUT when only an attribute changed", () => {
+    const update = calculateCellUpdate({
+      column,
+      oldValue: [{ id: 1, attributes: [50] }],
+      newValue: [{ id: 1, attributes: [12] }]
+    });
+
+    expect(update).toEqual({
+      method: "PUT",
+      value: { value: [{ id: 1, attributes: [12] }] }
+    });
+  });
+
+  test("clears the slot instead of replaying the value being undone", () => {
+    // undo of "set 12 on a link that had nothing stored": the target state
+    // carries no attributes, so the slot must be nulled rather than falling
+    // back to oldValue the way the generic reset branch does
+    const update = calculateCellUpdate({
+      column,
+      oldValue: [{ id: 1, attributes: [12] }],
+      newValue: [{ id: 1 }]
+    });
+
+    expect(update).toEqual({
+      method: "PUT",
+      value: { value: [{ id: 1, attributes: [null] }] }
+    });
+  });
+
+  test("does not mistake an attribute change for a reordering", () => {
+    const update = calculateCellUpdate({
+      column,
+      oldValue: [
+        { id: 1, attributes: [50] },
+        { id: 2, attributes: [10] }
+      ],
+      newValue: [
+        { id: 1, attributes: [50] },
+        { id: 2, attributes: [99] }
+      ]
+    });
+
+    expect(update.method).toBe("PUT");
+    expect(update.pathPostfix).toBeUndefined();
+    expect(update.value.value).toEqual([
+      { id: 1, attributes: [50] },
+      { id: 2, attributes: [99] }
+    ]);
+  });
+
+  test("still reports nothing to do when attributes are equal", () => {
+    expect(
+      calculateCellUpdate({
+        column,
+        oldValue: [{ id: 1, attributes: [50] }],
+        newValue: [{ id: 1, attributes: [50] }]
+      })
+    ).toBe(null);
+  });
+
+  test("a column without linkAttributes is unaffected", () => {
+    expect(
+      calculateCellUpdate({
+        column: { kind: ColumnKinds.link },
+        oldValue: [{ id: 1, attributes: [50] }],
+        newValue: [{ id: 1, attributes: [12] }]
+      })
+    ).toBe(null);
+  });
+});

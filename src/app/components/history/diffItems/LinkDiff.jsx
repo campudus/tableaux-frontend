@@ -4,6 +4,7 @@ import f from "lodash/fp";
 import classNames from "classnames";
 
 import { ifElse, when } from "../../../helpers/functools";
+import { formatLinkLabel } from "../../../helpers/linkAttributes";
 import { retrieveTranslation } from "../../../helpers/multiLanguage";
 import SvgIcon from "../../helperComponents/SvgIcon";
 import TooltipBubble from "../../helperComponents/TooltipBubble";
@@ -16,77 +17,85 @@ const LinkState = {
 
 const LinkDiff = props => {
   const { diff, langtag } = props;
+  const column = f.get(["cell", "column"], props);
 
-  return diff.map(
-    ({ add, del, value: { id, value }, currentDisplayValues = {} }) => {
-      const displayValue = currentDisplayValues[id];
-      const revisionValue = ifElse(
-        f.isObject,
-        retrieveTranslation(langtag),
-        f.identity,
-        value
-      );
+  return diff.map(({ add, del, value: link, currentDisplayValues = {} }) => {
+    const { id, value } = link;
+    // A revision's attributes belong to that revision, so each side of a
+    // diff is labelled with its own -- otherwise a changed attribute would
+    // render as two identical lines. Falls through untouched for columns
+    // without a formatPattern and for attachments.
+    const withAttributes = base =>
+      f.isString(base)
+        ? formatLinkLabel({ column, link, displayValue: base, langtag })
+        : base;
 
-      const [hovered, setHovered] = React.useState(false);
-      const handleMouseEnter = React.useCallback(() => {
-        setHovered(true);
-      });
+    const displayValue = withAttributes(currentDisplayValues[id]);
+    const revisionValue = withAttributes(
+      ifElse(f.isObject, retrieveTranslation(langtag), f.identity, value)
+    );
 
-      const handleMouseLeave = React.useCallback(() => {
-        setHovered(false);
-      });
+    const [hovered, setHovered] = React.useState(false);
+    const handleMouseEnter = React.useCallback(() => {
+      setHovered(true);
+    });
 
-      const state = f.isEmpty(displayValue)
-        ? LinkState.FOREIGN_ROW_DELETED
-        : displayValue !== revisionValue
-        ? LinkState.CHANGED
-        : LinkState.DEFAULT;
+    const handleMouseLeave = React.useCallback(() => {
+      setHovered(false);
+    });
 
-      const cssClass = classNames("link-diff", {
-        "content-diff--added": add,
-        "content-diff--deleted": del,
-        "content-diff--foreign-row-deleted":
-          state === LinkState.FOREIGN_ROW_DELETED,
-        "content-diff--with-tooltip": hovered
-      });
+    const state = f.isEmpty(displayValue)
+      ? LinkState.FOREIGN_ROW_DELETED
+      : displayValue !== revisionValue
+      ? LinkState.CHANGED
+      : LinkState.DEFAULT;
 
-      const stateIcon =
-        state === LinkState.FOREIGN_ROW_DELETED ? (
-          <SvgIcon icon="deletedFile" />
-        ) : state === LinkState.CHANGED && !f.isEmpty(revisionValue) ? (
-          <i className="fa fa-info-circle" />
-        ) : null;
+    const cssClass = classNames("link-diff", {
+      "content-diff--added": add,
+      "content-diff--deleted": del,
+      "content-diff--foreign-row-deleted":
+        state === LinkState.FOREIGN_ROW_DELETED,
+      "content-diff--with-tooltip": hovered
+    });
 
-      const tooltipMessage =
-        state === LinkState.FOREIGN_ROW_DELETED
-          ? ["history:remote-row-deleted"]
-          : ["history:outdated-value", revisionValue];
+    const stateIcon =
+      state === LinkState.FOREIGN_ROW_DELETED ? (
+        <SvgIcon icon="deletedFile" />
+      ) : state === LinkState.CHANGED && !f.isEmpty(revisionValue) ? (
+        <i className="fa fa-info-circle" />
+      ) : null;
 
-      const tooltipBubble =
-        state !== LinkState.DEFAULT && hovered ? (
-          <TooltipBubble messages={tooltipMessage} />
-        ) : null;
+    const tooltipMessage =
+      state === LinkState.FOREIGN_ROW_DELETED
+        ? ["history:remote-row-deleted"]
+        : ["history:outdated-value", revisionValue];
 
-      return (
-        <div
-          className={cssClass}
-          key={id}
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
-        >
-          {stateIcon && (
-            <div className="link-diff__icon">
-              {tooltipBubble}
-              {stateIcon}
-            </div>
-          )}
-          {state === LinkState.FOREIGN_ROW_DELETED
-            ? when(f.isEmpty, () => displayValue, revisionValue)
-            : displayValue}
-        </div>
-      );
-    }
-  );
+    const tooltipBubble =
+      state !== LinkState.DEFAULT && hovered ? (
+        <TooltipBubble messages={tooltipMessage} />
+      ) : null;
+
+    return (
+      <div
+        className={cssClass}
+        // An attribute change renders both sides of the same link, so the
+        // id alone would collide between the deleted and the added line.
+        key={`${id}-${add ? "add" : del ? "del" : "same"}`}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+      >
+        {stateIcon && (
+          <div className="link-diff__icon">
+            {tooltipBubble}
+            {stateIcon}
+          </div>
+        )}
+        {state === LinkState.FOREIGN_ROW_DELETED
+          ? when(f.isEmpty, () => displayValue, revisionValue)
+          : displayValue}
+      </div>
+    );
+  });
 };
 
 export default LinkDiff;
