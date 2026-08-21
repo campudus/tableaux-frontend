@@ -4,6 +4,9 @@ import PropTypes from "prop-types";
 import { retrieveTranslation } from "../../../helpers/multiLanguage";
 import getDisplayValue from "../../../helpers/getDisplayValue";
 import Empty from "../../helperComponents/emptyEntry";
+import FormattedLabel, {
+  stripFormattingTags
+} from "../../helperComponents/FormattedLabel";
 import PermissionDenied from "../../helperComponents/PermissionDenied";
 import { isLinkArchived } from "../../../archivedRows";
 import { buildClassName } from "../../../helpers/buildClassName";
@@ -40,14 +43,18 @@ const LinkLabelCell = props => {
         ) : f.isEmpty(linkName) ? (
           <Empty />
         ) : isTaxonomyPath && !f.isEmpty(displayValue) ? (
-          <Tooltip className="taxonomy-label" tooltip={linkName} offsetTop={5}>
+          <Tooltip
+            className="taxonomy-label"
+            tooltip={stripFormattingTags(linkName)}
+            offsetTop={5}
+          >
             <TaxonomyPath
               nodes={displayValue}
               availableWidth={availableWidth}
             />
           </Tooltip>
         ) : (
-          linkName
+          <FormattedLabel text={linkName} />
         )}
       </div>
     </div>

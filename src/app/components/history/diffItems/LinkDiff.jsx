@@ -5,6 +5,9 @@ import classNames from "classnames";
 
 import { ifElse, when } from "../../../helpers/functools";
 import { formatLinkLabel } from "../../../helpers/linkAttributes";
+import FormattedLabel, {
+  stripFormattingTags
+} from "../../helperComponents/FormattedLabel";
 import { retrieveTranslation } from "../../../helpers/multiLanguage";
 import SvgIcon from "../../helperComponents/SvgIcon";
 import TooltipBubble from "../../helperComponents/TooltipBubble";
@@ -68,7 +71,14 @@ const LinkDiff = props => {
     const tooltipMessage =
       state === LinkState.FOREIGN_ROW_DELETED
         ? ["history:remote-row-deleted"]
-        : ["history:outdated-value", revisionValue];
+        : [
+            "history:outdated-value",
+            // the bubble renders plain text, so emphasis from the
+            // formatPattern would otherwise show up as literal tags
+            f.isString(revisionValue)
+              ? stripFormattingTags(revisionValue)
+              : revisionValue
+          ];
 
     const tooltipBubble =
       state !== LinkState.DEFAULT && hovered ? (
@@ -90,9 +100,13 @@ const LinkDiff = props => {
             {stateIcon}
           </div>
         )}
-        {state === LinkState.FOREIGN_ROW_DELETED
-          ? when(f.isEmpty, () => displayValue, revisionValue)
-          : displayValue}
+        <FormattedLabel
+          text={
+            state === LinkState.FOREIGN_ROW_DELETED
+              ? when(f.isEmpty, () => displayValue, revisionValue)
+              : displayValue
+          }
+        />
       </div>
     );
   });

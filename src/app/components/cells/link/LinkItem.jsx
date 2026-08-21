@@ -11,6 +11,9 @@ import {
 import SvgIcon from "../../helperComponents/SvgIcon";
 import { loadAndOpenEntityView } from "../../overlay/EntityViewOverlay";
 import Empty from "../../helperComponents/emptyEntry";
+import FormattedLabel, {
+  stripFormattingTags
+} from "../../helperComponents/FormattedLabel";
 import { unless } from "../../../helpers/functools";
 import { retrieveTranslation } from "../../../helpers/multiLanguage";
 import f from "lodash/fp";
@@ -181,7 +184,9 @@ const LinkItem = props => {
             ) : f.isEmpty(linkName) ? (
               <Empty />
             ) : (
-              <span title={linkName}>{linkName}</span>
+              <span title={stripFormattingTags(linkName)}>
+                <FormattedLabel text={linkName} />
+              </span>
             )}
           </div>
         </div>

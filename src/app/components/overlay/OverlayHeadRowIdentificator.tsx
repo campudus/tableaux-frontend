@@ -2,6 +2,7 @@ import f from "lodash/fp";
 import React from "react";
 import { useSelector } from "react-redux";
 import getDisplayValue from "../../helpers/getDisplayValue";
+import { stripFormattingTags } from "../helperComponents/FormattedLabel";
 import { retrieveTranslation } from "../../helpers/multiLanguage";
 import { Cell, Column, GRUDStore, Row } from "../../types/grud";
 
@@ -53,9 +54,14 @@ const Identificator = ({
   columnName: string;
 }) => {
   const translate = retrieveTranslation(langtag);
-  const title = Array.isArray(displayValue)
-    ? displayValue.map(translate).join(" ")
-    : translate(displayValue);
+  // The identifier column may be (or contain) a link column whose formatPattern
+  // carries emphasis markup. Only the link chips render it (see FormattedLabel);
+  // a title is plain text, here and in the native tooltip below.
+  const title = stripFormattingTags(
+    Array.isArray(displayValue)
+      ? displayValue.map(translate).join(" ")
+      : translate(displayValue)
+  );
   return (
     <span>
       <span className="column-name">
