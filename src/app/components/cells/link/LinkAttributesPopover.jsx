@@ -21,6 +21,7 @@ import {
   toAttributeInputValue
 } from "../../../helpers/linkAttributes";
 import NumberInput from "../../helperComponents/NumberInput";
+import Toggle from "../../helperComponents/Toggle";
 
 // Same wrapping used by DateCell.jsx / DateView.jsx / HistoryFilterArea.jsx --
 // react-datetime doesn't portal its calendar, so click-outside-to-close is
@@ -77,6 +78,13 @@ const DateAttributeInput = ({ definition, value, onChange, autoFocus }) => {
   );
 };
 
+// A boolean renders as a toggle, which sits on the label's line instead of
+// below it (see the row markup further down). Multilanguage attributes are
+// unsupported and always render as the disabled hint input, so they keep the
+// stacked layout even when their kind is boolean.
+const rendersAsToggle = definition =>
+  definition.kind === ColumnKinds.boolean && !definition.multilanguage;
+
 // Per-kind input for a single link attribute definition. Multilanguage
 // attributes are out of scope for now (see linkAttributes.ts) -- they render
 // disabled with a hint instead of a langtag-per-input UI.
@@ -95,13 +103,13 @@ const AttributeInput = ({ definition, value, onChange, autoFocus }) => {
 
   switch (definition.kind) {
     case ColumnKinds.boolean:
+      // no autoFocus: the toggle's own input is display:none, so focusing it
+      // would show nothing -- Escape/Enter are handled on document anyway
       return (
-        <input
-          type="checkbox"
-          className="link-attributes-popover__checkbox"
+        <Toggle
+          className="link-attributes-popover__toggle"
           checked={value === true}
           onChange={evt => onChange(evt.target.checked)}
-          autoFocus={autoFocus}
         />
       );
     case ColumnKinds.numeric:
@@ -257,20 +265,30 @@ const LinkAttributesPopover = ({
             langtag,
             definition.description || {}
           );
+          const isToggle = rendersAsToggle(definition);
+          const input = (
+            <AttributeInput
+              definition={definition}
+              value={draft[index]}
+              onChange={value => handleChange(index, value)}
+              autoFocus={index === 0}
+            />
+          );
+
           return (
             <div className="link-attributes-popover__row" key={definition.name}>
-              <label className="link-attributes-popover__label">{label}</label>
+              <div className="link-attributes-popover__head">
+                <label className="link-attributes-popover__label">
+                  {label}
+                </label>
+                {isToggle && input}
+              </div>
               {!f.isEmpty(description) && (
                 <div className="link-attributes-popover__description">
                   {description}
                 </div>
               )}
-              <AttributeInput
-                definition={definition}
-                value={draft[index]}
-                onChange={value => handleChange(index, value)}
-                autoFocus={index === 0}
-              />
+              {!isToggle && input}
             </div>
           );
         })}
