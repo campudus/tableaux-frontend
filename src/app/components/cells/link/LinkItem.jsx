@@ -109,7 +109,10 @@ const LinkItem = props => {
     linked: props.isLinked,
     "has-focus": props.selectedMode === 0,
     archived,
-    editable: canEditAttributes
+    editable: canEditAttributes,
+    // keeps the item marked as the popover's owner while it is open, even
+    // though the pointer has moved off the item and onto the popover
+    "attributes-open": popoverOpen
   });
   const secondaryButtonClass = classNames("link-item-button", {
     "has-focus": props.selectedMode === 1,

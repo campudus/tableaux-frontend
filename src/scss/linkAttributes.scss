@@ -105,15 +105,3 @@
     }
   }
 }
-
-// Click affordance on a link item's display value once it carries editable
-// attributes (see LinkItem.jsx, classNames("left", {..., editable})).
-// Shared by the LinkOverlay and the detail EntityView, both of which import
-// ./linkList.scss.
-.list-item .left.editable {
-  cursor: pointer;
-
-  &:hover {
-    text-decoration: underline;
-  }
-}
