@@ -19,6 +19,8 @@ import {
   buildOriginColumnLookup,
   getConcatOrigin
 } from "../helpers/columnHelper";
+import { formatLinkLabel } from "../helpers/linkAttributes";
+import { stripFormattingTags } from "../components/helperComponents/FormattedLabel";
 
 export const Annotation = FilterAnnotation.Mode;
 export const Boolean = FilterBoolean.Mode;
@@ -183,8 +185,21 @@ const buildContext = (tableId, langtag, store) => {
     return f.get(`${displayValueIdx}.values.${colIdx}`, displayValues);
   };
 
-  const retrieveDisplayValue = name => row =>
-    f.get(langtag, getDisplayValueEntry(name, row));
+  // A link column's formatPattern may carry emphasis markup, and a concat or
+  // group column takes in the display value of its link members -- markup and
+  // all. Only the link chips render that markup (see FormattedLabel), so
+  // filtering and sorting have to match the plain text the user reads. Other
+  // kinds are left byte-identical: their content is the user's own text, where
+  // a literal "<em>" is content rather than formatting.
+  const mayEmbedLinkFormat = kind =>
+    kind === ColumnKinds.concat || kind === ColumnKinds.group;
+
+  const retrieveDisplayValue = name => row => {
+    const displayValue = f.get(langtag, getDisplayValueEntry(name, row));
+    return mayEmbedLinkFormat(columnKindLookup[name])
+      ? stripFormattingTags(displayValue)
+      : displayValue;
+  };
 
   const retrieveConcatValue = name => {
     // There will be only one, and that one is one of the first
@@ -195,20 +210,32 @@ const buildContext = (tableId, langtag, store) => {
       const column = getConcatOrigin(tableId, concatColumn, row.tableId);
       const value = f.get(`values.${idx}`, row);
       const dv = getDisplayValue(column, value);
-      return dv[langtag];
+      return stripFormattingTags(dv[langtag]);
     };
   };
 
+  // One value per edge. The cache is keyed per target row and therefore holds
+  // that row's plain identifier (see linkHelper.js), so the column's
+  // formatPattern is applied here with the edge's own attributes -- otherwise
+  // the filter would match against a label the cell never shows. Stripped for
+  // the same reason as above: the markup is not part of what the user reads.
   const retrieveLinkDisplayValue = name => {
     const columnIdx = columnIdxLookup[name];
     const column = columns[columnIdx];
     return row => {
       const originColumn = getOriginColumn(column.id, row.tableId);
       const toTableId = originColumn?.toTable || column.toTable;
-      return row.values[columnIdx].map(value =>
-        f.prop(
-          [toTableId, value.id, "value", 0, langtag],
-          linkDisplayValueCache
+      return row.values[columnIdx].map(link =>
+        stripFormattingTags(
+          formatLinkLabel({
+            column: originColumn ?? column,
+            link,
+            displayValue: f.prop(
+              [toTableId, link.id, "value", 0, langtag],
+              linkDisplayValueCache
+            ),
+            langtag
+          })
         )
       );
     };
