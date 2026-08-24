@@ -36,54 +36,59 @@ const linkColumn = {
 
 const initialCellValue = [{ id: linkId, value: { "de-DE": "Grau" } }];
 
+const cell = {
+  table: { id: SRC },
+  column: linkColumn,
+  row: { id: rowId },
+  value: initialCellValue
+};
+
+// The store is a singleton, so every case seeds its own state.
+const seedStore = () => {
+  store.dispatch({
+    type: "COLUMNS_DATA_LOADED",
+    tableId: SRC,
+    result: { columns: [srcIdent, linkColumn] }
+  });
+  store.dispatch({
+    type: "SET_STATE",
+    state: {
+      ...store.getState(),
+      tables: { data: { [SRC]: { id: SRC }, [TGT]: { id: TGT } } },
+      rows: {
+        [SRC]: {
+          data: [
+            { id: rowId, values: [{ "de-DE": "Rezept" }, initialCellValue] }
+          ]
+        }
+      },
+      tableView: {
+        ...store.getState().tableView,
+        displayValues: {
+          [SRC]: [
+            {
+              id: rowId,
+              values: [{ "de-DE": "Rezept" }, [{ "de-DE": "Grau" }]]
+            }
+          ],
+          [TGT]: [{ id: linkId, values: [{ "de-DE": "Grau" }] }]
+        }
+      }
+    }
+  });
+};
+
 // After a write the label must come from the SOURCE row's link-column
 // displayValue -- the per-edge slot every view reads -- while the target
 // table's own identifier stays clean.
 describe("changeLinkAttributes: store displayValues after a write", () => {
   it("writes the formatted label into the source row's link column slot", async () => {
-    store.dispatch({
-      type: "COLUMNS_DATA_LOADED",
-      tableId: SRC,
-      result: { columns: [srcIdent, linkColumn] }
-    });
-    store.dispatch({
-      type: "SET_STATE",
-      state: {
-        ...store.getState(),
-        tables: { data: { [SRC]: { id: SRC }, [TGT]: { id: TGT } } },
-        rows: {
-          [SRC]: {
-            data: [
-              { id: rowId, values: [{ "de-DE": "Rezept" }, initialCellValue] }
-            ]
-          }
-        },
-        tableView: {
-          ...store.getState().tableView,
-          displayValues: {
-            [SRC]: [
-              {
-                id: rowId,
-                values: [{ "de-DE": "Rezept" }, [{ "de-DE": "Grau" }]]
-              }
-            ],
-            [TGT]: [{ id: linkId, values: [{ "de-DE": "Grau" }] }]
-          }
-        }
-      }
-    });
+    seedStore();
 
     makeRequest.mockResolvedValue({
       status: "ok",
       value: [{ id: linkId, value: { "de-DE": "Grau" }, attributes: [12] }]
     });
-
-    const cell = {
-      table: { id: SRC },
-      column: linkColumn,
-      row: { id: rowId },
-      value: initialCellValue
-    };
 
     await store.dispatch(
       changeLinkAttributes({ cell, linkId, attributes: [12] })
@@ -103,5 +108,31 @@ describe("changeLinkAttributes: store displayValues after a write", () => {
     expect(state.tableView.displayValues[TGT][0].values[0]).toEqual({
       "de-DE": "Grau"
     });
+  });
+
+  // The response is expected to carry the whole cell value. If it ever stops
+  // doing so, the optimistic value has to survive -- adopting a missing one
+  // would empty the link cell until the next reload.
+  it("keeps the optimistic value when the response carries none", async () => {
+    seedStore();
+
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => null);
+    makeRequest.mockResolvedValue({ status: "ok" });
+
+    await store.dispatch(
+      changeLinkAttributes({ cell, linkId, attributes: [12] })
+    );
+
+    const state = store.getState();
+
+    expect(state.rows[SRC].data[0].values[1]).toEqual([
+      { id: linkId, value: { "de-DE": "Grau" }, attributes: [12] }
+    ]);
+    expect(state.tableView.displayValues[SRC][0].values[1]).toEqual([
+      { "de-DE": "Grau (12%)" }
+    ]);
+    expect(warn).toHaveBeenCalled();
+
+    warn.mockRestore();
   });
 });
