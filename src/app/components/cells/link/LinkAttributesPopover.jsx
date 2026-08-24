@@ -151,8 +151,8 @@ const AttributeInput = ({ definition, value, onChange, autoFocus }) => {
 // opened by clicking a linked item's display value in the LinkOverlay or the
 // detail EntityView. Positioned with @floating-ui/react-dom (see LinkItem.jsx,
 // which owns the `useFloating()` call since it also owns the trigger
-// element). Auto-saves via the dedicated attributes endpoint when closed
-// (outside click, Escape, or Enter).
+// element). Saves via the dedicated attributes endpoint when closed by an
+// outside click or Enter; Escape discards the draft.
 const LinkAttributesPopover = ({
   cell,
   linkId,
@@ -211,14 +211,21 @@ const LinkAttributesPopover = ({
     });
   };
 
-  const handleClose = () => {
+  // The popover writes only when it closes, so discarding is simply closing
+  // without the commit -- there is no optimistic value to roll back.
+  const close = ({ save }) => {
     if (closingRef.current) {
       return;
     }
     closingRef.current = true;
-    commit();
+    if (save) {
+      commit();
+    }
     onClose();
   };
+
+  const handleClose = () => close({ save: true });
+  const handleCancel = () => close({ save: false });
 
   useEffect(
     outsideClickEffect({
@@ -230,10 +237,16 @@ const LinkAttributesPopover = ({
   );
 
   useEffect(() => {
+    // Both keys stop propagation: without it they would also reach the
+    // surrounding LinkOverlay / EntityView and close that too.
     const handleKeyDown = evt => {
-      if (evt.key === "Escape" || evt.key === "Enter") {
+      if (evt.key === "Enter") {
         evt.stopPropagation();
         handleClose();
+      }
+      if (evt.key === "Escape") {
+        evt.stopPropagation();
+        handleCancel();
       }
     };
     document.addEventListener("keydown", handleKeyDown, true);
