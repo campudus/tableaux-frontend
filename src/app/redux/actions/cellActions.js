@@ -533,15 +533,28 @@ export const changeLinkAttributes = ({
         data: payload
       }).then(result => {
         // Adopt the server-normalized value (esp. datetime -> UTC) instead
-        // of what we optimistically sent.
-        dispatch({
-          type: CELL_SET_VALUE,
-          ...cellIds,
-          column,
-          cell,
-          oldValue: newValue,
-          newValue: result.value
-        });
+        // of what we optimistically sent -- but only when the response really
+        // carries the whole cell value, which is what this endpoint returns
+        // today. Writing anything else into the cell would blank the link out
+        // until the next reload; the optimistically set value at least stays
+        // readable and differs from the server's only in its normalization.
+        const serverValue = f.get("value", result);
+
+        if (f.isArray(serverValue)) {
+          dispatch({
+            type: CELL_SET_VALUE,
+            ...cellIds,
+            column,
+            cell,
+            oldValue: newValue,
+            newValue: serverValue
+          });
+        } else {
+          console.warn(
+            "changeLinkAttributes: response carried no cell value, keeping the optimistic one.",
+            result
+          );
+        }
         return result;
       }),
       actionTypes: [
