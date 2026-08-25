@@ -31,10 +31,38 @@ const {
   CLEAN_UP,
   ADD_ROWS,
   ROW_CREATE_SUCCESS,
+  LINKED_VALUES_UPDATED,
   SET_STATE
 } = actionTypes;
 
 const initialState = {};
+
+// Rows that embed something of a changed row (see redux/linkedValues.js). Only
+// the tables and rows that actually changed get new objects -- everything else
+// keeps its reference, so only the affected rows re-render.
+const applyLinkedValues = (state, updates = []) =>
+  updates.reduce((next, { tableId, rows }) => {
+    const storedRows = next[tableId]?.data;
+    if (!storedRows) {
+      return next;
+    }
+
+    const patchedValuesByRowId = new Map(
+      rows.map(({ id, values }) => [id, values])
+    );
+
+    return {
+      ...next,
+      [tableId]: {
+        ...next[tableId],
+        data: storedRows.map(row =>
+          patchedValuesByRowId.has(row.id)
+            ? { ...row, values: patchedValuesByRowId.get(row.id) }
+            : row
+        )
+      }
+    };
+  }, state);
 
 const maybeUpdateConcats = (rows, action, completeState) => {
   const concatValues = calcConcatValues(action, completeState) || {};
@@ -234,6 +262,8 @@ const rows = (state = initialState, action, completeState) => {
   switch (action.type) {
     case SET_STATE:
       return action.state.rows;
+    case LINKED_VALUES_UPDATED:
+      return applyLinkedValues(state, action.updates);
     case ALL_ROWS_LOADING_DATA:
       return {
         [action.tableId]: { error: false, finishedLoading: false }
