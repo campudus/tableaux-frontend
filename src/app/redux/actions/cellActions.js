@@ -31,11 +31,14 @@ import {
 } from "../../helpers/linkAttributes";
 import { getCountryOfLangtag } from "../../helpers/multiLanguage";
 import ActionTypes from "../actionTypes";
+import {
+  propagateLinkedValues,
+  refreshBacklinks,
+  refreshRows
+} from "../linkedValues";
 import store from "../store";
-import { refreshDependentRows } from "../updateDependentTables";
 
 const {
-  SET_STATE,
   CELL_ROLLBACK_VALUE,
   CELL_SAVED_SUCCESSFULLY,
   CELL_SET_VALUE
@@ -222,6 +225,11 @@ export const clearMultilangCell = cell => {
     actionTypes: [CELL_SET_VALUE, CELL_SAVED_SUCCESSFULLY, CELL_ROLLBACK_VALUE]
   });
   store.dispatch(action());
+  // this path bypasses dispatchCellValueChange, so it has to bring the copies
+  // of this row's identifier in line itself
+  store.dispatch(
+    propagateLinkedValues({ tableId: cell.table.id, rowId: cell.row.id })
+  );
 };
 
 const dispatchCellValueChange = action => (dispatch, getState) => {
@@ -292,7 +300,7 @@ const dispatchCellValueChange = action => (dispatch, getState) => {
   };
 
   // bail out if no updates needed
-  return new Promise((resolve, reject) => {
+  const request = new Promise((resolve, reject) => {
     if (!needsUpdate) {
       dispatch({
         type: "NOTHING_TO_DO"
@@ -321,12 +329,27 @@ const dispatchCellValueChange = action => (dispatch, getState) => {
         ...f.dissoc("type", action)
       });
     }
-  })
+  });
+
+  // thunkMiddleware reduces the optimistic CELL_SET_VALUE synchronously, so the
+  // new value is already in the store here -- every copy of it elsewhere can be
+  // brought in line without waiting for the response, and without a request.
+  if (needsUpdate) {
+    dispatch(propagateLinkedValues({ tableId, rowId }));
+  }
+
+  return request
     .then(() =>
       maybeUpdateStatusColumnValue(tableId, columnId, rowId)(dispatch, store)
     )
-    .then(() => refreshDependentRows(tableId, [rowId], store.getState()))
-    .then(state => dispatch({ type: SET_STATE, state }));
+    .then(() => dispatch(refreshBacklinks({ column, oldValue, newValue })))
+    .catch(error => {
+      // CELL_ROLLBACK_VALUE is already reduced by now (thunkMiddleware calls
+      // onError before next(rollback), and this handler only runs a microtask
+      // later), so the same function distributes the restored value.
+      dispatch(propagateLinkedValues({ tableId, rowId }));
+      throw error;
+    });
 };
 
 const maybeUpdateStatusColumnValue = (tableId, columnId, rowId) => (
@@ -525,7 +548,7 @@ export const changeLinkAttributes = ({
   const newValue = setLinkAttributes(linkId, payload.attributes, oldValue);
   const cellIds = { tableId: table.id, columnId: column.id, rowId: row.id };
 
-  return new Promise((resolve, reject) => {
+  const request = new Promise((resolve, reject) => {
     dispatch({
       promise: makeRequest({
         apiRoute: route.toLinkAttributes({ ...cellIds, linkId }),
@@ -570,9 +593,27 @@ export const changeLinkAttributes = ({
       onSuccess: resolve,
       onError: reject
     });
-  })
-    .then(() => refreshDependentRows(table.id, [row.id], store.getState()))
-    .then(state => dispatch({ type: SET_STATE, state }));
+  });
+
+  // An attribute is part of the link's label, so it travels with this row's
+  // identifier into every other table that embeds it -- a no-op when this link
+  // column is not part of the identifier.
+  dispatch(propagateLinkedValues({ tableId: table.id, rowId: row.id }));
+
+  return request
+    .then(() => {
+      // the server's normalized value (datetime -> UTC) has landed by now and
+      // can differ from what was distributed optimistically above
+      dispatch(propagateLinkedValues({ tableId: table.id, rowId: row.id }));
+      // The attributes belong to the edge, which the target table's backlink
+      // column renders from the other side -- and which of its columns that
+      // is, only the backend knows. One row, one request.
+      return dispatch(refreshRows(column.toTable, [linkId]));
+    })
+    .catch(error => {
+      dispatch(propagateLinkedValues({ tableId: table.id, rowId: row.id }));
+      throw error;
+    });
 };
 
 export const modifyHistory = (modifyAction, tableId, rowId) => (
