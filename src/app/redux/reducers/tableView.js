@@ -44,7 +44,8 @@ const {
   CLEAN_UP,
   SET_COLUMN_ORDERING,
   SET_COLUMN_WIDTHS,
-  SET_ANNOTATION_HIGHLIGHT
+  SET_ANNOTATION_HIGHLIGHT,
+  LINKED_VALUES_UPDATED
 } = ActionTypes;
 
 const initialState = {
@@ -253,6 +254,43 @@ const maybeUpdateConcat = f.curryN(3, (action, completeState, tableView) => {
     : f.assoc(pathToDv, displayValue, tableView);
 });
 
+// Counterpart of applyLinkedValues in rows.js: the display values of the rows
+// that embed something of a changed row. Merged per column index, because only
+// the positions that actually hold a copy were recomputed -- a row linked from
+// thousands of others must not cost a full row recomputation each.
+const applyLinkedDisplayValues = (tableView, updates = []) =>
+  updates.reduce((next, { tableId, rows }) => {
+    const storedDisplayValues = next.displayValues?.[tableId];
+    if (!storedDisplayValues) {
+      return next;
+    }
+
+    const updatesByRowId = new Map(
+      rows.map(({ id, displayValueUpdates }) => [id, displayValueUpdates])
+    );
+    const merge = (values, columnUpdates) => {
+      const merged = [...(values || [])];
+      Object.entries(columnUpdates).forEach(([columnIndex, displayValue]) => {
+        merged[columnIndex] = displayValue;
+      });
+      return merged;
+    };
+
+    return {
+      ...next,
+      displayValues: {
+        ...next.displayValues,
+        [tableId]: storedDisplayValues.map(entry => {
+          const columnUpdates = updatesByRowId.get(entry.id);
+
+          return columnUpdates
+            ? { ...entry, values: merge(entry.values, columnUpdates) }
+            : entry;
+        })
+      }
+    };
+  }, tableView);
+
 const switchValues = action => ({
   ...action,
   oldValue: action.newValue,
@@ -334,6 +372,8 @@ export default (state = initialState, action, completeState) => {
   switch (action.type) {
     case SET_STATE:
       return action.state.tableView;
+    case LINKED_VALUES_UPDATED:
+      return applyLinkedDisplayValues(state, action.updates);
     case TOGGLE_COLUMN_VISIBILITY:
       return f.assoc("visibleColumns", action.visibleColumns, state);
     case HIDE_ALL_COLUMNS:

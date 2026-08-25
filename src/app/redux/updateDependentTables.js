@@ -1,19 +1,9 @@
 // @flow
 
 import f from "lodash/fp";
-import { set } from "lodash"; // eslint-disable-line
 
 import { ColumnKinds } from "../constants/TableauxConstants";
-import {
-  doto,
-  mapIndexed,
-  mapPromise,
-  memoizeWith,
-  when
-} from "../helpers/functools";
-import { makeRequest } from "../helpers/apiHelper";
-import getDisplayValue from "../helpers/getDisplayValue";
-import route from "../helpers/apiRoutes.js";
+import { doto, memoizeWith, when } from "../helpers/functools";
 
 export const calcColumnDependencies = columnCollection => {
   const filterLinkColumns = ([tableId, { data }]) => [
@@ -46,9 +36,9 @@ export const calcColumnDependencies = columnCollection => {
 // bare id list: COLUMNS_LOADING_DATA already registers a table id while its
 // `data` is still missing, and calcColumnDependencies then finds no link
 // columns for it. Keying on the id list alone would cache that incomplete map
-// under the very key the loaded state produces, leaving the dependency map --
-// and with it refreshDependentRows -- wrong for the rest of the session.
-const listOfTableIds = f.compose(
+// under the very key the loaded state produces, leaving the dependency map
+// wrong for the rest of the session.
+export const dependencyMapMemoKey = f.compose(
   f.join(","),
   f.sortBy(f.identity),
   f.keys,
@@ -56,7 +46,7 @@ const listOfTableIds = f.compose(
 );
 
 const getCachedDependencyMap = memoizeWith(
-  listOfTableIds,
+  dependencyMapMemoKey,
   calcColumnDependencies
 );
 
@@ -108,111 +98,3 @@ export const propagateRowDelete = f.curryN(
     return { rows: updatedRows };
   }
 );
-
-export const hasTransitiveDependencies = (tableId, state) => {
-  const dependencies = getCachedDependencyMap(state);
-  const primaryDependencies = doto(dependencies[tableId], f.keys);
-  const transitiveDependencies = doto(
-    primaryDependencies,
-    f.map(tblId => dependencies[tblId]),
-    f.reject(f.isEmpty)
-  );
-  return !f.isEmpty(transitiveDependencies);
-};
-
-// This function mutates the global state object, but it shouldnt pose a problem as we replace the
-// whole state anyway afterwards
-export const refreshDependentRows = async (
-  changeOrigin,
-  changedRows,
-  state
-) => {
-  const dependentTables = getCachedDependencyMap(state.columns);
-  if (f.isEmpty(dependentTables[changeOrigin])) return state;
-
-  const clonedState = { ...state };
-  const refreshedTables = new Set();
-
-  const fetchChangedRows = async (tableId, parentTable, changedParentRows) => {
-    // assure we terminate in case of cyclic links
-    if (refreshedTables.has(tableId)) {
-      return;
-    }
-    refreshedTables.add(tableId);
-
-    const columns = state.columns[tableId].data;
-    const linkColumnIndices = doto(
-      columns,
-      mapIndexed((column, idx) => ({ ...column, idx })),
-      f.filter(f.propEq("toTable", parentTable)),
-      f.map("idx")
-    );
-    const getLinkCellValues = row =>
-      f.flatMap(
-        idx => doto(f.nth(idx, row.values), f.map(f.prop("id"))),
-        linkColumnIndices
-      );
-    const linksToChangedRow = row =>
-      doto(row, getLinkCellValues, f.any(f.contains(f.__, changedParentRows)));
-    const rowsToUpdate = f
-      .propOr([], ["rows", tableId, "data"], clonedState)
-      .filter(linksToChangedRow);
-    const fetchRows = mapPromise(({ id }) =>
-      makeRequest({ apiRoute: route.toRow({ tableId, rowId: id }) })
-    );
-    const freshRows = await fetchRows(rowsToUpdate);
-    const freshDisplayValues = freshRows.map(({ values }) =>
-      mapIndexed(
-        (cellValue, idx) => getDisplayValue(columns[idx], cellValue),
-        values
-      )
-    );
-
-    freshRows.forEach((row, ii) => {
-      // Here be mutations!
-      const rowIdx = f.findIndex(
-        f.propEq("id", row.id),
-        state.rows[tableId].data
-      );
-      const pathToRow = ["rows", tableId, "data", rowIdx];
-      if (!f.prop(pathToRow, clonedState)) {
-        set(clonedState, pathToRow, {}); // eslint-disable-line
-      }
-      clonedState.rows[tableId].data[rowIdx].values = row.values;
-      const dvIdx = f.findIndex(
-        f.propEq("id", row.id),
-        state.tableView.displayValues[tableId]
-      );
-
-      const pathToDisplayValue = ["tableView", "displayValues", tableId, dvIdx];
-      if (!f.prop(pathToDisplayValue, clonedState)) {
-        set(clonedState, pathToDisplayValue, {}); // eslint-disable-line
-      }
-      clonedState.tableView.displayValues[tableId][dvIdx].values =
-        freshDisplayValues[ii];
-    });
-
-    const subDependencies = dependentTables[tableId];
-    return doto(
-      subDependencies,
-      f.keys,
-      f.filter(tblId => hasTransitiveDependencies(tblId, state.columns)),
-      mapPromise(tblId =>
-        fetchChangedRows(tblId, tableId, rowsToUpdate.map(f.prop("id")))
-      )
-    );
-  };
-
-  // No hasTransitiveDependencies() gate here: that asks whether the *dependents*
-  // have dependents of their own, which says nothing about whether they need
-  // refreshing. Gating on it skipped the first level entirely whenever nothing
-  // linked back -- e.g. renaming a linked row never refreshed the row holding
-  // the link, so its displayValue stayed stale. The early return above already
-  // covers "no dependents at all", the recursion keeps its own guard, and
-  // `refreshedTables` breaks cycles.
-  await mapPromise(
-    tableId => fetchChangedRows(tableId, changeOrigin, changedRows),
-    f.keys(dependentTables[changeOrigin])
-  );
-  return clonedState;
-};
