@@ -1,8 +1,6 @@
 import React, { PureComponent } from "react";
 import PropTypes from "prop-types";
 import { translate } from "react-i18next";
-import classNames from "classnames";
-import SvgIcon from "../../helperComponents/SvgIcon";
 import f from "lodash/fp";
 
 class BooleanView extends PureComponent {
@@ -41,10 +39,6 @@ class BooleanView extends PureComponent {
   render() {
     const { t, funcs, thisUserCantEdit, value } = this.props;
     const selected = !!value;
-    const checkboxCss = classNames("checkbox", {
-      checked: selected,
-      disabled: thisUserCantEdit
-    });
 
     return (
       <div
@@ -57,9 +51,13 @@ class BooleanView extends PureComponent {
         }}
       >
         <div className="content-wrapper">
-          <div className={checkboxCss}>
-            {selected ? <SvgIcon icon="check" /> : ""}
-          </div>
+          <input
+            className="checkbox"
+            type="checkbox"
+            checked={selected}
+            disabled={thisUserCantEdit}
+            readOnly
+          />
           <div className="value">
             {`${t("current_selection")}: `}
             <div>{selected ? t("yes") : t("no")}</div>

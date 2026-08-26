@@ -432,14 +432,38 @@ $dist-from-top: 20px;
     }
 
     .checkbox {
-      background-color: $color-background-very-light-grey;
-      border: 2px solid $color-text-light-grey;
-      border-radius: 3px;
-      width: 23px;
-      height: 22px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      &[type="checkbox"] {
+        display: block;
+        line-height: 15px;
+        height: 15px;
+        width: 15px;
+        margin: 0;
+        appearance: none;
+        -webkit-appearance: none;
+        border: 1.5px solid $color-text-medium-grey;
+        border-radius: 2px;
+        background-color: transparent;
+        cursor: pointer;
+        position: relative; /* For pseudo-element positioning */
+      }
+
+      &[type="checkbox"]:checked {
+        border: 0;
+        background-color: $color-primary;
+      }
+
+      &[type="checkbox"]:checked::after {
+        content: "";
+        position: absolute;
+        left: 5px;
+        top: 1px;
+        width: 3px;
+        height: 9px;
+        border-width: 0 2px 2px 0;
+        border-color: #FFFFFF;
+        border-style: solid;
+        transform: rotate(45deg);
+      }
     }
 
     & > :first-child {
