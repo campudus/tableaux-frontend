@@ -13,6 +13,7 @@ import { ReactElement } from "react";
 import TextCell from "./cells/TextCell";
 import AttachmentCell from "./cells/AttachmentCell";
 import CurrencyCell from "./cells/CurrencyCell";
+import GroupCell from "./cells/GroupCell";
 import LinkCell from "./cells/LinkCell/LinkCell";
 
 type PreviewCellValueProps = {
@@ -26,6 +27,7 @@ type PreviewCellValueProps = {
 const ColumnKind = {
   boolean: "boolean",
   currency: "currency",
+  group: "group",
   link: "link",
   attachment: "attachment"
 };
@@ -85,6 +87,8 @@ const PreviewContent = ({
           link={link}
         />
       );
+    case ColumnKind.group:
+      return <GroupCell langtag={langtag} column={column} value={value} />;
     default:
       return (
         <TextCell

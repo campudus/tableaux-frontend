@@ -29,6 +29,7 @@ import BooleanCell from "./boolean/BooleanCell";
 import CurrencyCell from "./currency/CurrencyCell.jsx";
 import DateCell from "./date/DateCell";
 import DisabledCell from "./disabled/DisabledCell.jsx";
+import GroupCell from "./group/GroupCell.jsx";
 import IdentifierCell from "./identifier/IdentifierCell.jsx";
 import LinkCell from "./link/LinkCell.jsx";
 import NumericCell from "./numeric/NumericCell.jsx";
@@ -236,7 +237,7 @@ class Cell extends React.Component {
     [ColumnKinds.currency]: CurrencyCell,
     [ColumnKinds.text]: TextCell,
     [ColumnKinds.richtext]: TextCell,
-    [ColumnKinds.group]: IdentifierCell,
+    [ColumnKinds.group]: GroupCell,
     [ColumnKinds.status]: StatusCell
   };
 

@@ -1,8 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { openEntityView } from "../../overlay/EntityViewOverlay";
-import Empty from "../../helperComponents/emptyEntry";
-import { isEmpty, trim } from "lodash/fp";
+import GroupDisplayValue from "../../helperComponents/GroupDisplayValue";
 
 const GroupView = props => {
   const { langtag, cell, thisUserCantEdit, funcs } = props;
@@ -20,8 +19,6 @@ const GroupView = props => {
     });
   };
 
-  const value = trim(cell.displayValue[langtag]);
-
   return (
     <div
       className="item-content group"
@@ -31,7 +28,11 @@ const GroupView = props => {
       }}
       onClick={clickHandler}
     >
-      {isEmpty(value) ? <Empty /> : value}
+      <GroupDisplayValue
+        column={cell.column}
+        value={cell.value}
+        langtag={langtag}
+      />
       {props.children}
     </div>
   );

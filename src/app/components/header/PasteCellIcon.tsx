@@ -17,6 +17,7 @@ import BooleanCell from "../cells/boolean/BooleanCell";
 import DateCell from "../cells/date/DateCell";
 import ShortTextCell from "../cells/text/ShortTextCell";
 import IdentifierCell from "../cells/identifier/IdentifierCell";
+import GroupCell from "../cells/group/GroupCell";
 import CurrencyCell from "../cells/currency/CurrencyCell";
 import TextCell from "../cells/text/TextCell";
 import StatusCell from "../cells/status/StatusCell";
@@ -53,7 +54,7 @@ const CellMap: Record<
   currency: CurrencyCell,
   text: TextCell,
   richtext: TextCell,
-  group: IdentifierCell,
+  group: GroupCell,
   status: StatusCell
 };
 
