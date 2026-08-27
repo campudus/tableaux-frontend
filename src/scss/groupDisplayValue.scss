@@ -1,0 +1,43 @@
+// How much space a group column's format pattern puts around a separator is
+// part of the pattern: "{{1}} | {{2}}" and "{{1}}    |    {{2}}" have to read
+// differently, so the runs of whitespace between the members must survive --
+// HTML collapses them by default.
+.group-display-value {
+  white-space: pre-wrap;
+}
+
+// A grid cell is one line high and clips what does not fit, so its content
+// keeps the spacing but must not start wrapping.
+.cell-content .group-display-value {
+  white-space: pre;
+}
+
+// In the entity view an item brings its own vertical breathing room, the way
+// the boolean view does with its content wrapper. Vertical padding needs a
+// block box: on an inline one it would paint without making room.
+.item-content.group .group-display-value {
+  display: inline-block;
+  padding: 6px 0;
+}
+
+// A boolean member of a group column: check or cross plus the member's name.
+// Shared by the grid cell, the entity view and the preview, so all three read
+// the same (see GroupDisplayValue.tsx).
+.group-boolean {
+  display: inline-flex;
+  align-items: baseline;
+  white-space: nowrap;
+  color: $color-text-medium-grey;
+
+  &--true {
+    color: $color-primary;
+  }
+
+  // Sized in em so the icon follows the surrounding text, and a little below
+  // its cap height so the label leads. The padding sets it off from the label
+  // it belongs to and from whatever the format pattern puts in front of it.
+  .svg-icon {
+    height: 0.65em;
+    padding: 0 4px;
+  }
+}
