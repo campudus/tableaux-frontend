@@ -14,7 +14,7 @@ import {
   combineColumnsAndRow,
   getPreviewDefaultTitle
 } from "./helper";
-import { useHistory } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { getDefaultSelectedColumnId } from "./attributes";
 import SvgIcon from "../helperComponents/SvgIcon";
 import i18n from "i18next";
@@ -134,7 +134,8 @@ export default function PreviewView({
   tableId,
   rowId
 }: PreviewViewProps): ReactElement {
-  const history = useHistory();
+  const navigate = useNavigate();
+  const location = useLocation();
   const dispatch = useDispatch();
   const [isDragging, setIsDragging] = useState(false);
   const [leftWidth, setLeftWidth] = useState(50);
@@ -207,7 +208,7 @@ export default function PreviewView({
   }, [columnsAndRow.join("-")]);
 
   const handleLanguageSwitch = (newLangtag: string) => {
-    switchLanguageHandler(history, newLangtag);
+    switchLanguageHandler(navigate, location.pathname, newLangtag);
   };
 
   const handleMouseDown = () => {

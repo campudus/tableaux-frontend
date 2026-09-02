@@ -1,8 +1,7 @@
 import i18n from "i18next";
-import f from "lodash/fp";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import { Link, withRouter } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { expandServiceUrl } from "../../frontendServiceRegistry/frontendServiceHelper";
 import route from "../../helpers/apiRoutes";
 import actionCreators from "../../redux/actionCreators";
@@ -109,4 +108,4 @@ ServiceLink.propTypes = {
   showToast: PropTypes.func
 };
 
-export default f.pipe(connect(null, { showToast }), withRouter)(ServiceLink);
+export default connect(null, { showToast })(ServiceLink);

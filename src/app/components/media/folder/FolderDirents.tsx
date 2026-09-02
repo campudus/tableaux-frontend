@@ -1,6 +1,6 @@
 import f from "lodash/fp";
 import i18n from "i18next";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { ReactElement, useEffect, useMemo, useRef, useState } from "react";
 import {
   AutoSizer,
@@ -31,7 +31,7 @@ export default function FolderDirents({
   fileIdsDiff,
   layout
 }: FolderDirentsProps): ReactElement {
-  const history = useHistory();
+  const navigate = useNavigate();
   const [dimensions, setDimensions] = useState({ width: 100, height: 100 });
   const masonryRef = useRef<Masonry>(null);
   const isRoot = folder.id === null;
@@ -71,7 +71,7 @@ export default function FolderDirents({
   };
 
   const handleNavigateBack = () => {
-    switchFolderHandler(history, langtag, folder.parentId);
+    switchFolderHandler(navigate, langtag, folder.parentId);
   };
 
   useEffect(() => {

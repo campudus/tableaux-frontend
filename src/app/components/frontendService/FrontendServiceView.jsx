@@ -2,7 +2,7 @@ import f from "lodash/fp";
 import React from "react";
 import IFrame from "react-iframe";
 import { connect } from "react-redux";
-import { Redirect, withRouter } from "react-router-dom";
+import { Navigate, useLocation, useNavigate } from "react-router-dom";
 
 import PropTypes from "prop-types";
 
@@ -17,11 +17,12 @@ const FrontendServiceView = ({
   frontendServices,
   tableId,
   columnId,
-  rowId,
-  history
+  rowId
 }) => {
+  const navigate = useNavigate();
+  const location = useLocation();
   const handleLanguageSwitch = React.useCallback(newLangtag =>
-    switchLanguageHandler(history, newLangtag)
+    switchLanguageHandler(navigate, location.pathname, newLangtag)
   );
   const service = f.find(f.propEq("id", serviceId), frontendServices);
 
@@ -56,7 +57,7 @@ const FrontendServiceView = ({
           <FrontendServiceNotFound />
         )}
       </div>
-      <Redirect to={routeToService} />
+      <Navigate to={routeToService} replace />
     </>
   );
 };
@@ -66,7 +67,4 @@ FrontendServiceView.propTypes = {
   langtag: PropTypes.string.isRequired
 };
 
-export default f.pipe(
-  connect(f.pick(["frontendServices"])),
-  withRouter
-)(FrontendServiceView);
+export default connect(f.pick(["frontendServices"]))(FrontendServiceView);

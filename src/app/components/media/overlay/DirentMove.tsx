@@ -1,6 +1,6 @@
 import f from "lodash/fp";
 import i18n from "i18next";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { ReactElement, useEffect } from "react";
 import { AutoSizer, List } from "react-virtualized";
 import { useDispatch, useSelector } from "react-redux";
@@ -149,11 +149,11 @@ export function DirentMoveFooter(props: DirentMoveProps): ReactElement {
   const { langtag, dirent, sharedData: targetFolder } = props;
   const isFile = isAttachment(dirent);
   const canEdit = canUserEditFiles();
-  const history = useHistory();
+  const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const handleNavigate = () => {
-    switchFolderHandler(history, langtag, targetFolder?.id);
+    switchFolderHandler(navigate, langtag, targetFolder?.id);
   };
 
   const handleSave = () => {

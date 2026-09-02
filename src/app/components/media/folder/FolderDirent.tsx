@@ -13,7 +13,7 @@ import { buildClassName as cn } from "../../../helpers/buildClassName";
 import { useDispatch } from "react-redux";
 import { retrieveTranslation } from "../../../helpers/multiLanguage";
 import apiUrl from "../../../helpers/apiUrl";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { switchFolderHandler } from "../../Router";
 import MediaThumbnail, { MediaThumbnailFolder } from "../MediaThumbnail";
 import { Layout } from "./FolderToolbar";
@@ -64,7 +64,7 @@ function FolderDirent(
   direntRef: ForwardedRef<HTMLDivElement>
 ): ReactElement {
   const dispatch = useDispatch();
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const isFile = isAttachment(dirent);
   const isModified = isFile && f.contains(dirent.uuid, fileIdsDiff);
@@ -87,7 +87,7 @@ function FolderDirent(
     if (isFile) {
       window.open(apiUrl(translate(dirent.url)), "_blank");
     } else {
-      switchFolderHandler(history, langtag, dirent?.id);
+      switchFolderHandler(navigate, langtag, dirent?.id);
     }
   };
 

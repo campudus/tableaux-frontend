@@ -1,4 +1,4 @@
-import { withRouter, Redirect } from "react-router-dom";
+import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import React from "react";
 import i18n from "i18next";
 import f from "lodash/fp";
@@ -39,16 +39,18 @@ const WidgetColletion = withDashboardStatusData(
           langtag={langtag}
           requestedData={requestedData}
         />
-        <Redirect to={`/${langtag}/dashboard`} />
+        <Navigate to={`/${langtag}/dashboard`} replace />
       </div>
     );
   }
 );
 
 const DashboardView = props => {
-  const { history, langtag } = props;
+  const { langtag } = props;
+  const navigate = useNavigate();
+  const location = useLocation();
   const handleLanguageSwitch = React.useCallback(newLangtag =>
-    switchLanguageHandler(history, newLangtag)
+    switchLanguageHandler(navigate, location.pathname, newLangtag)
   );
   const flagConfigs = f.flow(
     f.filter(config => config.kind === "flag" && config.isDashboard),
@@ -78,4 +80,4 @@ DashboardView.propTypes = {
   requestedData: PropTypes.object
 };
 
-export default withRouter(DashboardView);
+export default DashboardView;

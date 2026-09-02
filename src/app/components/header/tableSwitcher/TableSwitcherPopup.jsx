@@ -3,7 +3,6 @@ import PropTypes from "prop-types";
 import React from "react";
 import { translate } from "react-i18next";
 import listensToClickOutside from "react-onclickoutside";
-import { withRouter } from "react-router-dom";
 import { ShowArchived } from "../../../archivedRows/helpers";
 import { FilterModes } from "../../../constants/TableauxConstants";
 import { forkJoin, maybe } from "../../../helpers/functools";
@@ -14,6 +13,7 @@ import {
 } from "../../../helpers/multiLanguage";
 import SearchFunctions from "../../../helpers/searchFunctions";
 import Action from "../../../redux/actionCreators";
+import { withRouter } from "../../Router";
 import store from "../../../redux/store";
 
 class SwitcherPopup extends React.PureComponent {
@@ -95,14 +95,14 @@ class SwitcherPopup extends React.PureComponent {
   };
 
   onClickTable = table => () => {
-    const { history } = this.props;
+    const { router } = this.props;
     this.setState({
       focusTableId: table.id
     });
     store.dispatch(Action.setShowArchivedRows(table, ShowArchived.hide));
     this.handleClickOutside(null);
-    history.push(
-      history.location.pathname.replace(/tables.*/, `tables/${table.id}`)
+    router.navigate(
+      router.location.pathname.replace(/tables.*/, `tables/${table.id}`)
     );
   };
 
