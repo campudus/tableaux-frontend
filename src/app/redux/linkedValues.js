@@ -167,11 +167,11 @@ const findEmbeddedColumnOfTable = (state, tableId) =>
 
 // The identifier value of (tableId, rowId) as the store holds it right now.
 //
-// A concat identifier is assembled from its member columns instead of read from
-// the row's stored concat value: that copy is only brought up to date once the
-// cell write came back (maybeUpdateConcat[s] in the reducers), whereas this runs
-// optimistically, right after the changed cell was set. Reading it would
-// distribute the value from before the change -- i.e. nothing at all.
+// A concat identifier is assembled from its member columns rather than read
+// from the row's stored concat value. The stored copy is in line by the time
+// this runs (applyDependentValues in reducers/rows.js patches it along with the
+// cell write), but assembling makes that irrelevant: the members are the source
+// of truth either way, and this stays correct no matter when it is called.
 const identifierValueOf = (state, tableId, rowId, embeddedColumn) => {
   const columns = columnsOf(state, tableId);
   const row = rowsOf(state, tableId).find(row => row.id === rowId);
