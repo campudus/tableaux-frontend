@@ -127,13 +127,19 @@ const copyGroupColumn = (src, srcLang, dst, dstLang) => {
       f.contains(column.id, groupColumnIds) ? [...accum, idx] : accum,
     []
   );
+  // src.row/dst.row only carry {id, tableId}; look up the full row (with cells/values) from the store
+  const findRow = cell =>
+    f.find(
+      f.propEq("id", cell.row.id),
+      store.getState().rows[cell.table.id].data
+    );
   const getCell = row => idx => ({
     ...f.nth(idx, row.cells),
     value: f.nth(idx, row.values)
   });
   const cellTuples = f.zip(
-    groupColumnIndices.map(getCell(src.row)),
-    groupColumnIndices.map(getCell(dst.row))
+    groupColumnIndices.map(getCell(findRow(src))),
+    groupColumnIndices.map(getCell(findRow(dst)))
   );
   cellTuples.forEach(([srcCell, dstCell]) =>
     pasteCellValue(srcCell, srcLang, dstCell, dstLang, true)
