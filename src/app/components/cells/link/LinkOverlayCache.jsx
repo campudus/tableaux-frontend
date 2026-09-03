@@ -90,17 +90,21 @@ const withCachedLinks = Component => props => {
     f.propEq("id", column.id),
     f.prop(["columns", table.id, "data"], grudData) ?? []
   );
-  const linkDvByRowId = f.zipObject(
-    f.map(f.prop("id"), cell.value || []),
-    f.propOr(
-      [],
-      ["values", columnIdx],
-      f.find(
-        f.propEq("id", row.id),
-        f.prop(["displayValues", table.id], grudData) ?? []
-      )
+  const ownLinkIds = f.map(f.prop("id"), cell.value || []);
+  const ownRowDisplayValues = f.propOr(
+    [],
+    ["values", columnIdx],
+    f.find(
+      f.propEq("id", row.id),
+      f.prop(["displayValues", table.id], grudData) ?? []
     )
   );
+  // Pairing is positional, so a stored array that has not caught up with an
+  // optimistic cell update would hand a link another target's label.
+  const linkDvByRowId =
+    ownRowDisplayValues.length === ownLinkIds.length
+      ? f.zipObject(ownLinkIds, ownRowDisplayValues)
+      : {};
 
   // A candidate that is not linked yet has no attributes to compose a label
   // from, so it falls back to the target row's identifier.
