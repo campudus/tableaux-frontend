@@ -1,7 +1,7 @@
 import f from "lodash/fp";
 
 import { ColumnKinds } from "../constants/TableauxConstants";
-import { doto, memoizeWith, merge, when } from "../helpers/functools";
+import { doto, memoizeWith, merge } from "../helpers/functools";
 import getDisplayValue from "../helpers/getDisplayValue";
 import store from "./store";
 
@@ -70,75 +70,88 @@ export const isGroupMember = memoizeWith(
   }
 );
 
-export const getLookupMap = memoizeWith(
-  f.prop("tableId"),
-  ({ tableId, completeState }) => {
-    const columns = completeState.columns[tableId].data;
+const columnsOf = (tableId, completeState) =>
+  f.propOr([], ["columns", tableId, "data"], completeState);
 
-    // column[] -> { [groupColumnId]: groupMemberId[] }
-    const groups = doto(
-      columns,
-      f.groupBy("id"),
-      f.mapValues(f.flow(f.first, f.prop("groups"), f.map("id"))),
-      f.pickBy(f.complement(f.isEmpty))
-    );
-
-    // { [groupColumnId]: groupMemberId[] } -> { [groupMemberId]: groupColumnId }
-    return doto(
-      groups,
-      f.toPairs,
-      f.reduce((theMap, [groupColumnId, groupMemberIds]) => {
-        groupMemberIds.forEach(memberId => (theMap[memberId] = groupColumnId));
-        return theMap;
-      }, {})
-    );
-  }
+// Keyed on the columns array, not the table id: that never changes, so a group
+// created or edited mid-session stayed invisible for the rest of the session.
+export const getGroupLookup = memoizeWith(
+  f.identity,
+  // column[] -> { [groupMemberId]: groupColumnId[] }, a column may be a member
+  // of more than one group
+  columns =>
+    columns.reduce(
+      (theMap, column) =>
+        (column.groups || []).reduce((acc, member) => {
+          acc[member.id] = [...(acc[member.id] || []), column.id];
+          return acc;
+        }, theMap),
+      {}
+    )
 );
 
-export const getGroupColumn = (data, completeState) =>
-  when(
-    f.isString,
-    f.parseInt(10),
-    f.propOr(null, data.column.id, getLookupMap({ ...data, completeState }))
+export const getGroupColumnIds = (data, completeState) =>
+  f.propOr(
+    [],
+    data.column.id,
+    getGroupLookup(columnsOf(data.tableId, completeState))
   );
 
-export const calcConcatValues = (action, completeState) => {
+// The columns of the changed row that carry a copy of the changed value: the
+// concat at index 0 if the changed column is an identifier, and every group it
+// is a member of. Independent of each other -- a column that is both used to
+// get its group patched and its concat skipped.
+export const calcDependentValues = (
+  action,
+  completeState,
+  isRollback = false
+) => {
   const { tableId, columnId, column } = action;
   const [rowIdx, _columnIdx, dvRowIdx] = idsToIndices(action, completeState);
-  const columns = completeState.columns[tableId].data;
-  const rows = completeState.rows[tableId].data;
+  const columns = columnsOf(tableId, completeState);
+  const rows = f.propOr([], ["rows", tableId, "data"], completeState);
 
-  // if we changed an identifier cell and the table has a concat column
-  const groupColumnId = getGroupColumn(action, completeState); // nil for non-group members
-  if (
-    (column.identifier && columns[0].kind === ColumnKinds.concat) ||
-    f.isInteger(groupColumnId)
-  ) {
-    const concatColumnIdx = f.isInteger(groupColumnId)
-      ? completeState.columns[tableId].data.findIndex(
-          f.propEq("id", groupColumnId)
-        )
-      : 0;
-    const concatColumn = completeState.columns[tableId].data[concatColumnIdx];
-    const entryIdx = f.findIndex(
-      f.propEq("id", columnId),
-      f.isInteger(groupColumnId) ? concatColumn.groups : concatColumn.concats
-    );
-    const concatValue = rows[rowIdx].values[concatColumnIdx];
-    const mergedNewValue = getUpdatedCellValueToSet(action);
-
-    const updatedConcatValue = f.assoc(entryIdx, mergedNewValue, concatValue);
-
-    return {
-      columnIdx: concatColumnIdx,
-      rowIdx,
-      updatedConcatValue,
-      dvRowIdx,
-      displayValue: getDisplayValue(concatColumn, updatedConcatValue)
-    };
-  } else {
-    return null;
+  if (!column || rowIdx < 0 || f.isEmpty(columns)) {
+    return [];
   }
+
+  const newValue = getUpdatedCellValueToSet(action, isRollback);
+
+  const dependentColumnIdcs = [
+    ...(column.identifier && columns[0].kind === ColumnKinds.concat ? [0] : []),
+    ...getGroupColumnIds(action, completeState).map(groupColumnId =>
+      columns.findIndex(f.propEq("id", groupColumnId))
+    )
+  ];
+
+  return dependentColumnIdcs.reduce((updates, dependentColumnIdx) => {
+    const dependentColumn = columns[dependentColumnIdx];
+    const members = f.propOr(
+      f.propOr([], "groups", dependentColumn),
+      "concats",
+      dependentColumn
+    );
+    const entryIdx = f.findIndex(f.propEq("id", columnId), members);
+    const dependentValue = f.prop(["values", dependentColumnIdx], rows[rowIdx]);
+
+    // Nothing to patch -- f.assoc(-1, ...) would add a stray "-1" property.
+    if (dependentColumnIdx < 0 || entryIdx < 0 || !f.isArray(dependentValue)) {
+      return updates;
+    }
+
+    const updatedValue = f.assoc(entryIdx, newValue, dependentValue);
+
+    return [
+      ...updates,
+      {
+        columnIdx: dependentColumnIdx,
+        rowIdx,
+        dvRowIdx,
+        updatedValue,
+        displayValue: getDisplayValue(dependentColumn, updatedValue)
+      }
+    ];
+  }, []);
 };
 
 // Conditionally merge cell values for multilang updates

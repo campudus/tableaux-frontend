@@ -1,5 +1,5 @@
 import { buildOriginColumnLookup } from "./columnHelper";
-import getDisplayValue from "./getDisplayValue";
+import getDisplayValue, { applyLinkAttributeFormat } from "./getDisplayValue";
 
 describe("getDisplayValue", () => {
   it("should format union table values", () => {
@@ -113,6 +113,99 @@ describe("getDisplayValue", () => {
 
     expect(displayValue).toEqual({
       "de-DE": "Reign Advanced E+ 0 _ Advanced Carbon Steel S 12x148mm"
+    });
+  });
+
+  it("should format link display values using linkAttributes + formatPattern", () => {
+    const linkColumn = {
+      id: 5,
+      name: "material",
+      kind: "link",
+      toTable: 1,
+      linkAttributes: [
+        {
+          name: "percentage",
+          kind: "integer",
+          displayName: { "de-DE": "Anteil" }
+        }
+      ],
+      formatPattern: "{{value}} ({{attributes.percentage}}%)",
+      toColumn: {
+        id: 1,
+        name: "identifier",
+        kind: "shorttext",
+        multilanguage: true
+      }
+    };
+    const linkedRows = [
+      { id: 10, value: { "de-DE": "Mehl" }, attributes: [50] },
+      { id: 11, value: { "de-DE": "Zucker" } } // no attributes stored -> "_"
+    ];
+
+    const result = getDisplayValue(linkColumn)(linkedRows);
+
+    expect(result).toEqual([
+      { "de-DE": "Mehl (50%)" },
+      { "de-DE": "Zucker (_%)" }
+    ]);
+  });
+
+  it("should leave link display values unformatted without linkAttributes/formatPattern", () => {
+    const linkColumn = {
+      id: 5,
+      name: "material",
+      kind: "link",
+      toTable: 1,
+      toColumn: {
+        id: 1,
+        name: "identifier",
+        kind: "shorttext",
+        multilanguage: true
+      }
+    };
+    const linkedRows = [{ id: 10, value: { "de-DE": "Mehl" } }];
+
+    const result = getDisplayValue(linkColumn)(linkedRows);
+
+    expect(result).toEqual([{ "de-DE": "Mehl" }]);
+  });
+
+  // A concat holds each member's full definition, so a link member carries its
+  // own pattern and is composed just like a standalone link column.
+  it("should format a link inside a concat column", () => {
+    const linkColumn = {
+      id: 5,
+      name: "material",
+      kind: "link",
+      toTable: 1,
+      linkAttributes: [{ name: "percentage", kind: "integer" }],
+      formatPattern: "{{value}} ({{attributes.percentage}}%)",
+      toColumn: {
+        id: 1,
+        name: "identifier",
+        kind: "shorttext",
+        multilanguage: true
+      }
+    };
+    const concatColumn = {
+      id: 0,
+      name: "ID",
+      kind: "concat",
+      concats: [
+        { id: 2, name: "name", kind: "shorttext", multilanguage: true },
+        linkColumn
+      ]
+    };
+    const rowValue = [
+      { "de-DE": "Trikot" },
+      [
+        { id: 10, value: { "de-DE": "Baumwolle" }, attributes: [80] },
+        { id: 11, value: { "de-DE": "Elastan" }, attributes: [20] }
+      ]
+    ];
+
+    expect(getDisplayValue(concatColumn)(rowValue)).toEqual({
+      "de-DE": "Trikot Baumwolle (80%) Elastan (20%)"
     });
   });
 });
@@ -388,3 +481,66 @@ const unionLinkColumn = {
     }
   ]
 };
+
+// The worker builds its labels from the shared cache instead of going through
+// getDisplayValue(linkColumn), so it composes with this helper itself.
+describe("applyLinkAttributeFormat()", () => {
+  const linkColumn = {
+    id: 5,
+    name: "material",
+    kind: "link",
+    toTable: 1,
+    linkAttributes: [{ name: "percentage", kind: "integer" }],
+    formatPattern: "{{value}} ({{attributes.percentage}}%)",
+    toColumn: {
+      id: 1,
+      name: "identifier",
+      kind: "shorttext",
+      multilanguage: true
+    }
+  };
+  const base = { "de-DE": "Grau" };
+
+  it("formats the target's label with the edge's attributes", () => {
+    expect(
+      applyLinkAttributeFormat(linkColumn, { id: 1, attributes: [12] }, base)
+    ).toEqual({ "de-DE": "Grau (12%)" });
+  });
+
+  it("returns the base untouched without linkAttributes/formatPattern", () => {
+    const plain = {
+      ...linkColumn,
+      linkAttributes: undefined,
+      formatPattern: undefined
+    };
+
+    expect(
+      applyLinkAttributeFormat(plain, { id: 1, attributes: [12] }, base)
+    ).toBe(base);
+  });
+
+  it("renders a missing attribute as placeholder but keeps a stored 0", () => {
+    expect(applyLinkAttributeFormat(linkColumn, { id: 1 }, base)).toEqual({
+      "de-DE": "Grau (_%)"
+    });
+    expect(
+      applyLinkAttributeFormat(linkColumn, { id: 1, attributes: [0] }, base)
+    ).toEqual({ "de-DE": "Grau (0%)" });
+  });
+
+  it("keeps two edges onto the same target row independent", () => {
+    const a = applyLinkAttributeFormat(
+      linkColumn,
+      { id: 1, attributes: [12] },
+      base
+    );
+    const b = applyLinkAttributeFormat(
+      linkColumn,
+      { id: 1, attributes: [75] },
+      base
+    );
+
+    expect(a["de-DE"]).toBe("Grau (12%)");
+    expect(b["de-DE"]).toBe("Grau (75%)");
+  });
+});

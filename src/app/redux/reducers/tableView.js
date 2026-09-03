@@ -3,7 +3,7 @@ import f from "lodash/fp";
 import Worker from "./worker?worker";
 import { DefaultLangtag } from "../../constants/TableauxConstants";
 import {
-  calcConcatValues,
+  calcDependentValues,
   getUpdatedCellValueToSet,
   idsToIndices
 } from "../redux-helpers";
@@ -44,7 +44,8 @@ const {
   CLEAN_UP,
   SET_COLUMN_ORDERING,
   SET_COLUMN_WIDTHS,
-  SET_ANNOTATION_HIGHLIGHT
+  SET_ANNOTATION_HIGHLIGHT,
+  LINKED_VALUES_UPDATED
 } = ActionTypes;
 
 const initialState = {
@@ -224,10 +225,8 @@ const displayValueSelector = ({ tableId, dvRowIdx, columnIdx }) => [
 ];
 
 const updateDisplayValue = (valueProp, tableView, action, completeState) => {
-  const value = getUpdatedCellValueToSet(
-    action,
-    valueProp === "oldValue" /*isRollback*/
-  );
+  const isRollback = valueProp === "oldValue";
+  const value = getUpdatedCellValueToSet(action, isRollback);
   const { tableId, column } = action;
   const [columnIdx, dvRowIdx] = f.tail(idsToIndices(action, completeState));
   const pathToDv = displayValueSelector({
@@ -235,23 +234,71 @@ const updateDisplayValue = (valueProp, tableView, action, completeState) => {
     dvRowIdx,
     columnIdx
   });
-  return f.assoc(pathToDv, getDisplayValue(column, value), tableView);
+  return updateDependentDisplayValues(
+    f.assoc(pathToDv, getDisplayValue(column, value), tableView),
+    action,
+    completeState,
+    isRollback
+  );
 };
 
-// if an identifier cell was modified, we need to update the concat display value
-const maybeUpdateConcat = f.curryN(3, (action, completeState, tableView) => {
-  const concatValues = calcConcatValues(action, completeState) || {};
-  const { dvRowIdx, displayValue, columnIdx } = concatValues;
-  const pathToDv = displayValueSelector({
-    tableId: action.tableId,
-    dvRowIdx,
-    columnIdx
-  });
+// Counterpart of applyDependentValues in rows.js, for the display values.
+const updateDependentDisplayValues = (
+  tableView,
+  action,
+  completeState,
+  isRollback
+) =>
+  calcDependentValues(action, completeState, isRollback).reduce(
+    (next, { columnIdx, dvRowIdx, displayValue }) =>
+      dvRowIdx < 0
+        ? next
+        : f.assoc(
+            displayValueSelector({
+              tableId: action.tableId,
+              dvRowIdx,
+              columnIdx
+            }),
+            displayValue,
+            next
+          ),
+    tableView
+  );
 
-  return f.isEmpty(concatValues)
-    ? tableView
-    : f.assoc(pathToDv, displayValue, tableView);
-});
+// Counterpart of applyLinkedValues in rows.js. Merged per column index, since
+// only the positions actually holding a copy were recomputed.
+const applyLinkedDisplayValues = (tableView, updates = []) =>
+  updates.reduce((next, { tableId, rows }) => {
+    const storedDisplayValues = next.displayValues?.[tableId];
+    if (!storedDisplayValues) {
+      return next;
+    }
+
+    const updatesByRowId = new Map(
+      rows.map(({ id, displayValueUpdates }) => [id, displayValueUpdates])
+    );
+    const merge = (values, columnUpdates) => {
+      const merged = [...(values || [])];
+      Object.entries(columnUpdates).forEach(([columnIndex, displayValue]) => {
+        merged[columnIndex] = displayValue;
+      });
+      return merged;
+    };
+
+    return {
+      ...next,
+      displayValues: {
+        ...next.displayValues,
+        [tableId]: storedDisplayValues.map(entry => {
+          const columnUpdates = updatesByRowId.get(entry.id);
+
+          return columnUpdates
+            ? { ...entry, values: merge(entry.values, columnUpdates) }
+            : entry;
+        })
+      }
+    };
+  }, tableView);
 
 const switchValues = action => ({
   ...action,
@@ -334,6 +381,8 @@ export default (state = initialState, action, completeState) => {
   switch (action.type) {
     case SET_STATE:
       return action.state.tableView;
+    case LINKED_VALUES_UPDATED:
+      return applyLinkedDisplayValues(state, action.updates);
     case TOGGLE_COLUMN_VISIBILITY:
       return f.assoc("visibleColumns", action.visibleColumns, state);
     case HIDE_ALL_COLUMNS:
@@ -384,10 +433,7 @@ export default (state = initialState, action, completeState) => {
     case CELL_ROLLBACK_VALUE:
       return updateDisplayValue("oldValue", state, action, completeState);
     case CELL_SAVED_SUCCESSFULLY:
-      return f.flow(
-        modifyHistory(action),
-        maybeUpdateConcat(action, completeState)
-      )(state);
+      return modifyHistory(action)(state);
     case SET_DISPLAY_VALUE_WORKER:
       return {
         ...state,

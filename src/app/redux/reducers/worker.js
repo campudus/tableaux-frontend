@@ -4,7 +4,9 @@ import {
   buildOriginColumnLookup,
   getConcatOrigin
 } from "../../helpers/columnHelper";
-import getDisplayValue from "../../helpers/getDisplayValue";
+import getDisplayValue, {
+  applyLinkAttributeFormat
+} from "../../helpers/getDisplayValue";
 import { buildLinkDisplayValueCache } from "../../helpers/linkHelper";
 import { ColumnKind } from "@grud/devtools/types";
 
@@ -46,7 +48,15 @@ onmessage = function(e) {
       const toTableId = row.tableId ?? originColumn?.toTable ?? column.toTable;
       switch (column.kind) {
         case ColumnKind.link:
-          return value.map(link => getLinkDisplayValue(toTableId, link.id));
+          // The cache holds identifiers, so the label is composed here, where
+          // the individual link is known.
+          return value.map(link =>
+            applyLinkAttributeFormat(
+              originColumn ?? column,
+              link,
+              getLinkDisplayValue(toTableId, link.id)
+            )
+          );
         case ColumnKind.concat: {
           const concatColumn = getConcatOrigin(
             tableId,

@@ -442,13 +442,9 @@ export default withPropsOnChange(["grudData"], ({ grudData, table, row }) => {
   });
 
   const retrieveDisplayValue = (column, columnIdx, value) => {
-    const displayValue =
-      column.kind === "link"
-        ? f.map(
-            linkedRow => findDisplayValue(column.toTable)(linkedRow.id)(0),
-            value
-          )
-        : findDisplayValue(table.id)(row.id)(columnIdx);
+    // Link columns included: this row's own display value holds the composed
+    // labels, while displayValues[toTable] holds only shared identifiers.
+    const displayValue = findDisplayValue(table.id)(row.id)(columnIdx);
 
     // if displayValue was not found findDisplayValue returns either [] or [undefined]
     const displayValueFound = !f.isEmpty(displayValue) && f.head(displayValue);

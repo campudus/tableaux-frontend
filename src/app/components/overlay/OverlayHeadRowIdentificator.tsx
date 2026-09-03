@@ -2,6 +2,7 @@ import f from "lodash/fp";
 import React from "react";
 import { useSelector } from "react-redux";
 import getDisplayValue from "../../helpers/getDisplayValue";
+import { stripFormattingTags } from "../helperComponents/FormattedLabel";
 import { retrieveTranslation } from "../../helpers/multiLanguage";
 import { Cell, Column, GRUDStore, Row } from "../../types/grud";
 
@@ -53,9 +54,11 @@ const Identificator = ({
   columnName: string;
 }) => {
   const translate = retrieveTranslation(langtag);
-  const title = Array.isArray(displayValue)
-    ? displayValue.map(translate).join(" ")
-    : translate(displayValue);
+  const title = stripFormattingTags(
+    Array.isArray(displayValue)
+      ? displayValue.map(translate).join(" ")
+      : translate(displayValue)
+  );
   return (
     <span>
       <span className="column-name">

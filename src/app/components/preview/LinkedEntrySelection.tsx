@@ -4,6 +4,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { GRUDStore, Column, Row } from "../../types/grud";
 import actionTypes from "../../redux/actionTypes";
 import getDisplayValue from "../../helpers/getDisplayValue";
+import { stripFormattingTags } from "../helperComponents/FormattedLabel";
 
 type LinkedEntrySelectionProps = {
   langtag: string;
@@ -48,7 +49,7 @@ export default function LinkedEntrySelection({
             key={entry.id}
             className="linked-entry-selection__chip"
             icon={entry.archived && <i className="fa fa-archive" />}
-            label={values.at(index)}
+            label={stripFormattingTags(values.at(index))}
             onClick={() => handleClick(entry.id)}
             isActive={isActive}
           />

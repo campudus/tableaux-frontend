@@ -4,6 +4,7 @@ import i18n from "i18next";
 import { useDebouncedValue } from "../../../helpers/useDebouncedValue";
 import { getColumnDisplayName } from "../../../helpers/multiLanguage";
 import Tooltip from "../../helperComponents/Tooltip/Tooltip";
+import { stripFormattingTags } from "../../helperComponents/FormattedLabel";
 import { Column } from "../../../types/grud";
 
 type TextCellProps = {
@@ -27,7 +28,7 @@ export default function TextCell({
   const handleMouseEnter = useCallback(() => setTooltipVisible(true), []);
   const handleMouseLeave = useCallback(() => setTooltipVisible(false), []);
 
-  const value = multilangValue[langtag];
+  const value = stripFormattingTags(multilangValue[langtag]);
   const columnDisplayName = getColumnDisplayName(column, langtag);
 
   if (value && value.length > TEXT_MAX_LENGTH) {

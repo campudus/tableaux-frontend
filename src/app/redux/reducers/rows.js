@@ -7,7 +7,7 @@ import { doto, when } from "../../helpers/functools";
 import { addCellId } from "../../helpers/getCellId";
 import actionTypes from "../actionTypes";
 import {
-  calcConcatValues,
+  calcDependentValues,
   getUpdatedCellValueToSet,
   idsToIndices
 } from "../redux-helpers";
@@ -22,7 +22,6 @@ const {
   DELETE_ROW,
   CELL_SET_VALUE,
   CELL_ROLLBACK_VALUE,
-  CELL_SAVED_SUCCESSFULLY,
   SET_CELL_ANNOTATION,
   SET_ROW_ANNOTATION,
   SET_ALL_ROWS_FINAL,
@@ -31,24 +30,51 @@ const {
   CLEAN_UP,
   ADD_ROWS,
   ROW_CREATE_SUCCESS,
+  LINKED_VALUES_UPDATED,
   SET_STATE
 } = actionTypes;
 
 const initialState = {};
 
-const maybeUpdateConcats = (rows, action, completeState) => {
-  const concatValues = calcConcatValues(action, completeState) || {};
-  const { columnIdx, rowIdx, updatedConcatValue } = concatValues;
-  const { tableId } = action;
+// Rows that embed something of a changed row (see redux/linkedValues.js). Only
+// what actually changed gets a new object, so only affected rows re-render.
+const applyLinkedValues = (state, updates = []) =>
+  updates.reduce((next, { tableId, rows }) => {
+    const storedRows = next[tableId]?.data;
+    if (!storedRows) {
+      return next;
+    }
 
-  return f.isEmpty(concatValues)
-    ? rows
-    : f.assoc(
-        [tableId, "data", rowIdx, "values", columnIdx],
-        updatedConcatValue,
-        rows
-      );
-};
+    const patchedValuesByRowId = new Map(
+      rows.map(({ id, values }) => [id, values])
+    );
+
+    return {
+      ...next,
+      [tableId]: {
+        ...next[tableId],
+        data: storedRows.map(row =>
+          patchedValuesByRowId.has(row.id)
+            ? { ...row, values: patchedValuesByRowId.get(row.id) }
+            : row
+        )
+      }
+    };
+  }, state);
+
+// The changed row's own concat and group columns hold a copy of the changed
+// value. Applied together with the cell write, so the row's identifier is as
+// current as the cell without waiting for the response.
+const applyDependentValues = (rows, action, completeState, isRollback) =>
+  calcDependentValues(action, completeState, isRollback).reduce(
+    (next, { columnIdx, rowIdx, updatedValue }) =>
+      f.assoc(
+        [action.tableId, "data", rowIdx, "values", columnIdx],
+        updatedValue,
+        next
+      ),
+    rows
+  );
 
 const insertSkeletonRows = (state, action, completeState) => {
   const { tableId } = action;
@@ -227,13 +253,20 @@ const setCellValue = (state, action, completeState, isRollback = false) => {
   const rowSelector = [action.tableId, "data", rowIdx, "values"];
   const valueToSet = getUpdatedCellValueToSet(action, isRollback);
 
-  return f.update(rowSelector, f.assoc(columnIdx, valueToSet), state);
+  return applyDependentValues(
+    f.update(rowSelector, f.assoc(columnIdx, valueToSet), state),
+    action,
+    completeState,
+    isRollback
+  );
 };
 
 const rows = (state = initialState, action, completeState) => {
   switch (action.type) {
     case SET_STATE:
       return action.state.rows;
+    case LINKED_VALUES_UPDATED:
+      return applyLinkedValues(state, action.updates);
     case ALL_ROWS_LOADING_DATA:
       return {
         [action.tableId]: { error: false, finishedLoading: false }
@@ -280,8 +313,6 @@ const rows = (state = initialState, action, completeState) => {
       );
     case CELL_ROLLBACK_VALUE:
       return setCellValue(state, action, completeState, true /*isRollback*/);
-    case CELL_SAVED_SUCCESSFULLY:
-      return maybeUpdateConcats(state, action, completeState);
     case CLEAN_UP:
       return {};
     case ADD_ROWS:

@@ -1,9 +1,19 @@
-import React from "react";
+import React, { useState } from "react";
 import PropTypes from "prop-types";
 import classNames from "classnames";
+import {
+  autoUpdate,
+  flip,
+  offset,
+  shift,
+  useFloating
+} from "@floating-ui/react-dom";
 import SvgIcon from "../../helperComponents/SvgIcon";
 import { loadAndOpenEntityView } from "../../overlay/EntityViewOverlay";
 import Empty from "../../helperComponents/emptyEntry";
+import FormattedLabel, {
+  stripFormattingTags
+} from "../../helperComponents/FormattedLabel";
 import { unless } from "../../../helpers/functools";
 import { retrieveTranslation } from "../../../helpers/multiLanguage";
 import f from "lodash/fp";
@@ -11,6 +21,8 @@ import { canUserSeeTable } from "../../../helpers/accessManagementHelper.js";
 import { Link } from "react-router-dom";
 import { buildClassName } from "../../../helpers/buildClassName";
 import PermissionDenied from "../../helperComponents/PermissionDenied";
+import { hasLinkAttributes } from "../../../helpers/linkAttributes";
+import LinkAttributesPopover from "./LinkAttributesPopover";
 
 const isViewableUrl = url => {
   const fileType = f.last(url.split(".")).toLowerCase();
@@ -61,15 +73,46 @@ const LinkItem = props => {
     userCanEdit = true,
     viewUrl,
     isPermissionDenied = false,
-    archived = false
+    archived = false,
+    enableLinkAttributes = false
   } = props;
+  const attributes = f.get(["row", "attributes"], props);
   const isAttachment = props.isAttachment || Boolean(viewUrl);
   const isDisabled = isPermissionDenied || !userCanEdit;
+  const column = f.get(["cell", "column"], props);
+
+  const canEditAttributes =
+    enableLinkAttributes &&
+    hasLinkAttributes(column) &&
+    !isDisabled &&
+    !archived;
+
+  const [popoverOpen, setPopoverOpen] = useState(false);
+  const { refs, floatingStyles } = useFloating({
+    placement: "bottom-start",
+    whileElementsMounted: autoUpdate,
+    middleware: [offset(4), flip(), shift({ padding: 8 })]
+  });
+
+  const handleOpenAttributesPopover = evt => {
+    if (!canEditAttributes) {
+      return;
+    }
+    evt.preventDefault();
+    evt.stopPropagation();
+    setPopoverOpen(true);
+  };
+
+  const handleCloseAttributesPopover = () => setPopoverOpen(false);
 
   const mainButtonClass = classNames("left", {
     linked: props.isLinked,
     "has-focus": props.selectedMode === 0,
-    archived
+    archived,
+    editable: canEditAttributes,
+    // keeps the item marked as the popover's owner while it is open, even
+    // though the pointer has moved off the item and onto the popover
+    "attributes-open": popoverOpen
   });
   const secondaryButtonClass = classNames("link-item-button", {
     "has-focus": props.selectedMode === 1,
@@ -133,18 +176,36 @@ const LinkItem = props => {
             )}
           </LinkButton>
         )}
-        <div className={mainButtonClass}>
+        <div
+          ref={refs.setReference}
+          className={mainButtonClass}
+          onClick={canEditAttributes ? handleOpenAttributesPopover : undefined}
+        >
           <div draggable={false}>
             {isPermissionDenied ? (
               <PermissionDenied />
             ) : f.isEmpty(linkName) ? (
               <Empty />
             ) : (
-              <span title={linkName}>{linkName}</span>
+              <span title={stripFormattingTags(linkName)}>
+                <FormattedLabel text={linkName} />
+              </span>
             )}
           </div>
         </div>
       </div>
+      {popoverOpen && (
+        <LinkAttributesPopover
+          key={props.row.id}
+          cell={props.cell}
+          linkId={props.row.id}
+          attributes={attributes}
+          langtag={props.langtag}
+          floatingRef={refs.setFloating}
+          floatingStyles={floatingStyles}
+          onClose={handleCloseAttributesPopover}
+        />
+      )}
     </div>
   );
 };
@@ -162,7 +223,8 @@ LinkItem.propTypes = {
   showToggleButton: PropTypes.bool,
   userCanEdit: PropTypes.bool,
   viewUrl: PropTypes.string,
-  isPermissionDenied: PropTypes.bool
+  isPermissionDenied: PropTypes.bool,
+  enableLinkAttributes: PropTypes.bool
 };
 
 export default LinkItem;

@@ -16,7 +16,11 @@ import {
   setAllRowsFinal,
   toggleAnnotationFlag
 } from "./actions/annotationActions";
-import { changeCellValue, modifyHistory } from "./actions/cellActions";
+import {
+  changeCellValue,
+  changeLinkAttributes,
+  modifyHistory
+} from "./actions/cellActions";
 import { queryFrontendServices } from "./actions/frontendServices";
 import * as Row from "./actions/rowActions";
 import * as MediaActions from "./actions/mediaActions";
@@ -760,6 +764,7 @@ const actionCreators = {
   toggleExpandedRow: dispatchParamsFor(TOGGLE_EXPANDED_ROW),
   copyCellValue: dispatchParamsFor(COPY_CELL_VALUE_TO_CLIPBOARD),
   changeCellValue,
+  changeLinkAttributes,
   deleteRow,
   duplicateRow: Row.safelyDuplicateRow,
   addAnnotationLangtags,

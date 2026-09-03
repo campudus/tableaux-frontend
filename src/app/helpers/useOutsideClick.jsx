@@ -12,6 +12,16 @@
  * The useEffect's cleanup mechanism will take care of removing event listeners.
  */
 
+// A nested widget can rebuild its own DOM while handling the very click being
+// dispatched -- the calendar switching from days to months does. That detaches
+// event.target, and `container.contains()` then wrongly reports "outside".
+// composedPath() is captured at dispatch time and stays accurate.
+const isInside = (container, event) => {
+  const path =
+    typeof event.composedPath === "function" ? event.composedPath() : null;
+  return path ? path.includes(container) : container.contains(event.target);
+};
+
 const outsideClickEffect = ({
   shouldListen, // Boolean
   containerRef, // React.leagacyRef
@@ -19,7 +29,7 @@ const outsideClickEffect = ({
 }) => () => {
   if (shouldListen && containerRef.current) {
     const handleOutsideClick = event => {
-      if (!containerRef.current?.contains(event.target)) onOutsideClick(event);
+      if (!isInside(containerRef.current, event)) onOutsideClick(event);
     };
     const handleCleanUp = () => {
       document.removeEventListener("click", handleOutsideClick);

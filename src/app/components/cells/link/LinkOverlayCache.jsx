@@ -1,5 +1,5 @@
 import f from "lodash/fp";
-import React, { useMemo } from "react";
+import React from "react";
 import { compose, withHandlers } from "recompose";
 import { FilterModes } from "../../../constants/TableauxConstants";
 import { makeRequest } from "../../../helpers/apiHelper";
@@ -7,6 +7,7 @@ import route from "../../../helpers/apiRoutes";
 import { doto, when } from "../../../helpers/functools";
 import getDisplayValue from "../../../helpers/getDisplayValue";
 import { retrieveTranslation } from "../../../helpers/multiLanguage";
+import { stripFormattingTags } from "../../helperComponents/FormattedLabel";
 import SearchFunctions from "../../../helpers/searchFunctions";
 import { connectOverlayToCellValue } from "../../helperComponents/connectOverlayToCellHOC";
 
@@ -83,11 +84,48 @@ const withCachedLinks = Component => props => {
     f.prop(["displayValues", column.toTable], grudData) ?? [];
   const dvLookupTable = f.keyBy("id", displayValues);
 
-  const lookupDisplayValue = link =>
-    retrieveTranslation(langtag, f.prop([link.id, "values", 0], dvLookupTable));
+  // The already composed labels of this cell's own links, keyed by target row
+  // id -- unique within one link cell.
+  const columnIdx = f.findIndex(
+    f.propEq("id", column.id),
+    f.prop(["columns", table.id, "data"], grudData) ?? []
+  );
+  const ownLinkIds = f.map(f.prop("id"), cell.value || []);
+  const ownRowDisplayValues = f.propOr(
+    [],
+    ["values", columnIdx],
+    f.find(
+      f.propEq("id", row.id),
+      f.prop(["displayValues", table.id], grudData) ?? []
+    )
+  );
+  // Pairing is positional, so a stored array that has not caught up with an
+  // optimistic cell update would hand a link another target's label.
+  const linkDvByRowId =
+    ownRowDisplayValues.length === ownLinkIds.length
+      ? f.zipObject(ownLinkIds, ownRowDisplayValues)
+      : {};
 
-  const addDisplayValues = link =>
-    f.assoc("label", lookupDisplayValue(link), link);
+  // A candidate that is not linked yet has no attributes to compose a label
+  // from, so it falls back to the target row's identifier.
+  const lookupDisplayValue = link =>
+    retrieveTranslation(
+      langtag,
+      linkDvByRowId[link.id] ?? f.prop([link.id, "values", 0], dvLookupTable)
+    );
+
+  // `label` is rendered and keeps its markup, `searchableLabel` feeds the
+  // search box and the alphabetical sort.
+  const addDisplayValues = link => {
+    const label = lookupDisplayValue(link);
+    return f.flow(
+      f.assoc("label", label),
+      f.assoc(
+        "searchableLabel",
+        f.isString(label) ? stripFormattingTags(label) : label
+      )
+    )(link);
+  };
 
   const linkedIds = getLinkedIds(cell);
 
@@ -107,14 +145,16 @@ const withCachedLinks = Component => props => {
     const theFilterFn =
       loading || f.isEmpty(filterValue)
         ? f.stubTrue
-        : link => SearchFunctions[filterMode](filterValue)(link.label);
+        : link =>
+            SearchFunctions[filterMode](filterValue)(link.searchableLabel);
     setFilterFnDebounced(theFilterFn);
   }, [setFilterFn, loading, filterValue]);
 
   const sortMode = when(f.isNil, f.always(0), unlinkedOrder);
-  const sortValue = [f.prop("id"), el => el.label && f.toLower(el.label)][
-    sortMode
-  ];
+  const sortValue = [
+    f.prop("id"),
+    el => el.searchableLabel && f.toLower(el.searchableLabel)
+  ][sortMode];
 
   const rowsWithDisplayValues = doto(
     [

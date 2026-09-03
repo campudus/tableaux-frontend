@@ -12,6 +12,7 @@ import {
   getCurrencyCode,
   getFallbackCurrencyValue
 } from "./multiLanguage";
+import { formatLinkLabel, usesLinkAttributeFormat } from "./linkAttributes";
 
 // (obj, obj) -> obj
 //
@@ -142,8 +143,32 @@ const getStatusValue = column => value =>
     .map(rule => rule.name)
     .join(",");
 
+// Composes ONE link's label per langtag: `base` is the linked row's identifier
+// ({langtag: text}), `link` carries the attribute values. Exported for the
+// display value worker, which builds its labels from the shared cache and
+// needs the identical formatting.
+export const applyLinkAttributeFormat = (column, link, base) =>
+  usesLinkAttributeFormat(column)
+    ? applyToAllLangs(lt =>
+        formatLinkLabel({
+          column,
+          link,
+          displayValue: f.get(lt, base),
+          langtag: lt
+        })
+      )
+    : base;
+
+// Composing here means every direct caller of getDisplayValue(linkColumn) gets
+// labels rather than bare identifiers.
 const getLinkValue = column =>
-  f.map(f.flow(f.get("value"), getDisplayValue(column.toColumn)));
+  f.map(link =>
+    applyLinkAttributeFormat(
+      column,
+      link,
+      getDisplayValue(column.toColumn)(link.value)
+    )
+  );
 
 const getAttachmentFileName = () => links => {
   const getFileName = (lt, link) =>
