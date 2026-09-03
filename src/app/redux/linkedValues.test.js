@@ -445,7 +445,7 @@ describe("collectLinkedValueUpdates()", () => {
     ).toEqual([]);
   });
 
-  // Why no gate on "was this an identifier column?" is needed.
+  // Without a columnId the walk still runs, it just produces no payload.
   it("is empty when the identifier did not actually change", () => {
     const state = buildState();
     state.rows[manufacturerTableId] = {
@@ -458,6 +458,27 @@ describe("collectLinkedValueUpdates()", () => {
         rowId: manufacturerRowId
       })
     ).toEqual([]);
+  });
+
+  // With one, it is skipped up front instead.
+  it("is empty when the given columnId is not part of the identifier", () => {
+    expect(
+      collectLinkedValueUpdates(buildState(), {
+        tableId: modelTableId,
+        rowId: modelRowId,
+        columnId: modelIdentifierColumnDefinition.id
+      })
+    ).toEqual([]);
+  });
+
+  it("still walks when the given columnId is part of the identifier", () => {
+    const modelUpdate = collectLinkedValueUpdates(buildState(), {
+      tableId: manufacturerTableId,
+      rowId: manufacturerRowId,
+      columnId: manufacturerNameColumnDefinition.id
+    }).find(update => update.tableId === modelTableId);
+
+    expect(modelUpdate.rows.map(row => row.id)).toEqual([modelRowId]);
   });
 
   it("is empty when no table links to the changed one", () => {

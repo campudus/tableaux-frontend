@@ -131,6 +131,16 @@ const findEmbeddedColumn = (column, tableId, depth = 0) => {
   );
 };
 
+// A change outside the identifier cannot alter any copy, so the walk over
+// every loaded row can be skipped entirely.
+const isPartOfIdentifier = (embeddedColumn, columnId) => {
+  const resolved = resolveColumn(embeddedColumn);
+  const members = membersOf(resolved);
+  return members.length === 0
+    ? resolved.id === columnId
+    : members.some(member => member.id === columnId);
+};
+
 const columnsOf = (state, tableId) => state.columns?.[tableId]?.data ?? [];
 
 const rowsOf = (state, tableId) => state.rows?.[tableId]?.data ?? [];
@@ -239,9 +249,16 @@ const patchTable = (state, tableId, target) => {
 // row's current identifier pushed into it:
 //
 //   [{ tableId, rows: [{ id, values, displayValueUpdates: { [columnIdx]: dv } }] }]
-export const collectLinkedValueUpdates = (state, { tableId, rowId }) => {
+export const collectLinkedValueUpdates = (
+  state,
+  { tableId, rowId, columnId }
+) => {
   const embeddedColumn = findEmbeddedColumnOfTable(state, tableId);
   if (!embeddedColumn) {
+    return [];
+  }
+
+  if (!f.isNil(columnId) && !isPartOfIdentifier(embeddedColumn, columnId)) {
     return [];
   }
 
@@ -262,11 +279,15 @@ export const collectLinkedValueUpdates = (state, { tableId, rowId }) => {
 
 // Pushes the current identifier of (tableId, rowId) into every copy the store
 // holds. Idempotent, so the rollback path can simply call it again.
-export const propagateLinkedValues = ({ tableId, rowId }) => (
+export const propagateLinkedValues = ({ tableId, rowId, columnId }) => (
   dispatch,
   getState
 ) => {
-  const updates = collectLinkedValueUpdates(getState(), { tableId, rowId });
+  const updates = collectLinkedValueUpdates(getState(), {
+    tableId,
+    rowId,
+    columnId
+  });
 
   if (updates.length > 0) {
     dispatch({ type: LINKED_VALUES_UPDATED, updates });
