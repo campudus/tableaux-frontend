@@ -171,12 +171,10 @@ body {
     color: $color-primary-contrast-text;
     @include link-diff-color($color-primary);
 
-    // The bare .content-diff--added / --deleted rules further down belong to
-    // the inline text diffs, which paint the *text* in the accent color on a
-    // near-transparent background. A link renders as a filled chip instead, so
-    // it has to state its own text color here: those rules carry the same
-    // specificity but come later, and would otherwise win -- painting a deleted
-    // chip's label in exactly its own background color.
+    // A link renders as a filled chip, so it has to state its own text color:
+    // the bare .content-diff--added / --deleted rules further down are for the
+    // inline text diffs, carry the same specificity but come later, and would
+    // paint a deleted chip's label in exactly its own background color.
     &.content-diff--added {
       @include link-diff-color($color-revision-link-added);
       color: $color-primary-text;

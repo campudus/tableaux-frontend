@@ -23,15 +23,13 @@ import {
 import NumberInput from "../../helperComponents/NumberInput";
 import Toggle from "../../helperComponents/Toggle";
 
-// Same wrapping used by DateCell.jsx / DateView.jsx / HistoryFilterArea.jsx --
-// react-datetime doesn't portal its calendar, so click-outside-to-close is
-// handled by react-onclickoutside instead of relying on this popover's own
-// (much coarser) outside-click handling.
+// Same wrapping as DateCell.jsx / DateView.jsx: react-datetime doesn't portal
+// its calendar, so closing it on an outside click is left to
+// react-onclickoutside rather than to this popover's own, much coarser one.
 const Datetime = listensToClickOutside(ReactDatetime.default ?? ReactDatetime);
 
-// Compact date/datetime attribute input: a trigger button showing the
-// current value (like HistoryFilterArea.jsx's history-date-picker), which
-// opens an inline react-datetime calendar (input={false}, calendar only).
+// A trigger button showing the current value, opening an inline calendar --
+// same shape as HistoryFilterArea.jsx's history-date-picker.
 const DateAttributeInput = ({ definition, value, onChange, autoFocus }) => {
   const [open, setOpen] = useState(false);
   const showTime = definition.kind === ColumnKinds.datetime;
@@ -78,16 +76,14 @@ const DateAttributeInput = ({ definition, value, onChange, autoFocus }) => {
   );
 };
 
-// A boolean renders as a toggle, which sits on the label's line instead of
-// below it (see the row markup further down). Multilanguage attributes are
-// unsupported and always render as the disabled hint input, so they keep the
-// stacked layout even when their kind is boolean.
+// A toggle sits on the label's line instead of below it (see the row markup
+// further down). A multilanguage attribute renders as the disabled hint input
+// whatever its kind, so it keeps the stacked layout.
 const rendersAsToggle = definition =>
   definition.kind === ColumnKinds.boolean && !definition.multilanguage;
 
-// Per-kind input for a single link attribute definition. Multilanguage
-// attributes are out of scope for now (see linkAttributes.ts) -- they render
-// disabled with a hint instead of a langtag-per-input UI.
+// Per-kind input for one attribute definition, mapped here rather than reusing
+// the edit cells (docs/adr/0005-link-attributes-are-not-treated-as-columns.md).
 const AttributeInput = ({ definition, value, onChange, autoFocus }) => {
   if (definition.multilanguage) {
     return (
@@ -103,8 +99,8 @@ const AttributeInput = ({ definition, value, onChange, autoFocus }) => {
 
   switch (definition.kind) {
     case ColumnKinds.boolean:
-      // no autoFocus: the toggle's own input is display:none, so focusing it
-      // would show nothing -- Escape/Enter are handled on document anyway
+      // no autoFocus: the toggle's input is display:none, so focusing it would
+      // show nothing -- Escape/Enter are handled on document anyway
       return (
         <Toggle
           className="link-attributes-popover__toggle"
@@ -147,12 +143,10 @@ const AttributeInput = ({ definition, value, onChange, autoFocus }) => {
   }
 };
 
-// Small anchored popover for editing a single link edge's attribute values,
-// opened by clicking a linked item's display value in the LinkOverlay or the
-// detail EntityView. Positioned with @floating-ui/react-dom (see LinkItem.jsx,
-// which owns the `useFloating()` call since it also owns the trigger
-// element). Saves via the dedicated attributes endpoint when closed by an
-// outside click or Enter; Escape discards the draft.
+// Anchored popover for editing one link's attribute values. Saves when closed
+// by an outside click or Enter, Escape discards the draft. Positioned by
+// LinkItem.jsx, which owns the trigger element and therefore the
+// `useFloating()` call.
 const LinkAttributesPopover = ({
   cell,
   linkId,
@@ -211,8 +205,7 @@ const LinkAttributesPopover = ({
     });
   };
 
-  // The popover writes only when it closes, so discarding is simply closing
-  // without the commit -- there is no optimistic value to roll back.
+  // Nothing was sent yet, so discarding is just closing without the commit.
   const close = ({ save }) => {
     if (closingRef.current) {
       return;
@@ -237,8 +230,8 @@ const LinkAttributesPopover = ({
   );
 
   useEffect(() => {
-    // Both keys stop propagation: without it they would also reach the
-    // surrounding LinkOverlay / EntityView and close that too.
+    // Both keys stop propagation, or they would reach the surrounding
+    // LinkOverlay / EntityView and close that too.
     const handleKeyDown = evt => {
       if (evt.key === "Enter") {
         evt.stopPropagation();
@@ -253,10 +246,8 @@ const LinkAttributesPopover = ({
     return () => document.removeEventListener("keydown", handleKeyDown, true);
   }, []);
 
-  // floatingStyles/floatingRef come from LinkItem's useFloating() -- it owns
-  // the trigger element, so it also owns the position calculation.
-  // containerRef only tracks "is a click inside this popover" for the
-  // auto-save-on-close behaviour above.
+  // floatingRef positions the popover (LinkItem's useFloating), containerRef
+  // only answers "is this click inside?" for the auto-save above.
   const setRefs = node => {
     containerRef.current = node;
     floatingRef(node);

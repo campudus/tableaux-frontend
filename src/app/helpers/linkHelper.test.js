@@ -1,11 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { buildLinkDisplayValueCache } from "./linkHelper";
 
-// This cache is keyed per TARGET row and shared by every edge pointing at it,
-// so it must hold that row's own identifier -- never an edge's formatted
-// label. It also lands on index 0 of the target table's own per-column
-// displayValues (mergeArrays overwrites index-wise), so a formatted value here
-// corrupts the target table's identifier column.
+// One entry per TARGET row, shared by every link pointing at it, so it must
+// hold that row's identifier and never a composed label. See
+// docs/adr/0001-attribute-free-link-display-value-cache.md.
 describe("buildLinkDisplayValueCache() - link attributes", () => {
   const toColumn = {
     id: 1,

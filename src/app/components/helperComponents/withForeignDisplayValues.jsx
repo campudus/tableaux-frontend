@@ -29,9 +29,8 @@ const flattenAndTranslate = f.curryN(2, (langtag, value = []) => {
   return f.map(retrieveTranslation(langtag), value).join(" ");
 });
 
-// Exported for tests: these two are the store-reading contract the whole
-// link-attribute display rests on, and there is no component-render test setup
-// in this project to reach them through connect().
+// Exported for the tests -- there is no component-render setup in this project
+// to reach it through connect().
 export const getLinkDisplayValues = ({
   value,
   column,
@@ -62,12 +61,9 @@ export const getLinkDisplayValues = ({
     };
   }
 
-  // Preferred source: this cell's own displayValue, which the worker/reducers
-  // compute per edge and therefore carries the link column's formatPattern
-  // applied with each edge's `attributes`. The per-target-row lookup below is
-  // shared across edges and holds the target's plain identifier only.
-  // `table`/`row` are absent when called from getConcatDisplayValues -- fall
-  // through to that lookup then.
+  // Preferred source: this cell's own display value, which already holds the
+  // composed labels. `table`/`row` are absent when called from
+  // getConcatDisplayValues -- fall through to the shared lookup then.
   const linkDisplayValues =
     table && row
       ? doto(
@@ -82,11 +78,9 @@ export const getLinkDisplayValues = ({
     return { foreignDisplayValues: linkDisplayValues };
   }
 
-  // Fallback: the target row's own identifier, shared by every edge pointing
-  // at it and therefore attribute-free. A label belongs to one edge, so the
-  // column's formatPattern is applied here with that edge's attributes -- this
-  // is also the path a link nested in a concat takes (see below), which has no
-  // per-edge slot of its own to read from.
+  // Fallback: the shared identifiers, so the label is composed here. This is
+  // also the path a link nested in a concat takes, which has no per-link slot
+  // of its own to read from.
   const foreignDisplayValues = f.map(link => {
     const identifier = f.prop([link.id, "values", 0], tableDisplayValuesMap);
 
@@ -152,10 +146,8 @@ const mapStateToProps = (state, props) => {
 
 // HOC ({ column, tableId }) -> (Component) -> Component
 //
-// connect() is applied once, at composition time. Building it inside render
-// instead would hand React a brand new component type on every render, which
-// unmounts and remounts the whole subtree -- that discarded any state below,
-// e.g. the open LinkAttributesPopover in the detail EntityView (and its
-// unsaved draft) as soon as a mouse move re-rendered the row.
+// connect() has to be applied once, at composition time: doing it inside render
+// hands React a new component type every render, unmounting the whole subtree
+// and discarding any state below it.
 export const withForeignDisplayValues = Component =>
   connect(mapStateToProps)(Component);

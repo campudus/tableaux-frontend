@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 // NB: importing the slice reducers directly triggers a module-init cycle via
-// store.js, so this drives the real store -- which is also the only way to
-// assert the state identity the omniscentReducer produces, and that identity is
-// what makes the difference between a correct store and a visible update.
+// store.js, so this drives the real store -- also the only way to assert the
+// identity the omniscentReducer produces, which is what decides whether a
+// correct store actually re-renders.
 import store from "../store";
 import actionTypes from "../actionTypes";
 
@@ -82,8 +82,8 @@ describe("LINKED_VALUES_UPDATED", () => {
     ]);
   });
 
-  // Only the positions that hold a copy were recomputed, so the display values
-  // are merged per column index instead of replacing the row's array.
+  // Only the positions holding a copy were recomputed, so display values are
+  // merged per column index instead of replacing the row's array.
   it("merges display values per column index", () => {
     seed();
     update(patchedFirstRow);
@@ -94,8 +94,8 @@ describe("LINKED_VALUES_UPDATED", () => {
   });
 
   // Without a new identity the store would be correct but nothing would
-  // re-render: the omniscentReducer compares each slice deeply against the
-  // objects it holds and returns the previous root when it finds no difference.
+  // re-render: the omniscentReducer compares slices deeply and otherwise hands
+  // back the previous root.
   it("produces a new state identity", () => {
     seed();
     const before = store.getState();

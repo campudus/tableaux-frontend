@@ -160,9 +160,8 @@ describe("calculateCellUpdate() - unaffected link branches", () => {
   });
 });
 
-// Attribute values hang off the edge, so an attribute-only change leaves every
-// id in place. Comparing ids alone reported "nothing to do", which is what made
-// undo/redo of an attribute change a silent no-op.
+// An attribute-only change leaves every id in place, so comparing ids alone
+// reported "nothing to do" -- undo/redo of one was a silent no-op.
 describe("calculateCellUpdate() - attribute-only link changes", () => {
   const column = {
     kind: ColumnKinds.link,
@@ -184,9 +183,8 @@ describe("calculateCellUpdate() - attribute-only link changes", () => {
   });
 
   test("clears the slot instead of replaying the value being undone", () => {
-    // undo of "set 12 on a link that had nothing stored": the target state
-    // carries no attributes, so the slot must be nulled rather than falling
-    // back to oldValue the way the generic reset branch does
+    // undo of "set 12 on a link that had nothing stored": the slot must be
+    // nulled, not fall back to oldValue the way the reset branch does
     const update = calculateCellUpdate({
       column,
       oldValue: [{ id: 1, attributes: [12] }],

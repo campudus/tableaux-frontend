@@ -1,13 +1,7 @@
-// The only tag a link column's formatPattern may use, emitted by
-// FormattedLabel.tsx (the only place this class comes from).
-//
-// The appearance has to be spelled out in full: the compass reset pulled in by
-// main.scss applies `font: inherit; font-size: 100%` to em, so it keeps no
-// browser default of its own.
-//
-// Link labels sit on a filled, coloured chip -- the only place the markup is
-// rendered at all -- so the highlight is a translucent white wash rather than a
-// solid colour.
+// Emitted by FormattedLabel.tsx, the only place this class comes from. The
+// appearance has to be spelled out in full: the compass reset in main.scss
+// applies `font: inherit` to em, leaving no browser default. A translucent
+// wash, because the markup only ever renders on a filled, coloured chip.
 .formatted-label__em {
   padding: 1px 3px;
   border-radius: 4px;

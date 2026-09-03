@@ -220,8 +220,7 @@ describe("patchLinkedValue()", () => {
     ).toEqual(modelIdentifier(newManufacturerName));
   });
 
-  // The identity checks below are what keep unaffected rows out of the payload,
-  // and with them their objects out of the re-render.
+  // The identity checks below are what keep unaffected rows out of the payload.
   it("hands back the same value when another row is linked", () => {
     const linkToAnotherManufacturer = linkTo(999, "Shimano");
 
@@ -404,9 +403,8 @@ describe("collectLinkedValueUpdates()", () => {
     expect(updatesByTableId(buildState())[manufacturerTableId]).toBe(undefined);
   });
 
-  // A row's own concat value is only refreshed once its cell write came back,
-  // so the identifier has to be assembled from the member columns. Reading the
-  // stored copy instead is what made linking and unlinking look like a no-op.
+  // Reading the stored concat value instead is what made linking and unlinking
+  // look like a no-op.
   it("builds a concat identifier from its member columns", () => {
     const state = buildState();
     const manufacturerLink = linkTo(manufacturerRowId, newManufacturerName);
@@ -434,8 +432,7 @@ describe("collectLinkedValueUpdates()", () => {
     );
   });
 
-  // Distributing an identifier that could not be read would replace every
-  // label of that row with an empty one.
+  // Distributing an identifier that could not be read would empty every label.
   it("leaves every copy alone when the changed row is not in the store", () => {
     const state = buildState();
     state.rows[manufacturerTableId] = { data: [] };
@@ -448,8 +445,7 @@ describe("collectLinkedValueUpdates()", () => {
     ).toEqual([]);
   });
 
-  // No gate on "was this an identifier column?" is needed: a value nobody
-  // embeds simply produces no payload.
+  // Why no gate on "was this an identifier column?" is needed.
   it("is empty when the identifier did not actually change", () => {
     const state = buildState();
     state.rows[manufacturerTableId] = {

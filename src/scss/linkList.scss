@@ -177,15 +177,10 @@
       color: $color-primary-contrast-text;
     }
 
-    // Click affordance once the item carries editable link attributes (see
-    // LinkItem.jsx, classNames("left", {..., editable})). Same feedback as a
-    // link label in the grid, see the link-look() mixin: the chip darkens
-    // rather than underlining its text.
-    //
-    // This has to live next to `&.linked` above rather than in
-    // linkAttributes.scss: linkList.scss is imported into two contexts
-    // (.overlay .sortable and .overlay .link-overlay), which puts `.linked`
-    // at a specificity no top-level `.list-item .left.editable` rule can beat.
+    // Has to live next to `&.linked` above rather than in linkAttributes.scss:
+    // linkList.scss is imported into two contexts (.overlay .sortable and
+    // .overlay .link-overlay), which puts `.linked` at a specificity no
+    // top-level `.list-item .left.editable` rule can beat.
     &.editable {
       cursor: pointer;
 

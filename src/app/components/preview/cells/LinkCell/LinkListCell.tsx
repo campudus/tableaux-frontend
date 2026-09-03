@@ -62,9 +62,8 @@ export default function LinkListCell({
 }: LinkListCellProps): ReactElement {
   const [showAll, setShowAll] = useState(false);
 
-  // {{value}} in a formatPattern denotes the whole linked row, so a formatted
-  // link renders as a single item per entry rather than being exploded into
-  // its target's concat parts (see LinkValues above).
+  // A pattern describes the whole linked row, so entries render as one label
+  // each instead of the target's concat parts LinkValues would list.
   const isFormatted = usesLinkAttributeFormat(linkColumn);
 
   const addIndexNumber = (index: number): string => {

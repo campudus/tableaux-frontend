@@ -30,14 +30,10 @@ export const buildLinkDisplayValueCache = (table, columns, rows) => {
     if (f.isNil(existingDV)) {
       acc[tableId] = acc[tableId] || {};
       acc[tableId][linkRowId] = {
-        // Deliberately the TARGET column, not the link column. This cache is
-        // keyed per target row and shared by every edge pointing at it, so it
-        // must hold that row's own identifier only -- formatting the link
-        // column here would bake one edge's `attributes` into an entry other
-        // rows read too. It also lands on index 0 of the target table's own
-        // per-column displayValues (mergeArrays in tableView.js overwrites
-        // index-wise), which stays harmless only as long as this equals the
-        // target's identifier. Per-edge formatting happens in worker.js.
+        // Deliberately the TARGET column: one entry is shared by every link
+        // pointing at that row, so it must hold the row's identifier and never
+        // a link's label. See
+        // docs/adr/0001-attribute-free-link-display-value-cache.md.
         value: [getDisplayValue(column.toColumn, values[0].value)],
         column,
         id: linkRowId

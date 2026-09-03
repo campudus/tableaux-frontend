@@ -9,11 +9,9 @@ const { GENERATED_DISPLAY_VALUES, SET_STATE } = actionTypes;
 // displayValues[tableId][rowId].values carries two different things:
 //   - a table's own rows: one entry PER COLUMN
 //   - linked target rows:  a single [identifier] entry
-// setLinkDisplayValues merges both into the same slot via mergeArrays, which
-// overwrites INDEX-WISE -- so the identifier cache always lands on index 0 of
-// the target table's own column values. That is only harmless as long as it
-// holds the target's identifier (column 0 is the identifier/concat column),
-// which is why buildLinkDisplayValueCache must not format with the link column.
+// setLinkDisplayValues merges both into the same slot INDEX-WISE, so the cache
+// entry lands on index 0 of the target table's own column values -- harmless
+// only while it holds that row's identifier.
 describe("tableView: displayValues merge of link identifiers vs own columns", () => {
   const ownColumns = {
     tableId: 1,

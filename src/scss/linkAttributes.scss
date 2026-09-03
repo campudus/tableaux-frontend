@@ -1,9 +1,7 @@
 @import "variables";
 
-// Small anchored popover for editing a link attribute value (see
-// LinkAttributesPopover.jsx). Positioned via @floating-ui/react-dom, rendered
-// in a Portal, so this deliberately does not nest under .link-overlay /
-// .entity-view -- it must escape their overflow:hidden containers.
+// Rendered in a Portal, so this deliberately does not nest under
+// .link-overlay / .entity-view -- it has to escape their overflow:hidden.
 .link-attributes-popover {
   background: $color-white;
   min-width: 220px;
@@ -22,11 +20,9 @@
     }
   }
 
-  // Label line: holds the label alone for the stacked inputs, and label plus
-  // right-aligned toggle for a boolean attribute (see
-  // LinkAttributesPopover.jsx); `gap` is the minimum distance for a label long
-  // enough to reach the toggle. The distance to whatever follows lives here
-  // rather than on the label, so a toggle next to it stays vertically centred.
+  // The label alone for a stacked input, label plus right-aligned toggle for a
+  // boolean one. The distance to whatever follows lives here rather than on the
+  // label, so a toggle next to it stays vertically centred.
   &__head {
     display: flex;
     align-items: center;

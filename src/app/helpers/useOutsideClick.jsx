@@ -12,13 +12,10 @@
  * The useEffect's cleanup mechanism will take care of removing event listeners.
  */
 
-// A nested widget can restructure its own DOM synchronously in reaction to
-// the very click being handled (e.g. a date/time picker switching views, or
-// a press-and-hold counter button firing on mousedown before the paired
-// click arrives). If that removes event.target from the tree before this
-// listener runs, containerRef.contains(event.target) sees a detached node
-// and wrongly reports "outside". event.composedPath() is captured at
-// dispatch time, before any such mutation, so it stays accurate.
+// A nested widget can rebuild its own DOM while handling the very click being
+// dispatched -- the calendar switching from days to months does. That detaches
+// event.target, and `container.contains()` then wrongly reports "outside".
+// composedPath() is captured at dispatch time and stays accurate.
 const isInside = (container, event) => {
   const path =
     typeof event.composedPath === "function" ? event.composedPath() : null;
