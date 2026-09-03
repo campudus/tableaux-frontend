@@ -7,7 +7,7 @@ import { doto, when } from "../../helpers/functools";
 import { addCellId } from "../../helpers/getCellId";
 import actionTypes from "../actionTypes";
 import {
-  calcConcatValues,
+  calcDependentValues,
   getUpdatedCellValueToSet,
   idsToIndices
 } from "../redux-helpers";
@@ -22,7 +22,6 @@ const {
   DELETE_ROW,
   CELL_SET_VALUE,
   CELL_ROLLBACK_VALUE,
-  CELL_SAVED_SUCCESSFULLY,
   SET_CELL_ANNOTATION,
   SET_ROW_ANNOTATION,
   SET_ALL_ROWS_FINAL,
@@ -64,19 +63,20 @@ const applyLinkedValues = (state, updates = []) =>
     };
   }, state);
 
-const maybeUpdateConcats = (rows, action, completeState) => {
-  const concatValues = calcConcatValues(action, completeState) || {};
-  const { columnIdx, rowIdx, updatedConcatValue } = concatValues;
-  const { tableId } = action;
-
-  return f.isEmpty(concatValues)
-    ? rows
-    : f.assoc(
-        [tableId, "data", rowIdx, "values", columnIdx],
-        updatedConcatValue,
-        rows
-      );
-};
+// The concat and group columns of the changed row hold a copy of the changed
+// value (see calcDependentValues). Applied together with the cell write itself,
+// so the row's identifier -- and with it the EntityView title -- is as current
+// as the cell, without waiting for the response.
+const applyDependentValues = (rows, action, completeState, isRollback) =>
+  calcDependentValues(action, completeState, isRollback).reduce(
+    (next, { columnIdx, rowIdx, updatedValue }) =>
+      f.assoc(
+        [action.tableId, "data", rowIdx, "values", columnIdx],
+        updatedValue,
+        next
+      ),
+    rows
+  );
 
 const insertSkeletonRows = (state, action, completeState) => {
   const { tableId } = action;
@@ -255,7 +255,12 @@ const setCellValue = (state, action, completeState, isRollback = false) => {
   const rowSelector = [action.tableId, "data", rowIdx, "values"];
   const valueToSet = getUpdatedCellValueToSet(action, isRollback);
 
-  return f.update(rowSelector, f.assoc(columnIdx, valueToSet), state);
+  return applyDependentValues(
+    f.update(rowSelector, f.assoc(columnIdx, valueToSet), state),
+    action,
+    completeState,
+    isRollback
+  );
 };
 
 const rows = (state = initialState, action, completeState) => {
@@ -310,8 +315,6 @@ const rows = (state = initialState, action, completeState) => {
       );
     case CELL_ROLLBACK_VALUE:
       return setCellValue(state, action, completeState, true /*isRollback*/);
-    case CELL_SAVED_SUCCESSFULLY:
-      return maybeUpdateConcats(state, action, completeState);
     case CLEAN_UP:
       return {};
     case ADD_ROWS:

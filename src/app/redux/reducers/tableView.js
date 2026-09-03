@@ -3,7 +3,7 @@ import f from "lodash/fp";
 import Worker from "./worker?worker";
 import { DefaultLangtag } from "../../constants/TableauxConstants";
 import {
-  calcConcatValues,
+  calcDependentValues,
   getUpdatedCellValueToSet,
   idsToIndices
 } from "../redux-helpers";
@@ -225,10 +225,8 @@ const displayValueSelector = ({ tableId, dvRowIdx, columnIdx }) => [
 ];
 
 const updateDisplayValue = (valueProp, tableView, action, completeState) => {
-  const value = getUpdatedCellValueToSet(
-    action,
-    valueProp === "oldValue" /*isRollback*/
-  );
+  const isRollback = valueProp === "oldValue";
+  const value = getUpdatedCellValueToSet(action, isRollback);
   const { tableId, column } = action;
   const [columnIdx, dvRowIdx] = f.tail(idsToIndices(action, completeState));
   const pathToDv = displayValueSelector({
@@ -236,23 +234,37 @@ const updateDisplayValue = (valueProp, tableView, action, completeState) => {
     dvRowIdx,
     columnIdx
   });
-  return f.assoc(pathToDv, getDisplayValue(column, value), tableView);
+  return updateDependentDisplayValues(
+    f.assoc(pathToDv, getDisplayValue(column, value), tableView),
+    action,
+    completeState,
+    isRollback
+  );
 };
 
-// if an identifier cell was modified, we need to update the concat display value
-const maybeUpdateConcat = f.curryN(3, (action, completeState, tableView) => {
-  const concatValues = calcConcatValues(action, completeState) || {};
-  const { dvRowIdx, displayValue, columnIdx } = concatValues;
-  const pathToDv = displayValueSelector({
-    tableId: action.tableId,
-    dvRowIdx,
-    columnIdx
-  });
-
-  return f.isEmpty(concatValues)
-    ? tableView
-    : f.assoc(pathToDv, displayValue, tableView);
-});
+// Counterpart of applyDependentValues in rows.js: the display values of the
+// concat and group columns that carry a copy of the changed cell's value.
+const updateDependentDisplayValues = (
+  tableView,
+  action,
+  completeState,
+  isRollback
+) =>
+  calcDependentValues(action, completeState, isRollback).reduce(
+    (next, { columnIdx, dvRowIdx, displayValue }) =>
+      dvRowIdx < 0
+        ? next
+        : f.assoc(
+            displayValueSelector({
+              tableId: action.tableId,
+              dvRowIdx,
+              columnIdx
+            }),
+            displayValue,
+            next
+          ),
+    tableView
+  );
 
 // Counterpart of applyLinkedValues in rows.js: the display values of the rows
 // that embed something of a changed row. Merged per column index, because only
@@ -424,10 +436,7 @@ export default (state = initialState, action, completeState) => {
     case CELL_ROLLBACK_VALUE:
       return updateDisplayValue("oldValue", state, action, completeState);
     case CELL_SAVED_SUCCESSFULLY:
-      return f.flow(
-        modifyHistory(action),
-        maybeUpdateConcat(action, completeState)
-      )(state);
+      return modifyHistory(action)(state);
     case SET_DISPLAY_VALUE_WORKER:
       return {
         ...state,

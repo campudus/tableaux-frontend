@@ -1,6 +1,6 @@
 import {
-  getGroupColumn,
-  getLookupMap,
+  getGroupColumnIds,
+  getGroupLookup,
   idsToIndices,
   isGroupMember,
   tableColumnKey
@@ -61,21 +61,41 @@ describe("Redux helpers", () => {
     });
   });
 
-  describe("getLookupMap()", () => {
+  describe("getGroupLookup()", () => {
     it("creates correct lookup maps", () => {
-      expect(getLookupMap({ tableId, completeState })).toMatchSnapshot();
+      expect(getGroupLookup(columns)).toMatchSnapshot();
+    });
+
+    it("lists every group a column is a member of", () => {
+      const twoGroups = [
+        { id: 1, kind: "group", groups: [{ id: 3 }] },
+        { id: 2, kind: "group", groups: [{ id: 3 }, { id: 4 }] },
+        { id: 3, kind: "boolean" },
+        { id: 4, kind: "shorttext" }
+      ];
+      expect(getGroupLookup(twoGroups)).toEqual({ 3: [1, 2], 4: [2] });
+    });
+
+    it("rebuilds when a table's columns change", () => {
+      const withoutGroup = [{ id: 1, kind: "group" }, { id: 3 }];
+      const withGroup = [
+        { id: 1, kind: "group", groups: [{ id: 3 }] },
+        { id: 3 }
+      ];
+      expect(getGroupLookup(withoutGroup)).toEqual({});
+      expect(getGroupLookup(withGroup)).toEqual({ 3: [1] });
     });
   });
 
-  describe("geGroupColumn()", () => {
-    it("identifies group member's group column correctly", () => {
-      const findGroup = column =>
-        getGroupColumn({ tableId, column, completeState });
-      expect(findGroup(columns[0])).toBe(null);
-      expect(findGroup(columns[4])).toBe(31);
-      expect(findGroup(columns[9])).toBe(null);
-      expect(findGroup(columns[15])).toBe(25);
-      expect(columns.map(findGroup)).toMatchSnapshot();
+  describe("getGroupColumnIds()", () => {
+    it("identifies group member's group columns correctly", () => {
+      const findGroups = column =>
+        getGroupColumnIds({ tableId, column }, completeState);
+      expect(findGroups(columns[0])).toEqual([]);
+      expect(findGroups(columns[4])).toEqual([31]);
+      expect(findGroups(columns[9])).toEqual([]);
+      expect(findGroups(columns[15])).toEqual([25]);
+      expect(columns.map(findGroups)).toMatchSnapshot();
     });
   });
 });
