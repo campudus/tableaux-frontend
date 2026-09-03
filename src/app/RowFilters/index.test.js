@@ -5,10 +5,9 @@ const langtag = "de-DE";
 const SRC = 1;
 const TGT = 2;
 
-// A link column with a formatPattern contributes both the attribute value and
-// emphasis markup to every display value that embeds it -- the identifier
-// concat here. Only the link chips render that markup, so nothing below may
-// match against it.
+// A formatted link column contributes both its attribute value and emphasis
+// markup to every display value embedding it -- the identifier concat here.
+// Filters and sorting must match the plain text the user reads.
 const targetIdColumn = {
   id: 20,
   name: "targetName",

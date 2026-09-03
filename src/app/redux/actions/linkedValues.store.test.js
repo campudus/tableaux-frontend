@@ -6,13 +6,12 @@ import { makeRequest } from "../../helpers/apiHelper";
 import store from "../store";
 import { changeCellValue } from "./cellActions";
 
-// The scenario from the requirement, driven through the real store:
+// Driven through the real store:
 //
 //   variant --link--> model --link--> manufacturer --shorttext "name"
 //
 // The variant table is the open one. A change two levels down has to show up in
-// the model table, in the variant table, and it must not cost a single request
-// beyond the cell write itself.
+// both other tables, without a request beyond the cell write itself.
 
 const manufacturerTableId = 71;
 const modelTableId = 72;
@@ -259,8 +258,7 @@ describe("renaming a row two link levels down", () => {
     expect(variantsModelLabel()).toEqual([labelWithRenamedManufacturer]);
     expect(variantsIdentifierLabel()).toEqual(labelWithRenamedManufacturer);
 
-    // exactly one request: the cell write. Everything else was derived from
-    // what the store already held.
+    // exactly one request: the cell write, everything else was derived
     expect(makeRequest.mock.calls.length).toBe(1);
     expect(makeRequest.mock.calls[0][0].method).toBe("POST");
   });
@@ -275,8 +273,8 @@ describe("renaming a row two link levels down", () => {
 
     const pending = renameManufacturer();
 
-    // it really was distributed first -- otherwise the assertions below would
-    // also hold for "nothing ever happened"
+    // it really was distributed first, or the assertions below would also hold
+    // for "nothing ever happened"
     expect(variantsModelLabel()).toEqual([labelWithRenamedManufacturer]);
 
     await pending.catch(() => null);
@@ -289,8 +287,7 @@ describe("renaming a row two link levels down", () => {
 });
 
 // Adding or removing a link changes the identifier of the row holding it, so
-// the same propagation has to run -- the new identifier is a concat, and its
-// stored value is not what the cell write touched.
+// the same propagation has to run.
 describe("linking and unlinking in an identifier column", () => {
   // The cell write is answered by method, the backlink refetch is a plain GET.
   const mockBackend = () =>
@@ -346,8 +343,7 @@ describe("linking and unlinking in an identifier column", () => {
     expect(variantsIdentifierLabel()).toEqual(labelWithoutManufacturer);
   });
 
-  // The edge exists on both sides, and the frontend cannot derive the target
-  // table's backlink column -- that is the one thing worth a request.
+  // The one thing the frontend cannot derive: which column mirrors the link.
   it("refetches only the row on the other side of the edge", async () => {
     seedStore({
       manufacturerLink: noManufacturer,

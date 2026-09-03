@@ -170,9 +170,8 @@ describe("getDisplayValue", () => {
     expect(result).toEqual([{ "de-DE": "Mehl" }]);
   });
 
-  // A concat holds the full definition of each member column, so a link member
-  // carries its own linkAttributes + formatPattern and has to be formatted just
-  // like a standalone link column.
+  // A concat holds each member's full definition, so a link member carries its
+  // own pattern and is composed just like a standalone link column.
   it("should format a link inside a concat column", () => {
     const linkColumn = {
       id: 5,
@@ -483,10 +482,8 @@ const unionLinkColumn = {
   ]
 };
 
-// The display value worker builds link labels from the per-target-row cache
-// (which is attribute-free by design, see linkHelper.js) instead of going
-// through getDisplayValue(linkColumn), so it applies the format itself via
-// this shared helper.
+// The worker builds its labels from the shared cache instead of going through
+// getDisplayValue(linkColumn), so it composes with this helper itself.
 describe("applyLinkAttributeFormat()", () => {
   const linkColumn = {
     id: 5,

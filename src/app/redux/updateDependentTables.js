@@ -32,12 +32,9 @@ export const calcColumnDependencies = columnCollection => {
   );
 };
 
-// Key the memo on the tables whose columns have actually arrived, not on the
-// bare id list: COLUMNS_LOADING_DATA already registers a table id while its
-// `data` is still missing, and calcColumnDependencies then finds no link
-// columns for it. Keying on the id list alone would cache that incomplete map
-// under the very key the loaded state produces, leaving the dependency map
-// wrong for the rest of the session.
+// Counts only the tables whose columns have arrived: a table registers its id
+// while they still load, and the empty map computed then would be cached under
+// the very key the loaded state produces later.
 export const dependencyMapMemoKey = f.compose(
   f.join(","),
   f.sortBy(f.identity),

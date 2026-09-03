@@ -24,11 +24,10 @@ const EmptyLink = ({ link, values }: { link: string; values: any[] }) => {
   );
 };
 
-// One item per entry. A link column carrying its own formatPattern resolves
-// the whole entry -- target display value plus this edge's attributes -- to a
-// single label, which getDisplayValue does when handed the *link* column and
-// a single-edge array (the same idiom LinkLabelCell.jsx uses in the grid).
-// Without one, the entry shows its target column's own display value.
+// One item per entry. A formatted column resolves an entry to a single label,
+// which getDisplayValue does when handed the *link* column and a one-entry
+// array -- the same idiom LinkLabelCell.jsx uses in the grid. Without a
+// pattern, the entry shows its target column's own display value.
 const SingleLinkItems = ({ langtag, column, values }: LinkCellProps) => {
   const isFormatted = usesLinkAttributeFormat(column);
   const currentColumn = column.toColumn;
@@ -110,8 +109,8 @@ export default function LinkCell(props: LinkCellProps): ReactElement {
   const isSingle =
     values.length === 1 || column.constraint?.cardinality?.to === 1;
 
-  // A formatPattern describes the whole linked row, so its entries render as
-  // one label each and never explode into the target's concat parts below.
+  // A pattern describes the whole linked row, so entries render as one label
+  // each instead of being exploded into the target's concat parts below.
   if (usesLinkAttributeFormat(column)) {
     return (
       <div className={cssClass}>

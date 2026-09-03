@@ -6,8 +6,8 @@ import {
 
 const langtag = "de-DE";
 
-// table 1 links to table 2; the link column carries an attribute, so a label
-// belongs to one edge -- not to the target row, which several edges share.
+// table 1 links to table 2, the link column carries an attribute -- so a label
+// belongs to one link, not to the target row several links share.
 const linkAttributes = [{ name: "percentage", kind: "integer" }];
 const formatPattern = "{{value}} ({{attributes.percentage}}%)";
 
@@ -85,8 +85,8 @@ describe("getLinkDisplayValues()", () => {
       ]
     });
 
-    // taken verbatim -- the worker already applied the format, applying it a
-    // second time would nest the attribute: "Baumwolle (80%) (80%)"
+    // taken verbatim: composing a second time would nest the attribute,
+    // "Baumwolle (80%) (80%)"
     expect(
       getLinkDisplayValues({
         value: links,
@@ -103,8 +103,8 @@ describe("getLinkDisplayValues()", () => {
   });
 
   it("formats the target's identifier per edge when there is no own slot", () => {
-    // no table/row: the caller has no per-edge slot to read (a link nested in
-    // a concat), so the shared target identifier is formatted here
+    // no table/row: a link nested in a concat has no slot of its own to read,
+    // so the shared identifier is composed here
     expect(
       getLinkDisplayValues({ value: links, column: linkColumn })(buildState())
     ).toEqual({
@@ -153,8 +153,8 @@ describe("getLinkDisplayValues()", () => {
   });
 
   it("returns taxonomy paths unformatted", () => {
-    // formatting a path array is out of scope (see formatLinkLabel), and the
-    // taxonomy branch returns before the per-edge formatting
+    // composing a path array is out of scope, and the taxonomy branch returns
+    // before the composing anyway
     const state = {
       ...buildState(),
       tables: { data: { 1: { id: 1 }, 2: { id: 2, type: "taxonomy" } } },

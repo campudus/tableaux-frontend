@@ -40,7 +40,7 @@ describe("parseFormattedLabel()", () => {
     const input = "<em onclick='evil()'>x</em>";
     const nodes = parseFormattedLabel(input);
 
-    // what matters is that no element is created -- the text may be split
+    // what matters is that no element is created; the text may well be split
     // across several literal segments, which renders identically
     expect(nodes.every(node => typeof node === "string")).toBe(true);
     expect(nodes.join("")).toBe(input);
@@ -72,9 +72,8 @@ describe("parseFormattedLabel()", () => {
   });
 });
 
-// An em is a padded, filled badge, so an empty one is a visible artefact --
-// which is exactly what a formatPattern yields when the attribute it wraps has
-// no value, e.g. an unset boolean.
+// An empty em would render as a stray coloured box -- what a pattern yields
+// when the attribute it wraps has no value.
 describe("parseFormattedLabel() - empty emphasis", () => {
   it("drops an em with no content", () => {
     expect(parseFormattedLabel("Grau <em></em>")).toEqual(["Grau "]);
@@ -137,8 +136,7 @@ describe("stripFormattingTags()", () => {
     );
   });
 
-  // callers hand it display values straight from the store, which are absent
-  // for a langtag the row has no value for
+  // a display value from the store is absent for a langtag with no value
   it("takes a missing value", () => {
     expect(stripFormattingTags(undefined)).toBe("");
     expect(stripFormattingTags(null)).toBe("");

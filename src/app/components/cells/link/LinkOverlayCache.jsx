@@ -1,5 +1,5 @@
 import f from "lodash/fp";
-import React, { useMemo } from "react";
+import React from "react";
 import { compose, withHandlers } from "recompose";
 import { FilterModes } from "../../../constants/TableauxConstants";
 import { makeRequest } from "../../../helpers/apiHelper";
@@ -84,10 +84,8 @@ const withCachedLinks = Component => props => {
     f.prop(["displayValues", column.toTable], grudData) ?? [];
   const dvLookupTable = f.keyBy("id", displayValues);
 
-  // The linked items are this cell's edges, so their label comes from the
-  // cell's own displayValue -- computed per edge, hence carrying the link
-  // column's formatPattern/attributes. Keyed by target row id, which is unique
-  // per edge within one link cell.
+  // The already composed labels of this cell's own links, keyed by target row
+  // id -- unique within one link cell.
   const columnIdx = f.findIndex(
     f.propEq("id", column.id),
     f.prop(["columns", table.id, "data"], grudData) ?? []
@@ -104,17 +102,16 @@ const withCachedLinks = Component => props => {
     )
   );
 
-  // Unlinked candidates from /foreignRows have no edge, so they keep the
-  // target row's plain identifier -- formatting them would render "_".
+  // A candidate that is not linked yet has no attributes to compose a label
+  // from, so it falls back to the target row's identifier.
   const lookupDisplayValue = link =>
     retrieveTranslation(
       langtag,
       linkDvByRowId[link.id] ?? f.prop([link.id, "values", 0], dvLookupTable)
     );
 
-  // `label` keeps the emphasis tags a formatPattern may contain, since that is
-  // what gets rendered; `searchableLabel` is the plain-text form, so filtering
-  // and sorting match what the user actually sees instead of the markup.
+  // `label` is rendered and keeps its markup, `searchableLabel` feeds the
+  // search box and the alphabetical sort.
   const addDisplayValues = link => {
     const label = lookupDisplayValue(link);
     return f.flow(

@@ -1,12 +1,8 @@
 import { Fragment, ReactElement, ReactNode, createElement } from "react";
 
-// The only tag a link column's formatPattern may render as markup.
-//
-// The pattern is parsed into React elements instead of being sanitised and
-// handed to innerHTML: anything that is not a bare <em> -- any other tag, an
-// <em> carrying attributes, malformed markup -- stays literal text, which React
-// escapes on render. A formatPattern therefore cannot inject markup by
-// construction, and there is no dangerouslySetInnerHTML anywhere in this path.
+// The only markup a format pattern may contain. Anything else -- another tag,
+// an <em> with attributes, malformed markup -- stays literal text, which React
+// escapes on render. See docs/adr/0002-em-only-markup-parsed-to-react-nodes.md.
 const TAG_PATTERN = /<(\/?)(em)>/gi;
 
 type LabelNode = string | { tag: string; children: LabelNode[] };
@@ -32,7 +28,7 @@ export const parseFormattedLabel = (text: string): LabelNode[] => {
     const tag = (tagName ?? "").toLowerCase();
     if (closing) {
       // Only an end tag matching the innermost open one closes it; a stray or
-      // mismatched one is content, not structure.
+      // mismatched one is content.
       if (stack.length > 1 && current().tag === tag) {
         stack.pop();
       } else {
@@ -62,11 +58,9 @@ const textContentOf = (nodes: LabelNode[]): string =>
     )
     .join("");
 
-// An `em` renders as a padded, filled badge, so one with nothing in it would
-// show up as a stray coloured box -- which is what a formatPattern produces
-// whenever the attribute it wraps has no value, e.g. an unset boolean.
-// Whitespace counts as empty here: a badge around a single space is just as
-// much of an artefact as a completely empty one.
+// An `em` renders as a filled badge, so an empty one -- what a pattern yields
+// when the attribute it wraps has no value -- would be a stray coloured box.
+// Whitespace counts as empty.
 const pruneEmptyEmphasis = (nodes: LabelNode[]): LabelNode[] =>
   nodes.reduce<LabelNode[]>((kept, node) => {
     if (typeof node === "string") {
@@ -79,10 +73,8 @@ const pruneEmptyEmphasis = (nodes: LabelNode[]): LabelNode[] =>
       : kept;
   }, []);
 
-// Plain-text form, for every context that does not render the markup: title
-// attributes, tooltips, search and sorting, and all display values outside the
-// link cell, the link overlay and the history diff. Takes a missing value so
-// callers can hand it a display value straight from the store.
+// Plain-text form, for everything that does not render the markup. Takes a
+// missing value, so callers can hand it a display value straight from the store.
 export const stripFormattingTags = (text?: string | null): string =>
   (text ?? "").replace(TAG_PATTERN, "");
 
@@ -95,8 +87,8 @@ const renderNodes = (nodes: LabelNode[]): ReactNode[] =>
           {
             key: idx,
             // The class carries the whole appearance: the compass reset in
-            // main.scss applies `font: inherit` to em, so it has no browser
-            // default left to fall back on.
+            // main.scss applies `font: inherit` to em, leaving no browser
+            // default to fall back on.
             className: `formatted-label__${node.tag}`
           },
           ...renderNodes(node.children)
@@ -104,8 +96,8 @@ const renderNodes = (nodes: LabelNode[]): ReactNode[] =>
   );
 
 type FormattedLabelProps = {
-  // Anything other than a string is passed through untouched -- callers hand
-  // us React elements for empty or permission-denied placeholders.
+  // Passed through untouched unless it is a string: callers hand us React
+  // elements for empty or permission-denied placeholders.
   text?: ReactNode;
 };
 

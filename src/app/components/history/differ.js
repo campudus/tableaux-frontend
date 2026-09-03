@@ -33,9 +33,8 @@ const calcLinkDiff = revision => {
   const removed = f.differenceBy("id", prevContent, fullValue);
   const stillLinked = f.intersectionBy("id", fullValue, prevContent);
 
-  // A link attribute lives on the edge, not on either row, so a changed
-  // attribute leaves both ids untouched. Comparing by id alone would file
-  // those revisions as "unchanged" and render them as if nothing happened.
+  // An attribute change leaves both ids untouched, so comparing by id alone
+  // would file it as unchanged and render it as if nothing happened.
   const previousById = f.keyBy("id", prevContent);
   const attributesChanged = link =>
     !f.isEqual(

@@ -8,18 +8,12 @@ import {
 } from "../constants/TableauxConstants";
 import { retrieveTranslation } from "./multiLanguage";
 
-// A moment instance, as returned by react-datetime's onChange -- date/
-// datetime attribute inputs use react-datetime (see LinkAttributesPopover),
-// so the "input value" representation for those two kinds is a Moment
-// rather than a string.
+// Date/datetime attributes are edited with react-datetime (see
+// LinkAttributesPopover), so their "input value" is a Moment, not a string.
 type MomentInstance = ReturnType<typeof Moment>;
 
-// Link attributes are values carried by a single link edge (a connection
-// between two rows), as opposed to a "real" column. Their definition lives on
-// the link column (`column.linkAttributes`) and is authored manually in the
-// backend; the frontend only reads it. Values live positionally in the link
-// entry's `attributes` array: `attributes[i]` belongs to `linkAttributes[i]`
-// -- never match by name.
+// `attributes[i]` belongs to `linkAttributes[i]` -- never match by name, see
+// docs/adr/0006-link-attribute-values-stay-positional-in-the-client.md.
 
 export type LinkAttributeKind =
   | "text"
@@ -43,9 +37,8 @@ export type LinkAttributeDefinition = {
 export type LinkAttributeValue = any;
 
 export type LinkEntry = {
-  // Optional because formatLinkLabel's callers often pass loosely-typed
-  // objects (Record<string, any> from preview components); id is only
-  // actually read by setLinkAttributes/readLinkAttributes.
+  // Optional because formatLinkLabel's callers pass loosely-typed objects from
+  // the preview components; only setLinkAttributes/readLinkAttributes read it.
   id?: number;
   value?: unknown;
   attributes?: LinkAttributeValue[];
@@ -68,20 +61,11 @@ export const hasLinkAttributes = (column?: any): boolean =>
 export const getLinkFormatPattern = (column?: any): string | undefined =>
   f.get("formatPattern", resolveColumn(column));
 
-// The single gate deciding whether a link column's display value should be
-// run through the formatPattern renderer at all. Both a definition AND a
-// pattern are required -- a stray/legacy formatPattern must never blank out
-// a label just because linkAttributes are absent (and vice versa).
 export const usesLinkAttributeFormat = (column?: any): boolean =>
   hasLinkAttributes(column) && !f.isEmpty(getLinkFormatPattern(column));
 
-// Resolve a raw stored attribute value (may be a multilanguage {langtag:
-// value} object) down to a single scalar for the given langtag. This is
-// intentionally NOT `retrieveTranslation`, which validates its input via
-// checkOrThrow(getLangObjSpec()) and throws on values that aren't proper
-// lang objects (e.g. plain numbers/booleans/strings for non-multilanguage
-// attributes) -- attribute values are untyped from the backend's point of
-// view, so we resolve leniently instead.
+// Not `retrieveTranslation`: its checkOrThrow rejects the bare scalars a
+// non-multilanguage attribute stores.
 const resolveAttributeRawValue = (
   value: LinkAttributeValue,
   langtag: string
@@ -95,10 +79,8 @@ const resolveAttributeRawValue = (
 const isEmptyAttributeValue = (raw: LinkAttributeValue): boolean =>
   f.isNil(raw) || (f.isNumber(raw) && f.isNaN(raw)) || raw === "";
 
-// Format a single attribute's raw stored value to a display string.
-// IMPORTANT: never use f.isEmpty() to test attribute values -- f.isEmpty(0)
-// and f.isEmpty(false) are both `true` in lodash/fp, which would silently
-// blank out a stored `0` or `false`.
+// Never test attribute values with f.isEmpty(): it is `true` for 0 and false,
+// which would silently blank out a stored `0`.
 export const formatAttributeValue = ({
   definition,
   value,
@@ -141,21 +123,19 @@ export const formatAttributeValue = ({
 
 const MOUSTACHE_TOKEN = /\{\{\s*([^{}]*?)\s*\}\}/g;
 
-// (column, link, langtag) -> definition index, keyed by name -- lazily built
-// once per call since linkAttributes arrays are tiny (currently max 1).
+// A pattern names an attribute, its value is stored positionally, so the index
+// has to travel with the definition.
 const findDefinitionByName = (
   definitions: LinkAttributeDefinition[],
   name: string
 ): { definition: LinkAttributeDefinition; index: number } | null => {
   const index = f.findIndex(def => def.name === name, definitions);
-  // index !== -1 guarantees definitions[index] exists; noUncheckedIndexedAccess
-  // can't see that from a plain numeric index, hence the assertion.
+  // noUncheckedIndexedAccess can't see that index !== -1 makes this defined.
   return index === -1 ? null : { definition: definitions[index]!, index };
 };
 
-// Render one link edge's display value through the column's formatPattern.
-// `displayValue` is the already langtag-resolved value of the linked row
-// (string), or an array of node labels for a taxonomy path link.
+// Composes one link's label. `displayValue` is the linked row's identifier,
+// already resolved to `langtag`.
 export const formatLinkLabel = ({
   column,
   link,
@@ -167,9 +147,8 @@ export const formatLinkLabel = ({
   displayValue?: string | string[] | null;
   langtag: string;
 }): string | string[] | null | undefined => {
-  // Taxonomy links resolve to an array of path-node labels instead of a
-  // single string; formatting them is out of scope, leave the array as-is
-  // for callers (e.g. TaxonomyPath) to render unchanged.
+  // A taxonomy link's display value is an array of path labels -- composing a
+  // path through a pattern is out of scope, hand it back untouched.
   if (!usesLinkAttributeFormat(column) || f.isArray(displayValue)) {
     return displayValue;
   }
@@ -240,9 +219,8 @@ export const toAttributeInputValue = ({
       return raw === true;
     case ColumnKinds.numeric:
     case ColumnKinds.integer:
-      // NumberInput (react-number-format under the hood) expects "" rather
-      // than null/undefined for an empty value -- same convention as
-      // NumericEditCell#getValue.
+      // NumberInput expects "" rather than null for an empty value -- same
+      // convention as NumericEditCell#getValue.
       return f.isNumber(raw) && !f.isNaN(raw) ? raw : "";
     case ColumnKinds.date: {
       if (!f.isString(raw)) {
@@ -255,10 +233,9 @@ export const toAttributeInputValue = ({
       if (!f.isString(raw)) {
         return null;
       }
-      // No explicit .utc()/.local() conversion needed: the moment already
-      // carries the correct absolute instant, and react-datetime displays
-      // it in the browser's local time zone regardless of the moment's own
-      // utc/local mode.
+      // No .utc()/.local() needed: the moment carries the correct absolute
+      // instant, and react-datetime displays it in the browser's time zone
+      // regardless of the moment's own utc/local mode.
       const moment = Moment(raw, DateTimeFormats.formatForServer);
       return moment.isValid() ? moment : null;
     }
@@ -287,10 +264,8 @@ export const parseAttributeInput = ({
       return f.isNaN(num) ? null : Math.round(num);
     }
     case ColumnKinds.date: {
-      // input is a Moment (or null/undefined) from react-datetime's
-      // onChange, since date attributes render with input={false} (no free
-      // text entry -- see LinkAttributesPopover), so only valid moments or
-      // an explicit clear ever reach here.
+      // Only a Moment or a clear reaches here: the calendar has no free-text
+      // entry (input={false}).
       const moment = f.isNil(input) ? null : Moment(input);
       return moment?.isValid()
         ? moment.format(DateFormats.formatForServer)
@@ -308,8 +283,8 @@ export const parseAttributeInput = ({
   }
 };
 
-// Build the exact-length attributes array the write endpoint requires:
-// missing definitions are padded with `null`, extras are dropped.
+// The endpoint requires exactly one value per definition: pad with `null`,
+// drop extras.
 export const buildAttributesPayload = (
   definitions: LinkAttributeDefinition[],
   draft: Record<number, LinkAttributeValue>

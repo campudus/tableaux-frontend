@@ -1,8 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-// The popover only decides *whether* to save; what a save does is covered by
-// linkAttributes.store.test.js. Mocking the action creator keeps this test to
-// that decision -- no reducers, no request, no seeded state.
+// Only *whether* it saves; what a save does is covered by
+// linkAttributes.store.test.js. Hence the mocked action creator.
 vi.mock("../../../redux/actionCreators", () => ({
   default: {
     changeLinkAttributes: vi.fn(() => () => Promise.resolve()),
@@ -61,8 +60,8 @@ const renderPopover = () => {
   return {
     onClose,
     unmount: () => act(() => void ReactDOM.unmountComponentAtNode(container)),
-    // a boolean attribute renders as the Toggle, whose checkbox can be
-    // clicked without faking React's value setter
+    // a boolean renders as the Toggle, whose checkbox can be clicked without
+    // faking React's value setter
     toggle: () => document.querySelector(".toggle__input"),
     press: key =>
       act(() => {

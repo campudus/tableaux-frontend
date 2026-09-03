@@ -74,9 +74,6 @@ function PreviewTitleContent({
         onMouseLeave={handleMouseLeave}
       >
         <a href={defaultTitle.link}>
-          {/* the default title is the identifier concat, which takes in the
-              formatPattern of any link member -- markup included, and only the
-              link chips render that (see FormattedLabel) */}
           <span>{stripFormattingTags(defaultTitle.value)}</span>
         </a>
 

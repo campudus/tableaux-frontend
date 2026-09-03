@@ -24,10 +24,8 @@ describe("Dependent state updates", () => {
     });
   });
 
-  // Regression: the memo key used to be the bare list of table ids. The
-  // incomplete map computed during COLUMNS_LOADING_DATA was then reused after
-  // COLUMNS_DATA_LOADED, because both states produce the same key -- leaving
-  // the dependency map wrong for the rest of the session.
+  // Regression: with the bare list of table ids as the key, the incomplete map
+  // computed during COLUMNS_LOADING_DATA was reused after COLUMNS_DATA_LOADED.
   describe("dependencyMapMemoKey()", () => {
     it("counts only the tables whose columns have arrived", () => {
       expect(

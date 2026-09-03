@@ -12,23 +12,14 @@ import ActionTypes from "./actionTypes";
 
 const { LINKED_VALUES_UPDATED } = ActionTypes;
 
-// A link cell does not only store the id of its target row, it stores a copy of
-// that row's identifier value -- the label is built from that copy. And if the
-// target's identifier is itself a link, the copy contains another copy:
+// Every copy of a changed row's identifier is already in the store, so the
+// functions below distribute it by walking the column tree and the value tree
+// in parallel instead of refetching.
 //
-//   variant.model = [{ id: 7, value: <the model's identifier> }]
-//                                     = [[{ id: 3, value: "Tektro" }], "BR-R01"]
-//                                          ^ the manufacturer's name
-//
-// So renaming the manufacturer has to reach a value nested two levels deep in a
-// row of a third table. Every one of those copies is already in the store,
-// which is why nothing here needs a request: the functions below walk the
-// column tree and the value tree in parallel -- the same recursion
-// getDisplayValue does -- and replace the copies wherever they sit. A single
-// pass covers every level, because the deeper level is part of the same value.
+// See docs/architecture/dependent-display-values.md and
+// docs/adr/0004-local-propagation-of-dependent-display-values.md.
 
-// The nesting the backend sends ends at the identifier leaf column. A cyclic
-// identifier definition must not hang the walk regardless.
+// Bounds the walk against cyclic identifier definitions.
 const MAX_DEPTH = 12;
 
 const isLink = column => column.kind === ColumnKinds.link;
@@ -45,10 +36,8 @@ const replaceAt = (values, index, value) => {
   return next;
 };
 
-// Maps over an array but returns the SAME array when no element changed.
-// Everything below relies on this: an untouched value is recognised by
-// identity, which is what keeps unaffected rows out of the payload -- and their
-// objects out of the re-render.
+// Returns the SAME array when no element changed. Identity is how everything
+// below recognises an untouched value.
 const mapKeepingIdentity = (values, fn) => {
   if (!Array.isArray(values)) {
     return values;
@@ -80,8 +69,6 @@ export const patchLinkedValue = (column, value, target, depth = 0) => {
         resolved.toTable === target.tableId && entry.id === target.rowId;
 
       if (isTargetRow) {
-        // Already equal: keep the reference. This is what makes a change to a
-        // column that is nobody's identifier produce no payload at all.
         return f.isEqual(entry.value, target.value)
           ? entry
           : { ...entry, value: target.value };
@@ -108,8 +95,7 @@ export const patchLinkedValue = (column, value, target, depth = 0) => {
       );
 };
 
-// Can a value of this column hold a link into `tableId` at any depth? Answered
-// per column, so the row scan only visits positions that can match at all.
+// Can a value of this column hold a link into `tableId` at any depth?
 export const columnCanHold = (column, tableId, depth = 0) => {
   const resolved = resolveColumn(column);
   if (!resolved || depth > MAX_DEPTH) {
@@ -125,8 +111,8 @@ export const columnCanHold = (column, tableId, depth = 0) => {
 };
 
 // Which column of `tableId` the links pointing at it embed -- its identifier.
-// Read from a link column rather than guessed from the target table's own
-// column list, so nothing has to assume where its identifier sits.
+// Read off a link column instead of guessing where the target table's own
+// identifier sits.
 const findEmbeddedColumn = (column, tableId, depth = 0) => {
   const resolved = resolveColumn(column);
   if (!resolved || depth > MAX_DEPTH) {
@@ -165,13 +151,9 @@ const findEmbeddedColumnOfTable = (state, tableId) =>
     null
   );
 
-// The identifier value of (tableId, rowId) as the store holds it right now.
-//
-// A concat identifier is assembled from its member columns rather than read
-// from the row's stored concat value. The stored copy is in line by the time
-// this runs (applyDependentValues in reducers/rows.js patches it along with the
-// cell write), but assembling makes that irrelevant: the members are the source
-// of truth either way, and this stays correct no matter when it is called.
+// The identifier value of (tableId, rowId) as the store holds it right now. A
+// concat identifier is assembled from its members rather than read from the
+// row's stored concat value, so this stays correct whenever it is called.
 const identifierValueOf = (state, tableId, rowId, embeddedColumn) => {
   const columns = columnsOf(state, tableId);
   const row = rowsOf(state, tableId).find(row => row.id === rowId);
@@ -200,9 +182,7 @@ const columnForRow = (column, row, tableId, getOriginColumn) =>
     : getOriginColumn(column.id, row.tableId) || column;
 
 // One row's patched values, or null when it holds no copy of the changed row.
-// Only the positions that actually changed get a new display value: that is
-// what keeps the pathological case cheap -- a target row linked from 10.000
-// rows costs one or two operations per row instead of a full recomputation.
+// Only changed positions get a new display value.
 const patchRow = (
   row,
   { columns, columnIndices, tableId, getOriginColumn, target }
@@ -256,7 +236,7 @@ const patchTable = (state, tableId, target) => {
 };
 
 // Everything in the store that shows something of (tableId, rowId), with that
-// row's current identifier value pushed into it:
+// row's current identifier pushed into it:
 //
 //   [{ tableId, rows: [{ id, values, displayValueUpdates: { [columnIdx]: dv } }] }]
 export const collectLinkedValueUpdates = (state, { tableId, rowId }) => {
@@ -267,9 +247,8 @@ export const collectLinkedValueUpdates = (state, { tableId, rowId }) => {
 
   const value = identifierValueOf(state, tableId, rowId, embeddedColumn);
 
-  // The row is not in the store, or its identifier column is not among the
-  // loaded ones. Distributing that would replace readable labels with empty
-  // ones, so leave every copy alone instead.
+  // Unloaded row or identifier column: distributing that would replace
+  // readable labels with empty ones.
   if (value === undefined) {
     return [];
   }
@@ -281,9 +260,8 @@ export const collectLinkedValueUpdates = (state, { tableId, rowId }) => {
     .filter(Boolean);
 };
 
-// Pushes the current identifier value of (tableId, rowId) into every copy the
-// store holds. Direction-agnostic and idempotent -- it distributes whatever the
-// row holds right now, which is why the rollback path can simply call it again.
+// Pushes the current identifier of (tableId, rowId) into every copy the store
+// holds. Idempotent, so the rollback path can simply call it again.
 export const propagateLinkedValues = ({ tableId, rowId }) => (
   dispatch,
   getState
@@ -304,11 +282,9 @@ const allDisplayValues = (row, columns, tableId, getOriginColumn) =>
     return updates;
   }, {});
 
-// Refetches single rows. Used for the one thing that cannot be derived
-// locally: a link change alters the same edge on the other side, and the
-// frontend cannot tell which column of the target table mirrors it (`toColumn`
-// points at the identifier, not at the backlink). One request per changed edge
-// -- not one per row that shows the change.
+// Refetches single rows -- the one thing that cannot be derived locally: a link
+// change alters the same edge on the other side, and `toColumn` points at the
+// target's identifier, not at its backlink column.
 export const refreshRows = (tableId, rowIds) => async (dispatch, getState) => {
   const state = getState();
   const columns = columnsOf(state, tableId);
@@ -348,9 +324,8 @@ export const refreshRows = (tableId, rowIds) => async (dispatch, getState) => {
     ]
   });
 
-  // A refetched row may have a new identifier itself -- its backlink column can
-  // be part of it -- so its own copies elsewhere have to follow. Local again,
-  // no further request.
+  // A refetched row's own identifier may have changed -- its backlink column
+  // can be part of it -- so its copies elsewhere have to follow.
   freshRows.forEach(row =>
     dispatch(propagateLinkedValues({ tableId, rowId: row.id }))
   );

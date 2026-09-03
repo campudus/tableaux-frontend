@@ -242,8 +242,7 @@ const updateDisplayValue = (valueProp, tableView, action, completeState) => {
   );
 };
 
-// Counterpart of applyDependentValues in rows.js: the display values of the
-// concat and group columns that carry a copy of the changed cell's value.
+// Counterpart of applyDependentValues in rows.js, for the display values.
 const updateDependentDisplayValues = (
   tableView,
   action,
@@ -266,10 +265,8 @@ const updateDependentDisplayValues = (
     tableView
   );
 
-// Counterpart of applyLinkedValues in rows.js: the display values of the rows
-// that embed something of a changed row. Merged per column index, because only
-// the positions that actually hold a copy were recomputed -- a row linked from
-// thousands of others must not cost a full row recomputation each.
+// Counterpart of applyLinkedValues in rows.js. Merged per column index, since
+// only the positions actually holding a copy were recomputed.
 const applyLinkedDisplayValues = (tableView, updates = []) =>
   updates.reduce((next, { tableId, rows }) => {
     const storedDisplayValues = next.displayValues?.[tableId];

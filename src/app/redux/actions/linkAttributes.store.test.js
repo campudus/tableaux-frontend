@@ -78,9 +78,8 @@ const seedStore = () => {
   });
 };
 
-// After a write the label must come from the SOURCE row's link-column
-// displayValue -- the per-edge slot every view reads -- while the target
-// table's own identifier stays clean.
+// After a write the composed label lives in the source row's link column,
+// while the target table's own identifier stays unformatted.
 describe("changeLinkAttributes: store displayValues after a write", () => {
   it("writes the formatted label into the source row's link column slot", async () => {
     seedStore();
@@ -96,7 +95,7 @@ describe("changeLinkAttributes: store displayValues after a write", () => {
 
     const state = store.getState();
 
-    // the per-edge slot the grid / LinkOverlay / EntityView read
+    // the slot the grid, LinkOverlay and EntityView read
     expect(state.tableView.displayValues[SRC][0].values[1]).toEqual([
       { "de-DE": "Grau (12%)" }
     ]);
@@ -110,9 +109,7 @@ describe("changeLinkAttributes: store displayValues after a write", () => {
     });
   });
 
-  // The response is expected to carry the whole cell value. If it ever stops
-  // doing so, the optimistic value has to survive -- adopting a missing one
-  // would empty the link cell until the next reload.
+  // Adopting a missing value would empty the link cell until the next reload.
   it("keeps the optimistic value when the response carries none", async () => {
     seedStore();
 

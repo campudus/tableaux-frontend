@@ -73,15 +73,12 @@ export const isGroupMember = memoizeWith(
 const columnsOf = (tableId, completeState) =>
   f.propOr([], ["columns", tableId, "data"], completeState);
 
-// The columns array itself is the memo key, not the table id: a group can be
-// created or edited mid-session, and COLUMNS_LOADING_DATA already registers a
-// table id while its `data` is still missing. Keying on the id alone would
-// freeze the first answer -- including "this column is in no group at all" --
-// for the rest of the session.
+// Keyed on the columns array, not the table id: that never changes, so a group
+// created or edited mid-session stayed invisible for the rest of the session.
 export const getGroupLookup = memoizeWith(
   f.identity,
-  // column[] -> { [groupMemberId]: groupColumnId[] }
-  // A column may be a member of more than one group.
+  // column[] -> { [groupMemberId]: groupColumnId[] }, a column may be a member
+  // of more than one group
   columns =>
     columns.reduce(
       (theMap, column) =>
@@ -101,10 +98,9 @@ export const getGroupColumnIds = (data, completeState) =>
   );
 
 // The columns of the changed row that carry a copy of the changed value: the
-// table's concat column at index 0 if the changed column is an identifier, and
-// every group column the changed column is a member of. These are independent
-// of each other -- an identifier can be a group member too, which is exactly
-// the case that used to lose its concat update.
+// concat at index 0 if the changed column is an identifier, and every group it
+// is a member of. Independent of each other -- a column that is both used to
+// get its group patched and its concat skipped.
 export const calcDependentValues = (
   action,
   completeState,
@@ -138,9 +134,7 @@ export const calcDependentValues = (
     const entryIdx = f.findIndex(f.propEq("id", columnId), members);
     const dependentValue = f.prop(["values", dependentColumnIdx], rows[rowIdx]);
 
-    // A column the changed one does not appear in, or a value the store has not
-    // loaded, has nothing to patch -- writing to index -1 would only add a
-    // stray "-1" property.
+    // Nothing to patch -- f.assoc(-1, ...) would add a stray "-1" property.
     if (dependentColumnIdx < 0 || entryIdx < 0 || !f.isArray(dependentValue)) {
       return updates;
     }

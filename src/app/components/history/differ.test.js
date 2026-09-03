@@ -15,8 +15,8 @@ const diffOf = revision =>
 
 describe("calcRevisionDiff() - link attributes", () => {
   it("reports an attribute-only change as a deletion plus an addition", () => {
-    // Both revisions link the same row, so diffing by id alone would file
-    // this as unchanged and render it as if nothing happened.
+    // Both revisions link the same row, so diffing by id alone files this as
+    // unchanged.
     const diff = diffOf({
       prevContent: [{ id: 1, value: "Grau", attributes: [50] }],
       fullValue: [{ id: 1, value: "Grau", attributes: [12] }]

@@ -185,12 +185,9 @@ const buildContext = (tableId, langtag, store) => {
     return f.get(`${displayValueIdx}.values.${colIdx}`, displayValues);
   };
 
-  // A link column's formatPattern may carry emphasis markup, and a concat or
-  // group column takes in the display value of its link members -- markup and
-  // all. Only the link chips render that markup (see FormattedLabel), so
-  // filtering and sorting have to match the plain text the user reads. Other
-  // kinds are left byte-identical: their content is the user's own text, where
-  // a literal "<em>" is content rather than formatting.
+  // Only these take in a link member's display value and with it the emphasis
+  // markup. In plain text a typed "<em>" is the user's own content, and
+  // stripping it would break searching for it.
   const mayEmbedLinkFormat = kind =>
     kind === ColumnKinds.concat || kind === ColumnKinds.group;
 
@@ -214,11 +211,9 @@ const buildContext = (tableId, langtag, store) => {
     };
   };
 
-  // One value per edge. The cache is keyed per target row and therefore holds
-  // that row's plain identifier (see linkHelper.js), so the column's
-  // formatPattern is applied here with the edge's own attributes -- otherwise
-  // the filter would match against a label the cell never shows. Stripped for
-  // the same reason as above: the markup is not part of what the user reads.
+  // One value per link. The cache holds identifiers, so the label has to be
+  // composed here -- filtering against the cache would match text the cell
+  // never shows.
   const retrieveLinkDisplayValue = name => {
     const columnIdx = columnIdxLookup[name];
     const column = columns[columnIdx];

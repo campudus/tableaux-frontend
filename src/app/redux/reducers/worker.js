@@ -48,9 +48,8 @@ onmessage = function(e) {
       const toTableId = row.tableId ?? originColumn?.toTable ?? column.toTable;
       switch (column.kind) {
         case ColumnKind.link:
-          // The cache above is per target row and therefore attribute-free
-          // (see linkHelper.js); this row's own link displayValue is the
-          // per-edge slot, so the formatPattern is applied here.
+          // The cache holds identifiers, so the label is composed here, where
+          // the individual link is known.
           return value.map(link =>
             applyLinkAttributeFormat(
               originColumn ?? column,

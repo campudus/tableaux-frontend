@@ -18,10 +18,8 @@ const LinkState = {
   DEFAULT: 3
 };
 
-// One line of the diff, as its own component because it owns hover state: the
-// number of lines depends on the revision (an attribute change contributes a
-// del/add pair), and hooks called from inside a map would tie React's hook
-// order to that count.
+// Its own component because it owns hover state: the line count now varies per
+// revision, and hooks called inside the map would tie React's hook order to it.
 const LinkDiffItem = ({
   add,
   del,
@@ -35,10 +33,8 @@ const LinkDiffItem = ({
   const handleMouseLeave = useCallback(() => setHovered(false), []);
 
   const { id, value } = link;
-  // A revision's attributes belong to that revision, so each side of a
-  // diff is labelled with its own -- otherwise a changed attribute would
-  // render as two identical lines. Falls through untouched for columns
-  // without a formatPattern and for attachments.
+  // Each side of a diff is labelled with its own revision's attributes, or a
+  // changed attribute would render as two identical lines.
   const withAttributes = base =>
     f.isString(base)
       ? formatLinkLabel({ column, link, displayValue: base, langtag })
@@ -75,8 +71,7 @@ const LinkDiffItem = ({
       ? ["history:remote-row-deleted"]
       : [
           "history:outdated-value",
-          // the bubble renders plain text, so emphasis from the
-          // formatPattern would otherwise show up as literal tags
+          // the bubble renders plain text, tags would show up literally
           f.isString(revisionValue)
             ? stripFormattingTags(revisionValue)
             : revisionValue
@@ -116,8 +111,8 @@ const LinkDiff = props => {
 
   return diff.map(({ add, del, value: link, currentDisplayValues = {} }) => (
     <LinkDiffItem
-      // An attribute change renders both sides of the same link, so the id
-      // alone would collide between the deleted and the added line.
+      // An attribute change renders the same link twice, so its id alone
+      // collides between the deleted and the added line.
       key={`${link.id}-${add ? "add" : del ? "del" : "same"}`}
       add={add}
       del={del}
