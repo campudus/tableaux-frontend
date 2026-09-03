@@ -175,6 +175,28 @@ describe("formatAttributeValue", () => {
       })
     ).toBe("Hallo");
   });
+
+  // Rendering "_" while a readable value sits in another langtag is what the
+  // rest of the app avoids via retrieveTranslation.
+  it("falls back to the default langtag", () => {
+    expect(
+      formatAttributeValue({
+        definition: noteDef,
+        value: { "de-DE": "Hallo" },
+        langtag: "en-GB"
+      })
+    ).toBe("Hallo");
+  });
+
+  it("keeps a zero in the current langtag instead of falling back", () => {
+    expect(
+      formatAttributeValue({
+        definition: percentageDef,
+        value: { "de-DE": 0, "en-GB": 42 },
+        langtag: "de-DE"
+      })
+    ).toBe("0");
+  });
 });
 
 describe("formatLinkLabel", () => {
