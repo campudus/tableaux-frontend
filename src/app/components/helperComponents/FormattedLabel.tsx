@@ -1,8 +1,8 @@
 import { Fragment, ReactElement, ReactNode, createElement } from "react";
 
-// The only markup a format pattern may contain. Anything else -- another tag,
-// an <em> with attributes, malformed markup -- stays literal text, which React
-// escapes on render. See docs/adr/0002-em-only-markup-parsed-to-react-nodes.md.
+// The only markup a format pattern may contain. Another tag, an <em> carrying
+// attributes and a stray end tag stay literal text, which React escapes on
+// render. See docs/adr/0002-em-only-markup-parsed-to-react-nodes.md.
 const TAG_PATTERN = /<(\/?)(em)>/gi;
 
 type LabelNode = string | { tag: string; children: LabelNode[] };
