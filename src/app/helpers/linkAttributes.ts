@@ -4,9 +4,11 @@ import Moment from "moment";
 import {
   ColumnKinds,
   DateFormats,
-  DateTimeFormats
+  DateTimeFormats,
+  DefaultLangtag,
+  FallbackLanguage
 } from "../constants/TableauxConstants";
-import { retrieveTranslation } from "./multiLanguage";
+import { getLanguageOfLangtag, retrieveTranslation } from "./multiLanguage";
 
 // Date/datetime attributes are edited with react-datetime (see
 // LinkAttributesPopover), so their "input value" is a Moment, not a string.
@@ -65,7 +67,9 @@ export const usesLinkAttributeFormat = (column?: any): boolean =>
   hasLinkAttributes(column) && !f.isEmpty(getLinkFormatPattern(column));
 
 // Not `retrieveTranslation`: its checkOrThrow rejects the bare scalars a
-// non-multilanguage attribute stores.
+// non-multilanguage attribute stores. The fallback chain is the same one,
+// but tested with isEmptyAttributeValue -- f.isEmpty would skip a stored
+// 0 or false.
 const resolveAttributeRawValue = (
   value: LinkAttributeValue,
   langtag: string
@@ -73,7 +77,18 @@ const resolveAttributeRawValue = (
   if (!f.isPlainObject(value)) {
     return value;
   }
-  return f.has(langtag, value) ? value[langtag] : undefined;
+  return f.find(
+    (candidate: LinkAttributeValue) => !isEmptyAttributeValue(candidate),
+    f.props(
+      [
+        langtag,
+        getLanguageOfLangtag(langtag),
+        DefaultLangtag,
+        FallbackLanguage
+      ],
+      value
+    )
+  );
 };
 
 const isEmptyAttributeValue = (raw: LinkAttributeValue): boolean =>
