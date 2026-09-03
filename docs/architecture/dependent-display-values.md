@@ -23,6 +23,10 @@ So renaming the manufacturer has to reach a value nested two levels deep in a ro
 table. The crucial observation: **every one of those copies is already in the store.** Nothing
 has to be fetched to know the new value — only found.
 
+The changed row holds copies of its own cell values too — its concat column, and every group
+column the changed column is a member of. Those need no walk, and have their own mechanism:
+[The row's own dependents](#the-rows-own-dependents).
+
 ## What this replaced
 
 The previous `refreshDependentRows` was a network crawler. For every table depending on the
@@ -57,8 +61,9 @@ Several details carry more weight than their size suggests:
 - **`columnCanHold` pre-filters columns**, so the row scan only visits positions that could
   possibly match.
 - **`identifierValueOf` assembles a concat identifier from its member columns** rather than
-  reading the stored concat value. That stored copy is only refreshed once the write returns,
-  and this runs optimistically — reading it would distribute the value being replaced.
+  reading the stored concat value. The members are the source of truth, so this stays correct
+  no matter when it is called — it does not depend on the row's own concat copy having been
+  patched first, even though it now has been.
 - **`MAX_DEPTH` bounds the walk**, because a cyclic identifier definition must not hang it.
 - **A row that is not in the store, or whose identifier column is not loaded, produces no
   updates at all.** Distributing an unknown value would replace readable labels with empty
@@ -104,13 +109,42 @@ than computing an inverse. The ordering that makes this work is that the middlew
 reduced the optimistic value — or the rollback — by the time the propagation runs. A change to
 a column that is nobody's identifier produces no payload at all.
 
-## The memoisation fix
+## The row's own dependents
 
-The dependency map is memoised, and its key used to be the list of table ids. A table registers
-its id while its columns are still loading, at which point the map for it is necessarily empty —
-and that incomplete map got cached under exactly the key the fully loaded state produces later,
-leaving the dependency map wrong for the rest of the session. The key now counts only tables
-whose columns have actually arrived.
+The walk never touches them: `columnCanHold` only admits columns holding a link _into_ the
+changed table, and a concat of local scalars holds none back to its own. `calcDependentValues`
+in `src/app/redux/redux-helpers.js` does it instead, and it is cheap — a concat's or group's
+value is an array positional to its `concats` / `groups` members, so one index assignment plus
+one `getDisplayValue` per dependent column.
+
+Two load-bearing properties:
+
+- **A cell can feed several dependent columns, independently.** The concat at index 0 if the
+  changed column is an `identifier`, _and_ every group it is a member of. Used to be an
+  either/or, so a boolean that was both got its group patched and its concat skipped — leaving
+  the concat display value and the EntityView title (live from `row.values[0]` in
+  `OverlayHeadRowIdentificator`) stale until reload.
+- **It runs with `CELL_SET_VALUE` / `CELL_ROLLBACK_VALUE`, not `CELL_SAVED_SUCCESSFULLY`** —
+  next to the changed cell's own write, in `setCellValue` and `updateDisplayValue`. Optimistic
+  for the same reason as above, and symmetrical: the post-response variant it replaced was
+  never undone on rollback.
+
+A dependent column the changed one does not appear in, or whose value is not loaded, is skipped
+rather than written to; `f.assoc(-1, …)` would add a stray `"-1"` property and change nothing.
+
+## The memoisation fixes
+
+Two keys, stable across a state change that should have invalidated them.
+
+The dependency map was keyed on the list of table ids. A table registers its id while its
+columns still load, so its map is empty — and got cached under exactly the key the loaded state
+produces later, wrong for the rest of the session. The key now counts only tables whose columns
+have arrived.
+
+`getGroupLookup` (member → group) was keyed on the table id, which never changes. A group
+created or edited mid-session stayed invisible, as did a cached "this column is in no group"
+from before it existed. Now keyed on the columns array itself, which the `columns` reducer
+replaces on `COLUMNS_DATA_LOADED` and `COLUMN_EDIT_SUCCESS`.
 
 ## A related fix
 
@@ -129,3 +163,8 @@ request layer. The identity guarantees in
 `src/app/redux/reducers/linkedValuesUpdated.test.js`, the index-wise display value merge in
 `src/app/redux/reducers/tableView.test.js`, and the memo key in
 `src/app/redux/updateDependentTables.test.js`.
+
+The row's own dependents in `src/app/redux/reducers/dependentValues.test.js` — a real store
+through `CELL_SET_VALUE` / `CELL_ROLLBACK_VALUE`, covering the identifier that is also a group
+member, each on its own, and a group arriving after the first cell change. The lookup in
+`src/app/redux/redux-helpers.test.js`.

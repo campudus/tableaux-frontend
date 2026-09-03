@@ -22,6 +22,13 @@ The text a cell shows for one langtag. Every column kind has one, and it is what
 sorting and search compare against.
 _Avoid_: rendered value, cell text
 
+**Dependent value**:
+A stored copy of another cell's value, which a write has to bring in line. Two kinds, two
+mechanisms: **local** — the changed row's own concat and group columns — and **linked** — the
+identifier copies in link cells of other rows and tables. See
+[dependent display values](docs/architecture/dependent-display-values.md).
+_Avoid_: derived value — nothing is derived at read time, the copy is stored
+
 **Identifier**:
 The display value of a row's identifier columns. It stands in for that row wherever the row
 appears inside another cell, so a link cell holds a copy of it for each row it links to.
