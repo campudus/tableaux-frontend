@@ -173,10 +173,17 @@ const LinkAttributesPopover = ({
   const dirtyRef = useRef(false);
   const closingRef = useRef(false);
   const containerRef = useRef(null);
+  // The effects below run once, so commit() would otherwise send the first
+  // render's cell value -- same reason draft is mirrored.
+  const cellRef = useRef(cell);
 
   useEffect(() => {
     draftRef.current = draft;
   }, [draft]);
+
+  useEffect(() => {
+    cellRef.current = cell;
+  }, [cell]);
 
   const handleChange = (index, inputValue) => {
     dirtyRef.current = true;
@@ -191,7 +198,11 @@ const LinkAttributesPopover = ({
       parseAttributeInput({ definition, input: draftRef.current[index] })
     );
     dispatch(
-      actions.changeLinkAttributes({ cell, linkId, attributes: payload })
+      actions.changeLinkAttributes({
+        cell: cellRef.current,
+        linkId,
+        attributes: payload
+      })
     ).catch(() => {
       dispatch(
         actions.showToast({
