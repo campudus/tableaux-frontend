@@ -295,11 +295,26 @@ export const refreshRows = (tableId, rowIds) => async (dispatch, getState) => {
     return;
   }
 
-  const freshRows = await Promise.all(
+  // The write this follows has already succeeded, so a failed refetch leaves a
+  // stale label -- it must not surface as a failed save.
+  const settled = await Promise.allSettled(
     wantedIds.map(rowId =>
       makeRequest({ apiRoute: route.toRow({ tableId, rowId }) })
     )
   );
+  settled
+    .filter(result => result.status === "rejected")
+    .forEach(result =>
+      console.warn("refreshRows: refetch failed", result.reason)
+    );
+  const freshRows = settled
+    .filter(result => result.status === "fulfilled")
+    .map(result => result.value);
+
+  if (freshRows.length === 0) {
+    return;
+  }
+
   const getOriginColumn = buildOriginColumnLookup(
     tableOf(state, tableId),
     columns
