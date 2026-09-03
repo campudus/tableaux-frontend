@@ -101,6 +101,7 @@ const LinkList = props => {
         viewUrl={getViewUrl(link)}
         isPermissionDenied={link.hiddenByRowPermissions}
         archived={isArchived}
+        userCanEdit={changeCellAuthorized}
         enableLinkAttributes={enableLinkAttributes}
       />
     );
