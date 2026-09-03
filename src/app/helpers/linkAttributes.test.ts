@@ -408,8 +408,7 @@ describe("toAttributeInputValue / parseAttributeInput", () => {
     }) as moment.Moment;
     expect(Moment.isMoment(input)).toBe(true);
     expect(input.isValid()).toBe(true);
-    // The moment must represent the same instant regardless of the local
-    // time zone the test runs in.
+    // the same instant regardless of the time zone the test runs in
     expect(input.isSame(Moment(stored))).toBe(true);
 
     const parsed = parseAttributeInput({ definition: datetimeDef, input });

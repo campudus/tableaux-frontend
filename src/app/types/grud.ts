@@ -29,8 +29,7 @@ export type UnionColumn = Column & {
   }>;
 };
 
-// @grud/devtools' LinkColumn doesn't know about linkAttributes/formatPattern
-// yet -- both are runtime-only fields today (see helpers/linkAttributes.ts).
+// @grud/devtools' LinkColumn doesn't know these two yet.
 export type LinkAttributeColumn = LinkColumn & {
   linkAttributes?: LinkAttributeDefinition[];
   formatPattern?: string;

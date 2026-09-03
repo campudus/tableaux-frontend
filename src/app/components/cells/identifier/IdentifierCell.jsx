@@ -36,9 +36,6 @@ const IdentifierCell = props => {
       displayValue[langtag] === format(cell.column, "_")
   });
 
-  // An identifier is a concat/group of member columns, so a link member
-  // contributes its formatPattern -- including any emphasis markup, which only
-  // the link chips render (see FormattedLabel).
   const label =
     cell.column.kind === ColumnKinds.concat &&
     !T.isUnionTable(cell.table) &&

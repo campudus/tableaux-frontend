@@ -28,8 +28,6 @@ export default function TextCell({
   const handleMouseEnter = useCallback(() => setTooltipVisible(true), []);
   const handleMouseLeave = useCallback(() => setTooltipVisible(false), []);
 
-  // A concat column takes in its link members' formatPattern, so the value may
-  // carry emphasis markup -- only the link chips render that, here it is text.
   const value = stripFormattingTags(multilangValue[langtag]);
   const columnDisplayName = getColumnDisplayName(column, langtag);
 

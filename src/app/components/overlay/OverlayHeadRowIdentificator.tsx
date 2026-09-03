@@ -54,9 +54,6 @@ const Identificator = ({
   columnName: string;
 }) => {
   const translate = retrieveTranslation(langtag);
-  // The identifier column may be (or contain) a link column whose formatPattern
-  // carries emphasis markup. Only the link chips render it (see FormattedLabel);
-  // a title is plain text, here and in the native tooltip below.
   const title = stripFormattingTags(
     Array.isArray(displayValue)
       ? displayValue.map(translate).join(" ")

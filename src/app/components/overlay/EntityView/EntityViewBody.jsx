@@ -441,10 +441,8 @@ const mkCellProps = ({ grudData, table, row }) => {
   });
 
   const retrieveDisplayValue = (column, columnIdx, value) => {
-    // Link columns included: this row's own displayValue for the link column
-    // is computed per edge and carries the formatPattern/attributes, whereas
-    // displayValues[toTable][linkedRowId] is shared by every edge pointing at
-    // that row and holds its plain identifier only.
+    // Link columns included: this row's own display value holds the composed
+    // labels, while displayValues[toTable] holds only shared identifiers.
     const displayValue = findDisplayValue(table.id)(row.id)(columnIdx);
 
     // if displayValue was not found findDisplayValue returns either [] or [undefined]

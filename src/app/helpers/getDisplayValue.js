@@ -143,15 +143,10 @@ const getStatusValue = column => value =>
     .map(rule => rule.name)
     .join(",");
 
-// Apply a link column's formatPattern to ONE edge, per langtag: `base` is the
-// target row's own displayValue ({langtag: text}), `link` the edge carrying the
-// positional `attributes`. Returned unchanged when the column has no
-// linkAttributes + formatPattern.
-//
-// Exported because the display value worker needs the identical formatting: it
-// builds link labels from the per-target-row cache rather than from
-// getDisplayValue(linkColumn) (see worker.js / linkHelper.js), and
-// applyToAllLangs is private to this module.
+// Composes ONE link's label per langtag: `base` is the linked row's identifier
+// ({langtag: text}), `link` carries the attribute values. Exported for the
+// display value worker, which builds its labels from the shared cache and
+// needs the identical formatting.
 export const applyLinkAttributeFormat = (column, link, base) =>
   usesLinkAttributeFormat(column)
     ? applyToAllLangs(lt =>
@@ -164,9 +159,8 @@ export const applyLinkAttributeFormat = (column, link, base) =>
       )
     : base;
 
-// Per link entry (edge): the target row's own displayValue, formatted with that
-// edge's attributes. Doing it here means every direct caller of
-// getDisplayValue(linkColumn) gets formatted labels for free.
+// Composing here means every direct caller of getDisplayValue(linkColumn) gets
+// labels rather than bare identifiers.
 const getLinkValue = column =>
   f.map(link =>
     applyLinkAttributeFormat(

@@ -33,8 +33,6 @@ export default function LinkCellItem({
   const handleMouseEnter = useCallback(() => setTooltipVisible(true), []);
   const handleMouseLeave = useCallback(() => setTooltipVisible(false), []);
 
-  // A link column's formatPattern may carry emphasis markup, which only the
-  // link chips render (see FormattedLabel) -- here the label is plain text.
   const displayValue = stripFormattingTags(
     f.cond([
       [

@@ -37,8 +37,7 @@ const {
 const initialState = {};
 
 // Rows that embed something of a changed row (see redux/linkedValues.js). Only
-// the tables and rows that actually changed get new objects -- everything else
-// keeps its reference, so only the affected rows re-render.
+// what actually changed gets a new object, so only affected rows re-render.
 const applyLinkedValues = (state, updates = []) =>
   updates.reduce((next, { tableId, rows }) => {
     const storedRows = next[tableId]?.data;
@@ -63,10 +62,9 @@ const applyLinkedValues = (state, updates = []) =>
     };
   }, state);
 
-// The concat and group columns of the changed row hold a copy of the changed
-// value (see calcDependentValues). Applied together with the cell write itself,
-// so the row's identifier -- and with it the EntityView title -- is as current
-// as the cell, without waiting for the response.
+// The changed row's own concat and group columns hold a copy of the changed
+// value. Applied together with the cell write, so the row's identifier is as
+// current as the cell without waiting for the response.
 const applyDependentValues = (rows, action, completeState, isRollback) =>
   calcDependentValues(action, completeState, isRollback).reduce(
     (next, { columnIdx, rowIdx, updatedValue }) =>

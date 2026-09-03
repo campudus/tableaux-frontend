@@ -122,9 +122,8 @@ describe("dependent concat and group values after a cell change", () => {
     setFlag(true);
 
     expect(values()[FLAG_IDX]).toBe(true);
-    // This is the regression: the group used to win the either/or and the
-    // concat at index 0 was never patched, which left the EntityView title and
-    // every concat display value stale for good.
+    // The regression: the group used to win the either/or, leaving the concat
+    // at index 0 unpatched and the EntityView title stale until reload.
     expect(values()[CONCAT_IDX]).toEqual(["Rad", true]);
     expect(values()[GROUP_IDX]).toEqual(["Rad", true]);
 
@@ -187,9 +186,8 @@ describe("dependent concat and group values after a cell change", () => {
   });
 
   it("picks up a group definition that arrives after the first cell change", () => {
-    // The member -> group lookup used to be memoized on the table id alone and
-    // never invalidated, so a group created or edited mid-session stayed
-    // invisible for the rest of the session.
+    // The member -> group lookup used to be memoized on the table id, which
+    // never changes, so a group added mid-session stayed invisible.
     seed({ withGroup: false });
     setFlag(true);
     expect(values()[GROUP_IDX]).toEqual(["Rad", false]);
