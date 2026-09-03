@@ -1,9 +1,6 @@
-import classNames from "classnames";
 import f from "lodash/fp";
 import PropTypes from "prop-types";
 import React from "react";
-import { ColumnKinds } from "../../../constants/TableauxConstants";
-import { format } from "../../../helpers/getDisplayValue";
 import { isLocked } from "../../../helpers/rowUnlock";
 import T from "../../../helpers/table";
 import { stripFormattingTags } from "../../helperComponents/FormattedLabel";
@@ -30,14 +27,7 @@ const IdentifierCell = props => {
     }
   };
 
-  const className = classNames("cell-content", {
-    "grey-out":
-      cell.column.kind === ColumnKinds.group &&
-      displayValue[langtag] === format(cell.column, "_")
-  });
-
   const label =
-    cell.column.kind === ColumnKinds.concat &&
     !T.isUnionTable(cell.table) &&
     !f.isEmpty(foreignDisplayValues) &&
     !cell.column.formatPattern
@@ -45,7 +35,7 @@ const IdentifierCell = props => {
       : displayValue[langtag];
 
   return (
-    <div className={className} onClick={openEditor}>
+    <div className="cell-content" onClick={openEditor}>
       {stripFormattingTags(label)}
     </div>
   );

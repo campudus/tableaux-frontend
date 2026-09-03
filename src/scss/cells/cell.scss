@@ -123,6 +123,39 @@
       line-height: $space-height-cell-content;
       height: $space-height-cell-content;
       margin: 0;
+
+      &[type="checkbox"] {
+        display: block;
+        line-height: 20px;
+        height: 20px;
+        width: 20px;
+        margin: 2.5px auto;
+        appearance: none;
+        -webkit-appearance: none;
+        border: 1.5px solid $color-text-medium-grey;
+        border-radius: 2px;
+        background-color: #FFFFFF;
+        cursor: pointer;
+        position: relative; /* For pseudo-element positioning */
+      }
+      
+      &[type="checkbox"]:checked {
+        border: 0;
+        background-color: $color-primary;
+      }
+    
+      &[type="checkbox"]:checked::after {
+        content: "";
+        position: absolute;
+        left: 6px;
+        top: 1px;
+        width: 6px;
+        height: 12px;
+        border-width: 0 2px 2px 0;
+        border-color: #FFFFFF;
+        border-style: solid;
+        transform: rotate(45deg);
+      }
     }
   }
 
@@ -229,20 +262,6 @@
 
     &.cell-shorttext .cell-content {
       overflow: visible;
-    }
-  }
-
-  &.holds-checkbox {
-    vertical-align: middle;
-    text-align: center;
-
-    .checkbox {
-      vertical-align: middle;
-      margin: 0 auto;
-      padding: 0;
-      width: 16px;
-      height: 16px;
-      display: inline-block;
     }
   }
 
