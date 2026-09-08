@@ -2,14 +2,7 @@ import classNames from "classnames";
 import f from "lodash/fp";
 import i18n from "i18next";
 import PropTypes from "prop-types";
-import React, { createRef } from "react";
-import {
-  branch,
-  compose,
-  pure,
-  renderComponent,
-  withHandlers
-} from "recompose";
+import React, { createRef, useCallback } from "react";
 import { isRowArchived } from "../../archivedRows/helpers";
 import { ColumnKinds, Langtags } from "../../constants/TableauxConstants";
 import {
@@ -372,31 +365,42 @@ const isRepeaterCell = ({ cell, isExpandedCell }) =>
   (!cell.column.multilanguage ||
     f.contains(cell.kind, [ColumnKinds.link, ColumnKinds.attachment]));
 
-const RepeaterCell = withHandlers({
-  onContextMenu: ({
+const RepeaterCell = React.memo(props => {
+  const {
     openCellContextMenu,
     cell,
     langtag,
     actions: { toggleCellSelection }
-  }) => event => {
-    event.preventDefault();
-    toggleCellSelection({ cell, langtag });
-    openCellContextMenu({ cell, langtag: f.first(Langtags) })(event);
-  }
-})(props => (
-  <div
-    style={props.style}
-    className="cell repeat placeholder"
-    onContextMenu={props.onContextMenu}
-  >
-    —.—
-  </div>
-));
+  } = props;
 
-export default compose(
-  branch(isRepeaterCell, renderComponent(pure(RepeaterCell))),
-  pure
-)(reduxActionHoc(Cell, mapStateToProps));
+  const onContextMenu = useCallback(
+    event => {
+      event.preventDefault();
+      toggleCellSelection({ cell, langtag });
+      openCellContextMenu({ cell, langtag: f.first(Langtags) })(event);
+    },
+    [openCellContextMenu, cell, langtag, toggleCellSelection]
+  );
+
+  return (
+    <div
+      style={props.style}
+      className="cell repeat placeholder"
+      onContextMenu={onContextMenu}
+    >
+      —.—
+    </div>
+  );
+});
+
+const ConnectedCell = React.memo(reduxActionHoc(Cell, mapStateToProps));
+
+export default props =>
+  isRepeaterCell(props) ? (
+    <RepeaterCell {...props} />
+  ) : (
+    <ConnectedCell {...props} />
+  );
 
 Cell.propTypes = {
   cell: PropTypes.object.isRequired,
