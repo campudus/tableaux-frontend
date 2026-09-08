@@ -99,10 +99,6 @@ const NumericView = props => {
 
   const handleKeyDown = useCallback(
     event => {
-      console.log("NumericView", {
-        key: event.key,
-        isKeyAllowed: isKeyAllowed(event)
-      });
       if (isKeyAllowed(event)) {
         KeyboardShortcutsHelper.onKeyboardShortcut(getKeyboardShortcuts)(event);
       }
