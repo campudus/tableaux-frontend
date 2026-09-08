@@ -1,15 +1,6 @@
-import React from "react";
+import React, { useCallback, useState } from "react";
 import PropTypes from "prop-types";
 import f from "lodash/fp";
-import {
-  branch,
-  compose,
-  mapProps,
-  pure,
-  renderComponent,
-  withHandlers,
-  withStateHandlers
-} from "recompose";
 import { Header, TableEntry } from "./TableEntryFragments";
 import classNames from "classnames";
 import { AutoSizer, List } from "react-virtualized";
@@ -128,53 +119,53 @@ FlagWidget.propTypes = {
   flag: PropTypes.string.isRequired
 };
 
-const enhance = compose(
-  pure,
-  withStateHandlers(
-    ({ langtag }) => ({
-      selectedIdx: -1,
-      selectedLang: getFirstEditableLang(langtag)
-    }),
-    {
-      handleMouseLeave: () => () => ({ selectedIdx: -1 }),
-      setSelection: () => index => ({ selectedIdx: index }),
-      setLangtag: () => langtag => ({ selectedLang: langtag })
-    }
-  ),
-  branch(
-    props => f.isNil(props.requestedData),
-    renderComponent(LoadingFlagWidget)
-  ),
-  mapProps(pickTables),
-  mapProps(sortEntries),
-  withHandlers({
-    mkTableEntry: ({
-      selectedIdx,
-      flag,
-      config,
-      tables,
-      setSelection,
-      langtag,
-      selectedLang
-    }) => ({ index, style }) => {
-      const table = f.getOr({}, index, tables);
-      return (
-        <TableEntry
-          key={f.get("id", table)}
-          style={style}
-          table={table}
-          index={index}
-          selected={selectedIdx === index}
-          active={selectedIdx >= 0}
-          handleMouseEnter={setSelection}
-          flag={flag}
-          config={config}
-          langtag={langtag}
-          selectedLang={selectedLang}
-        />
-      );
-    }
-  })
-);
+const FlagWidgetContainer = props => {
+  const { langtag, requestedData, config, flag } = props;
+  const [selectedIdx, setSelectedIdx] = useState(-1);
+  const [selectedLang, setSelectedLang] = useState(() =>
+    getFirstEditableLang(langtag)
+  );
 
-export default enhance(FlagWidget);
+  const handleMouseLeave = useCallback(() => setSelectedIdx(-1), []);
+  const setSelection = useCallback(index => setSelectedIdx(index), []);
+  const setLangtag = useCallback(lang => setSelectedLang(lang), []);
+
+  const statefulProps = {
+    ...props,
+    selectedIdx,
+    selectedLang,
+    handleMouseLeave,
+    setSelection,
+    setLangtag
+  };
+
+  if (f.isNil(requestedData)) {
+    return <LoadingFlagWidget {...statefulProps} />;
+  }
+
+  const sortedProps = sortEntries(pickTables(statefulProps));
+  const { tables } = sortedProps;
+
+  const mkTableEntry = ({ index, style }) => {
+    const table = f.getOr({}, index, tables);
+    return (
+      <TableEntry
+        key={f.get("id", table)}
+        style={style}
+        table={table}
+        index={index}
+        selected={selectedIdx === index}
+        active={selectedIdx >= 0}
+        handleMouseEnter={setSelection}
+        flag={flag}
+        config={config}
+        langtag={langtag}
+        selectedLang={selectedLang}
+      />
+    );
+  };
+
+  return <FlagWidget {...sortedProps} mkTableEntry={mkTableEntry} />;
+};
+
+export default React.memo(FlagWidgetContainer);

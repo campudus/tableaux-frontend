@@ -1,8 +1,7 @@
-import React from "react";
+import React, { useCallback, useState } from "react";
 import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
 import i18n from "i18next";
 import PropTypes from "prop-types";
-import { withStateHandlers } from "recompose";
 import {
   columnHasMinLength,
   columnHasMaxLength,
@@ -107,22 +106,31 @@ class TextView extends React.PureComponent {
   }
 }
 
-const withEditFunction = withStateHandlers(
-  ({ langtag, cell }) => ({
-    editValue:
-      (cell.column.multilanguage ? cell.value[langtag] : cell.value) || ""
-  }),
-  {
-    handleChange: () => event => ({
-      editValue: event.target.value
-    }),
-    saveEdits: ({ editValue }, { langtag, cell, actions }) => () => {
-      const newValue = cell.column.multilanguage
-        ? { ...cell.value, [langtag]: editValue }
-        : editValue;
-      actions.changeCellValue({ cell, newValue, oldValue: cell.value });
-    }
-  }
-);
+const withEditFunction = Component => props => {
+  const { langtag, cell, actions } = props;
+  const [editValue, setEditValue] = useState(
+    () => (cell.column.multilanguage ? cell.value[langtag] : cell.value) || ""
+  );
+
+  const handleChange = useCallback(
+    event => setEditValue(event.target.value),
+    []
+  );
+  const saveEdits = useCallback(() => {
+    const newValue = cell.column.multilanguage
+      ? { ...cell.value, [langtag]: editValue }
+      : editValue;
+    actions.changeCellValue({ cell, newValue, oldValue: cell.value });
+  }, [editValue, cell, langtag, actions]);
+
+  return (
+    <Component
+      {...props}
+      editValue={editValue}
+      handleChange={handleChange}
+      saveEdits={saveEdits}
+    />
+  );
+};
 
 export default withEditFunction(TextView);
