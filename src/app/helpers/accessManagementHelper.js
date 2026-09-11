@@ -1,6 +1,7 @@
 import f from "lodash/fp";
 import { isRowArchived } from "../archivedRows/helpers";
 import {
+  ColumnKinds,
   ImmutableColumnKinds,
   Langtags,
   LanguageType,
@@ -65,14 +66,30 @@ const getPermission = pathToPermission => cell =>
   !T.isUnionTable(cell.table ?? {}) &&
   f.compose(f.propOr(false, pathToPermission), lookUpPermissions)(cell);
 
-export const isSettingsTable = table => table.type === TableType.settings;
+export const isSettingsTable = table => table?.type === TableType.settings;
 export const isCellInSettingsColumn = cell =>
-  isSettingsTable(cell.table) &&
-  (cell.column.name === "key" || cell.column.name === "displayKey");
+  isSettingsTable(cell?.table) &&
+  (cell?.column?.name === "key" || cell?.column?.name === "displayKey");
 
 //      (cell | {tableId: number, columnId: number}) -> (langtag | nil) -> boolean
 export const canUserChangeCell = f.curry((cell, langtag) => {
-  const { table, kind, row } = cell ?? {};
+  const { table, row, column } = cell ?? {};
+  // not every caller passes a full cell, some only carry the column
+  const kind = column?.kind ?? cell?.kind;
+
+  if (kind === ColumnKinds.group) {
+    const members = column?.groups ?? [];
+    const memberCells = members.map(member => ({
+      ...cell,
+      column: member,
+      kind: member?.kind
+    }));
+
+    return memberCells.some(memberCell =>
+      canUserChangeCell(memberCell, langtag)
+    );
+  }
+
   const editCellValue = getPermission(["column", "editCellValue"])(cell);
   const language = f.propEq("column.languageType", LanguageType.country)(cell)
     ? getCountryOfLangtag(langtag)
@@ -84,8 +101,8 @@ export const canUserChangeCell = f.curry((cell, langtag) => {
 
   return (
     !isCellInSettingsColumn(cell ?? {}) &&
-    !T.isUnionTable(table) &&
-    !isRowArchived(row) &&
+    !T.isUnionTable(table ?? {}) &&
+    !isRowArchived(row ?? {}) &&
     !f.contains(kind, ImmutableColumnKinds) &&
     (allowed || !shouldCheckPermissions)
   ); //    this special case is not caught by ALLOW_ANYTHING
