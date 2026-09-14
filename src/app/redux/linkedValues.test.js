@@ -536,3 +536,96 @@ describe("refreshRows()", () => {
     expect(dispatch).not.toHaveBeenCalled();
   });
 });
+
+// A group column inside a concat identifier: the edited column sits two levels
+// below the identifier, not one.
+describe("collectLinkedValueUpdates() with a nested identifier", () => {
+  const nameGroupColumnDefinition = {
+    id: 11,
+    name: "nameGroup",
+    kind: "group",
+    identifier: true,
+    groups: [manufacturerNameColumnDefinition]
+  };
+
+  const manufacturerIdentifierColumnDefinition = {
+    id: 0,
+    name: "ID",
+    kind: "concat",
+    concats: [nameGroupColumnDefinition]
+  };
+
+  // The concat holds one value per member, the group one per member again.
+  const nestedIdentifier = manufacturerName => [[manufacturerName]];
+
+  const modelManufacturerColumn = {
+    ...modelManufacturerColumnDefinition,
+    toColumn: manufacturerIdentifierColumnDefinition
+  };
+
+  const buildNestedState = () => ({
+    tables: {
+      data: {
+        [manufacturerTableId]: { id: manufacturerTableId },
+        [modelTableId]: { id: modelTableId }
+      }
+    },
+    columns: {
+      [manufacturerTableId]: {
+        data: [
+          manufacturerIdentifierColumnDefinition,
+          nameGroupColumnDefinition,
+          manufacturerNameColumnDefinition
+        ]
+      },
+      [modelTableId]: { data: [modelManufacturerColumn] }
+    },
+    rows: {
+      [manufacturerTableId]: {
+        data: [
+          {
+            id: manufacturerRowId,
+            values: [
+              nestedIdentifier(newManufacturerName),
+              [newManufacturerName],
+              newManufacturerName
+            ]
+          }
+        ]
+      },
+      [modelTableId]: {
+        data: [
+          {
+            id: modelRowId,
+            values: [
+              linkTo(manufacturerRowId, nestedIdentifier(oldManufacturerName))
+            ]
+          }
+        ]
+      }
+    }
+  });
+
+  it("still walks when the changed column sits inside a nested group", () => {
+    const [modelUpdate] = collectLinkedValueUpdates(buildNestedState(), {
+      tableId: manufacturerTableId,
+      rowId: manufacturerRowId,
+      columnId: manufacturerNameColumnDefinition.id
+    });
+
+    expect(modelUpdate.tableId).toBe(modelTableId);
+    expect(modelUpdate.rows[0].values[0]).toEqual(
+      linkTo(manufacturerRowId, nestedIdentifier(newManufacturerName))
+    );
+  });
+
+  it("is empty when the changed column is nowhere in the identifier", () => {
+    expect(
+      collectLinkedValueUpdates(buildNestedState(), {
+        tableId: manufacturerTableId,
+        rowId: manufacturerRowId,
+        columnId: 4711
+      })
+    ).toEqual([]);
+  });
+});
