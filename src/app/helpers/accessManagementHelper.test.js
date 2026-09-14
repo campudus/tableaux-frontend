@@ -41,7 +41,11 @@ describe("group cell permission", () => {
   });
 
   it("is false for a group column without a groups prop", () => {
-    const cell = { table: { id: 1 }, row: { id: 1 }, column: { kind: "group" } };
+    const cell = {
+      table: { id: 1 },
+      row: { id: 1 },
+      column: { kind: "group" }
+    };
     expect(canUserChangeCell(cell, "de-DE")).toBe(false);
   });
 
