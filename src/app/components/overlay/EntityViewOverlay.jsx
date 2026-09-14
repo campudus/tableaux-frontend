@@ -9,14 +9,15 @@ import store from "../../redux/store";
 import ReduxActions from "../../redux/actionCreators";
 import f from "lodash/fp";
 
-export function openEntityView({
-  columnId, // of the column/cell to scroll to
-  filterColumn, // group column if used to edit groups
-  langtag,
-  row,
-  rows, // non-nil will allow to navigate rows
-  table
-}) {
+export function openEntityView(params) {
+  const {
+    columnId, // of the column/cell to scroll to
+    filterColumn, // group column if used to edit groups
+    langtag,
+    row,
+    rows, // non-nil will allow to navigate rows
+    table
+  } = params;
   const state = store.getState();
   const columns = f.prop(["columns", table.id, "data"], state);
   const idColumn = f.first(columns);
