@@ -133,12 +133,23 @@ const findEmbeddedColumn = (column, tableId, depth = 0) => {
 
 // A change outside the identifier cannot alter any copy, so the walk over
 // every loaded row can be skipped entirely.
-const isPartOfIdentifier = (embeddedColumn, columnId) => {
+const isPartOfIdentifier = (embeddedColumn, columnId, depth = 0) => {
   const resolved = resolveColumn(embeddedColumn);
+  if (!resolved || depth > MAX_DEPTH) {
+    return false;
+  }
+
   const members = membersOf(resolved);
-  return members.length === 0
-    ? resolved.id === columnId
-    : members.some(member => member.id === columnId);
+  if (members.length === 0) {
+    return resolved.id === columnId;
+  }
+
+  // The outermost wrapper is the identifier column itself -- not something
+  // anyone edits. A nested one counts like any other member.
+  return (
+    (depth > 0 && resolved.id === columnId) ||
+    members.some(member => isPartOfIdentifier(member, columnId, depth + 1))
+  );
 };
 
 const columnsOf = (state, tableId) => state.columns?.[tableId]?.data ?? [];
