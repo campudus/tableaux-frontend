@@ -1,6 +1,5 @@
 import classNames from "classnames";
 import { ReactElement } from "react";
-import { canUserChangeCell } from "../../../helpers/accessManagementHelper";
 import { showsOnlyPlaceholders } from "../../../helpers/groupDisplayValue";
 import { isLocked } from "../../../helpers/rowUnlock";
 import { Cell } from "../../../types/grud";
@@ -20,10 +19,8 @@ export default function GroupCell({
   selected,
   langtag
 }: GroupCellProps): ReactElement {
-  const editable = canUserChangeCell(cell)(langtag);
-
   const openEditor = () => {
-    if ((selected || editing) && editable && !isLocked(cell.row)) {
+    if ((selected || editing) && !isLocked(cell.row)) {
       openEntityView({
         langtag,
         table: cell.table,
