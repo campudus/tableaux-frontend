@@ -167,7 +167,6 @@ const LinkItem = props => {
           <LinkButton
             className={secondaryButtonClass}
             onClick={handleClickEdit}
-            disabled={isDisabled}
           >
             {archived ? (
               <i className="fa fa-eye" />
