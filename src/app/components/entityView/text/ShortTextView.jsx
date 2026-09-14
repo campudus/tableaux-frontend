@@ -1,12 +1,5 @@
-import React from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import PropTypes from "prop-types";
-import {
-  compose,
-  lifecycle,
-  pure,
-  withHandlers,
-  withStateHandlers
-} from "recompose";
 import f from "lodash/fp";
 import i18n from "i18next";
 import KeyboardShortcutsHelper from "../../../helpers/KeyboardShortcutsHelper";
@@ -19,79 +12,69 @@ import {
   isTextTooLong
 } from "../../../helpers/limitTextLength";
 
-const enhance = compose(
-  pure,
-  withStateHandlers(
-    ({ cell, langtag }) => {
-      const oldValue = cell.value;
-      return {
-        oldValue,
-        value: cell.column.multilanguage
-          ? f.propOr("", ["value", langtag], cell)
-          : f.propOr("", "value", cell)
-      };
+const ShortTextView = props => {
+  const {
+    actions,
+    cell,
+    cell: { column },
+    langtag,
+    funcs,
+    thisUserCantEdit,
+    children
+  } = props;
+
+  const [oldValue, setOldValue] = useState(() => cell.value);
+  const [value, setValue] = useState(() =>
+    cell.column.multilanguage
+      ? f.propOr("", ["value", langtag], cell)
+      : f.propOr("", "value", cell)
+  );
+
+  const registerInput = useCallback(
+    node => {
+      funcs.register(node);
     },
-    {
-      registerInput: (state, { funcs }) => node => {
-        funcs.register(node);
-      },
-      handleChange: () => event => ({ value: event.target.value }),
-      saveChanges: ({ value, oldValue }, { actions, cell, langtag }) => () => {
-        const newValue = cell.column.multilanguage
-          ? { [langtag]: value }
-          : value;
+    [funcs]
+  );
 
-        const valueChanged = cell.column.multilanguage
-          ? !f.eq(newValue[langtag], oldValue[langtag])
-          : !f.eq(oldValue, newValue);
+  const handleChange = useCallback(event => setValue(event.target.value), []);
 
-        if (valueChanged) {
-          actions.changeCellValue({
-            cell,
-            oldValue,
-            newValue
-          });
-        }
+  const saveChanges = useCallback(() => {
+    const newValue = cell.column.multilanguage ? { [langtag]: value } : value;
 
-        return {
-          oldValue: cell.column.multilanguage
-            ? merge(oldValue, newValue)
-            : value
-        };
-      }
+    const valueChanged = cell.column.multilanguage
+      ? !f.eq(newValue[langtag], oldValue[langtag])
+      : !f.eq(oldValue, newValue);
+
+    if (valueChanged) {
+      actions.changeCellValue({
+        cell,
+        oldValue,
+        newValue
+      });
     }
-  ),
-  withHandlers({
-    getKeyboardShortcuts: ({ saveChanges }) => () => {
-      const captureEventAnd = fn => event => {
-        event.stopPropagation();
-        event.preventDefault();
-        (fn || function() {})(event);
-      };
 
-      return {
-        escape: captureEventAnd(saveChanges),
-        enter: captureEventAnd(saveChanges)
-      };
-    }
-  }),
-  lifecycle({
-    componentWillUnmount() {
-      this.props.saveChanges();
-    }
-  })
-);
+    setOldValue(cell.column.multilanguage ? merge(oldValue, newValue) : value);
+  }, [actions, cell, langtag, oldValue, value]);
 
-const ShortTextView = ({
-  value,
-  registerInput,
-  handleChange,
-  thisUserCantEdit,
-  children,
-  getKeyboardShortcuts,
-  saveChanges,
-  cell: { column }
-}) => {
+  // keep the unmount handler on the latest state without re-running the effect
+  const saveChangesRef = useRef(saveChanges);
+  saveChangesRef.current = saveChanges;
+  useEffect(() => () => saveChangesRef.current(), []);
+
+  const getKeyboardShortcuts = useCallback(() => {
+    const captureEventAnd = fn => event => {
+      event.stopPropagation();
+      event.preventDefault();
+      (fn || function() {})(event);
+    };
+
+    return {
+      escape: captureEventAnd(saveChanges),
+      enter: captureEventAnd(saveChanges)
+    };
+  }, [saveChanges]);
+
   const { minLength, maxLength } = column;
   const minLengthText = columnHasMinLength(column)
     ? i18n.t("table:text-length:min-length-full", { minLength })
@@ -143,7 +126,7 @@ const ShortTextView = ({
   );
 };
 
-export default enhance(ShortTextView);
+export default React.memo(ShortTextView);
 
 ShortTextView.propTypes = {
   cell: PropTypes.object.isRequired,

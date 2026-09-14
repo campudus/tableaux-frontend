@@ -1,6 +1,5 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { getMultiLangValue } from "../../../helpers/multiLanguage";
-import { compose, pure, withHandlers } from "recompose";
 import classNames from "classnames";
 import f from "lodash/fp";
 import Header from "./HeaderFragments";
@@ -10,17 +9,11 @@ import { doto } from "../../../helpers/functools";
 import { mkAnnotationFilterTemplates } from "../../header/filter/helpers";
 import { match, otherwise, when } from "match-iz";
 
-const TableEntry = compose(
-  pure,
-  withHandlers({
-    onMouseEnter: ({ handleMouseEnter, index }) => () => {
-      handleMouseEnter(index);
-    }
-  })
-)(
+const TableEntry = React.memo(
   ({
     active,
-    onMouseEnter,
+    handleMouseEnter,
+    index,
     langtag,
     selectedLang,
     table = {},
@@ -28,6 +21,10 @@ const TableEntry = compose(
     selected,
     flag
   }) => {
+    const onMouseEnter = useCallback(() => {
+      handleMouseEnter(index);
+    }, [handleMouseEnter, index]);
+
     const latest = f.get(["annotationCount", "latest"], table);
     const cellUrl =
       flag === "comments" && f.isObject(latest)

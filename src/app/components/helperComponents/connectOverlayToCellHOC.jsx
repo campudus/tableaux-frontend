@@ -1,8 +1,8 @@
-import { withProps } from "recompose";
+import React from "react";
 import { idsToIndices } from "../../redux/redux-helpers";
 import f from "lodash/fp";
 
-export const connectOverlayToCellValue = withProps(props => {
+const getCellValueProps = props => {
   const { cell, grudData } = props;
   try {
     const { rows, columns } = grudData;
@@ -24,4 +24,8 @@ export const connectOverlayToCellValue = withProps(props => {
     console.error("Error connecting element:", err);
     return {};
   }
-});
+};
+
+export const connectOverlayToCellValue = Component => props => (
+  <Component {...props} {...getCellValueProps(props)} />
+);

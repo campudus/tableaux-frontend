@@ -3,15 +3,6 @@ import f from "lodash/fp";
 import React, { useCallback } from "react";
 import { useSelector } from "react-redux";
 import { AutoSizer, List } from "react-virtualized";
-import {
-  branch,
-  compose,
-  pure,
-  renderComponent,
-  renderNothing,
-  withHandlers,
-  withProps
-} from "recompose";
 import { canUserCreateRow } from "../../../helpers/accessManagementHelper";
 import { retrieveTranslation } from "../../../helpers/multiLanguage";
 import Spinner from "../../header/Spinner";
@@ -31,15 +22,18 @@ const NoLinkedRows = ({ linkEmptyLines }) => (
   </div>
 );
 
-export const LinkedRows = compose(
-  branch(
-    ({ loading, entries }) => !loading && f.isEmpty(entries),
-    renderComponent(NoLinkedRows)
-  ),
-  withHandlers({
-    renderListItem: ({ renderListItem }) => renderListItem({ isLinked: true })
-  })
-)(DragSortList);
+export const LinkedRows = props => {
+  const { loading, entries, renderListItem } = props;
+
+  return !loading && f.isEmpty(entries) ? (
+    <NoLinkedRows {...props} />
+  ) : (
+    <DragSortList
+      {...props}
+      renderListItem={renderListItem({ isLinked: true })}
+    />
+  );
+};
 
 // ---------------------------------------------------------------------------------------
 // "Unlinked items" section
@@ -76,21 +70,23 @@ const UnlinkedRowsFrag = ({
   </div>
 );
 
-const UnlinkedRowsOrSpinner = compose(
-  branch(
-    f.get("loading"),
-    renderComponent(withProps({ isLoading: true })(Spinner))
-  ),
-  withHandlers({
-    rowRenderer: ({ renderRows }) => renderRows({ isLinked: false }),
-    onMouseEnter: ({ setActiveBox, activeBox }) => setActiveBox(activeBox)
-  })
-)(UnlinkedRowsFrag);
+export const UnlinkedRows = props => {
+  const { loading, noForeignRows, renderRows, setActiveBox, activeBox } = props;
 
-export const UnlinkedRows = branch(
-  ({ loading, noForeignRows }) => !loading && noForeignRows,
-  renderNothing
-)(UnlinkedRowsOrSpinner);
+  if (!loading && noForeignRows) {
+    return null;
+  }
+
+  return loading ? (
+    <Spinner {...props} isLoading={true} />
+  ) : (
+    <UnlinkedRowsFrag
+      {...props}
+      rowRenderer={renderRows({ isLinked: false })}
+      onMouseEnter={setActiveBox(activeBox)}
+    />
+  );
+};
 
 // ---------------------------------------------------------------------------------------
 // Link count
@@ -108,10 +104,8 @@ const LinkStatusCountFrag = ({ rowResults, maxLinks }) => {
   );
 };
 
-export const LinkStatus = branch(
-  ({ maxLinks }) => !isFinite(maxLinks),
-  renderNothing
-)(LinkStatusCountFrag);
+export const LinkStatus = props =>
+  isFinite(props.maxLinks) ? <LinkStatusCountFrag {...props} /> : null;
 
 // ---------------------------------------------------------------------------------------
 // Link count
@@ -160,14 +154,13 @@ export const RowCreator = props => {
   ) : null;
 };
 
-export const SwitchSortingButton = compose(
-  pure,
-  withHandlers({
-    switchSortMode: ({ setSortOrder, sortOrder, sortIcons }) => () =>
-      setSortOrder((sortOrder + 1) % sortIcons.length)
-  })
-)(props => {
-  const { switchSortMode, sortIcons, sortOrder } = props;
+export const SwitchSortingButton = React.memo(props => {
+  const { setSortOrder, sortOrder, sortIcons } = props;
+  const switchSortMode = useCallback(
+    () => setSortOrder((sortOrder + 1) % sortIcons.length),
+    [setSortOrder, sortOrder, sortIcons.length]
+  );
+
   return (
     <button className="sort-mode-button" onClick={switchSortMode}>
       <i className={sortIcons[sortOrder]} />

@@ -3,7 +3,6 @@ import PropTypes from "prop-types";
 import React from "react";
 import { translate } from "react-i18next";
 import withClickOutside from "react-onclickoutside";
-import { compose } from "recompose";
 import pasteCellValue from "../../components/cells/cellCopyHelper";
 import { ColumnKinds, config } from "../../constants/TableauxConstants";
 import {
@@ -382,4 +381,4 @@ RowContextMenu.propTypes = {
   openAnnotations: PropTypes.func.isRequired
 };
 
-export default compose(translate(["table"]), withClickOutside)(RowContextMenu);
+export default translate(["table"])(withClickOutside(RowContextMenu));

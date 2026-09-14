@@ -3,7 +3,6 @@ import * as f from "lodash/fp";
 import i18n from "i18next";
 
 import PropTypes from "prop-types";
-import { compose, lifecycle } from "recompose";
 
 import { withForeignDisplayValues } from "../../helperComponents/withForeignDisplayValues";
 import LinkLabelCell from "./LinkLabelCell.jsx";
@@ -116,27 +115,26 @@ LinkCell.propTypes = {
   value: PropTypes.array.isRequired,
   setCellKeyboardShortcuts: PropTypes.func
 };
-export default compose(
-  withForeignDisplayValues,
-  lifecycle({
-    shouldComponentUpdate(nextProps) {
-      const cell = this.props.cell;
-      const nextCell = nextProps.cell;
-      const getRelevantCellProps = f.pick(["value", "annotations"]);
+// React.memo skips the render when the comparator returns true, so this is the
+// negation of the former `shouldComponentUpdate`
+const arePropsEqual = (props, nextProps) => {
+  const cell = props.cell;
+  const nextCell = nextProps.cell;
+  const getRelevantCellProps = f.pick(["value", "annotations"]);
 
-      return (
-        this.props.langtag !== nextProps.langtag ||
-        cell.id !== nextCell.id ||
-        this.props.selected !== nextProps.selected ||
-        this.props.inSelectedRow !== nextProps.inSelectedRow ||
-        this.props.editing !== nextProps.editing ||
-        this.props.annotationsOpen !== nextProps.annotationsOpen ||
-        this.props.foreignDisplayValues !== nextProps.foreignDisplayValues ||
-        !f.isEqual(
-          getRelevantCellProps(this.props.cell),
-          getRelevantCellProps(nextProps.cell)
-        )
-      );
-    }
-  })
-)(LinkCell);
+  return !(
+    props.langtag !== nextProps.langtag ||
+    cell.id !== nextCell.id ||
+    props.selected !== nextProps.selected ||
+    props.inSelectedRow !== nextProps.inSelectedRow ||
+    props.editing !== nextProps.editing ||
+    props.annotationsOpen !== nextProps.annotationsOpen ||
+    props.foreignDisplayValues !== nextProps.foreignDisplayValues ||
+    !f.isEqual(
+      getRelevantCellProps(props.cell),
+      getRelevantCellProps(nextProps.cell)
+    )
+  );
+};
+
+export default withForeignDisplayValues(React.memo(LinkCell, arePropsEqual));

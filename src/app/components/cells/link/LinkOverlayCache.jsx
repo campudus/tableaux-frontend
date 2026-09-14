@@ -1,6 +1,5 @@
 import f from "lodash/fp";
 import React, { useMemo } from "react";
-import { compose, withHandlers } from "recompose";
 import { FilterModes } from "../../../constants/TableauxConstants";
 import { makeRequest } from "../../../helpers/apiHelper";
 import route from "../../../helpers/apiRoutes";
@@ -149,15 +148,35 @@ const withCachedLinks = Component => props => {
   );
 };
 
-export default compose(
-  withHandlers({
-    setFilterValue: ({ id, actions, filterMode }) => filterValue =>
-      actions.setOverlayState({ id, filterValue, filterMode }),
-    setFilterMode: ({ id, actions, filterValue }) => filterMode =>
-      actions.setOverlayState({ id, filterValue, filterMode }),
-    setUnlinkedOrder: ({ id, actions }) => unlinkedOrder =>
-      actions.setOverlayState({ id, unlinkedOrder })
-  }),
-  connectOverlayToCellValue,
-  withCachedLinks
-);
+const withOverlayStateHandlers = Component => props => {
+  const { id, actions, filterMode, filterValue } = props;
+
+  const setFilterValue = React.useCallback(
+    newFilterValue =>
+      actions.setOverlayState({ id, filterValue: newFilterValue, filterMode }),
+    [actions, id, filterMode]
+  );
+  const setFilterMode = React.useCallback(
+    newFilterMode =>
+      actions.setOverlayState({ id, filterValue, filterMode: newFilterMode }),
+    [actions, id, filterValue]
+  );
+  const setUnlinkedOrder = React.useCallback(
+    unlinkedOrder => actions.setOverlayState({ id, unlinkedOrder }),
+    [actions, id]
+  );
+
+  return (
+    <Component
+      {...props}
+      setFilterValue={setFilterValue}
+      setFilterMode={setFilterMode}
+      setUnlinkedOrder={setUnlinkedOrder}
+    />
+  );
+};
+
+export default Component =>
+  withOverlayStateHandlers(
+    connectOverlayToCellValue(withCachedLinks(Component))
+  );

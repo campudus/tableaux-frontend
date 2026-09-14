@@ -100,7 +100,9 @@ const NumberInput = (props, ref) => {
 
   return (
     <NumberFormat
-      ref={inputRef}
+      getInputRef={el => {
+        inputRef.current = el;
+      }}
       thousandSeparator={localize && separator ? thousandSeparator : false}
       decimalSeparator={decimalSeparator}
       value={value}

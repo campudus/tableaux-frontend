@@ -1,73 +1,72 @@
-import React from "react";
+import React, { useCallback } from "react";
 import f from "lodash/fp";
-import {
-  branch,
-  compose,
-  pure,
-  renderComponent,
-  withHandlers
-} from "recompose";
 import { LoadingSpinner } from "../../header/Spinner";
 import { AutoSizer, List } from "react-virtualized";
 
 export const ROW_HEIGHT = 40;
 
-const enhance = compose(
-  pure,
-  branch(
-    props => f.isNil(props.requestedData),
-    renderComponent(LoadingSpinner)
-  ),
+const CompletionItem = React.memo(
+  ({
+    value,
+    index,
+    isSelected,
+    virtualizedStyle,
+    handleSelection,
+    handleClick
+  }) => {
+    const onSelect = useCallback(() => {
+      handleSelection(index);
+    }, [handleSelection, index]);
 
-  withHandlers({
-    renderEntry: ({ completions, selected, handleClick, handleSelection }) => ({
-      index,
-      style,
-      key
-    }) => {
-      const completion = f.get(index, completions);
-      const isSelected = index === selected;
-      // Need to set unused style here to suppress react-virtualized warnings
-      return (
-        <CompletionItem
-          style={style}
-          key={key}
-          value={completion}
-          index={index}
-          isSelected={isSelected}
-          handleClick={handleClick}
-          virtualizedStyle={style}
-          handleSelection={handleSelection}
-        />
-      );
-    }
-  })
+    return (
+      <div
+        className="completion-item-wrapper"
+        style={virtualizedStyle}
+        onMouseEnter={onSelect}
+      >
+        <button
+          className={`completion-item ${isSelected ? "selected" : ""}`}
+          draggable={false}
+          onMouseDownCapture={handleClick}
+        >
+          <div className="completion-item-label">{value}</div>
+        </button>
+      </div>
+    );
+  }
 );
 
-const CompletionItem = compose(
-  pure,
-  withHandlers({
-    handleSelection: ({ handleSelection, index }) => () => {
-      handleSelection(index);
-    }
-  })
-)(({ value, isSelected, virtualizedStyle, handleSelection, handleClick }) => (
-  <div
-    className="completion-item-wrapper"
-    style={virtualizedStyle}
-    onMouseEnter={handleSelection}
-  >
-    <button
-      className={`completion-item ${isSelected ? "selected" : ""}`}
-      draggable={false}
-      onMouseDownCapture={handleClick}
-    >
-      <div className="completion-item-label">{value}</div>
-    </button>
-  </div>
-));
+const SelectableCompletionList = props => {
+  const {
+    completions,
+    selected,
+    handleClick,
+    handleSelection,
+    requestedData
+  } = props;
 
-const SelectableCompletionList = ({ completions, renderEntry, selected }) => {
+  const renderEntry = ({ index, style, key }) => {
+    const completion = f.get(index, completions);
+    const isSelected = index === selected;
+    // Need to set unused style here to suppress react-virtualized warnings
+    return (
+      <CompletionItem
+        style={style}
+        key={key}
+        value={completion}
+        index={index}
+        isSelected={isSelected}
+        handleClick={handleClick}
+        virtualizedStyle={style}
+        handleSelection={handleSelection}
+      />
+    );
+  };
+
+  if (f.isNil(requestedData)) {
+    return <LoadingSpinner {...props} />;
+  }
+
   return (
     <AutoSizer>
       {({ width, height }) => (
@@ -85,4 +84,4 @@ const SelectableCompletionList = ({ completions, renderEntry, selected }) => {
   );
 };
 
-export default compose(enhance)(SelectableCompletionList);
+export default React.memo(SelectableCompletionList);

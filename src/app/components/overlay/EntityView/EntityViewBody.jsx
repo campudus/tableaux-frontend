@@ -1,5 +1,4 @@
-import { withPropsOnChange } from "recompose";
-import React, { Component } from "react";
+import React, { Component, useMemo } from "react";
 import * as f from "lodash/fp";
 import i18n from "i18next";
 
@@ -429,7 +428,7 @@ class EntityViewBody extends Component {
 
 // Re-construct relevant data from previous Ampersand cell model so
 // downstream functions and components need no changes
-export default withPropsOnChange(["grudData"], ({ grudData, table, row }) => {
+const mkCellProps = ({ grudData, table, row }) => {
   const findDisplayValue = f.memoize(tableId => {
     const tableDv = f.prop(["displayValues", tableId], grudData);
     return f.memoize(rowId => {
@@ -491,7 +490,19 @@ export default withPropsOnChange(["grudData"], ({ grudData, table, row }) => {
     .filter(isNotHidden);
 
   return { cells, row: filteredRowData };
-})(EntityViewBody);
+};
+
+const EntityViewBodyContainer = props => {
+  const { grudData, table, row } = props;
+  // only `grudData` is watched, as with the former withPropsOnChange
+  const cellProps = useMemo(() => mkCellProps({ grudData, table, row }), [
+    grudData
+  ]);
+
+  return <EntityViewBody {...props} {...cellProps} />;
+};
+
+export default EntityViewBodyContainer;
 
 EntityViewBody.propTypes = {
   langtag: PropTypes.string.isRequired,
