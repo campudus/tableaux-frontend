@@ -27,6 +27,7 @@ $overlay-border-radius: 5px;
         transition: transform 0.5s;
         transform: translateX(-20vw);
       }
+
       &.is-right {
         &:not(.is-left) {
           transition: transform 0.4s;
@@ -53,6 +54,7 @@ $overlay-border-radius: 5px;
     from {
       transform: translateX(80vw);
     }
+
     to {
       transform: translateX(20vw);
     }
@@ -62,7 +64,8 @@ $overlay-border-radius: 5px;
 //--------------------------------------------------------------------------------
 // Animation fix for IE
 //--------------------------------------------------------------------------------
-@media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
+@media all and (-ms-high-contrast: none),
+(-ms-high-contrast: active) {
   .overlay {
     .overlay-wrapper {
       &.full-height {
@@ -73,6 +76,7 @@ $overlay-border-radius: 5px;
           transform: none;
           left: 0vw; // redundant unit is required here
         }
+
         &.is-right {
           &:not(.is-left) {
             transition: left 0.4s;
@@ -99,6 +103,7 @@ $overlay-border-radius: 5px;
   from {
     left: 100vw;
   }
+
   to {
     left: 40vw;
   }
@@ -109,6 +114,7 @@ $overlay-border-radius: 5px;
 //--------------------------------------------------------------------------------
 
 $dist-from-top: 20px;
+
 .overlay {
   &.open {
     display: block;
@@ -135,6 +141,7 @@ $dist-from-top: 20px;
   &.active {
     background-color: transparentize($color-text-medium-grey, 0.3);
   }
+
   .overlay-wrapper {
     position: relative;
     max-width: 70vw;
@@ -147,6 +154,7 @@ $dist-from-top: 20px;
     flex-flow: column nowrap;
 
     background-color: $color-overlay-background;
+
     .header-wrapper {
       $vspacing: 50px;
       height: $overlay-headline-height;
@@ -169,6 +177,7 @@ $dist-from-top: 20px;
         .svg-icon {
           width: 1em;
         }
+
         &:hover svg {
           fill: $color-text-medium-grey;
         }
@@ -188,13 +197,16 @@ $dist-from-top: 20px;
         overflow: hidden;
         max-height: 55px;
         max-width: 100%;
+
         .context-info {
           color: $color-text-medium-grey;
           font-size: 14px;
         }
-        & > div {
+
+        &>div {
           max-width: calc(100% - 60px); // 100% minus 60px for history-buttons
         }
+
         .title {
           color: $color-primary-contrast-text;
           font-size: 20px;
@@ -250,7 +262,8 @@ $dist-from-top: 20px;
     overflow-y: auto;
     flex: 1;
 
-    @media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
+    @media all and (-ms-high-contrast: none),
+    (-ms-high-contrast: active) {
       flex: 1 1 auto;
     }
 
@@ -306,6 +319,7 @@ $dist-from-top: 20px;
         .min-length {
           flex: 1;
         }
+
         .max-length {
           flex: 1;
           text-align: right;
@@ -334,6 +348,7 @@ $dist-from-top: 20px;
           display: flex;
           flex-direction: row;
           align-items: center;
+
           i {
             margin-right: 10px;
           }
@@ -341,6 +356,11 @@ $dist-from-top: 20px;
 
         .item-content {
           border-color: inherit;
+
+          .group {
+            display: flex;
+            align-items: center;
+          }
 
           .empty-item {
             margin: 5px;
@@ -407,6 +427,7 @@ $dist-from-top: 20px;
             margin-bottom: 15px;
           }
         }
+
         .message {
           font-size: small;
           color: $color-text-medium-grey;
@@ -432,20 +453,46 @@ $dist-from-top: 20px;
     }
 
     .checkbox {
-      background-color: $color-background-very-light-grey;
-      border: 2px solid $color-text-light-grey;
-      border-radius: 3px;
-      width: 23px;
-      height: 22px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      &[type="checkbox"] {
+        display: block;
+        line-height: 15px;
+        height: 15px;
+        width: 15px;
+        margin: 0;
+        appearance: none;
+        -webkit-appearance: none;
+        border: 1.5px solid $color-text-medium-grey;
+        border-radius: 2px;
+        background-color: transparent;
+        cursor: pointer;
+        position: relative;
+        /* For pseudo-element positioning */
+      }
+
+      &[type="checkbox"]:checked {
+        border: 0;
+        background-color: $color-primary;
+      }
+
+      &[type="checkbox"]:checked::after {
+        content: "";
+        position: absolute;
+        left: 5px;
+        top: 1px;
+        width: 3px;
+        height: 9px;
+        border-width: 0 2px 2px 0;
+        border-color: #FFFFFF;
+        border-style: solid;
+        transform: rotate(45deg);
+      }
     }
 
-    & > :first-child {
+    &> :first-child {
       margin-top: 20px;
     }
-    & > :last-child {
+
+    &> :last-child {
       margin-bottom: 20px;
     }
   }
@@ -472,21 +519,23 @@ $dist-from-top: 20px;
       }
     }
   }
+
   .sortable {
     @import "./linkList.scss";
   }
 
   .link-list {
     max-height: 430px;
-    & > .can-expand {
+
+    &>.can-expand {
       .link-label-wrapper-2:last-of-type {
+
         .main-button,
         .unlink-button {
-          background: linear-gradient(
-            $color-primary-contrast-text,
-            transparent
-          );
+          background: linear-gradient($color-primary-contrast-text,
+              transparent);
           color: $color-text-light-grey;
+
           &:hover {
             background: linear-gradient($color-hover-background, transparent);
           }
@@ -502,6 +551,7 @@ $dist-from-top: 20px;
     .link-label-wrapper-2 {
       position: relative;
       height: 42px;
+
       .link-label-wrapper {
         width: 100%;
         background-color: $color-primary-contrast-text;
@@ -525,6 +575,7 @@ $dist-from-top: 20px;
 
         .link-label {
           display: block;
+
           i {
             float: right;
           }
@@ -537,7 +588,7 @@ $dist-from-top: 20px;
           justify-content: space-between;
           align-items: center;
 
-          & > div {
+          &>div {
             background-color: $color-white;
             display: flex;
             align-items: center;
@@ -584,6 +635,7 @@ $dist-from-top: 20px;
       text-align: center;
       text-transform: uppercase;
       color: $color-primary;
+
       i {
         margin-right: 5px;
       }
@@ -595,15 +647,19 @@ $dist-from-top: 20px;
   .item {
     display: flex;
     justify-content: space-between;
+
     .country-icon {
       flex: 3;
+
       .langtag-label {
         font-weight: 500;
         margin-left: 5px;
       }
     }
+
     .old {
       flex: 10;
+
       .text {
         text-decoration: line-through;
       }
@@ -623,11 +679,13 @@ $dist-from-top: 20px;
 .overlay .content-items.richtext-cell-editor {
   height: 100%;
   margin: 0;
+
   .item,
   .item-content,
   textarea {
     height: 100%;
   }
+
   textarea {
     resize: none;
   }
@@ -656,9 +714,11 @@ $dist-from-top: 20px;
       font-weight: 500;
       color: $color-text-medium-grey;
     }
+
     .title {
       font-size: medium;
       color: $color-primary-contrast-text;
+
       i {
         margin-right: 5px;
       }
