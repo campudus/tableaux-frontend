@@ -5,6 +5,7 @@ import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import DependentRowsList from "../../components/rows/DependentRowsList";
 import { buildClassName } from "../../helpers/buildClassName";
+import { stripFormattingTags } from "../helperComponents/FormattedLabel";
 import { retrieveTranslation } from "../../helpers/multiLanguage";
 import OverlayHeadRowIdentificator from "./OverlayHeadRowIdentificator";
 import actions from "../../redux/actionCreators";
@@ -196,6 +197,7 @@ const lookupRowDisplayName = (store, tableId, langtag) => rowId => {
     f.map(retrieveTranslation(langtag))
   );
   const go = f.compose(
+    stripFormattingTags,
     dv =>
       Array.isArray(dv)
         ? flattenTranslation(dv)
