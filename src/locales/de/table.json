@@ -187,6 +187,10 @@
   "row-is-locked": "Datensatz ist schreibgeschützt",
   "unlock-row": "Entsperren",
   "clear-date": "Kein Datum / Zeit",
+  "link-attributes": {
+    "multilanguage-unsupported": "Mehrsprachig (noch nicht unterstützt)",
+    "save-error": "Der Attributwert konnte nicht gespeichert werden."
+  },
   "entity-view-search-placeholder": "Suche nach Spaltenname oder Inhalt",
   "cant-add-row": "Es existiert schon eine leere Zeile",
   "no-column-search-result": "Keine Spalte mit diesem Namen vorhanden",

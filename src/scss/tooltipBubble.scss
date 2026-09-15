@@ -3,6 +3,9 @@ $bubble-background: transparentize(black, 0.3);
 .message-bubble {
   position: absolute;
   background-color: $bubble-background;
+  // Stated rather than inherited: the bubble renders inside the element it
+  // describes, and a dark host's text color is unreadable on this background.
+  color: $color-primary-contrast-text;
   padding: 10px;
   min-width: 160px;
   max-width: 300px;

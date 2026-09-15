@@ -31,7 +31,17 @@ const calcLinkDiff = revision => {
   const { fullValue = [], prevContent = [], currentDisplayValues } = revision;
   const added = f.differenceBy("id", fullValue, prevContent);
   const removed = f.differenceBy("id", prevContent, fullValue);
-  const unchanged = f.intersectionBy("id", fullValue, prevContent);
+  const stillLinked = f.intersectionBy("id", fullValue, prevContent);
+
+  // An attribute change leaves both ids untouched, so comparing by id alone
+  // would file it as unchanged and render it as if nothing happened.
+  const previousById = f.keyBy("id", prevContent);
+  const attributesChanged = link =>
+    !f.isEqual(
+      f.get("attributes", previousById[link.id]),
+      f.get("attributes", link)
+    );
+  const [reattributed, unchanged] = f.partition(attributesChanged, stillLinked);
 
   return [
     ...removed.map(link => ({
@@ -44,6 +54,13 @@ const calcLinkDiff = revision => {
       value: link,
       currentDisplayValues
     })),
+    ...f.flatMap(
+      link => [
+        { del: true, value: previousById[link.id], currentDisplayValues },
+        { add: true, value: link, currentDisplayValues }
+      ],
+      reattributed
+    ),
     ...unchanged.map(link => ({
       value: link,
       currentDisplayValues

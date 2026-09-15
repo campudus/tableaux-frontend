@@ -1,9 +1,9 @@
 import { connect } from "react-redux";
-import React from "react";
 import f from "lodash/fp";
 
 import { ColumnKinds } from "../../constants/TableauxConstants";
 import { doto, memoizeWith } from "../../helpers/functools";
+import { applyLinkAttributeFormat } from "../../helpers/getDisplayValue";
 import { retrieveTranslation } from "../../helpers/multiLanguage";
 import * as t from "../taxonomy/taxonomy";
 
@@ -29,7 +29,15 @@ const flattenAndTranslate = f.curryN(2, (langtag, value = []) => {
   return f.map(retrieveTranslation(langtag), value).join(" ");
 });
 
-const getLinkDisplayValues = ({ value, column: { toTable } }) => state => {
+// Exported for the tests -- there is no component-render setup in this project
+// to reach it through connect().
+export const getLinkDisplayValues = ({
+  value,
+  column,
+  table,
+  row
+}) => state => {
+  const { toTable } = column;
   const tableDisplayValues = getDisplayValuesForTable(toTable)(state);
   const tableDisplayValuesMap = f.keyBy("id", tableDisplayValues);
   const linkTable = state.tables.data[toTable];
@@ -53,10 +61,33 @@ const getLinkDisplayValues = ({ value, column: { toTable } }) => state => {
     };
   }
 
-  const foreignDisplayValues = f.map(
-    id => f.prop([id, "values", 0], tableDisplayValuesMap),
-    linkRowIds
-  );
+  // Preferred source: this cell's own display value, which already holds the
+  // composed labels. `table`/`row` are absent when called from
+  // getConcatDisplayValues -- fall through to the shared lookup then.
+  const linkDisplayValues =
+    table && row
+      ? doto(
+          state,
+          getDisplayValuesForTable(table.id),
+          getRow(row.id),
+          f.prop(["values", getColumnIdx(table.id, column.id, state)])
+        )
+      : null;
+
+  if (!f.isEmpty(linkDisplayValues)) {
+    return { foreignDisplayValues: linkDisplayValues };
+  }
+
+  // Fallback: the shared identifiers, so the label is composed here. This is
+  // also the path a link nested in a concat takes, which has no per-link slot
+  // of its own to read from.
+  const foreignDisplayValues = f.map(link => {
+    const identifier = f.prop([link.id, "values", 0], tableDisplayValuesMap);
+
+    return f.isEmpty(identifier)
+      ? identifier
+      : applyLinkAttributeFormat(column, link, identifier);
+  }, value);
 
   return {
     foreignDisplayValues: f.isEmpty(foreignDisplayValues)
@@ -65,7 +96,7 @@ const getLinkDisplayValues = ({ value, column: { toTable } }) => state => {
   };
 };
 
-const getConcatDisplayValues = (
+export const getConcatDisplayValues = (
   { value, column: { concats }, table, row },
   langtag
 ) => state => {
@@ -100,18 +131,23 @@ const getConcatDisplayValues = (
   return { foreignDisplayValues: partialValues.join(" ") };
 };
 
-// HOC ({ column, tableId }) -> (Component) -> Component
-export const withForeignDisplayValues = Component => props => {
+const mapStateToProps = (state, props) => {
   const { cell, langtag } = props;
   if (f.any(f.isEmpty, f.props(["column", "table", "row"], cell))) {
-    return <Component {...props} />;
+    return {};
   }
 
-  const mapStateToProps = isConcatColumn(cell.column)
-    ? getConcatDisplayValues(cell, langtag)
+  return isConcatColumn(cell.column)
+    ? getConcatDisplayValues(cell, langtag)(state)
     : isLinkColumn(cell.column)
-    ? getLinkDisplayValues(cell, langtag)
-    : () => ({ foreignDisplayValues: cell.displayValue });
-  const ConnectedComponent = connect(mapStateToProps)(Component);
-  return <ConnectedComponent {...props} />;
+    ? getLinkDisplayValues(cell, langtag)(state)
+    : { foreignDisplayValues: cell.displayValue };
 };
+
+// HOC ({ column, tableId }) -> (Component) -> Component
+//
+// connect() has to be applied once, at composition time: doing it inside render
+// hands React a new component type every render, unmounting the whole subtree
+// and discarding any state below it.
+export const withForeignDisplayValues = Component =>
+  connect(mapStateToProps)(Component);

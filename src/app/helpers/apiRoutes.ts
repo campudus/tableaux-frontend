@@ -94,6 +94,14 @@ export const toFrontendServiceView = (
 export const toCellHistory = ({ tableId, rowId, columnId }: TableParams) =>
   toCell({ tableId, rowId, columnId }) + "/history";
 
+export const toLinkAttributes = ({
+  tableId,
+  columnId,
+  rowId,
+  linkId
+}: TableParams & { linkId: string | number }) =>
+  toCell({ tableId, rowId, columnId }) + "/link/" + linkId + "/attributes";
+
 export const toAnnotationConfigs = () => "/system/annotations";
 
 export function toUserSettings<Kind extends UserSettingKind>(
@@ -126,6 +134,7 @@ const API_ROUTES = {
   toServiceRegistry,
   toFrontendServiceView,
   toCellHistory,
+  toLinkAttributes,
   toAnnotationConfigs,
   toUserSettings
 };

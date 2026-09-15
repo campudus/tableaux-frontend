@@ -1,51 +1,71 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`Redux helpers > geGroupColumn() > identifies group member's group column correctly 1`] = `
+exports[`Redux helpers > getGroupColumnIds() > identifies group member's group columns correctly 1`] = `
 [
-  null,
-  null,
-  null,
-  null,
-  31,
-  31,
-  null,
-  null,
-  null,
-  null,
-  null,
-  null,
-  null,
-  null,
-  null,
-  25,
-  25,
-  25,
-  null,
-  null,
-  null,
-  null,
-  null,
-  null,
-  null,
-  null,
-  null,
-  null,
-  null,
-  null,
-  null,
-  null,
-  null,
-  null,
+  [],
+  [],
+  [],
+  [],
+  [
+    31,
+  ],
+  [
+    31,
+  ],
+  [],
+  [],
+  [],
+  [],
+  [],
+  [],
+  [],
+  [],
+  [],
+  [
+    25,
+  ],
+  [
+    25,
+  ],
+  [
+    25,
+  ],
+  [],
+  [],
+  [],
+  [],
+  [],
+  [],
+  [],
+  [],
+  [],
+  [],
+  [],
+  [],
+  [],
+  [],
+  [],
+  [],
 ]
 `;
 
-exports[`Redux helpers > getLookupMap() > creates correct lookup maps 1`] = `
+exports[`Redux helpers > getGroupLookup() > creates correct lookup maps 1`] = `
 {
-  "10": "25",
-  "2": "31",
-  "30": "31",
-  "8": "25",
-  "9": "25",
+  "10": [
+    25,
+  ],
+  "2": [
+    31,
+  ],
+  "30": [
+    31,
+  ],
+  "8": [
+    25,
+  ],
+  "9": [
+    25,
+  ],
 }
 `;
 

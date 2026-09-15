@@ -2,6 +2,14 @@
 
 Tableaux (pronounced /ta.blo/) is a restful service for storing data in tables. This project contains a generic React-based HTML5 client for the [tableaux backend](https://github.com/campudus/tableaux).
 
+## Documentation
+
+This file covers setup, configuration and operation. Everything else lives in [`docs/`](./docs):
+feature descriptions under [`docs/features/`](./docs/features), cross-cutting mechanics under
+[`docs/architecture/`](./docs/architecture), and decisions under [`docs/adr/`](./docs/adr).
+[`CONTEXT.md`](./CONTEXT.md) is the glossary; the terms shared with the backend are defined in
+the backend repository's own `CONTEXT.md`.
+
 ## Project setup
 
 Go to project directory and execute:

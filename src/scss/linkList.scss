@@ -176,6 +176,22 @@
       background-color: $color-primary;
       color: $color-primary-contrast-text;
     }
+
+    // Has to live next to `&.linked` above rather than in linkAttributes.scss:
+    // linkList.scss is imported into two contexts (.overlay .sortable and
+    // .overlay .link-overlay), which puts `.linked` at a specificity no
+    // top-level `.list-item .left.editable` rule can beat.
+    &.editable {
+      cursor: pointer;
+
+      // .attributes-open keeps the item marked as the popover's owner while
+      // the pointer sits on the popover instead of on the item.
+      &:hover,
+      &.attributes-open {
+        background-color: $color-primary-darker;
+      }
+    }
+
     &.archived {
       background: $color-archived-bg;
       color: $color-archived-fg;

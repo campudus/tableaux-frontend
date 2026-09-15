@@ -170,17 +170,23 @@ body {
     border-radius: 3px;
     color: $color-primary-contrast-text;
     @include link-diff-color($color-primary);
-    display: flex;
 
+    // A link renders as a filled chip, so it has to state its own text color:
+    // the bare .content-diff--added / --deleted rules further down are for the
+    // inline text diffs, carry the same specificity but come later, and would
+    // paint a deleted chip's label in exactly its own background color.
     &.content-diff--added {
       @include link-diff-color($color-revision-link-added);
+      color: $color-primary-text;
     }
 
     &.content-diff--deleted {
       @include link-diff-color($color-revision-deleted);
+      color: $color-primary-contrast-text;
     }
 
     .link-diff__icon {
+      display: inline-flex;
       margin-right: 5px;
       position: relative;
 

@@ -5,6 +5,7 @@ import LinkCellItem from "./LinkCellItem";
 import i18n from "i18next";
 import apiUrl from "../../../../helpers/apiUrl";
 import { getColumnDisplayName } from "../../../../helpers/multiLanguage";
+import { usesLinkAttributeFormat } from "../../../../helpers/linkAttributes";
 
 type LinkListCellProps = {
   langtag: string;
@@ -61,6 +62,10 @@ export default function LinkListCell({
 }: LinkListCellProps): ReactElement {
   const [showAll, setShowAll] = useState(false);
 
+  // A pattern describes the whole linked row, so entries render as one label
+  // each instead of the target's concat parts LinkValues would list.
+  const isFormatted = usesLinkAttributeFormat(linkColumn);
+
   const addIndexNumber = (index: number): string => {
     return index >= 10 ? index.toString() : `0${index}`;
   };
@@ -76,12 +81,28 @@ export default function LinkListCell({
         return (
           <div key={entry.id} className="link-list-cell__entry">
             {addIndexNumber(entryIndex + 1)}. &nbsp;
-            <LinkValues
-              langtag={langtag}
-              linkColumn={linkColumn}
-              values={entry.value}
-              entryId={entry.id}
-            />
+            {isFormatted ? (
+              <LinkCellItem
+                langtag={langtag}
+                column={linkColumn}
+                value={[entry]}
+                link={apiUrl({
+                  langtag,
+                  tableId: linkColumn.toTable,
+                  columnId: linkColumn.toColumn.id,
+                  rowId: entry.id
+                })}
+                path={[getColumnDisplayName(linkColumn, langtag)]}
+                isLast
+              />
+            ) : (
+              <LinkValues
+                langtag={langtag}
+                linkColumn={linkColumn}
+                values={entry.value}
+                entryId={entry.id}
+              />
+            )}
           </div>
         );
       })}

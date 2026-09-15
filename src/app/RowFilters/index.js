@@ -19,6 +19,8 @@ import {
   buildOriginColumnLookup,
   getConcatOrigin
 } from "../helpers/columnHelper";
+import { formatLinkLabel } from "../helpers/linkAttributes";
+import { stripFormattingTags } from "../components/helperComponents/FormattedLabel";
 
 export const Annotation = FilterAnnotation.Mode;
 export const Boolean = FilterBoolean.Mode;
@@ -183,8 +185,18 @@ const buildContext = (tableId, langtag, store) => {
     return f.get(`${displayValueIdx}.values.${colIdx}`, displayValues);
   };
 
-  const retrieveDisplayValue = name => row =>
-    f.get(langtag, getDisplayValueEntry(name, row));
+  // Only these take in a link member's display value and with it the emphasis
+  // markup. In plain text a typed "<em>" is the user's own content, and
+  // stripping it would break searching for it.
+  const mayEmbedLinkFormat = kind =>
+    kind === ColumnKinds.concat || kind === ColumnKinds.group;
+
+  const retrieveDisplayValue = name => row => {
+    const displayValue = f.get(langtag, getDisplayValueEntry(name, row));
+    return mayEmbedLinkFormat(columnKindLookup[name])
+      ? stripFormattingTags(displayValue)
+      : displayValue;
+  };
 
   const retrieveConcatValue = name => {
     // There will be only one, and that one is one of the first
@@ -195,20 +207,30 @@ const buildContext = (tableId, langtag, store) => {
       const column = getConcatOrigin(tableId, concatColumn, row.tableId);
       const value = f.get(`values.${idx}`, row);
       const dv = getDisplayValue(column, value);
-      return dv[langtag];
+      return stripFormattingTags(dv[langtag]);
     };
   };
 
+  // One value per link. The cache holds identifiers, so the label has to be
+  // composed here -- filtering against the cache would match text the cell
+  // never shows.
   const retrieveLinkDisplayValue = name => {
     const columnIdx = columnIdxLookup[name];
     const column = columns[columnIdx];
     return row => {
       const originColumn = getOriginColumn(column.id, row.tableId);
       const toTableId = originColumn?.toTable || column.toTable;
-      return row.values[columnIdx].map(value =>
-        f.prop(
-          [toTableId, value.id, "value", 0, langtag],
-          linkDisplayValueCache
+      return row.values[columnIdx].map(link =>
+        stripFormattingTags(
+          formatLinkLabel({
+            column: originColumn ?? column,
+            link,
+            displayValue: f.prop(
+              [toTableId, link.id, "value", 0, langtag],
+              linkDisplayValueCache
+            ),
+            langtag
+          })
         )
       );
     };

@@ -1,0 +1,119 @@
+@import "variables";
+
+// Rendered in a Portal, so this deliberately does not nest under
+// .link-overlay / .entity-view -- it has to escape their overflow:hidden.
+.link-attributes-popover {
+  background: $color-white;
+  min-width: 220px;
+  max-width: 320px;
+  z-index: 999999;
+  box-shadow: 0px 4px 20px 0px #00000026;
+  border-radius: 4px;
+  padding: 8px 12px;
+  box-sizing: border-box;
+
+  &__row {
+    padding: 8px 0;
+
+    & + & {
+      border-top: 1px solid #ececec;
+    }
+  }
+
+  // The label alone for a stacked input, label plus right-aligned toggle for a
+  // boolean one. The distance to whatever follows lives here rather than on the
+  // label, so a toggle next to it stays vertically centred.
+  &__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 6px;
+
+    // a boolean row ends with this line -- no input below it to space out
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  &__label {
+    display: block;
+    font-weight: bold;
+    color: $color-primary-text;
+  }
+
+  &__toggle {
+    flex: 0 0 auto;
+  }
+
+  &__description {
+    color: $color-text-medium-grey;
+    font-size: smaller;
+    margin-bottom: 4px;
+  }
+
+  &__input {
+    width: 100%;
+    box-sizing: border-box;
+    border: 1px solid $color-text-light-grey;
+    border-radius: 4px;
+    padding: 6px 8px;
+
+    &:disabled {
+      color: $color-text-medium-grey;
+      background: #f8f8f8;
+    }
+  }
+
+  &__date-picker {
+    display: flex;
+    align-items: center;
+    position: relative;
+  }
+
+  &__date-trigger {
+    flex: 1 1 auto;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    border: 1px solid $color-text-light-grey;
+    border-radius: 4px;
+    padding: 6px 8px;
+    background: $color-white;
+    color: $color-primary-text;
+    overflow: hidden;
+
+    i {
+      color: $color-primary;
+    }
+
+    span {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+
+  &__date-clear {
+    flex: 0 0 auto;
+    margin-left: 4px;
+    color: $color-text-medium-grey;
+
+    &:hover {
+      color: $color-primary-text;
+    }
+  }
+
+  &__date-calendar {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 1;
+
+    .rdt {
+      background: $color-white;
+      box-shadow: 0px 4px 20px 0px #00000026;
+      border-radius: 4px;
+    }
+  }
+}

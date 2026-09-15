@@ -30,7 +30,11 @@ export const buildLinkDisplayValueCache = (table, columns, rows) => {
     if (f.isNil(existingDV)) {
       acc[tableId] = acc[tableId] || {};
       acc[tableId][linkRowId] = {
-        value: getDisplayValue(column, values),
+        // Deliberately the TARGET column: one entry is shared by every link
+        // pointing at that row, so it must hold the row's identifier and never
+        // a link's label. See
+        // docs/adr/0001-attribute-free-link-display-value-cache.md.
+        value: [getDisplayValue(column.toColumn, values[0].value)],
         column,
         id: linkRowId
       };
