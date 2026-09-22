@@ -8,10 +8,6 @@
 
   outline-style: none;
 
-  .table-switcher-icon-chevron {
-    padding-left: 0.5em;
-  }
-
   .button {
     @include header-button-look();
 
@@ -24,6 +20,19 @@
       margin-right: 0;
       margin-left: -10px;
     }
+  }
+  .button-toggle-popup {
+    display: flex;
+    align-items: center;
+    padding-right: 0;
+  }
+  .separator-v {
+    height: 1em;
+    margin-left: 0.5em;
+    border-left: 1px solid $color-grey-dark;
+  }
+  .table-switcher-icon-chevron {
+    padding-left: 0.5em;
   }
 
   &.active {

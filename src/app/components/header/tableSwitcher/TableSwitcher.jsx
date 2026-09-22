@@ -102,7 +102,9 @@ class TableSwitcherButton extends React.PureComponent {
 
   render() {
     const open = this.state.isOpen;
-    const buttonClass = `button${open ? " ignore-react-onclickoutside" : ""}`;
+    const buttonClass = `button button-toggle-popup ${
+      open ? " ignore-react-onclickoutside" : ""
+    }`;
     const chevronClass = `table-switcher-icon-chevron fa fa-angle-${
       open ? "up" : "down"
     }`;
@@ -117,13 +119,8 @@ class TableSwitcherButton extends React.PureComponent {
           <button className={buttonClass} onClick={this.togglePopup}>
             <i className="fa fa-columns" />
             {tableDisplayName}
-          </button>
-          <button
-            className={buttonClass + " button-chevron"}
-            onClick={this.togglePopup}
-          >
-            {" "}
-            <i className={chevronClass} />{" "}
+            <div className="separator-v" />
+            <i className={chevronClass} />
           </button>
 
           {open ? this.renderPopup() : null}
