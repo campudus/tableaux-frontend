@@ -18,6 +18,7 @@
     .filter-popup-button {
       @include header-button-active();
       background-color: $color-primary;
+      border-color: $color-primary;
       color: $color-primary-contrast-text;
     }
   }
@@ -265,7 +266,7 @@
   &.filter-popup-button--open {
     background-color: $color-primary-text;
     color: $color-primary-contrast-text;
-    border-color: transparent;
+    border-color: $color-primary-text;
   }
 }
 
