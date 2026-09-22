@@ -27,6 +27,7 @@
     .button {
       @include header-button-active();
       background-color: $color-primary;
+      border-color: $color-primary;
       color: $color-primary-contrast-text;
     }
   }

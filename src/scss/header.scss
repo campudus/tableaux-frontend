@@ -258,6 +258,7 @@
 
       &:hover:not(.disabled) {
         background-color: $color-primary;
+        border-color: $color-primary;
         color: $color-primary-contrast-text;
       }
 
@@ -279,6 +280,7 @@
 
       &.inactive {
         background-color: $color-border-grey;
+        border-color: $color-border-grey;
         color: $color-primary-contrast-text;
         cursor: wait;
       }
@@ -298,6 +300,7 @@
     &--open .annotation-highlight-toggle__popup-button,
     &--open .archive-mode-toggle__popup-button {
       background: black;
+      border-color: black;
       .svg-icon svg, i {
         filter: invert(100%) brightness(150%);
       }
@@ -305,6 +308,7 @@
     &--active .annotation-highlight-toggle__popup-button,
     &--active .archive-mode-toggle__popup-button {
       background: $color-primary;
+      border-color: $color-primary;
       .svg-icon svg, i {
         filter: invert(100%) brightness(150%);
       }
