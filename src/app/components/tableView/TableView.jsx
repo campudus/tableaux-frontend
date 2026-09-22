@@ -18,7 +18,6 @@ import Filter from "../header/filter/Filter.jsx";
 import PasteCellIcon from "../header/PasteCellIcon";
 import ResetTableViewButton from "../header/ResetTableViewButton";
 import Spinner from "../header/Spinner.jsx";
-import TableSettings from "../header/tableSettings/TableSettings";
 import TableSwitcher from "../header/tableSwitcher/TableSwitcher.jsx";
 import AnnotationHighlightToggle from "../header/AnnotationHighlightToggle.jsx";
 import { showDialog } from "../overlay/GenericOverlay";
@@ -326,11 +325,6 @@ class TableView extends PureComponent {
                 currentTable={table}
                 tables={tables}
                 navigate={this.onNavigate}
-              />
-              <TableSettings
-                langtag={langtag}
-                table={table}
-                actions={actions}
               />
               <Filter
                 langtag={langtag}
