@@ -2,17 +2,27 @@
 @import "variables";
 
 #tableswitcher-wrapper {
-  display: inline-block;
+  display: flex;
 
   margin-top: 10px;
 
   outline-style: none;
+
+  .table-switcher-icon-chevron {
+    padding-left: 0.5em;
+  }
 
   .button {
     @include header-button-look();
 
     i {
       margin-right: 10px;
+    }
+  }
+  .button-chevron {
+    i {
+      margin-right: 0;
+      margin-left: -10px;
     }
   }
 
@@ -28,7 +38,6 @@
       border-bottom-right-radius: 0;
     }
   }
-
 
   #tableswitcher-popup {
     @include header-panel-look();
@@ -62,7 +71,8 @@
     }
   }
 
-  .tableswitcher-groups, .tableswitcher-tables {
+  .tableswitcher-groups,
+  .tableswitcher-tables {
     vertical-align: top;
     display: inline-block;
     box-sizing: border-box;
@@ -119,7 +129,8 @@
         border: 1px solid $color-grey-dark;
         @include border-radius(3px);
 
-        &:focus, &:active {
+        &:focus,
+        &:active {
           border-color: $color-primary-lighter;
         }
       }
@@ -147,12 +158,13 @@
     }
 
     li.active {
-      background-color: #EBEBEB;
+      background-color: #ebebeb;
     }
 
-    li:focus, li:hover {
+    li:focus,
+    li:hover {
       cursor: pointer;
-      background-color: #ECF7FF;
+      background-color: #ecf7ff;
       outline: none;
     }
   }
@@ -184,7 +196,7 @@
       padding: 15px 20px;
       .no-results {
         color: $color-text-medium-grey;
-        padding-bottom: 20px
+        padding-bottom: 20px;
       }
       .in-all-tables {
         border-top: 1px solid $color-text-light-grey;

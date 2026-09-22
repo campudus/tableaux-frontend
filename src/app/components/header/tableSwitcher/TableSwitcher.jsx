@@ -101,26 +101,34 @@ class TableSwitcherButton extends React.PureComponent {
   };
 
   render() {
-    let buttonClass = "button";
-
-    if (this.state.isOpen) {
-      buttonClass += " ignore-react-onclickoutside";
-    }
+    const open = this.state.isOpen;
+    const buttonClass = `button${open ? " ignore-react-onclickoutside" : ""}`;
+    const chevronClass = `table-switcher-icon-chevron fa fa-angle-${
+      open ? "up" : "down"
+    }`;
 
     // Show display name with fallback to machine name
     const table = this.props.currentTable;
     const tableDisplayName = getTableDisplayName(table, this.props.langtag);
-    const cssClass = classNames("", {
-      active: this.state.isOpen
-    });
+    const cssClass = classNames("", { active: open });
     return (
-      <div id="tableswitcher-wrapper" className={cssClass}>
-        <button className={buttonClass} onClick={this.togglePopup}>
-          <i className="fa fa-columns" />
-          {tableDisplayName}
-        </button>
-        {this.state.isOpen ? this.renderPopup() : null}
-      </div>
+      <>
+        <div id="tableswitcher-wrapper" className={cssClass}>
+          <button className={buttonClass} onClick={this.togglePopup}>
+            <i className="fa fa-columns" />
+            {tableDisplayName}
+          </button>
+          <button
+            className={buttonClass + " button-chevron"}
+            onClick={this.togglePopup}
+          >
+            {" "}
+            <i className={chevronClass} />{" "}
+          </button>
+
+          {open ? this.renderPopup() : null}
+        </div>
+      </>
     );
   }
 }
