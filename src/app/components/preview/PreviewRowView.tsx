@@ -38,6 +38,8 @@ export default function PreviewRowView({
 
   const reduxColumns = useSelector((store: GRUDStore) => store.columns);
   const reduxRows = useSelector((store: GRUDStore) => store.rows);
+  const table = useSelector((store: GRUDStore) => store.tables.data[tableId]);
+  const canEditRowAnnotations = canUserEditRowAnnotations({ table });
 
   const handleColumnSelection = async (columnId: number, rowId: number) => {
     const newColumnAndRow = columnsAndRow.find(c => c.column.id === columnId);
@@ -93,7 +95,7 @@ export default function PreviewRowView({
   };
 
   const handleUpdateRowFinalStatus = () => {
-    if (!canUserEditRowAnnotations({ row })) return;
+    if (!canEditRowAnnotations) return;
 
     dispatch(
       setRowFlag({
@@ -123,7 +125,7 @@ export default function PreviewRowView({
             !isUnionTable && (
               <button
                 onClick={handleUpdateRowFinalStatus}
-                disabled={!canUserEditRowAnnotations({ row })}
+                disabled={!canEditRowAnnotations}
               >
                 {row.final
                   ? i18n.t("preview:unlock_row")
