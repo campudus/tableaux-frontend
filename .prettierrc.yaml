@@ -4,4 +4,7 @@ semi: true
 singleQuote: false
 jsxSingleQuote: false
 bracketSpacing: true
-jsxBracketSameLine: false
+bracketSameLine: false
+# keep prettier 1.x defaults to avoid reformatting the codebase
+trailingComma: none
+arrowParens: avoid
