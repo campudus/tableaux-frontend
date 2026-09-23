@@ -306,40 +306,42 @@ const needsFilterValue = (columnKind, operation) =>
   // A JS functions `length` is its arity.
   f.prop(`${columnKind}.${operation}`, ModesForKind)?.length > 0;
 
-export const sortRows = (
-  ctx,
-  { colName, direction = SortValue.asc }
-) => rows => {
-  try {
-    const getValue = ctx.getValue(colName);
-    const lt = direction.toLowerCase() === SortValue.asc ? -1 : 1;
-    const gt = direction.toLowerCase() === SortValue.asc ? 1 : -1;
-    const eq = 0;
-    const isEmpty = x => typeof x !== "number" && f.isEmpty(x);
-    const comparator = (a, b) => {
-      const [valA, valB] = [a, b].map(
-        f.compose(v => (typeof v === "string" ? v.toLowerCase() : v), getValue)
-      );
+export const sortRows =
+  (ctx, { colName, direction = SortValue.asc }) =>
+  rows => {
+    try {
+      const getValue = ctx.getValue(colName);
+      const lt = direction.toLowerCase() === SortValue.asc ? -1 : 1;
+      const gt = direction.toLowerCase() === SortValue.asc ? 1 : -1;
+      const eq = 0;
+      const isEmpty = x => typeof x !== "number" && f.isEmpty(x);
+      const comparator = (a, b) => {
+        const [valA, valB] = [a, b].map(
+          f.compose(
+            v => (typeof v === "string" ? v.toLowerCase() : v),
+            getValue
+          )
+        );
 
-      switch (true) {
-        case isEmpty(valA) && !isEmpty(valB):
-          return gt;
-        case !isEmpty(valA) && isEmpty(valB):
-          return lt;
-        case valA < valB:
-          return lt;
-        case valB < valA:
-          return gt;
-        default:
-          return eq;
-      }
-    };
-    return rows.toSorted(comparator);
-  } catch (err) {
-    console.error(`Could not sort by column with name "${colName}"`, err);
-    return rows;
-  }
-};
+        switch (true) {
+          case isEmpty(valA) && !isEmpty(valB):
+            return gt;
+          case !isEmpty(valA) && isEmpty(valB):
+            return lt;
+          case valA < valB:
+            return lt;
+          case valB < valA:
+            return gt;
+          default:
+            return eq;
+        }
+      };
+      return rows.toSorted(comparator);
+    } catch (err) {
+      console.error(`Could not sort by column with name "${colName}"`, err);
+      return rows;
+    }
+  };
 
 export default {
   ModesForKind,

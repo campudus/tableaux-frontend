@@ -19,10 +19,8 @@ export function useMeasure() {
       const observer = new ResizeObserver(
         f.debounce(100, ([entry]) => {
           if (entry && entry.borderBoxSize) {
-            const {
-              inlineSize: width,
-              blockSize: height
-            } = entry.borderBoxSize[0];
+            const { inlineSize: width, blockSize: height } =
+              entry.borderBoxSize[0];
 
             setDimensions({ width, height });
           }

@@ -25,8 +25,8 @@ const LinkLabelCell = props => {
   const linkName = f.isEmpty(displayValue)
     ? retrieveTranslation(langtag, f.first(getDisplayValue(column, [value])))
     : isTaxonomyPath
-    ? f.join(" > ", displayValue)
-    : displayValue;
+      ? f.join(" > ", displayValue)
+      : displayValue;
 
   const isArchived = isLinkArchived(value);
 

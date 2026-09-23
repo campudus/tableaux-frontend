@@ -219,15 +219,8 @@ const renderComponent = (params, location, tables, viewName) => {
 };
 
 const validateRouteParams = (routeParams, tables) => {
-  const {
-    langtag,
-    tableId,
-    columnId,
-    rowId,
-    folderId,
-    serviceId,
-    profileTab
-  } = routeParams;
+  const { langtag, tableId, columnId, rowId, folderId, serviceId, profileTab } =
+    routeParams;
   const getFirstTableId = f.compose(
     f.prop("id"),
     f.first,

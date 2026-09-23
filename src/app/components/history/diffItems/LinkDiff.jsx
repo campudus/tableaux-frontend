@@ -48,8 +48,8 @@ const LinkDiffItem = ({
   const state = f.isEmpty(displayValue)
     ? LinkState.FOREIGN_ROW_DELETED
     : displayValue !== revisionValue
-    ? LinkState.CHANGED
-    : LinkState.DEFAULT;
+      ? LinkState.CHANGED
+      : LinkState.DEFAULT;
 
   const cssClass = classNames("link-diff", {
     "content-diff--added": add,

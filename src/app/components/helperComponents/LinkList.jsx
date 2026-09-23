@@ -58,58 +58,62 @@ const LinkList = props => {
   const getViewUrl = link =>
     isAttachment ? apiUrl(retrieveTranslation(langtag, link.url)) : undefined;
 
-  const mkListItemRenderer = fetchKey => () => ({ key, index, style = {} }) => {
-    const findFn =
-      fetchKey === "key" ? f.find(f.propEq("id", key)) : f.nth(index);
-    const link = findFn(links);
-    const {
-      linkTarget: { tableId, rowId }
-    } = link;
-    const clickHandler = (_, link, evt) => {
-      evt.preventDefault();
-      if (!changeCellAuthorized) {
-        return;
-      }
-      const httpMethodForChange =
-        cell.kind === ColumnKinds.attachment ? "PUT" : "POST";
-      actions.changeCellValue({
-        cell,
-        tableId,
-        rowId,
-        columnId: cell.column.id,
-        oldValue: cell.value,
-        newValue: f.remove(
-          f.matchesProperty(isAttachment ? "uuid" : "id", f.get("id", link))
-        )(cell.value),
-        method: httpMethodForChange
-      });
+  const mkListItemRenderer =
+    fetchKey =>
+    () =>
+    ({ key, index, style = {} }) => {
+      const findFn =
+        fetchKey === "key" ? f.find(f.propEq("id", key)) : f.nth(index);
+      const link = findFn(links);
+      const {
+        linkTarget: { tableId, rowId }
+      } = link;
+      const clickHandler = (_, link, evt) => {
+        evt.preventDefault();
+        if (!changeCellAuthorized) {
+          return;
+        }
+        const httpMethodForChange =
+          cell.kind === ColumnKinds.attachment ? "PUT" : "POST";
+        actions.changeCellValue({
+          cell,
+          tableId,
+          rowId,
+          columnId: cell.column.id,
+          oldValue: cell.value,
+          newValue: f.remove(
+            f.matchesProperty(isAttachment ? "uuid" : "id", f.get("id", link))
+          )(cell.value),
+          method: httpMethodForChange
+        });
+      };
+      const isArchived = isLinkArchived(link);
+      const id = link.linkTarget.rowId || link.uuid;
+      return (
+        <LinkItem
+          key={id}
+          showToggleButton={showToggleButton}
+          row={{ id, attributes: link.attributes }}
+          cell={cell}
+          toTable={link.linkTarget.tableId}
+          label={link.label || link.displayName}
+          langtag={langtag}
+          clickHandler={clickHandler}
+          style={style}
+          isLinked
+          viewUrl={getViewUrl(link)}
+          isPermissionDenied={link.hiddenByRowPermissions}
+          archived={isArchived}
+          userCanEdit={changeCellAuthorized}
+          enableLinkAttributes={enableLinkAttributes}
+        />
+      );
     };
-    const isArchived = isLinkArchived(link);
-    const id = link.linkTarget.rowId || link.uuid;
-    return (
-      <LinkItem
-        key={id}
-        showToggleButton={showToggleButton}
-        row={{ id, attributes: link.attributes }}
-        cell={cell}
-        toTable={link.linkTarget.tableId}
-        label={link.label || link.displayName}
-        langtag={langtag}
-        clickHandler={clickHandler}
-        style={style}
-        isLinked
-        viewUrl={getViewUrl(link)}
-        isPermissionDenied={link.hiddenByRowPermissions}
-        archived={isArchived}
-        userCanEdit={changeCellAuthorized}
-        enableLinkAttributes={enableLinkAttributes}
-      />
-    );
-  };
 
-  const renderSortableListItem = useMemo(() => mkListItemRenderer("key"), [
-    links
-  ]);
+  const renderSortableListItem = useMemo(
+    () => mkListItemRenderer("key"),
+    [links]
+  );
   const renderListItem = useMemo(mkListItemRenderer("index"), [links]);
 
   const ListRenderer = sortable ? (

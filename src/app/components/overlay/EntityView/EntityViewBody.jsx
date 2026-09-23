@@ -491,9 +491,10 @@ const mkCellProps = ({ grudData, table, row }) => {
 const EntityViewBodyContainer = props => {
   const { grudData, table, row } = props;
   // only `grudData` is watched, as with the former withPropsOnChange
-  const cellProps = useMemo(() => mkCellProps({ grudData, table, row }), [
-    grudData
-  ]);
+  const cellProps = useMemo(
+    () => mkCellProps({ grudData, table, row }),
+    [grudData]
+  );
 
   return <EntityViewBody {...props} {...cellProps} />;
 };

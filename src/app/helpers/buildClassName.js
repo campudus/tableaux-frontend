@@ -6,8 +6,8 @@ export const buildClassName = (base, modifiers = {}, additionals) => {
     typeof additionals === "string"
       ? [additionals]
       : Array.isArray(additionals)
-      ? additionals
-      : [];
+        ? additionals
+        : [];
 
   return [base, ...bemModifiers, ...additionalsList].join(" ").trim();
 };

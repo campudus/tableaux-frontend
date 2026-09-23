@@ -43,30 +43,34 @@ export const MultilangCellChangeInfo = ({
   oldVals,
   showOldValues: showNewValues
 }) => {
-  const renderEntry = kind => ([key, value]) => {
-    if (kind === "flag") {
+  const renderEntry =
+    kind =>
+    ([key, value]) => {
+      if (kind === "flag") {
+        return (
+          <div key={key} className="country-icon">
+            {getLanguageOrCountryIcon(key)}
+          </div>
+        );
+      }
+
+      const MAX_LENGTH = 30;
+      const formatValue = compose(
+        truncateText(MAX_LENGTH),
+        match(kind)(
+          when(date, always(formatDate(DateFormats.formatForUser))),
+          when(datetime, always(formatDate(DateTimeFormats.formatForUser))),
+          otherwise(always(identity))
+        )
+      );
       return (
-        <div key={key} className="country-icon">
-          {getLanguageOrCountryIcon(key)}
+        <div key={key} className="entry">
+          <div className="text">
+            {value ? formatValue(value) : EMPTY_STRING}
+          </div>
         </div>
       );
-    }
-
-    const MAX_LENGTH = 30;
-    const formatValue = compose(
-      truncateText(MAX_LENGTH),
-      match(kind)(
-        when(date, always(formatDate(DateFormats.formatForUser))),
-        when(datetime, always(formatDate(DateTimeFormats.formatForUser))),
-        otherwise(always(identity))
-      )
-    );
-    return (
-      <div key={key} className="entry">
-        <div className="text">{value ? formatValue(value) : EMPTY_STRING}</div>
-      </div>
-    );
-  };
+    };
 
   const langtagComparator = ([langtag]) => {
     return findIndex(eq(langtag));

@@ -26,88 +26,86 @@ export const addEmptyRow = tableId => ({
   tableId
 });
 
-export const safelyDuplicateRow = ({
-  tableId,
-  rowId,
-  langtag,
-  cell,
-  onSuccess,
-  onError
-}) => async dispatch => {
-  try {
-    const duplicatedRow = await createRowDuplicatesRequest(tableId, rowId);
-    dispatch({
-      type: ADDITIONAL_ROWS_DATA_LOADED,
-      tableId,
-      rows: [duplicatedRow]
-    });
-
-    if (cell?.column) {
+export const safelyDuplicateRow =
+  ({ tableId, rowId, langtag, cell, onSuccess, onError }) =>
+  async dispatch => {
+    try {
+      const duplicatedRow = await createRowDuplicatesRequest(tableId, rowId);
       dispatch({
-        type: TOGGLE_CELL_SELECTION,
+        type: ADDITIONAL_ROWS_DATA_LOADED,
         tableId,
-        rowId: duplicatedRow.id,
-        columnId: cell.column.id,
-        langtag
+        rows: [duplicatedRow]
       });
+
+      if (cell?.column) {
+        dispatch({
+          type: TOGGLE_CELL_SELECTION,
+          tableId,
+          rowId: duplicatedRow.id,
+          columnId: cell.column.id,
+          langtag
+        });
+      }
+
+      if (onSuccess) onSuccess();
+      return duplicatedRow;
+    } catch (err) {
+      if (onError) onError(err);
+      console.error("While duplicating row:", err);
+      return Promise.reject(
+        new Error(
+          `Could not duplicate row ${rowId} of table ${tableId}: ${
+            err.message ?? err
+          }`
+        )
+      );
     }
-
-    if (onSuccess) onSuccess();
-    return duplicatedRow;
-  } catch (err) {
-    if (onError) onError(err);
-    console.error("While duplicating row:", err);
-    return Promise.reject(
-      new Error(
-        `Could not duplicate row ${rowId} of table ${tableId}: ${err.message ??
-          err}`
-      )
-    );
-  }
-};
-
-export const loadAllRows = (tableId, archived = false) => async dispatch => {
-  const PARALLELL_CHUNKS = 4;
-  const ROWS_PER_CHUNK = 500;
-  const INITIAL_ROWS = 30;
-
-  const preloadParam = {
-    offset: 0,
-    limit: INITIAL_ROWS,
-    archived
   };
 
-  const buildParams = (allRows, rowsPerRequest) => {
-    if (allRows <= rowsPerRequest) {
-      return [{ ...preloadParam, offset: INITIAL_ROWS, limit: allRows }];
+export const loadAllRows =
+  (tableId, archived = false) =>
+  async dispatch => {
+    const PARALLELL_CHUNKS = 4;
+    const ROWS_PER_CHUNK = 500;
+    const INITIAL_ROWS = 30;
+
+    const preloadParam = {
+      offset: 0,
+      limit: INITIAL_ROWS,
+      archived
+    };
+
+    const buildParams = (allRows, rowsPerRequest) => {
+      if (allRows <= rowsPerRequest) {
+        return [{ ...preloadParam, offset: INITIAL_ROWS, limit: allRows }];
+      }
+      return f.compose(
+        f.map(offset => {
+          return { ...preloadParam, offset, limit: rowsPerRequest };
+        }),
+        f.rangeStep(rowsPerRequest, INITIAL_ROWS)
+      )(allRows % rowsPerRequest !== 0 ? allRows + 1 : allRows);
+    };
+
+    const loadPaginatedRows = async params => {
+      const paginatedRows = await makeRequest({
+        apiRoute: route.toRows(tableId),
+        params,
+        method: "get"
+      });
+      dispatch(addRows(tableId, paginatedRows.rows));
+      return paginatedRows;
+    };
+
+    const {
+      page: { totalSize }
+    } = await loadPaginatedRows(preloadParam);
+    if (totalSize > INITIAL_ROWS) {
+      const pageConfigs = buildParams(totalSize, ROWS_PER_CHUNK);
+      await P.chunk(PARALLELL_CHUNKS, loadPaginatedRows, pageConfigs);
     }
-    return f.compose(
-      f.map(offset => {
-        return { ...preloadParam, offset, limit: rowsPerRequest };
-      }),
-      f.rangeStep(rowsPerRequest, INITIAL_ROWS)
-    )(allRows % rowsPerRequest !== 0 ? allRows + 1 : allRows);
+    dispatch({ type: ALL_ROWS_DATA_LOADED, tableId });
   };
-
-  const loadPaginatedRows = async params => {
-    const paginatedRows = await makeRequest({
-      apiRoute: route.toRows(tableId),
-      params,
-      method: "get"
-    });
-    dispatch(addRows(tableId, paginatedRows.rows));
-    return paginatedRows;
-  };
-
-  const {
-    page: { totalSize }
-  } = await loadPaginatedRows(preloadParam);
-  if (totalSize > INITIAL_ROWS) {
-    const pageConfigs = buildParams(totalSize, ROWS_PER_CHUNK);
-    await P.chunk(PARALLELL_CHUNKS, loadPaginatedRows, pageConfigs);
-  }
-  dispatch({ type: ALL_ROWS_DATA_LOADED, tableId });
-};
 
 const addRows = (tableId, rows) => {
   return {
@@ -117,20 +115,22 @@ const addRows = (tableId, rows) => {
   };
 };
 
-export const createNewRows = ({ tableId, columns, rows }) => async dispatch => {
-  try {
-    const result = await makeRequest({
-      apiRoute: route.toTable({ tableId }),
-      data: { columns, rows },
-      method: "post"
-    });
-    dispatch({
-      type: ADDITIONAL_ROWS_DATA_LOADED,
-      tableId,
-      rows: result.rows
-    });
-    return result.rows;
-  } catch (err) {
-    return Promise.reject(new Error(`Could not create rows: ${err.message}`));
-  }
-};
+export const createNewRows =
+  ({ tableId, columns, rows }) =>
+  async dispatch => {
+    try {
+      const result = await makeRequest({
+        apiRoute: route.toTable({ tableId }),
+        data: { columns, rows },
+        method: "post"
+      });
+      dispatch({
+        type: ADDITIONAL_ROWS_DATA_LOADED,
+        tableId,
+        rows: result.rows
+      });
+      return result.rows;
+    } catch (err) {
+      return Promise.reject(new Error(`Could not create rows: ${err.message}`));
+    }
+  };

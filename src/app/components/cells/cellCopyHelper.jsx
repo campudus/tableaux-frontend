@@ -82,7 +82,7 @@ export const getSaveableRowDuplicate = ({ columns, row }) => {
   };
 };
 
-const calcNewValue = function(src, srcLang, dst, dstLang) {
+const calcNewValue = function (src, srcLang, dst, dstLang) {
   const getAllowedValue = langtag =>
     canUserChangeCell(dst, langtag)
       ? f.prop(["value", langtag], src)
@@ -180,32 +180,34 @@ export function createRowDuplicatesRequest(tableId, rowId) {
       });
 }
 
-const maybeChangeBacklink = ({ src, dst }) => saveableRowDuplicate => {
-  const { columns, rows } = saveableRowDuplicate;
-  const { backlinkIndices } = f.reduce(
-    (acc, column) => {
-      const { idx, backlinkIndices } = acc;
-      const newVal =
-        column.kind === ColumnKinds.link && column.toTable === src.table.id
-          ? f.concat(backlinkIndices, idx)
-          : backlinkIndices;
-      return { idx: idx + 1, backlinkIndices: newVal };
-    },
-    { idx: 0, backlinkIndices: [] },
-    columns
-  );
-  if (f.isEmpty(backlinkIndices)) {
-    return saveableRowDuplicate;
-  }
-  const newRow = f.reduce(
-    (acc, val) => {
-      return f.assoc([val, 0, "id"], dst.row.id, acc);
-    },
-    rows[0].values,
-    backlinkIndices
-  );
-  return { ...saveableRowDuplicate, rows: [{ values: newRow }] };
-};
+const maybeChangeBacklink =
+  ({ src, dst }) =>
+  saveableRowDuplicate => {
+    const { columns, rows } = saveableRowDuplicate;
+    const { backlinkIndices } = f.reduce(
+      (acc, column) => {
+        const { idx, backlinkIndices } = acc;
+        const newVal =
+          column.kind === ColumnKinds.link && column.toTable === src.table.id
+            ? f.concat(backlinkIndices, idx)
+            : backlinkIndices;
+        return { idx: idx + 1, backlinkIndices: newVal };
+      },
+      { idx: 0, backlinkIndices: [] },
+      columns
+    );
+    if (f.isEmpty(backlinkIndices)) {
+      return saveableRowDuplicate;
+    }
+    const newRow = f.reduce(
+      (acc, val) => {
+        return f.assoc([val, 0, "id"], dst.row.id, acc);
+      },
+      rows[0].values,
+      backlinkIndices
+    );
+    return { ...saveableRowDuplicate, rows: [{ values: newRow }] };
+  };
 
 // When links have a backlink/left constraint, we duplicate the linked
 // entries in their respective tables and link the duplicates in the
@@ -368,7 +370,7 @@ const startPasteOperation = (...args) => {
       );
 };
 
-const pasteCellValue = function(
+const pasteCellValue = function (
   src, // cell
   srcLang, // langtag
   dst, // cell

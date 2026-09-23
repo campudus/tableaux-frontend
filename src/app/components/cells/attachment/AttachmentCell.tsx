@@ -33,7 +33,7 @@ export default function AttachmentCell({
 }: AttachmentCellProps): ReactElement {
   const contentRef = useRef<HTMLDivElement>(null);
   const translate = retrieveTranslation(langtag);
-  const attachments = (cell.value as unknown) as Attachment[];
+  const attachments = cell.value as unknown as Attachment[];
   const [visibilityByUuid, setVisibilityByUuid] = useState(
     f.flow(
       f.keyBy("uuid"),
@@ -121,11 +121,13 @@ export default function AttachmentCell({
         })}
       </div>
 
-      {!isPreview && !isLocked(cell.row) && canUserChangeCell(cell)(langtag) && (
-        <button className="edit" onClick={handleClickEdit}>
-          <span className="fa fa-pencil" />
-        </button>
-      )}
+      {!isPreview &&
+        !isLocked(cell.row) &&
+        canUserChangeCell(cell)(langtag) && (
+          <button className="edit" onClick={handleClickEdit}>
+            <span className="fa fa-pencil" />
+          </button>
+        )}
     </>
   );
 }

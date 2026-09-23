@@ -18,12 +18,7 @@ type MomentInstance = ReturnType<typeof Moment>;
 // docs/adr/0006-link-attribute-values-stay-positional-in-the-client.md.
 
 export type LinkAttributeKind =
-  | "text"
-  | "numeric"
-  | "integer"
-  | "boolean"
-  | "date"
-  | "datetime";
+  "text" | "numeric" | "integer" | "boolean" | "date" | "datetime";
 
 export type LangObject = Record<string, string | null | undefined>;
 
@@ -256,7 +251,7 @@ export const toAttributeInputValue = ({
     }
     case ColumnKinds.text:
     default:
-      return f.isString(raw) ? raw : raw ?? "";
+      return f.isString(raw) ? raw : (raw ?? "");
   }
 };
 

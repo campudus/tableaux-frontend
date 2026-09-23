@@ -22,8 +22,14 @@ const lookupKey = (columnId, tableId, rowId) =>
 const lookUpPermissions = params =>
   shouldCheckPermissions ? _lookUpPermissions(params) : ALLOW_ANYTHING;
 const _lookUpPermissions = params => {
-  const { columnId, tableId, column = {}, table = {}, row = {}, rowId } =
-    params || {};
+  const {
+    columnId,
+    tableId,
+    column = {},
+    table = {},
+    row = {},
+    rowId
+  } = params || {};
   // we can do this as our DB-indices are one-based
   const _columnId = columnId || (column && column.id);
   const _tableId = tableId || (table && table.id);

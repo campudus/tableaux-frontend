@@ -20,7 +20,7 @@ export const reportUpdateReasons = title =>
    *   performStuff()
    * }
    */
-  function(nextProps, nextState) {
+  function (nextProps, nextState) {
     this.renderCount = (this.renderCount || 0) + 1;
     const getChanges = (keys, a, b) => keys.filter(k => !f.equals(a[k], b[k]));
     const changes = {

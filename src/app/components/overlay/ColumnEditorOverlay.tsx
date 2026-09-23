@@ -146,8 +146,8 @@ export function ColumnEditorOverlayBody({
       attribute?.type === "boolean"
         ? event.target.checked
         : attribute?.type === "number"
-        ? parseInt(event.target.value)
-        : event.target.value;
+          ? parseInt(event.target.value)
+          : event.target.value;
 
     const newAttribute = { ...attribute, value };
 
@@ -260,27 +260,29 @@ export function ColumnEditorOverlayBody({
                 />
               </div>
               <div className="item-content">
-                {attribute && attribute.type && attribute.type === "boolean" && (
-                  <label>
-                    <input
-                      className="attribute-input"
-                      type="checkbox"
-                      name={identifier}
-                      onChange={handleUpdateAttributeValue}
-                      onBlur={handleUpdateAttributeValue}
-                      checked={
-                        (attribute.value as boolean | undefined) || false
-                      }
-                    />
+                {attribute &&
+                  attribute.type &&
+                  attribute.type === "boolean" && (
+                    <label>
+                      <input
+                        className="attribute-input"
+                        type="checkbox"
+                        name={identifier}
+                        onChange={handleUpdateAttributeValue}
+                        onBlur={handleUpdateAttributeValue}
+                        checked={
+                          (attribute.value as boolean | undefined) || false
+                        }
+                      />
 
-                    <span>{i18n.t("table:editor.attribute-current")}: </span>
-                    <span className="bold">
-                      {attribute.value
-                        ? i18n.t("table:editor.attribute-yes")
-                        : i18n.t("table:editor.attribute-no")}
-                    </span>
-                  </label>
-                )}
+                      <span>{i18n.t("table:editor.attribute-current")}: </span>
+                      <span className="bold">
+                        {attribute.value
+                          ? i18n.t("table:editor.attribute-yes")
+                          : i18n.t("table:editor.attribute-no")}
+                      </span>
+                    </label>
+                  )}
                 {attribute && attribute.type && attribute.type === "string" && (
                   <input
                     className="attribute-input"

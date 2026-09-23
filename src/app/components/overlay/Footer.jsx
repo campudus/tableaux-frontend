@@ -9,12 +9,14 @@ class Footer extends Component {
     buttonActions: PropTypes.object
   };
 
-  wrapButtonFn = (value, fn) => (...args) => {
-    if (f.isFunction(fn)) {
-      fn(...args);
-    }
-    this.props.actions.closeOverlay();
-  };
+  wrapButtonFn =
+    (value, fn) =>
+    (...args) => {
+      if (f.isFunction(fn)) {
+        fn(...args);
+      }
+      this.props.actions.closeOverlay();
+    };
 
   render() {
     const { buttonActions } = this.props;

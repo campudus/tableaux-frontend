@@ -316,10 +316,10 @@ class Cell extends React.Component {
           editing && kind !== "boolean"
             ? this.stopBubblingUp
             : selected
-            ? KeyboardShortcutsHelper.onKeyboardShortcut(
-                this.getKeyboardShortcuts
-              )
-            : f.noop
+              ? KeyboardShortcutsHelper.onKeyboardShortcut(
+                  this.getKeyboardShortcuts
+                )
+              : f.noop
         }
       >
         <AnnotationBar

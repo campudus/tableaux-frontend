@@ -38,11 +38,8 @@ import {
 } from "../linkedValues";
 import store from "../store";
 
-const {
-  CELL_ROLLBACK_VALUE,
-  CELL_SAVED_SUCCESSFULLY,
-  CELL_SET_VALUE
-} = ActionTypes;
+const { CELL_ROLLBACK_VALUE, CELL_SAVED_SUCCESSFULLY, CELL_SET_VALUE } =
+  ActionTypes;
 
 export const changeCellValue = action => (dispatch, getState) => {
   // We either get ids directly, or we extract them from a "cell"
@@ -356,53 +353,51 @@ const dispatchCellValueChange = action => (dispatch, getState) => {
     });
 };
 
-const maybeUpdateStatusColumnValue = (tableId, columnId, rowId) => (
-  dispatch,
-  store
-) => {
-  const state = store.getState();
-  const calcDependentColumnIds = conditions => {
-    return f.flatMap(condition => {
-      return f.has("column", condition)
-        ? condition.column
-        : calcDependentColumnIds(condition);
-    }, conditions.values);
+const maybeUpdateStatusColumnValue =
+  (tableId, columnId, rowId) => (dispatch, store) => {
+    const state = store.getState();
+    const calcDependentColumnIds = conditions => {
+      return f.flatMap(condition => {
+        return f.has("column", condition)
+          ? condition.column
+          : calcDependentColumnIds(condition);
+      }, conditions.values);
+    };
+    const statusColumns = f.filter(
+      column => column.kind === ColumnKinds.status,
+      state.columns[tableId].data
+    );
+    if (f.isEmpty(statusColumns)) {
+      return;
+    }
+    return f.compose(
+      promises => Promise.all(promises),
+      f.map(({ column, dependentColumnIds }) => {
+        if (f.contains(columnId, dependentColumnIds)) {
+          return makeRequest({
+            apiRoute: route.toCell({ tableId, rowId, columnId: column.id })
+          }).then(res =>
+            dispatch({
+              type: CELL_SET_VALUE,
+              tableId,
+              columnId: column.id,
+              rowId,
+              newValue: res.value,
+              column
+            })
+          );
+        }
+      }),
+      f.zipWith(
+        (column, dependentColumnIds) => ({ column, dependentColumnIds }),
+        statusColumns
+      ),
+      f.map(f.compose(f.uniq, f.flatten)),
+      f.map(column =>
+        f.map(rule => calcDependentColumnIds(rule.conditions), column.rules)
+      )
+    )(statusColumns);
   };
-  const statusColumns = f.filter(
-    column => column.kind === ColumnKinds.status,
-    state.columns[tableId].data
-  );
-  if (f.isEmpty(statusColumns)) {
-    return;
-  }
-  return f.compose(
-    promises => Promise.all(promises),
-    f.map(({ column, dependentColumnIds }) => {
-      if (f.contains(columnId, dependentColumnIds)) {
-        return makeRequest({
-          apiRoute: route.toCell({ tableId, rowId, columnId: column.id })
-        }).then(res =>
-          dispatch({
-            type: CELL_SET_VALUE,
-            tableId,
-            columnId: column.id,
-            rowId,
-            newValue: res.value,
-            column
-          })
-        );
-      }
-    }),
-    f.zipWith(
-      (column, dependentColumnIds) => ({ column, dependentColumnIds }),
-      statusColumns
-    ),
-    f.map(f.compose(f.uniq, f.flatten)),
-    f.map(column =>
-      f.map(rule => calcDependentColumnIds(rule.conditions), column.rules)
-    )
-  )(statusColumns);
-};
 
 export const calculateCellUpdate = action => {
   const { column, oldValue, newValue, method } = action;
@@ -493,12 +488,12 @@ export const calculateCellUpdate = action => {
     return idsAreSame && attributesAreSame
       ? null
       : idsAreSame
-      ? attributeResetAction
-      : isReordering
-      ? reorderAction
-      : isReset
-      ? resetAction
-      : toggleAction;
+        ? attributeResetAction
+        : isReordering
+          ? reorderAction
+          : isReset
+            ? resetAction
+            : toggleAction;
   } else {
     const reduceLangs = f.flow(
       reduceValuesToAllowedLanguages(action),
@@ -528,125 +523,121 @@ export const calculateCellUpdate = action => {
 // because the server's normalized response (datetime -> UTC, date ->
 // YYYY-MM-DD) has to win over the optimistically sent value, and that function
 // does not expose the response body to its caller.
-export const changeLinkAttributes = ({
-  cell,
-  linkId,
-  attributes
-}) => dispatch => {
-  const { table, column, row } = cell;
-  const oldValue = cell.value;
-  const payload = {
-    attributes: buildAttributesPayload(
-      getLinkAttributeDefinitions(column),
-      attributes
-    )
+export const changeLinkAttributes =
+  ({ cell, linkId, attributes }) =>
+  dispatch => {
+    const { table, column, row } = cell;
+    const oldValue = cell.value;
+    const payload = {
+      attributes: buildAttributesPayload(
+        getLinkAttributeDefinitions(column),
+        attributes
+      )
+    };
+    const newValue = setLinkAttributes(linkId, payload.attributes, oldValue);
+    const cellIds = { tableId: table.id, columnId: column.id, rowId: row.id };
+
+    const request = new Promise((resolve, reject) => {
+      dispatch({
+        promise: makeRequest({
+          apiRoute: route.toLinkAttributes({ ...cellIds, linkId }),
+          method: "PUT",
+          data: payload
+        }).then(result => {
+          // Adopt the server-normalized value over the optimistically sent one,
+          // but only when the response carries the whole cell value -- writing
+          // anything else in would blank the link out until the next reload,
+          // while the optimistic value differs only in its normalization.
+          const serverValue = f.get("value", result);
+
+          if (f.isArray(serverValue)) {
+            dispatch({
+              type: CELL_SET_VALUE,
+              ...cellIds,
+              column,
+              cell,
+              oldValue: newValue,
+              newValue: serverValue
+            });
+          } else {
+            console.warn(
+              "changeLinkAttributes: response carried no cell value, keeping the optimistic one.",
+              result
+            );
+          }
+          return result;
+        }),
+        actionTypes: [
+          CELL_SET_VALUE,
+          CELL_SAVED_SUCCESSFULLY,
+          CELL_ROLLBACK_VALUE
+        ],
+        ...cellIds,
+        column,
+        cell,
+        oldValue,
+        newValue,
+        onSuccess: resolve,
+        onError: reject
+      });
+    });
+
+    // An attribute is part of the link's label, so it travels with this row's
+    // identifier into every table that embeds it -- a no-op when this link column
+    // is not part of the identifier.
+    dispatch(
+      propagateLinkedValues({
+        tableId: table.id,
+        rowId: row.id,
+        columnId: column.id
+      })
+    );
+
+    return request
+      .then(() => {
+        // the server's normalized value has landed by now and can differ from
+        // what was distributed optimistically above
+        dispatch(
+          propagateLinkedValues({
+            tableId: table.id,
+            rowId: row.id,
+            columnId: column.id
+          })
+        );
+        // The edge is rendered from the other side too, by the target table's
+        // backlink column -- and which column that is, only the backend knows.
+        return dispatch(refreshRows(column.toTable, [linkId]));
+      })
+      .catch(error => {
+        dispatch(
+          propagateLinkedValues({
+            tableId: table.id,
+            rowId: row.id,
+            columnId: column.id
+          })
+        );
+        throw error;
+      });
   };
-  const newValue = setLinkAttributes(linkId, payload.attributes, oldValue);
-  const cellIds = { tableId: table.id, columnId: column.id, rowId: row.id };
 
-  const request = new Promise((resolve, reject) => {
-    dispatch({
-      promise: makeRequest({
-        apiRoute: route.toLinkAttributes({ ...cellIds, linkId }),
-        method: "PUT",
-        data: payload
-      }).then(result => {
-        // Adopt the server-normalized value over the optimistically sent one,
-        // but only when the response carries the whole cell value -- writing
-        // anything else in would blank the link out until the next reload,
-        // while the optimistic value differs only in its normalization.
-        const serverValue = f.get("value", result);
+export const modifyHistory =
+  (modifyAction, tableId, rowId) => (dispatch, getState) => {
+    const rowSpecific = !f.isNil(rowId);
+    const findFn = rowSpecific
+      ? f.overEvery([f.propEq("tableId", tableId), f.propEq("rowId", rowId)])
+      : f.propEq("tableId", tableId);
+    const historyAction = f.compose(
+      f.findLast(findFn),
+      f.get([
+        "tableView",
+        "history",
+        modifyAction === "undo" ? "undoQueue" : "redoQueue"
+      ])
+    )(getState());
 
-        if (f.isArray(serverValue)) {
-          dispatch({
-            type: CELL_SET_VALUE,
-            ...cellIds,
-            column,
-            cell,
-            oldValue: newValue,
-            newValue: serverValue
-          });
-        } else {
-          console.warn(
-            "changeLinkAttributes: response carried no cell value, keeping the optimistic one.",
-            result
-          );
-        }
-        return result;
-      }),
-      actionTypes: [
-        CELL_SET_VALUE,
-        CELL_SAVED_SUCCESSFULLY,
-        CELL_ROLLBACK_VALUE
-      ],
-      ...cellIds,
-      column,
-      cell,
-      oldValue,
-      newValue,
-      onSuccess: resolve,
-      onError: reject
-    });
-  });
+    if (!historyAction) {
+      return;
+    }
 
-  // An attribute is part of the link's label, so it travels with this row's
-  // identifier into every table that embeds it -- a no-op when this link column
-  // is not part of the identifier.
-  dispatch(
-    propagateLinkedValues({
-      tableId: table.id,
-      rowId: row.id,
-      columnId: column.id
-    })
-  );
-
-  return request
-    .then(() => {
-      // the server's normalized value has landed by now and can differ from
-      // what was distributed optimistically above
-      dispatch(
-        propagateLinkedValues({
-          tableId: table.id,
-          rowId: row.id,
-          columnId: column.id
-        })
-      );
-      // The edge is rendered from the other side too, by the target table's
-      // backlink column -- and which column that is, only the backend knows.
-      return dispatch(refreshRows(column.toTable, [linkId]));
-    })
-    .catch(error => {
-      dispatch(
-        propagateLinkedValues({
-          tableId: table.id,
-          rowId: row.id,
-          columnId: column.id
-        })
-      );
-      throw error;
-    });
-};
-
-export const modifyHistory = (modifyAction, tableId, rowId) => (
-  dispatch,
-  getState
-) => {
-  const rowSpecific = !f.isNil(rowId);
-  const findFn = rowSpecific
-    ? f.overEvery([f.propEq("tableId", tableId), f.propEq("rowId", rowId)])
-    : f.propEq("tableId", tableId);
-  const historyAction = f.compose(
-    f.findLast(findFn),
-    f.get([
-      "tableView",
-      "history",
-      modifyAction === "undo" ? "undoQueue" : "redoQueue"
-    ])
-  )(getState());
-
-  if (!historyAction) {
-    return;
-  }
-
-  dispatch(changeCellValue({ ...historyAction, modifyAction }));
-};
+    dispatch(changeCellValue({ ...historyAction, modifyAction }));
+  };

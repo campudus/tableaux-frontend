@@ -87,8 +87,8 @@ class SwitcherPopup extends React.PureComponent {
         focusTableId: f.contains(currentTableId, tableIds)
           ? currentTableId
           : f.contains(focusTableId, tableIds)
-          ? focusTableId
-          : f.first(tableIds),
+            ? focusTableId
+            : f.first(tableIds),
         filteredTables: tableResults
       });
     }

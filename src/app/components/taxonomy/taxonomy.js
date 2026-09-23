@@ -44,24 +44,26 @@ export const tableToTreeNodes = ({ rows }) =>
   );
 
 // buildTree : TreeState -> List TreeNode -> TreeNode
-export const buildTree = ({ expandedNodeId }) => nodes => {
-  const expandedNode = nodes.find(node => node.id === expandedNodeId);
-  const nodesOnPathToExpanded = getPathToNode(nodes)(expandedNode).reduce(
-    (ids, node) => {
-      ids.add(node.id);
-      return ids;
-    },
-    new Set()
-  );
-  const getSubtree = node => {
-    const children = nodes.filter(n => n.parent === node.id);
-    const expanded = node.id === expandedNodeId;
-    const onPath = nodesOnPathToExpanded.has(node.id) && !expanded;
-    return { ...node, children: children.map(getSubtree), expanded, onPath };
+export const buildTree =
+  ({ expandedNodeId }) =>
+  nodes => {
+    const expandedNode = nodes.find(node => node.id === expandedNodeId);
+    const nodesOnPathToExpanded = getPathToNode(nodes)(expandedNode).reduce(
+      (ids, node) => {
+        ids.add(node.id);
+        return ids;
+      },
+      new Set()
+    );
+    const getSubtree = node => {
+      const children = nodes.filter(n => n.parent === node.id);
+      const expanded = node.id === expandedNodeId;
+      const onPath = nodesOnPathToExpanded.has(node.id) && !expanded;
+      return { ...node, children: children.map(getSubtree), expanded, onPath };
+    };
+    const rootNodes = nodes.filter(node => f.isNil(node.parent));
+    return rootNodes.map(getSubtree);
   };
-  const rootNodes = nodes.filter(node => f.isNil(node.parent));
-  return rootNodes.map(getSubtree);
-};
 
 // getPathToNode : List TreeNode -> List TreeNode
 export const getPathToNode = nodes => {

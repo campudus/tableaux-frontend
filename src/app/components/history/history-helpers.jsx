@@ -69,8 +69,8 @@ export const maybeAddLabels = (rawColumn, langtag) => {
   return column.kind === ColumnKinds.link
     ? addLinkLabels(column, langtag)
     : column.kind === ColumnKinds.attachment
-    ? addAttachmentLabels(column, langtag)
-    : f.identity;
+      ? addAttachmentLabels(column, langtag)
+      : f.identity;
 };
 
 const addLinkLabels = (column, langtag) => async revisions => {
@@ -119,17 +119,19 @@ const getCurrentAttachmentDisplayValue = langtag =>
 
 const getIdsFromRevision = f.compose(f.map("id"), f.prop("value"));
 
-const getCurrentLinkDisplayValue = ({ tableId, column, langtag }) => rowId => {
-  const apiRoute = route.toCell({ tableId, columnId: column.id, rowId });
-  return composeP(
-    displayValue => ({ [rowId]: displayValue }),
-    when(f.isEmpty, () => <Empty langtag={langtag} />),
-    f.prop(langtag),
-    getDisplayValue(column),
-    f.prop("value"),
-    makeRequest
-  )({ apiRoute }).catch(() => {}); // fulfill request promises to deleted rows
-};
+const getCurrentLinkDisplayValue =
+  ({ tableId, column, langtag }) =>
+  rowId => {
+    const apiRoute = route.toCell({ tableId, columnId: column.id, rowId });
+    return composeP(
+      displayValue => ({ [rowId]: displayValue }),
+      when(f.isEmpty, () => <Empty langtag={langtag} />),
+      f.prop(langtag),
+      getDisplayValue(column),
+      f.prop("value"),
+      makeRequest
+    )({ apiRoute }).catch(() => {}); // fulfill request promises to deleted rows
+  };
 
 //------------------------------------------------------------------------------
 // Revision filters. For easy combination, those are drop-filters.
@@ -143,10 +145,7 @@ export const matchesLangtag = langtag => rev =>
     : true;
 
 export const filterHasValidDateProp = (prop, filter) =>
-  maybe(filter)
-    .map(f.prop(prop))
-    .exec("isValid")
-    .getOrElse(false);
+  maybe(filter).map(f.prop(prop)).exec("isValid").getOrElse(false);
 
 export const isCurrentEnough = filter =>
   filterHasValidDateProp("fromDate", filter)
@@ -205,5 +204,8 @@ export const valueMatchesFilter = (filter, contentLangtag) =>
               getSearchableValues(contentLangtag)
             )(revision)
           : revision.historyType === "cell_comment"
-          ? f.contains(filter.value.toLowerCase(), revision.value.toLowerCase())
-          : true;
+            ? f.contains(
+                filter.value.toLowerCase(),
+                revision.value.toLowerCase()
+              )
+            : true;

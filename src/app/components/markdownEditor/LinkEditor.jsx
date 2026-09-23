@@ -40,9 +40,7 @@ const UrlInput = ({ setLinkUrl, editorState, onClose }) => {
   };
 
   const [url, setUrl] = React.useState(
-    either(editorState.getSelection())
-      .map(getUrlAtPoint)
-      .getOrElse("")
+    either(editorState.getSelection()).map(getUrlAtPoint).getOrElse("")
   );
   const linkTitle = extractSelectedText(editorState.getSelection());
   const handleChange = React.useCallback(event => setUrl(event.target.value));
@@ -129,10 +127,12 @@ const LinkEditor = ({ editorState, setEditorState }) => {
 
   // ((any) -> any) -> void
   // side-effects
-  const toggleFakeSelectionAnd = handler => (...args) => {
-    handler(...args);
-    setEditorState(toggleFakeSelectionStyle());
-  };
+  const toggleFakeSelectionAnd =
+    handler =>
+    (...args) => {
+      handler(...args);
+      setEditorState(toggleFakeSelectionStyle());
+    };
 
   const isTextSelected = React.useCallback(
     () => !editorState.getSelection().isCollapsed()

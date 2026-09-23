@@ -34,13 +34,8 @@ import { overlayParamsSpec } from "./reducers/overlays";
 import { isLinkColumn } from "../types/guards";
 import { isTaxonomyTable } from "../components/taxonomy/taxonomy";
 
-const {
-  getAllTables,
-  getAllColumnsForTable,
-  toRow,
-  toColumn,
-  toTable
-} = API_ROUTES;
+const { getAllTables, getAllColumnsForTable, toRow, toColumn, toTable } =
+  API_ROUTES;
 
 const {
   ADD_ROWS,
@@ -200,10 +195,12 @@ const checkIfSelectedCellExists = (dispatch, tableId, state) => {
   );
 };
 
-const loadAllRows = (tableId, ...params) => async (dispatch, getState) => {
-  await Row.loadAllRows(tableId, ...params)(dispatch);
-  checkIfSelectedCellExists(dispatch, tableId, getState());
-};
+const loadAllRows =
+  (tableId, ...params) =>
+  async (dispatch, getState) => {
+    await Row.loadAllRows(tableId, ...params)(dispatch);
+    checkIfSelectedCellExists(dispatch, tableId, getState());
+  };
 
 const toggleColumnVisibility = columnId => (dispatch, getState) => {
   const state = getState();
@@ -291,58 +288,55 @@ const setCurrentTable = tableId => {
   };
 };
 
-const generateDisplayValues = (rows, columns, table) => (
-  dispatch,
-  getState
-) => {
-  dispatch({ type: START_GENERATING_DISPLAY_VALUES });
-  const {
-    tableView: { worker }
-  } = getState();
-  worker.postMessage([rows, columns, Langtags, table]);
-  worker.onmessage = e => {
-    const [displayValues, returnedTableId] = e.data;
-    if (returnedTableId === table?.id) {
-      dispatch({
-        type: GENERATED_DISPLAY_VALUES,
-        displayValues
-      });
-    }
+const generateDisplayValues =
+  (rows, columns, table) => (dispatch, getState) => {
+    dispatch({ type: START_GENERATING_DISPLAY_VALUES });
+    const {
+      tableView: { worker }
+    } = getState();
+    worker.postMessage([rows, columns, Langtags, table]);
+    worker.onmessage = e => {
+      const [displayValues, returnedTableId] = e.data;
+      if (returnedTableId === table?.id) {
+        dispatch({
+          type: GENERATED_DISPLAY_VALUES,
+          displayValues
+        });
+      }
+    };
   };
-};
 
-const loadCompleteTable = ({ tableId, selectedRowId }) => async (
-  dispatch,
-  getState
-) => {
-  dispatch(setCurrentTable(tableId));
+const loadCompleteTable =
+  ({ tableId, selectedRowId }) =>
+  async (dispatch, getState) => {
+    dispatch(setCurrentTable(tableId));
 
-  const tablesById = f.get(["tables", "data"], getState());
-  const columnsResponse = await dispatch(loadColumns(tableId));
-  const columns = columnsResponse.columns ?? [];
-  const taxonomyLinkColumns = f.compose(
-    f.uniqBy("id"),
-    f.filter(c => isLinkColumn(c) && isTaxonomyTable(tablesById[c.toTable]))
-  )(columns);
+    const tablesById = f.get(["tables", "data"], getState());
+    const columnsResponse = await dispatch(loadColumns(tableId));
+    const columns = columnsResponse.columns ?? [];
+    const taxonomyLinkColumns = f.compose(
+      f.uniqBy("id"),
+      f.filter(c => isLinkColumn(c) && isTaxonomyTable(tablesById[c.toTable]))
+    )(columns);
 
-  // load data for taxonomy tables so it can be used as displayValue
-  for (const taxonomyLinkColumn of taxonomyLinkColumns) {
-    const taxonomyTableId = taxonomyLinkColumn.toTable;
+    // load data for taxonomy tables so it can be used as displayValue
+    for (const taxonomyLinkColumn of taxonomyLinkColumns) {
+      const taxonomyTableId = taxonomyLinkColumn.toTable;
 
-    // do not await taxonomy data, so table can render without having to wait.
-    // if taxonomy data takes longer than the rest, the fallback displayValue (only LeafNode) is used
-    // and will be replaced with full path as soon as data arrives
-    Promise.all([
-      dispatch(loadColumns(taxonomyTableId)),
-      dispatch(Row.loadAllRows(taxonomyTableId))
-    ]);
-  }
+      // do not await taxonomy data, so table can render without having to wait.
+      // if taxonomy data takes longer than the rest, the fallback displayValue (only LeafNode) is used
+      // and will be replaced with full path as soon as data arrives
+      Promise.all([
+        dispatch(loadColumns(taxonomyTableId)),
+        dispatch(Row.loadAllRows(taxonomyTableId))
+      ]);
+    }
 
-  if (selectedRowId > 0) {
-    dispatch(fetchSingleRow({ tableId, selectedRowId }));
-  }
-  dispatch(loadAllRows(tableId));
-};
+    if (selectedRowId > 0) {
+      dispatch(fetchSingleRow({ tableId, selectedRowId }));
+    }
+    dispatch(loadAllRows(tableId));
+  };
 
 const applyUserSettings = tableId => (dispatch, getState) => {
   const kind = "table";
@@ -485,30 +479,28 @@ const loadTableView = (tableId, customFilters) => (dispatch, getState) => {
   });
 };
 
-const loadPreviewView = (tableId, rowId, columnId) => async (
-  dispatch,
-  getState
-) => {
-  const { columns, rows } = getState();
-  const columnsData = f.get([tableId, "data"], columns) || [];
-  const rowsData = f.get([tableId, "data"], rows) || [];
-  const row = f.find(f.propEq("id", rowId), rowsData);
+const loadPreviewView =
+  (tableId, rowId, columnId) => async (dispatch, getState) => {
+    const { columns, rows } = getState();
+    const columnsData = f.get([tableId, "data"], columns) || [];
+    const rowsData = f.get([tableId, "data"], rows) || [];
+    const row = f.find(f.propEq("id", rowId), rowsData);
 
-  dispatch({
-    type: actionTypes.preview.PREVIEW_SET_VIEW,
-    currentTable: tableId,
-    currentColumn: columnId,
-    currentRow: rowId
-  });
+    dispatch({
+      type: actionTypes.preview.PREVIEW_SET_VIEW,
+      currentTable: tableId,
+      currentColumn: columnId,
+      currentRow: rowId
+    });
 
-  if (tableId && f.isEmpty(columnsData)) {
-    await dispatch(loadColumns(tableId));
-  }
+    if (tableId && f.isEmpty(columnsData)) {
+      await dispatch(loadColumns(tableId));
+    }
 
-  if (tableId && rowId && f.isEmpty(row)) {
-    dispatch(fetchSingleRow({ tableId, selectedRowId: rowId }));
-  }
-};
+    if (tableId && rowId && f.isEmpty(row)) {
+      dispatch(fetchSingleRow({ tableId, selectedRowId: rowId }));
+    }
+  };
 
 const setCurrentLanguage = lang => {
   return {
@@ -603,51 +595,47 @@ const appendFilters = filter => (dispatch, getState) => {
   });
 };
 
-const setFiltersAndSorting = (filters, sorting, shouldSave) => (
-  dispatch,
-  getState
-) => {
-  dispatch({
-    type: SET_FILTERS_AND_SORTING,
-    filters,
-    sorting
-  });
-  const rowsFilter = {
-    sortColumnName: f.get("colName", sorting),
-    sortDirection: f.get("direction", sorting),
-    filters
+const setFiltersAndSorting =
+  (filters, sorting, shouldSave) => (dispatch, getState) => {
+    dispatch({
+      type: SET_FILTERS_AND_SORTING,
+      filters,
+      sorting
+    });
+    const rowsFilter = {
+      sortColumnName: f.get("colName", sorting),
+      sortDirection: f.get("direction", sorting),
+      filters
+    };
+    if (shouldSave) {
+      const currentTable = f.get(["tableView", "currentTable"], getState());
+      dispatch(
+        upsertUserSetting(
+          { key: "rowsFilter", kind: "table", tableId: currentTable },
+          { value: rowsFilter }
+        )
+      );
+    }
   };
-  if (shouldSave) {
-    const currentTable = f.get(["tableView", "currentTable"], getState());
+
+const setShowArchivedRows =
+  (_table, shouldShow = ShowArchived.hide) =>
+  dispatch => {
+    dispatch({ type: SET_FILTERS_AND_SORTING, showArchived: shouldShow });
+  };
+
+const setAnnotationHighlight =
+  (annotationHighlight = "") =>
+  (dispatch, getState) => {
+    dispatch({ type: SET_ANNOTATION_HIGHLIGHT, annotationHighlight });
+    const tableId = f.get(["tableView", "currentTable"], getState());
     dispatch(
       upsertUserSetting(
-        { key: "rowsFilter", kind: "table", tableId: currentTable },
-        { value: rowsFilter }
+        { key: "annotationHighlight", kind: "table", tableId },
+        { value: annotationHighlight }
       )
     );
-  }
-};
-
-const setShowArchivedRows = (
-  _table,
-  shouldShow = ShowArchived.hide
-) => dispatch => {
-  dispatch({ type: SET_FILTERS_AND_SORTING, showArchived: shouldShow });
-};
-
-const setAnnotationHighlight = (annotationHighlight = "") => (
-  dispatch,
-  getState
-) => {
-  dispatch({ type: SET_ANNOTATION_HIGHLIGHT, annotationHighlight });
-  const tableId = f.get(["tableView", "currentTable"], getState());
-  dispatch(
-    upsertUserSetting(
-      { key: "annotationHighlight", kind: "table", tableId },
-      { value: annotationHighlight }
-    )
-  );
-};
+  };
 
 const deleteRow = action => {
   const { mergeWithRowId, tableId, rowId } = action;
@@ -690,37 +678,40 @@ const createAndLoadRow = async (dispatch, tableId, { columns, rows } = {}) => {
   const responseRows = Array.isArray(response)
     ? response
     : Array.isArray(response.rows)
-    ? response.rows
-    : [response];
+      ? response.rows
+      : [response];
   dispatch(addRows(tableId, responseRows));
   return responseRows;
 };
 
-export const addEmptyRowAndOpenEntityView = (
-  tableId,
-  langtag,
-  cellToUpdate,
-  onSuccess
-) => async dispatch => {
-  await dispatch(loadColumns(tableId));
-  const [freshRow] = await createAndLoadRow(dispatch, tableId);
+export const addEmptyRowAndOpenEntityView =
+  (tableId, langtag, cellToUpdate, onSuccess) => async dispatch => {
+    await dispatch(loadColumns(tableId));
+    const [freshRow] = await createAndLoadRow(dispatch, tableId);
 
-  dispatch(
-    changeCellValue({
-      cell: cellToUpdate,
-      oldValue: cellToUpdate.value,
-      newValue: [...cellToUpdate.value, { id: freshRow.id, label: "" }]
-    })
-  );
-  loadAndOpenEntityView({ tableId, rowId: freshRow.id, langtag, cellToUpdate });
-  onSuccess && onSuccess(freshRow);
-};
+    dispatch(
+      changeCellValue({
+        cell: cellToUpdate,
+        oldValue: cellToUpdate.value,
+        newValue: [...cellToUpdate.value, { id: freshRow.id, label: "" }]
+      })
+    );
+    loadAndOpenEntityView({
+      tableId,
+      rowId: freshRow.id,
+      langtag,
+      cellToUpdate
+    });
+    onSuccess && onSuccess(freshRow);
+  };
 
-const fetchSingleRow = ({ tableId, selectedRowId }) => async dispatch => {
-  const url = urlToTableDestination({ tableId, rowId: selectedRowId });
-  const row = await makeRequest({ url });
-  dispatch({ type: ADD_ROWS, rows: [row], tableId });
-};
+const fetchSingleRow =
+  ({ tableId, selectedRowId }) =>
+  async dispatch => {
+    const url = urlToTableDestination({ tableId, rowId: selectedRowId });
+    const row = await makeRequest({ url });
+    dispatch({ type: ADD_ROWS, rows: [row], tableId });
+  };
 
 const changeTableName = (tableId, displayName) => ({
   promise: makeRequest({
