@@ -103,7 +103,7 @@
   },
   "dependencies": {
     "connect-loki": "1.1.0",
-    "express": "4.22.2",
+    "express": "4.22.3",
     "express-session": "1.18.2",
     "finalhandler": "^1.1.2",
     "http-proxy": "^1.18.1",
