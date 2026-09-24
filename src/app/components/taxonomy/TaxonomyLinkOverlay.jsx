@@ -24,20 +24,22 @@ const EXPANDED_NODE_KEY = "expandedNode";
 //   , icon : string
 //   , idsToDisable : Set Int | () }
 // -> { node : TreeNode } -> React.Element
-const mkNodeActionButton = ({ onClick, icon, idsToDisable }) => ({ node }) => {
-  const handleClick = useCallback(() => {
-    f.isFunction(onClick) && onClick(node);
-  }, [node.id]);
+const mkNodeActionButton =
+  ({ onClick, icon, idsToDisable }) =>
+  ({ node }) => {
+    const handleClick = useCallback(() => {
+      f.isFunction(onClick) && onClick(node);
+    }, [node.id]);
 
-  const disabled = idsToDisable && idsToDisable.has(node.id);
-  const buttonClass = buildClassName("set-link-button", { disabled });
+    const disabled = idsToDisable && idsToDisable.has(node.id);
+    const buttonClass = buildClassName("set-link-button", { disabled });
 
-  return (
-    <button disabled={disabled} className={buttonClass} onClick={handleClick}>
-      <i className={`fa ${icon}`} />
-    </button>
-  );
-};
+    return (
+      <button disabled={disabled} className={buttonClass} onClick={handleClick}>
+        <i className={`fa ${icon}`} />
+      </button>
+    );
+  };
 
 export const LinkedItem = ({
   node,
@@ -212,8 +214,8 @@ const toState = ({ error, finishedLoading, data } = {}) =>
   error
     ? State(StateTag.error)
     : finishedLoading
-    ? State(StateTag.done, data)
-    : State(StateTag.loading);
+      ? State(StateTag.done, data)
+      : State(StateTag.loading);
 const combineStates = (...states) => {
   return f.cond([
     [f.some(isError), () => State(StateTag.error)],
@@ -226,14 +228,16 @@ const isDone = state => state.tag === StateTag.done;
 const isError = state => state.tag === StateTag.error;
 const storeToState = path => f.compose(toState, f.prop(path));
 
-const selectLiveCell = ({ tableId, columnId, rowId }) => store => {
-  const [rowIdx, colIdx] = idsToIndices({ tableId, columnId, rowId }, store);
-  const row = f.prop(["rows", tableId, "data", rowIdx], store);
-  return {
-    ...f.prop(["cells", colIdx], row),
-    value: f.propOr([], ["values", colIdx], row)
+const selectLiveCell =
+  ({ tableId, columnId, rowId }) =>
+  store => {
+    const [rowIdx, colIdx] = idsToIndices({ tableId, columnId, rowId }, store);
+    const row = f.prop(["rows", tableId, "data", rowIdx], store);
+    return {
+      ...f.prop(["cells", colIdx], row),
+      value: f.propOr([], ["values", colIdx], row)
+    };
   };
-};
 
 const DataLoader = Component => props => {
   const { cell } = props;

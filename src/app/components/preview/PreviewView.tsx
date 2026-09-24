@@ -170,9 +170,11 @@ export default function PreviewView({
         selectedColumnAndRow.row.values.map((r: Row) => r.id) || [];
       const toTable =
         (selectedColumnAndRow.column as LinkColumn).toTable ||
-        ((selectedColumnAndRow.column as UnionColumn).originColumns?.find(
-          col => col.tableId === originTableId
-        )?.column as LinkColumn)?.toTable;
+        (
+          (selectedColumnAndRow.column as UnionColumn).originColumns?.find(
+            col => col.tableId === originTableId
+          )?.column as LinkColumn
+        )?.toTable;
 
       dispatch({
         type: actionTypes.preview.PREVIEW_SET_CURRENT_DETAIL_TABLE,

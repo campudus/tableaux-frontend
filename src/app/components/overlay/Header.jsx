@@ -12,12 +12,14 @@ import SvgIcon from "../helperComponents/SvgIcon";
 import store from "../../redux/store";
 
 class Header extends PureComponent {
-  wrapButtonFn = (value, fn) => (...args) => {
-    if (f.isFunction(fn)) {
-      fn(...args);
-    }
-    this.props.actions.closeOverlay(this.props.id);
-  };
+  wrapButtonFn =
+    (value, fn) =>
+    (...args) => {
+      if (f.isFunction(fn)) {
+        fn(...args);
+      }
+      this.props.actions.closeOverlay(this.props.id);
+    };
 
   renderTitle = () => {
     const { title, langtag, cell } = this.props;

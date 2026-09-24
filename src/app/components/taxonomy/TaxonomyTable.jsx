@@ -67,94 +67,92 @@ const mustInvertPopup = event => {
 };
 
 // mkTableEditor : List (List EditorEntryDescription) -> { node: TreeNode } -> React.Element
-const mkTableEditor = entryGroups => ({ node }) => {
-  const groups = entryGroups
-    .map(group =>
-      group.filter(
-        entry => !f.isFunction(entry.isVisible) || entry.isVisible(node)
+const mkTableEditor =
+  entryGroups =>
+  ({ node }) => {
+    const groups = entryGroups
+      .map(group =>
+        group.filter(
+          entry => !f.isFunction(entry.isVisible) || entry.isVisible(node)
+        )
       )
-    )
-    .filter(group => !f.isEmpty(group));
+      .filter(group => !f.isEmpty(group));
 
-  const [isOpen, setIsOpen] = useState(false);
-  const [invert, setInvert] = useState(false); // open popup inverted
-  const handleTogglePopup = useCallback(
-    event => {
-      event.stopPropagation();
-      setIsOpen(!isOpen);
-      if (!isOpen) setInvert(!!mustInvertPopup(event));
-    },
-    [isOpen]
-  );
-  const handleClosePopup = useCallback(() => setIsOpen(false), []);
-  const containerRef = useRef(null);
+    const [isOpen, setIsOpen] = useState(false);
+    const [invert, setInvert] = useState(false); // open popup inverted
+    const handleTogglePopup = useCallback(
+      event => {
+        event.stopPropagation();
+        setIsOpen(!isOpen);
+        if (!isOpen) setInvert(!!mustInvertPopup(event));
+      },
+      [isOpen]
+    );
+    const handleClosePopup = useCallback(() => setIsOpen(false), []);
+    const containerRef = useRef(null);
 
-  useEffect(
-    outsideClickEffect({
-      shouldListen: isOpen,
-      onOutsideClick: handleClosePopup,
-      containerRef
-    }),
-    [isOpen, containerRef.current]
-  );
+    useEffect(
+      outsideClickEffect({
+        shouldListen: isOpen,
+        onOutsideClick: handleClosePopup,
+        containerRef
+      }),
+      [isOpen, containerRef.current]
+    );
 
-  const buttonClass = buildClassName("tree-node__menu-button", {
-    open: isOpen
-  });
+    const buttonClass = buildClassName("tree-node__menu-button", {
+      open: isOpen
+    });
 
-  const popupClass = buildClassName("tree-node__menu-popup", { invert });
+    const popupClass = buildClassName("tree-node__menu-popup", { invert });
 
-  return (
-    <button
-      className={buttonClass}
-      onClick={handleTogglePopup}
-      ref={containerRef}
-    >
-      <SvgIcon
-        containerClasses="tree-node__menu-button-icon"
-        icon="vdots"
-        center
-      />
-      {isOpen ? (
-        <div className={popupClass}>
-          <ul className="tree--node__menu-popup__items-list">
-            {groups.map((entries, idx) => (
-              <EditorEntryGroup key={idx} entries={entries} node={node} />
-            ))}
-          </ul>
-        </div>
-      ) : null}
-    </button>
-  );
-};
+    return (
+      <button
+        className={buttonClass}
+        onClick={handleTogglePopup}
+        ref={containerRef}
+      >
+        <SvgIcon
+          containerClasses="tree-node__menu-button-icon"
+          icon="vdots"
+          center
+        />
+        {isOpen ? (
+          <div className={popupClass}>
+            <ul className="tree--node__menu-popup__items-list">
+              {groups.map((entries, idx) => (
+                <EditorEntryGroup key={idx} entries={entries} node={node} />
+              ))}
+            </ul>
+          </div>
+        ) : null}
+      </button>
+    );
+  };
 
-const onCreateNode = ({
-  dispatch,
-  table,
-  columns,
-  langtag,
-  onFocusNode
-}) => async ({ tableId, parentNodeId }) => {
-  const transformRows = rowValuesToCells(table, columns);
-  const rows = await action
-    .createAndLoadRow(dispatch, tableId, {
-      columns: [{ id: 1 }, { id: 4 }],
-      rows: [{ values: [{ [langtag]: "" }, f.compact([parentNodeId])] }]
-    })
-    .then(transformRows);
+const onCreateNode =
+  ({ dispatch, table, columns, langtag, onFocusNode }) =>
+  async ({ tableId, parentNodeId }) => {
+    const transformRows = rowValuesToCells(table, columns);
+    const rows = await action
+      .createAndLoadRow(dispatch, tableId, {
+        columns: [{ id: 1 }, { id: 4 }],
+        rows: [{ values: [{ [langtag]: "" }, f.compact([parentNodeId])] }]
+      })
+      .then(transformRows);
 
-  const node = f.compose(
-    f.assoc("parent", parentNodeId),
-    f.assoc("children", []),
-    f.first,
-    t.tableToTreeNodes
-  )({ rows });
+    const node = f.compose(
+      f.assoc("parent", parentNodeId),
+      f.assoc("children", []),
+      f.first,
+      t.tableToTreeNodes
+    )({ rows });
 
-  // Timing issue: we need to pass the new row to the next function, as it might
-  // not yet be dispatched to the redux store
-  if (f.isFunction(onFocusNode)) onFocusNode({ id: node.parent });
-  return node;
-};
+    // Timing issue: we need to pass the new row to the next function, as it might
+    // not yet be dispatched to the redux store
+    if (f.isFunction(onFocusNode)) onFocusNode({ id: node.parent });
+    return node;
+  };
 
 const EmptyTable = ({ createFirstNode }) => (
   <section className="tree empty-taxonony-table">

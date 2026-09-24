@@ -54,8 +54,8 @@ export default function AnnotationContextMenu({
       const translationAction = f.isEmpty(langtagsRemaining)
         ? () => deleteCellAnnotation({ ...opts, uuid }, cell)
         : !f.includes(langtag, langtags)
-        ? () => addTranslationNeeded(langtagsNew, cell)
-        : () => removeTranslationNeeded(langtagsRemove, cell);
+          ? () => addTranslationNeeded(langtagsNew, cell)
+          : () => removeTranslationNeeded(langtagsRemove, cell);
       const annotationAction = hasAnnotation
         ? () => deleteCellAnnotation({ ...opts, uuid }, cell)
         : () => setCellAnnotation(opts, cell);

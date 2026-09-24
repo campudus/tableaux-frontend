@@ -59,8 +59,8 @@ const displayCell = (cell, langtag, mainLangtag) => {
     cell.column.kind === ColumnKinds.currency
       ? formatCurrencyValue(result)
       : typeof result === "number"
-      ? String(result).replace(".", getLocaleDecimalSeparator(mainLangtag))
-      : result;
+        ? String(result).replace(".", getLocaleDecimalSeparator(mainLangtag))
+        : result;
 
   return f.isNil(result) || f.isEmpty(String(result).trim()) ? (
     <Empty />

@@ -130,8 +130,8 @@ const getSorting = (sorting = {}, defaultIsDesc = false) =>
   !f.isEmpty(sorting)
     ? sorting
     : defaultIsDesc
-    ? { colName: "rowId", direction: SortDirection.DESC }
-    : {};
+      ? { colName: "rowId", direction: SortDirection.DESC }
+      : {};
 
 const arrayToKey = coll =>
   Array.from(coll ?? [])

@@ -52,30 +52,31 @@ const ListItem = ({ isLinked, item, onChange, onEdit, style, langtag }) => {
   );
 };
 
-const renderListItem = ({ items, onChange, onEdit, langtag }) => ({
-  index,
-  style
-}) => {
-  const item = items[index] || {};
-  return (
-    <ListItem
-      key={item.id}
-      item={item}
-      style={style}
-      onChange={onChange}
-      onEdit={onEdit}
-      langtag={langtag}
-    />
-  );
-};
+const renderListItem =
+  ({ items, onChange, onEdit, langtag }) =>
+  ({ index, style }) => {
+    const item = items[index] || {};
+    return (
+      <ListItem
+        key={item.id}
+        item={item}
+        style={style}
+        onChange={onChange}
+        onEdit={onEdit}
+        langtag={langtag}
+      />
+    );
+  };
 
-const handleCreateRow = ({ table, langtag, onCreateRow }) => async () => {
-  const newRow = await store
-    .dispatch(addEmptyRow(table.id))
-    .then(f.prop("result"));
-  onCreateRow(newRow.id);
-  openEntityView({ langtag, row: newRow, table });
-};
+const handleCreateRow =
+  ({ table, langtag, onCreateRow }) =>
+  async () => {
+    const newRow = await store
+      .dispatch(addEmptyRow(table.id))
+      .then(f.prop("result"));
+    onCreateRow(newRow.id);
+    openEntityView({ langtag, row: newRow, table });
+  };
 
 const RowCreator = ({ noRowsAvailable, table, onClick, langtag }) => {
   const cssClass = buildClassName("row-creator", {
@@ -274,8 +275,8 @@ const SortMode = [
       itemA.displayValue < itemB.displayValue
         ? -1
         : itemA.displayValue > itemB.displayValue
-        ? 1
-        : 0,
+          ? 1
+          : 0,
     icon: "fa fa-sort-alpha-asc"
   }
 ];

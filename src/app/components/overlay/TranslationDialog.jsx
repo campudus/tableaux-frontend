@@ -1,7 +1,7 @@
 import i18n from "i18next";
 import { showDialog } from "./GenericOverlay";
 
-const openTranslationDialog = (context, confirm, cancel = function() {}) => {
+const openTranslationDialog = (context, confirm, cancel = function () {}) => {
   if (!confirm) {
     console.error(
       "openTranslationDialog(confirm, cancel) needs at least a confirm function argument passed"

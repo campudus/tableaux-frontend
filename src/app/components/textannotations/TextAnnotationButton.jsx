@@ -22,9 +22,7 @@ const TextAnnotationButton = props => {
     f.flatten
   )(cell.annotations);
 
-  const cbr = maybe(node)
-    .exec("getBoundingClientRect")
-    .getOrElse({});
+  const cbr = maybe(node).exec("getBoundingClientRect").getOrElse({});
   return (
     <div
       className={`text-annotation-button ${

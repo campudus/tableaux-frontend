@@ -18,13 +18,8 @@ class ColumnFilter extends React.Component {
   };
 
   render = () => {
-    const {
-      langtag,
-      columns,
-      tableId,
-      columnActions,
-      columnOrdering
-    } = this.props;
+    const { langtag, columns, tableId, columnActions, columnOrdering } =
+      this.props;
     const { open } = this.state;
     const nHidden = countHiddenColumns(columns);
 

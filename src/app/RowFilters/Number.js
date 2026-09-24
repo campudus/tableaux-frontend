@@ -16,11 +16,7 @@ const Mode = {
 
 export default {
   Mode,
-  readValue: str =>
-    maybe(str)
-      .map(parseFloat)
-      .filter(isFinite)
-      .getOrElse(null),
+  readValue: str => maybe(str).map(parseFloat).filter(isFinite).getOrElse(null),
   [Mode.equals]: x => y => y === x,
   [Mode.gt]: x => y => y > x,
   [Mode.gte]: x => y => y >= x,

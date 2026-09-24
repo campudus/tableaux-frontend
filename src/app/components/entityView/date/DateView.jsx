@@ -65,7 +65,7 @@ class DateView extends Component {
   getKeyboardShortcuts = () => {
     const captureEventAnd = fn => event => {
       event.stopPropagation();
-      (fn || function() {})();
+      (fn || function () {})();
     };
 
     return {

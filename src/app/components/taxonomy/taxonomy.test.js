@@ -2,17 +2,19 @@ import * as t from "./taxonomy";
 import { performance } from "perf_hooks";
 import { range } from "lodash/fp";
 
-const time = fn => (...args) => {
-  const start = performance.now();
-  // Randomly generated trees might contains stack-blowingly deep parent nestings.
-  // We prefer that way over uglymising the code for artificial tests.
-  try {
-    fn(...args);
-  } catch {
-    // pass
-  }
-  return performance.now() - start;
-};
+const time =
+  fn =>
+  (...args) => {
+    const start = performance.now();
+    // Randomly generated trees might contains stack-blowingly deep parent nestings.
+    // We prefer that way over uglymising the code for artificial tests.
+    try {
+      fn(...args);
+    } catch {
+      // pass
+    }
+    return performance.now() - start;
+  };
 
 const srand = seed => {
   let val = seed;

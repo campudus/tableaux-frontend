@@ -37,13 +37,8 @@ const CompletionItem = React.memo(
 );
 
 const SelectableCompletionList = props => {
-  const {
-    completions,
-    selected,
-    handleClick,
-    handleSelection,
-    requestedData
-  } = props;
+  const { completions, selected, handleClick, handleSelection, requestedData } =
+    props;
 
   const renderEntry = ({ index, style, key }) => {
     const completion = f.get(index, completions);

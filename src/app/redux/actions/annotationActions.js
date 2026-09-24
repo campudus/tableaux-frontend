@@ -44,15 +44,15 @@ const modifyAnnotationLangtags = change => action => (dispatch, getState) => {
     shouldDelete
       ? makeRequest(paramToDeleteAnnotation(cell, existingAnnotation))
       : change === Change.ADD
-      ? makeRequest(paramToSetAnnotation(cell, annotation))
-      : // else remove individual tags
-        Promise.all(
-          newLangtags.map(lt =>
-            makeRequest(
-              paramToDeleteAnnotationLangtag(cell, existingAnnotation, lt)
+        ? makeRequest(paramToSetAnnotation(cell, annotation))
+        : // else remove individual tags
+          Promise.all(
+            newLangtags.map(lt =>
+              makeRequest(
+                paramToDeleteAnnotationLangtag(cell, existingAnnotation, lt)
+              )
             )
-          )
-        );
+          );
   if (shouldDelete && !couldFindUuid) {
     return null;
   } else {

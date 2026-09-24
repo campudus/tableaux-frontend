@@ -66,7 +66,7 @@ const ShortTextView = props => {
     const captureEventAnd = fn => event => {
       event.stopPropagation();
       event.preventDefault();
-      (fn || function() {})(event);
+      (fn || function () {})(event);
     };
 
     return {

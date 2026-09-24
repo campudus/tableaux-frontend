@@ -39,22 +39,22 @@ const SelectLinkTargetOverlayHeader = props => {
   );
 };
 
-const mkActionButton = ({ onSubmit, selectedRowId, buttonMode, oldRowId }) => ({
-  node
-}) => {
-  const isAddButton = buttonMode === ButtonMode.add;
-  const disabled =
-    isAddButton && (node.id === selectedRowId || node.id === oldRowId);
-  const buttonClass = buildClassName("set-link-button", { disabled });
-  const iconClass = `fa fa-${buttonMode === ButtonMode.add ? "plus" : "minus"}`;
-  const handleClick = onSubmit(isAddButton ? node : { id: null });
+const mkActionButton =
+  ({ onSubmit, selectedRowId, buttonMode, oldRowId }) =>
+  ({ node }) => {
+    const isAddButton = buttonMode === ButtonMode.add;
+    const disabled =
+      isAddButton && (node.id === selectedRowId || node.id === oldRowId);
+    const buttonClass = buildClassName("set-link-button", { disabled });
+    const iconClass = `fa fa-${buttonMode === ButtonMode.add ? "plus" : "minus"}`;
+    const handleClick = onSubmit(isAddButton ? node : { id: null });
 
-  return (
-    <button className={buttonClass} onClick={handleClick} disabled={disabled}>
-      <i className={iconClass} />
-    </button>
-  );
-};
+    return (
+      <button className={buttonClass} onClick={handleClick} disabled={disabled}>
+        <i className={iconClass} />
+      </button>
+    );
+  };
 
 const SelectLinkTargetOverlayBody = ({
   tableId,

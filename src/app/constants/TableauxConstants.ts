@@ -49,7 +49,7 @@ export const TableType = {
   settings: "settings",
   default: "default"
 } as const;
-export type TableType = typeof TableType[keyof typeof TableType];
+export type TableType = (typeof TableType)[keyof typeof TableType];
 
 export const ImmutableColumnKinds = ["status", "concat"] as const;
 

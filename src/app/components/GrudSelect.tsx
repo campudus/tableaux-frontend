@@ -1,6 +1,6 @@
 import { CSSProperties, ReactElement } from "react";
 import ReactSelect, {
-  ActionMeta as _ActionMeta,
+  ActionMeta,
   DropdownIndicatorProps,
   Theme,
   GroupBase,
@@ -10,9 +10,7 @@ import ReactSelect, {
 import f from "lodash/fp";
 import { unless } from "pragmatic-fp-ts";
 
-// upgrade prettier to v2 for support of new ts syntax
-// export type { ActionMeta };
-export type ActionMeta<Option> = _ActionMeta<Option>;
+export type { ActionMeta };
 
 export type SelectOption = {
   label: string;

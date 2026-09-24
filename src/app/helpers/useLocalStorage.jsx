@@ -69,12 +69,11 @@ export const useLocalStorage = (key, initialValue = null, raw = false) => {
   return [value, x => stream.next(x)];
 };
 
-export const withLocalStorage = ({
-  key,
-  initialValue,
-  raw
-}) => Component => props => {
-  const [value, setValue] = useLocalStorage(key, initialValue, raw);
-  const storage = { ...(props.storage || {}), [key]: { value, setValue } };
-  return <Component storage={storage} {...props} />;
-};
+export const withLocalStorage =
+  ({ key, initialValue, raw }) =>
+  Component =>
+  props => {
+    const [value, setValue] = useLocalStorage(key, initialValue, raw);
+    const storage = { ...(props.storage || {}), [key]: { value, setValue } };
+    return <Component storage={storage} {...props} />;
+  };

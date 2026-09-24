@@ -22,21 +22,23 @@ const isInside = (container, event) => {
   return path ? path.includes(container) : container.contains(event.target);
 };
 
-const outsideClickEffect = ({
-  shouldListen, // Boolean
-  containerRef, // React.leagacyRef
-  onOutsideClick // Html.Event -> ()
-}) => () => {
-  if (shouldListen && containerRef.current) {
-    const handleOutsideClick = event => {
-      if (!isInside(containerRef.current, event)) onOutsideClick(event);
-    };
-    const handleCleanUp = () => {
-      document.removeEventListener("click", handleOutsideClick);
-    };
-    document.addEventListener("click", handleOutsideClick);
-    return handleCleanUp;
-  }
-};
+const outsideClickEffect =
+  ({
+    shouldListen, // Boolean
+    containerRef, // React.leagacyRef
+    onOutsideClick // Html.Event -> ()
+  }) =>
+  () => {
+    if (shouldListen && containerRef.current) {
+      const handleOutsideClick = event => {
+        if (!isInside(containerRef.current, event)) onOutsideClick(event);
+      };
+      const handleCleanUp = () => {
+        document.removeEventListener("click", handleOutsideClick);
+      };
+      document.addEventListener("click", handleOutsideClick);
+      return handleCleanUp;
+    }
+  };
 
 export { outsideClickEffect };

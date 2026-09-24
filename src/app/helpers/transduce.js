@@ -30,8 +30,10 @@ const conjListM = (coll, next) => {
   return coll;
 };
 
-export const transduceList = (...fs) => list => {
-  const xform = f.compose(...fs);
+export const transduceList =
+  (...fs) =>
+  list => {
+    const xform = f.compose(...fs);
 
-  return f.reduce(xform(conjListM), [], list);
-};
+    return f.reduce(xform(conjListM), [], list);
+  };

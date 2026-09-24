@@ -219,53 +219,53 @@ class LinkOverlay extends PureComponent {
     e.stopPropagation();
   };
 
-  renderListItem = ({ isLinked }) => ({ key, index, style = {} }) => {
-    const { selectedMode, activeBox } = this.state;
-    const rowResults = f.get(
-      isLinked ? "linked" : "unlinked",
-      this.props.rowResults
-    );
-    const row = isLinked
-      ? f.find(f.propEq("id", key), rowResults)
-      : rowResults[index];
+  renderListItem =
+    ({ isLinked }) =>
+    ({ key, index, style = {} }) => {
+      const { selectedMode, activeBox } = this.state;
+      const rowResults = f.get(
+        isLinked ? "linked" : "unlinked",
+        this.props.rowResults
+      );
+      const row = isLinked
+        ? f.find(f.propEq("id", key), rowResults)
+        : rowResults[index];
 
-    if (f.isEmpty(rowResults) || f.isEmpty(row)) {
-      return null;
-    }
-
-    const isSelected =
-      this.getSelectedId() === index &&
-      activeBox === (isLinked ? LINKED_ITEMS : UNLINKED_ITEMS);
-    const { langtag, cell } = this.props;
-
-    const refIfLinked = el => {
-      if (isLinked) {
-        this.elements = f.assoc(index, el, this.elements || {});
+      if (f.isEmpty(rowResults) || f.isEmpty(row)) {
+        return null;
       }
-    };
 
-    return row && cell ? (
-      <LinkItem
-        key={`${key}-${row.id}`}
-        refIfLinked={refIfLinked}
-        clickHandler={this.addLinkValue}
-        isLinked={isLinked}
-        isSelected={isSelected}
-        archived={isRowArchived(row)}
-        row={row}
-        toTable={f.get(["column", "toTable"], cell)}
-        cell={cell}
-        label={row.label}
-        langtag={langtag}
-        style={style}
-        selectedMode={selectedMode}
-        isPermissionDenied={row.hiddenByRowPermissions}
-        enableLinkAttributes={isLinked}
-      />
-    ) : (
-      undefined
-    );
-  };
+      const isSelected =
+        this.getSelectedId() === index &&
+        activeBox === (isLinked ? LINKED_ITEMS : UNLINKED_ITEMS);
+      const { langtag, cell } = this.props;
+
+      const refIfLinked = el => {
+        if (isLinked) {
+          this.elements = f.assoc(index, el, this.elements || {});
+        }
+      };
+
+      return row && cell ? (
+        <LinkItem
+          key={`${key}-${row.id}`}
+          refIfLinked={refIfLinked}
+          clickHandler={this.addLinkValue}
+          isLinked={isLinked}
+          isSelected={isSelected}
+          archived={isRowArchived(row)}
+          row={row}
+          toTable={f.get(["column", "toTable"], cell)}
+          cell={cell}
+          label={row.label}
+          langtag={langtag}
+          style={style}
+          selectedMode={selectedMode}
+          isPermissionDenied={row.hiddenByRowPermissions}
+          enableLinkAttributes={isLinked}
+        />
+      ) : undefined;
+    };
 
   swapLinkedItems = (a, b) => {
     const {

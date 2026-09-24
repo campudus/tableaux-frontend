@@ -58,9 +58,7 @@ class Table extends PureComponent {
       // deselect a cell when clicking column. Right now we cannot deselect when clicking in the white area because we
       // can't differentiate between clicking the scrollbar or content
       if (
-        maybe(this.headerDOMElement)
-          .exec("contains", e.target)
-          .getOrElse(false)
+        maybe(this.headerDOMElement).exec("contains", e.target).getOrElse(false)
       ) {
         e.preventDefault();
       }
@@ -99,24 +97,27 @@ class Table extends PureComponent {
     return result;
   };
 
-  showRowContextMenu = openAnnotations => ({ langtag, cell }) => event => {
-    const { pageX, pageY } = event;
-    const { actions, rows, tableView } = this.props;
-    this.setState({
-      rowContextMenu: {
-        x: pageX,
-        y: pageY,
-        row: cell.row,
-        table: cell.table,
-        actions,
-        langtag,
-        cell,
-        rows,
-        openAnnotations,
-        copySource: f.propOr({}, "copySource", tableView)
-      }
-    });
-  };
+  showRowContextMenu =
+    openAnnotations =>
+    ({ langtag, cell }) =>
+    event => {
+      const { pageX, pageY } = event;
+      const { actions, rows, tableView } = this.props;
+      this.setState({
+        rowContextMenu: {
+          x: pageX,
+          y: pageY,
+          row: cell.row,
+          table: cell.table,
+          actions,
+          langtag,
+          cell,
+          rows,
+          openAnnotations,
+          copySource: f.propOr({}, "copySource", tableView)
+        }
+      });
+    };
 
   hideRowContextMenu = event => {
     stopPropagation(event);

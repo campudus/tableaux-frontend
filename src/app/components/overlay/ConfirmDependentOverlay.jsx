@@ -42,8 +42,8 @@ const getHeadline = count => {
   const translationKey = f.isNil(count)
     ? "table:dependent-rows.fetching-dependent-rows"
     : count === 0
-    ? "table:dependent-rows.no-dependent-rows-header"
-    : "table:dependent-rows.dependent-rows-header";
+      ? "table:dependent-rows.no-dependent-rows-header"
+      : "table:dependent-rows.dependent-rows-header";
   return i18n.t(translationKey, { count });
 };
 

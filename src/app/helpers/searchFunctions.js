@@ -2,7 +2,7 @@ import f from "lodash/fp";
 import { ColumnKinds, FilterModes } from "../constants/TableauxConstants";
 
 const TaggedFunction = (mode, displayName, fn, isValidColumn = () => true) => {
-  const taggedFn = function(...args) {
+  const taggedFn = function (...args) {
     return fn(...args);
   };
   taggedFn.mode = mode;

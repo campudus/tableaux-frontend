@@ -106,8 +106,8 @@ class VirtualTable extends PureComponent {
     return index === 0
       ? META_CELL_WIDTH
       : hasStatusColumn && index === 1
-      ? STATUS_CELL_WIDTH
-      : widths[columnId] || CELL_WIDTH;
+        ? STATUS_CELL_WIDTH
+        : widths[columnId] || CELL_WIDTH;
   };
 
   moveResizeBar = () => {
@@ -533,13 +533,8 @@ class VirtualTable extends PureComponent {
   handleKeypresses;
 
   render() {
-    const {
-      rows,
-      expandedRowIds,
-      columns,
-      langtag,
-      visibleColumnOrdering
-    } = this.props;
+    const { rows, expandedRowIds, columns, langtag, visibleColumnOrdering } =
+      this.props;
     const columnKeys = visibleColumnOrdering.join(",");
     const { openAnnotations, showResizeBar } = this.state;
     const { rowIndex, columnIndex, align } = this.getScrollInfo();

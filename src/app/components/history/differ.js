@@ -120,7 +120,10 @@ const showBooleanDiff = ({ value }, langtag) => {
   return [{ add: true, value: i18n.t(boolValue ? "common:yes" : "common:no") }];
 };
 
-const showCompleteReplacement = ({ displayValue, prevDisplayValue }, langtag) =>
+const showCompleteReplacement = (
+  { displayValue, prevDisplayValue },
+  langtag
+) =>
   prevDisplayValue[langtag].trim() !== displayValue[langtag].trim()
     ? [
         { del: true, value: prevDisplayValue[langtag] },

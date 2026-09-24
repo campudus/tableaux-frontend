@@ -52,9 +52,7 @@ const NumericView = props => {
 
   const [oldValue] = useState(() => cell.value);
   const [value, setValue] = useState(() =>
-    maybe(initialValue)
-      .map(parseFloat)
-      .getOrElse(NaN)
+    maybe(initialValue).map(parseFloat).getOrElse(NaN)
   );
 
   const registerInput = useCallback(
@@ -88,7 +86,7 @@ const NumericView = props => {
     const captureEventAnd = fn => event => {
       event.stopPropagation();
       event.preventDefault();
-      (fn || function() {})(event);
+      (fn || function () {})(event);
     };
 
     return {

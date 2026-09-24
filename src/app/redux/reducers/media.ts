@@ -164,9 +164,10 @@ const mediaReducer = (state = initialState, action: MediaAction) => {
           ? {
               ...state.data,
               files: f.compose(
-                f.orderBy((file: Attachment) => f.toLower(file.updatedAt), [
-                  "desc"
-                ]),
+                f.orderBy(
+                  (file: Attachment) => f.toLower(file.updatedAt),
+                  ["desc"]
+                ),
                 f.concat(editedFile),
                 f.remove(file => file.uuid === editedFile.uuid)
               )(state.data.files ?? [])
