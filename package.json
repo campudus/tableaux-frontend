@@ -40,7 +40,7 @@
     "@typescript-eslint/parser": "8.70.1",
     "@uiw/react-codemirror": "4.21.21",
     "@vitejs/plugin-react": "6.0.2",
-    "@vitest/coverage-v8": "4.1.8",
+    "@vitest/coverage-v8": "4.1.11",
     "@vitest/eslint-plugin": "^1.1.37",
     "autoprefixer": "^10.5.0",
     "codemirror": "6.0.1",
