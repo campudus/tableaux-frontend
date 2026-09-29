@@ -7,11 +7,15 @@ import {
 } from "../../../helpers/accessManagementHelper";
 import SvgIcon from "../../helperComponents/SvgIcon";
 import ButtonAction from "../../helperComponents/ButtonAction";
+import DirentOrderControl from "./DirentOrderControl";
+import { DirentOrder } from "./direntOrdering";
 
 export type Layout = "list" | "tiles";
 
 type FolderToolbarProps = {
   className?: string;
+  order: DirentOrder;
+  onOrderChange: (order: DirentOrder) => void;
   onLayoutChange: (layout: Layout) => void;
   onUploadClick: () => void;
   onNewFolderClick?: () => void;
@@ -19,6 +23,8 @@ type FolderToolbarProps = {
 
 export default function FolderToolbar({
   className,
+  order,
+  onOrderChange,
   onLayoutChange,
   onUploadClick,
   onNewFolderClick
@@ -70,6 +76,8 @@ export default function FolderToolbar({
           onClick={onUploadClick}
         />
       )}
+
+      <DirentOrderControl order={order} onChange={onOrderChange} />
     </div>
   );
 }

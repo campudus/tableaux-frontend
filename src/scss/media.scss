@@ -57,6 +57,20 @@
     position: relative;
   }
 
+  .folder-dirent-group-header {
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    padding: 0 8px;
+    font-weight: bold;
+    color: #666;
+    overflow: hidden;
+
+    &--list {
+      border-bottom: 1px solid #dedede;
+    }
+  }
+
   .folder-dirent {
     box-sizing: border-box;
     overflow: hidden;
