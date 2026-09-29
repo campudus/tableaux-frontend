@@ -15,6 +15,14 @@ import { Layout } from "./FolderToolbar";
 import FolderDirent from "./FolderDirent";
 import { switchFolderHandler } from "../../Router";
 import FolderDirentNav from "./FolderDirentNav";
+import FolderDirentGroupHeader from "./FolderDirentGroupHeader";
+import {
+  arrangeAttachments,
+  DEFAULT_DIRENT_ORDER,
+  DirentOrder,
+  sortFolders
+} from "./direntOrdering";
+import { toListCells } from "./direntCells";
 
 type FolderDirentsProps = {
   className?: string;
@@ -22,6 +30,7 @@ type FolderDirentsProps = {
   folder: Partial<Folder>;
   fileIdsDiff: string[];
   layout: Layout;
+  order?: DirentOrder;
 };
 
 export default function FolderDirents({
@@ -29,22 +38,23 @@ export default function FolderDirents({
   langtag,
   folder,
   fileIdsDiff,
-  layout
+  layout,
+  order = DEFAULT_DIRENT_ORDER
 }: FolderDirentsProps): ReactElement {
   const navigate = useNavigate();
   const [dimensions, setDimensions] = useState({ width: 100, height: 100 });
   const masonryRef = useRef<Masonry>(null);
   const isRoot = folder.id === null;
   const hasBack = !isRoot;
-  const files = f.orderBy(f.prop("updatedAt"), "desc", folder.files);
+  const fileGroups = arrangeAttachments(order, langtag, folder.files ?? []);
   // sort new folder to top
   const subfolders = f.orderBy(
     folder => folder.name === i18n.t("media:new_folder"),
     "desc",
-    folder.subfolders ?? []
+    sortFolders(order, folder.subfolders ?? [])
   );
-  // add dummy folder for back action
-  const dirents = [...(hasBack ? [{} as Folder] : []), ...subfolders, ...files];
+  // add dummy entry for back action
+  const cells = toListCells(hasBack, subfolders, fileGroups);
 
   const cellHeight = layout === "list" ? 50 : 190;
   const cellWidth = layout === "list" ? dimensions.width : 215;
@@ -83,7 +93,7 @@ export default function FolderDirents({
     });
     masonryRef.current?.clearCellPositions();
     masonryRef.current?.recomputeCellPositions();
-  }, [dirents.length, layout, dimensions]);
+  }, [cells.length, order, layout, dimensions]);
 
   return (
     <div className={cn("folder-dirents", {}, className)}>
@@ -100,11 +110,11 @@ export default function FolderDirents({
               width={width}
               autoHeight={false}
               overscanByPixels={200}
-              cellCount={dirents.length}
+              cellCount={cells.length}
               cellMeasurerCache={cellMeasurerCache}
               cellPositioner={cellPositioner}
               cellRenderer={({ index, key, parent, style }) => {
-                const dirent = dirents[index];
+                const cell = cells[index];
 
                 return (
                   <CellMeasurer
@@ -113,7 +123,7 @@ export default function FolderDirents({
                     parent={parent}
                     cache={cellMeasurerCache}
                   >
-                    {hasBack && index === 0 ? (
+                    {cell?.kind === "back" ? (
                       <FolderDirentNav
                         style={{ ...style, width: cellWidth }}
                         langtag={langtag}
@@ -121,11 +131,17 @@ export default function FolderDirents({
                         layout={layout}
                         onClick={handleNavigateBack}
                       />
-                    ) : dirent ? (
+                    ) : cell?.kind === "group-header" ? (
+                      <FolderDirentGroupHeader
+                        style={{ ...style, width: cellWidth }}
+                        label={cell.label}
+                        layout={layout}
+                      />
+                    ) : cell?.kind === "dirent" ? (
                       <FolderDirent
                         style={{ ...style, width: cellWidth }}
                         langtag={langtag}
-                        dirent={dirent}
+                        dirent={cell.dirent}
                         layout={layout}
                         fileIdsDiff={fileIdsDiff}
                         width={width}

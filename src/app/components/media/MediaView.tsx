@@ -15,6 +15,7 @@ import FolderBreadcrumbs from "./folder/FolderBreadcrumbs";
 import FolderToolbar, { Layout } from "./folder/FolderToolbar";
 import { createMediaFolder } from "../../redux/actions/mediaActions";
 import FolderDirents from "./folder/FolderDirents";
+import { DEFAULT_DIRENT_ORDER, DirentOrder } from "./folder/direntOrdering";
 import actions from "../../redux/actionCreators";
 import Header from "../overlay/Header";
 import { retrieveTranslation } from "../../helpers/multiLanguage";
@@ -29,6 +30,7 @@ type MediaViewProps = {
 
 export default function MediaView({ langtag }: MediaViewProps): ReactElement {
   const [layout, setLayout] = useState<Layout>("list");
+  const [order, setOrder] = useState<DirentOrder>(DEFAULT_DIRENT_ORDER);
   const dropzoneRef = useRef<Dropzone>(null);
   const navigate = useNavigate();
   const location = useLocation();
@@ -115,6 +117,8 @@ export default function MediaView({ langtag }: MediaViewProps): ReactElement {
 
           <FolderToolbar
             className="media-view__toolbar"
+            order={order}
+            onOrderChange={setOrder}
             onLayoutChange={handleSelectLayout}
             onUploadClick={handleClickUpload}
             onNewFolderClick={!hasNewFolder ? handleClickNewFolder : undefined}
@@ -132,6 +136,7 @@ export default function MediaView({ langtag }: MediaViewProps): ReactElement {
             folder={folder}
             fileIdsDiff={fileIdsDiff}
             layout={layout}
+            order={order}
           />
 
           {canUserCreateFiles() && (
