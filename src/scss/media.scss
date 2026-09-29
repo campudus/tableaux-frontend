@@ -57,6 +57,19 @@
     position: relative;
   }
 
+  .dirent-order-control {
+    display: flex;
+
+    .button-action:first-child .button-action__button {
+      border-radius: 4px 0 0 4px;
+    }
+
+    .button-action:last-child .button-action__button {
+      border-radius: 0 4px 4px 0;
+      margin-left: -1px;
+    }
+  }
+
   .folder-dirent-group-header {
     box-sizing: border-box;
     display: flex;
@@ -65,10 +78,6 @@
     font-weight: bold;
     color: #666;
     overflow: hidden;
-
-    &--list {
-      border-bottom: 1px solid #dedede;
-    }
   }
 
   .folder-dirent {
