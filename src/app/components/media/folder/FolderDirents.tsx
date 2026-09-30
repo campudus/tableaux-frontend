@@ -54,7 +54,7 @@ export default function FolderDirents({
     sortFolders(order, folder.subfolders ?? [])
   );
   // add dummy entry for back action
-  const cells = toListCells(hasBack, subfolders, fileGroups);
+  const listItems = toListCells(hasBack, subfolders, fileGroups);
 
   const cellHeight = layout === "list" ? 50 : 190;
   const cellWidth = layout === "list" ? dimensions.width : 215;
@@ -93,7 +93,7 @@ export default function FolderDirents({
     });
     masonryRef.current?.clearCellPositions();
     masonryRef.current?.recomputeCellPositions();
-  }, [cells.length, order, layout, dimensions]);
+  }, [listItems.length, order, layout, dimensions]);
 
   return (
     <div className={cn("folder-dirents", {}, className)}>
@@ -110,11 +110,11 @@ export default function FolderDirents({
               width={width}
               autoHeight={false}
               overscanByPixels={200}
-              cellCount={cells.length}
+              cellCount={listItems.length}
               cellMeasurerCache={cellMeasurerCache}
               cellPositioner={cellPositioner}
               cellRenderer={({ index, key, parent, style }) => {
-                const cell = cells[index];
+                const cell = listItems[index];
 
                 return (
                   <CellMeasurer
