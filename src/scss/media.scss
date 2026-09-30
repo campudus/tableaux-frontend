@@ -11,10 +11,11 @@
     height: 100%;
     padding: 30px;
     margin: 0 auto;
-    background-color: #FFFFFF;
+    background-color: #ffffff;
     border-radius: 8px;
     display: grid;
-    grid-template-areas: "title . toolbar"
+    grid-template-areas:
+      "title . toolbar"
       "breadcrumbs breadcrumbs breadcrumbs"
       "dirents dirents dirents"
       "upload upload upload";
@@ -62,6 +63,7 @@
 
     .button-action:first-child .button-action__button {
       border-radius: 4px 0 0 4px;
+      min-width: 10rem;
     }
 
     .button-action:last-child .button-action__button {
@@ -129,7 +131,6 @@
       }
 
       &:not(:hover) {
-
         .folder-dirent__action--download,
         .folder-dirent__action--move,
         .folder-dirent__action--edit,
@@ -142,7 +143,6 @@
       .folder-dirent__action--move,
       .folder-dirent__action--edit,
       .folder-dirent__action--remove {
-
         .button-action__button {
           padding: 0 12px;
         }
@@ -183,7 +183,7 @@
         .button-action__button--active {
           background: #f8f8f8;
 
-          &>.svg-icon {
+          & > .svg-icon {
             fill: #333333;
           }
         }
@@ -214,7 +214,6 @@
       }
     }
   }
-
 }
 
 .file-upload {
@@ -264,7 +263,7 @@
     justify-content: center;
 
     &:hover {
-      background-color: #0000000A;
+      background-color: #0000000a;
       color: $color-primary-text;
       border: 1px dashed #000000;
     }
@@ -286,10 +285,7 @@
   &__skeleton {
     position: absolute;
     inset: 0;
-    background: linear-gradient(50deg,
-        #EFEFEF 40%,
-        #f7f7f7 50%,
-        #EFEFEF 60%);
+    background: linear-gradient(50deg, #efefef 40%, #f7f7f7 50%, #efefef 60%);
     background-size: 400% 400%;
     animation: diagonalPulse 1.5s ease-in-out infinite;
     will-change: background-position;
@@ -557,7 +553,6 @@
         flex: 1;
       }
     }
-
   }
 }
 
@@ -638,7 +633,7 @@
             width: 50px;
             height: 50px;
             border-radius: 50%;
-            color: #FFFFFF;
+            color: #ffffff;
             background-color: $color-success;
             bottom: -15px;
             z-index: 2;
@@ -674,7 +669,7 @@
       text-align: center;
 
       &:hover {
-        background-color: #FFFFFF;
+        background-color: #ffffff;
       }
     }
 
@@ -684,7 +679,6 @@
       flex-flow: column;
       gap: 8px;
     }
-
   }
 
   .file-edit-meta {
@@ -759,7 +753,8 @@
     padding: 16px 16px;
     display: grid;
     align-items: baseline;
-    grid-template-areas: "title . toolbar"
+    grid-template-areas:
+      "title . toolbar"
       "breadcrumbs breadcrumbs breadcrumbs"
       "dirents dirents dirents"
       "upload upload upload";
@@ -825,7 +820,6 @@
     }
   }
 
-
   .attachment-dirent {
     box-sizing: border-box;
     overflow: hidden;
@@ -836,15 +830,15 @@
 
     &:has(.attachment-dirent__action--remove) {
       fill: #ffffff;
-      background: #3296DC;
-      border: 1px solid #3296DC;
+      background: #3296dc;
+      border: 1px solid #3296dc;
 
       button {
         color: #ffffff;
       }
 
       &:hover {
-        background: #3296DC;
+        background: #3296dc;
       }
     }
 
@@ -865,8 +859,8 @@
     }
 
     .attachment-dirent__action--toggle {
-      background: #C3E1FF;
-      fill: #2E96FF;
+      background: #c3e1ff;
+      fill: #2e96ff;
     }
 
     &--list {
@@ -937,7 +931,7 @@
               background: transparent;
             }
 
-            &>.svg-icon {
+            & > .svg-icon {
               fill: inherit;
             }
           }
