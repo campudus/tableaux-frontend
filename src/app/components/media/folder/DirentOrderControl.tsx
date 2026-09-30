@@ -16,12 +16,6 @@ type DirentOrderControlProps = {
   onChange: (order: DirentOrder) => void;
 };
 
-const criterionIcons: Record<Criterion, string> = {
-  "by-name": "fa-font",
-  "by-type": "fa-file-o",
-  "by-date": "fa-clock-o"
-};
-
 const directionIcons: Record<Direction, string> = {
   asc: "fa-sort-amount-asc",
   desc: "fa-sort-amount-desc"
@@ -46,13 +40,16 @@ export default function DirentOrderControl({
   return (
     <div className={cn("dirent-order-control", {}, className)}>
       <ButtonAction
+        className="dirent-order-control_criterion-button"
         variant="outlined"
-        icon={<i className={`icon fa ${criterionIcons[order.criterion]}`} />}
         alt={i18n.t("media:order_criterion_tooltip", {
           criterion: i18n.t(criterionLabelKeys[order.criterion])
         })}
         onClick={() => onChange(nextCriterion(order))}
-      />
+      >
+        <span>{i18n.t(criterionLabelKeys[order.criterion])}</span>
+      </ButtonAction>
+
       <ButtonAction
         variant="outlined"
         icon={<i className={`icon fa ${directionIcons[order.direction]}`} />}

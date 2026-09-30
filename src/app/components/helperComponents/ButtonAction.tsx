@@ -18,6 +18,7 @@ type ButtonActionProps = {
   alt?: string;
   disabled?: boolean;
   alignmentH?: "left" | "right";
+  children?: JSX.Element | JSX.Element[];
 } & (
   | { options: ButtonActionOption[]; onClick?: never }
   | {
@@ -27,6 +28,7 @@ type ButtonActionProps = {
 );
 
 export default function ButtonAction({
+  children,
   className,
   variant = "text",
   icon,
@@ -80,8 +82,12 @@ export default function ButtonAction({
         title={alt}
         disabled={disabled}
       >
-        {icon}
-        {label}
+        {children || (
+          <>
+            {icon}
+            {label}
+          </>
+        )}
       </button>
 
       {showMenu && options && (
