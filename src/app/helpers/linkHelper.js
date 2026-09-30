@@ -88,23 +88,21 @@ const calcDistanceTable = ({ original, changed }) =>
   );
 
 // if there was a location: "after", this would look way better
-const buildRequestParam =
-  ({ original }) =>
-  ({ originalIdx, distance, id }) => {
-    if (originalIdx + distance < original.length - 1) {
-      return {
-        id,
-        successorId: original[originalIdx + distance + (distance > 0 ? 1 : 0)],
-        location: "before"
-      };
-    } else {
-      return {
-        id,
-        successorId: original[originalIdx + distance],
-        location: "end"
-      };
-    }
-  };
+const buildRequestParam = ({ original }) => ({ originalIdx, distance, id }) => {
+  if (originalIdx + distance < original.length - 1) {
+    return {
+      id,
+      successorId: original[originalIdx + distance + (distance > 0 ? 1 : 0)],
+      location: "before"
+    };
+  } else {
+    return {
+      id,
+      successorId: original[originalIdx + distance],
+      location: "end"
+    };
+  }
+};
 
 export const createLinkOrderRequest = data =>
   f.compose(

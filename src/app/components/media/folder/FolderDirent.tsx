@@ -1,12 +1,6 @@
 import f from "lodash/fp";
 import i18n from "i18next";
-import {
-  CSSProperties,
-  ForwardedRef,
-  forwardRef,
-  ReactElement,
-  useMemo
-} from "react";
+import { CSSProperties, ForwardedRef, forwardRef, ReactElement } from "react";
 import { isAttachment } from "../../../types/guards";
 import { Attachment, Folder } from "../../../types/grud";
 import { buildClassName as cn } from "../../../helpers/buildClassName";

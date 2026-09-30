@@ -5,8 +5,9 @@ const parseOptions = optString => {
   if (!optString || f.isEmpty(optString)) {
     return {};
   }
-  const opts = (
-    optString[0] === "?" ? optString.substring(1) : optString
+  const opts = (optString[0] === "?"
+    ? optString.substring(1)
+    : optString
   ).split("&");
 
   const mergeOptions = (opts, moreOpts) =>
@@ -18,12 +19,12 @@ const parseOptions = optString => {
               ? oldFilters[0] === "and"
                 ? [...oldFilters, moreOpts.filter ?? []]
                 : ["and", ...oldFilters, moreOpts.filter ?? []]
-              : (moreOpts.filter ?? []),
+              : moreOpts.filter ?? [],
           opts
         )
       : merge(opts, moreOpts);
 
-  const parseFilter = function (str) {
+  const parseFilter = function(str) {
     const toFilter = x => ({
       filter: x
     });
@@ -43,7 +44,7 @@ const parseOptions = optString => {
     } else return toFilter([]);
   }; // will get more complex once we implement filter routes
 
-  const parseEntityView = function (str) {
+  const parseEntityView = function(str) {
     return { entityView: { focusElement: str.split(":").length > 1 } };
   };
 
