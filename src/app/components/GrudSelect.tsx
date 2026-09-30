@@ -1,6 +1,6 @@
 import { CSSProperties, ReactElement } from "react";
 import ReactSelect, {
-  ActionMeta,
+  ActionMeta as RSActionMeta,
   DropdownIndicatorProps,
   Theme,
   GroupBase,
@@ -10,7 +10,7 @@ import ReactSelect, {
 import f from "lodash/fp";
 import { unless } from "pragmatic-fp-ts";
 
-export type { ActionMeta };
+export type ActionMeta<T> = RSActionMeta<T>;
 
 export type SelectOption = {
   label: string;
