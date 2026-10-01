@@ -13,17 +13,6 @@ export const DEFAULT_DIRENT_ORDER: DirentOrder = {
   direction: "asc"
 };
 
-const criterionAfter: Record<Criterion, Criterion> = {
-  "by-name": "by-type",
-  "by-type": "by-date",
-  "by-date": "by-name"
-};
-
-export const nextCriterion = (order: DirentOrder): DirentOrder => ({
-  ...order,
-  criterion: criterionAfter[order.criterion]
-});
-
 export const toggleDirection = (order: DirentOrder): DirentOrder => ({
   ...order,
   direction: order.direction === "asc" ? "desc" : "asc"

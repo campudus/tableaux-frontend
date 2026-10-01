@@ -55,6 +55,8 @@ export default function FolderToolbar({
         ]}
       />
 
+      <DirentOrderControl order={order} onChange={onOrderChange} />
+
       {canUserCreateFolders() && (
         <ButtonAction
           variant="outlined"
@@ -76,8 +78,6 @@ export default function FolderToolbar({
           onClick={onUploadClick}
         />
       )}
-
-      <DirentOrderControl order={order} onChange={onOrderChange} />
     </div>
   );
 }
