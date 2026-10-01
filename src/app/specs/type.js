@@ -5,26 +5,28 @@ import f from "lodash/fp";
 
 export const optional = test => f.anyPass([f.isNil, test]);
 
-export const check = spec => (value, previousResults = {}) => {
-  let results = previousResults;
+export const check =
+  spec =>
+  (value, previousResults = {}) => {
+    let results = previousResults;
 
-  if (f.isFunction(spec)) {
-    const specFunction = spec;
-    results[specFunction.name] = checkWithFunction(specFunction)(value);
-  } else {
-    const specObject = spec;
-    results = checkWithObject(specObject, results)(value);
-  }
+    if (f.isFunction(spec)) {
+      const specFunction = spec;
+      results[specFunction.name] = checkWithFunction(specFunction)(value);
+    } else {
+      const specObject = spec;
+      results = checkWithObject(specObject, results)(value);
+    }
 
-  return results;
-};
+    return results;
+  };
 
 export const isValid = (valueOrObj, prev = true) => {
   return f.isObject(valueOrObj)
     ? prev && f.every(val => isValid(val), f.values(valueOrObj))
     : f.isBoolean(valueOrObj)
-    ? prev && valueOrObj
-    : false;
+      ? prev && valueOrObj
+      : false;
 };
 
 export const validate = f.curryN(2, (spec, value) =>

@@ -324,7 +324,7 @@ const fspy = info => x => {
 
 const logged = curryN(2)(
   (msg, fn) =>
-    function(...args) {
+    function (...args) {
       if (!isFunction(fn)) {
         console.error(fn, "is not a function");
         return undefined;
@@ -335,7 +335,7 @@ const logged = curryN(2)(
     }
 );
 
-const forkJoin = curryN(4, function(combine, f, g, x) {
+const forkJoin = curryN(4, function (combine, f, g, x) {
   return combine(f(x), g(x));
 });
 
@@ -465,20 +465,19 @@ const slidingWindow = curryN(3, (size, step, coll, accum = []) => {
 });
 
 const match = curryN(2, (regex, str) =>
-  either(str)
-    .exec("match", regex)
-    .map(first)
-    .getOrElse("")
+  either(str).exec("match", regex).map(first).getOrElse("")
 );
 
-const composeP = (...promises) => value => {
-  const initialPromise = fp.last(promises);
-  return fp.compose(
-    fp.reduce((p, next) => p.then(next), initialPromise(value)),
-    fp.tail,
-    fp.reverse
-  )(promises);
-};
+const composeP =
+  (...promises) =>
+  value => {
+    const initialPromise = fp.last(promises);
+    return fp.compose(
+      fp.reduce((p, next) => p.then(next), initialPromise(value)),
+      fp.tail,
+      fp.reverse
+    )(promises);
+  };
 
 const mapP = curryN(2, (promiseGenerator, coll) =>
   Promise.all(coll.map(promiseGenerator))

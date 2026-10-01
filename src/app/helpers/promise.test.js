@@ -91,15 +91,12 @@ describe("promise helpers", () => {
       const toWeight = x => x;
       const chunkSize = 3;
 
-      await P.chunkWeighted(chunkSize, toWeight, countConcurrentPromises, [
-        1,
-        2,
-        3,
-        2,
-        3,
-        2,
-        1
-      ]);
+      await P.chunkWeighted(
+        chunkSize,
+        toWeight,
+        countConcurrentPromises,
+        [1, 2, 3, 2, 3, 2, 1]
+      );
       expect(stats.max).toBe(2);
     });
   });

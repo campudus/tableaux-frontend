@@ -6,15 +6,8 @@ import {
 import * as f from "lodash/fp";
 import Moment from "moment";
 
-const {
-  shorttext,
-  richtext,
-  text,
-  numeric,
-  datetime,
-  date,
-  integer
-} = ColumnKinds;
+const { shorttext, richtext, text, numeric, datetime, date, integer } =
+  ColumnKinds;
 
 // (string, string) -> bool
 const canConvert = (from, to) => {

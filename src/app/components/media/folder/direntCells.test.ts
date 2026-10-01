@@ -2,8 +2,8 @@ import { describe, expect, it } from "vitest";
 import { Attachment, Folder } from "../../../types/grud";
 import { toListCells } from "./direntCells";
 
-const folder = (name: string) => (({ name } as unknown) as Folder);
-const file = (uuid: string) => (({ uuid } as unknown) as Attachment);
+const folder = (name: string) => ({ name }) as unknown as Folder;
+const file = (uuid: string) => ({ uuid }) as unknown as Attachment;
 
 describe("toListCells", () => {
   const folders = [folder("f1"), folder("f2")];

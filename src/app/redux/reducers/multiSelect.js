@@ -27,17 +27,21 @@ const findSelectedCell = store => {
   )(store);
 };
 
-const selectReducer = actionMap => (...args) => {
-  const [state, { type }] = args;
-  const fn = actionMap[type] ?? (() => state ?? initialState);
-  return fn(...args);
-};
+const selectReducer =
+  actionMap =>
+  (...args) => {
+    const [state, { type }] = args;
+    const fn = actionMap[type] ?? (() => state ?? initialState);
+    return fn(...args);
+  };
 
-const whenClipboardNotEmpty = fn => (...args) => {
-  const [_state, _action, store] = args;
-  const hasCopySource = !f.isEmpty(f.prop("tableView.copySource", store));
-  return hasCopySource ? fn(...args) : initialState;
-};
+const whenClipboardNotEmpty =
+  fn =>
+  (...args) => {
+    const [_state, _action, store] = args;
+    const hasCopySource = !f.isEmpty(f.prop("tableView.copySource", store));
+    return hasCopySource ? fn(...args) : initialState;
+  };
 
 const toggleMultiselectCell = (state = initialState, action, store) => {
   const { cell } = action;
