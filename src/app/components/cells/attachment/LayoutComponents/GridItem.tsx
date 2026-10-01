@@ -1,5 +1,5 @@
 import { ContextProp, GridItemProps } from "react-virtuoso";
-import { Attachment, Folder } from "../../../../types/grud";
+import { DirentListEntry } from "../../../media/folder/direntListEntries";
 import { isAttachment } from "../../../../types/guards";
 import AttachmentSortable from "../AttachmentSortable";
 import { Layout } from "../AttachmentOverlay";
@@ -10,16 +10,25 @@ export default function GridItem({
   ...props
 }: GridItemProps &
   ContextProp<{
-    dirents: (Folder | Attachment)[];
+    entries: DirentListEntry[];
     sortable?: boolean;
   }>) {
   const index = props["data-index"];
-  const dirent = context.dirents[index];
+  const entry = context.entries[index];
   const layout: Layout = "tiles";
   const style = { height: "130px" };
 
-  if (!dirent) return null;
+  if (!entry) return null;
 
+  if (entry.kind !== "dirent") {
+    return (
+      <div {...props} key={entry.kind} style={style}>
+        {children}
+      </div>
+    );
+  }
+
+  const { dirent } = entry;
   const id = isAttachment(dirent) ? dirent.uuid : dirent.id;
 
   return context.sortable ? (

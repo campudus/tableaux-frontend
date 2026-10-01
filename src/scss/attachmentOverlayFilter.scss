@@ -19,18 +19,31 @@
     }
   }
 
-  .attachment-order {
-    flex: 0 1 auto;
-    min-width: 35px;
+  .dirent-order-control {
+    flex: 0 0 auto;
+    display: flex;
 
     .button-action__button {
       justify-content: center;
       color: #999;
       background: #ffffff;
+      border: none;
 
       &--active {
-        background: #ffffff;
+        background: #333333;
+        color: #ffffff;
       }
+    }
+
+    .button-action:first-child .button-action__button {
+      min-width: 10rem;
+      border-radius: 4px 0 0 4px;
+      border-right: 1px solid #dedede;
+    }
+
+    .button-action:last-child .button-action__button {
+      min-width: 35px;
+      border-radius: 0 4px 4px 0;
     }
   }
 

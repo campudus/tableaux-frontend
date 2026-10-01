@@ -1,29 +1,31 @@
 import { Attachment, Folder } from "../../../types/grud";
 import { DirentGroup } from "./direntOrdering";
 
-export type ListCell =
+export type DirentListEntry =
   | { kind: "back" }
   | { kind: "group-header"; label: string }
   | { kind: "dirent"; dirent: Attachment | Folder };
 
-const direntCell = (dirent: Attachment | Folder): ListCell => ({
+const direntEntry = (dirent: Attachment | Folder): DirentListEntry => ({
   kind: "dirent",
   dirent
 });
 
-const groupCells = (group: DirentGroup<Attachment>): Array<ListCell> => [
+const groupEntries = (
+  group: DirentGroup<Attachment>
+): Array<DirentListEntry> => [
   ...(group.label !== null
     ? [{ kind: "group-header", label: group.label } as const]
     : []),
-  ...group.dirents.map(direntCell)
+  ...group.dirents.map(direntEntry)
 ];
 
-export const toListCells = (
+export const toDirentListEntries = (
   hasBack: boolean,
   folders: Array<Folder>,
   fileGroups: Array<DirentGroup<Attachment>>
-): Array<ListCell> => [
+): Array<DirentListEntry> => [
   ...(hasBack ? [{ kind: "back" } as const] : []),
-  ...folders.map(direntCell),
-  ...fileGroups.flatMap(groupCells)
+  ...folders.map(direntEntry),
+  ...fileGroups.flatMap(groupEntries)
 ];

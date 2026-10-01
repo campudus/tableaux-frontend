@@ -22,7 +22,7 @@ import {
   DirentOrder,
   sortFolders
 } from "./direntOrdering";
-import { toListCells } from "./direntCells";
+import { toDirentListEntries } from "./direntListEntries";
 
 type FolderDirentsProps = {
   className?: string;
@@ -54,7 +54,7 @@ export default function FolderDirents({
     sortFolders(order, folder.subfolders ?? [])
   );
   // add dummy entry for back action
-  const listItems = toListCells(hasBack, subfolders, fileGroups);
+  const listItems = toDirentListEntries(hasBack, subfolders, fileGroups);
 
   const cellHeight = layout === "list" ? 50 : 190;
   const cellWidth = layout === "list" ? dimensions.width : 215;
@@ -114,7 +114,7 @@ export default function FolderDirents({
               cellMeasurerCache={cellMeasurerCache}
               cellPositioner={cellPositioner}
               cellRenderer={({ index, key, parent, style }) => {
-                const cell = listItems[index];
+                const entry = listItems[index];
 
                 return (
                   <CellMeasurer
@@ -123,7 +123,7 @@ export default function FolderDirents({
                     parent={parent}
                     cache={cellMeasurerCache}
                   >
-                    {cell?.kind === "back" ? (
+                    {entry?.kind === "back" ? (
                       <FolderDirentNav
                         style={{ ...style, width: cellWidth }}
                         langtag={langtag}
@@ -131,17 +131,17 @@ export default function FolderDirents({
                         layout={layout}
                         onClick={handleNavigateBack}
                       />
-                    ) : cell?.kind === "group-header" ? (
+                    ) : entry?.kind === "group-header" ? (
                       <FolderDirentGroupHeader
                         style={{ ...style, width: cellWidth }}
-                        label={cell.label}
+                        label={entry.label}
                         layout={layout}
                       />
-                    ) : cell?.kind === "dirent" ? (
+                    ) : entry?.kind === "dirent" ? (
                       <FolderDirent
                         style={{ ...style, width: cellWidth }}
                         langtag={langtag}
-                        dirent={cell.dirent}
+                        dirent={entry.dirent}
                         layout={layout}
                         fileIdsDiff={fileIdsDiff}
                         width={width}
