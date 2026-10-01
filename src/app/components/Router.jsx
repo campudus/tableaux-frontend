@@ -162,6 +162,10 @@ const GRUDRouter = React.memo(() => {
         element={<ServiceRouteView />}
       />
       <Route
+        path="/:langtag/services/:serviceId/tables/:tableId"
+        element={<ServiceRouteView />}
+      />
+      <Route
         path="/:langtag/services/:serviceId"
         element={<ServiceRouteView />}
       />
