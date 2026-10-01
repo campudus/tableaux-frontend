@@ -17,11 +17,8 @@ import ActionTypes from "../actionTypes";
 import getDisplayValue from "../../helpers/getDisplayValue";
 import { ShowArchived } from "../../archivedRows/helpers";
 
-const {
-  TOGGLE_EXPANDED_ROW,
-  COPY_CELL_VALUE_TO_CLIPBOARD,
-  RERENDER_TABLE
-} = ActionTypes.tableView;
+const { TOGGLE_EXPANDED_ROW, COPY_CELL_VALUE_TO_CLIPBOARD, RERENDER_TABLE } =
+  ActionTypes.tableView;
 const {
   SET_STATE,
   TOGGLE_COLUMN_VISIBILITY,

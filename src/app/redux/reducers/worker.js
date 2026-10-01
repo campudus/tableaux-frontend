@@ -13,7 +13,7 @@ import { ColumnKind } from "@grud/devtools/types";
 const mapWithIndex = f.map.convert({ cap: false });
 
 // Returns: Array<{ tableId: number, values: Array<Pick<Row, 'id' | 'values'>> }>
-onmessage = function(e) {
+onmessage = function (e) {
   const [rows, columns, langtags, table] = e.data;
   const tableId = table.id;
   initLangtags(langtags);

@@ -8,8 +8,7 @@ import AttachmentOverlayHeader from "./AttachmentOverlayHeader";
 import { FilterModes } from "../../../constants/TableauxConstants";
 
 export type FilterMode =
-  | typeof FilterModes.CONTAINS
-  | typeof FilterModes.STARTS_WITH;
+  typeof FilterModes.CONTAINS | typeof FilterModes.STARTS_WITH;
 
 export const FILTER_MODE_DEFAULT: FilterMode = FilterModes.CONTAINS;
 
@@ -18,7 +17,7 @@ export const ORDER_MODE = {
   TITLE: "title"
 } as const;
 
-export type OrderMode = typeof ORDER_MODE[keyof typeof ORDER_MODE];
+export type OrderMode = (typeof ORDER_MODE)[keyof typeof ORDER_MODE];
 
 export const ORDER_MODE_DEFAULT: OrderMode = ORDER_MODE.TITLE;
 

@@ -38,7 +38,7 @@ export default function AttachmentCell({
 
   const pagination = {
     clickable: true,
-    renderBullet: function(index: number, className: string) {
+    renderBullet: function (index: number, className: string) {
       const images = imageAttachments ?? [];
       return `<img class="${className}" src="/api${images[index]?.url[langtag]}" alt="thumb" />`;
     }

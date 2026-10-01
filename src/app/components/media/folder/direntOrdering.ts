@@ -103,8 +103,8 @@ export const arrangeAttachments = <A extends Attachment>(
   return toGroupKey
     ? groupConsecutive(toGroupKey(langtag), sorted)
     : sorted.length > 0
-    ? [{ label: null, dirents: sorted }]
-    : [];
+      ? [{ label: null, dirents: sorted }]
+      : [];
 };
 
 const folderProps: Record<Criterion, Array<keyof Folder>> = {

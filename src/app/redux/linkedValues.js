@@ -290,20 +290,19 @@ export const collectLinkedValueUpdates = (
 
 // Pushes the current identifier of (tableId, rowId) into every copy the store
 // holds. Idempotent, so the rollback path can simply call it again.
-export const propagateLinkedValues = ({ tableId, rowId, columnId }) => (
-  dispatch,
-  getState
-) => {
-  const updates = collectLinkedValueUpdates(getState(), {
-    tableId,
-    rowId,
-    columnId
-  });
+export const propagateLinkedValues =
+  ({ tableId, rowId, columnId }) =>
+  (dispatch, getState) => {
+    const updates = collectLinkedValueUpdates(getState(), {
+      tableId,
+      rowId,
+      columnId
+    });
 
-  if (updates.length > 0) {
-    dispatch({ type: LINKED_VALUES_UPDATED, updates });
-  }
-};
+    if (updates.length > 0) {
+      dispatch({ type: LINKED_VALUES_UPDATED, updates });
+    }
+  };
 
 // A refetched row can differ anywhere, so all of its display values are
 // recomputed.
@@ -380,23 +379,21 @@ export const refreshRows = (tableId, rowIds) => async (dispatch, getState) => {
 
 // The rows on the other side of the edges this change added or removed. A
 // reorder changes no edge and therefore fetches nothing.
-export const refreshBacklinks = ({
-  column,
-  oldValue,
-  newValue
-}) => dispatch => {
-  if (!column || !isLink(column)) {
-    return Promise.resolve();
-  }
+export const refreshBacklinks =
+  ({ column, oldValue, newValue }) =>
+  dispatch => {
+    if (!column || !isLink(column)) {
+      return Promise.resolve();
+    }
 
-  const idsOf = value =>
-    Array.isArray(value) ? value.map(entry => entry.id) : [];
-  const oldIds = idsOf(oldValue);
-  const newIds = idsOf(newValue);
-  const changedIds = [
-    ...oldIds.filter(id => !newIds.includes(id)),
-    ...newIds.filter(id => !oldIds.includes(id))
-  ];
+    const idsOf = value =>
+      Array.isArray(value) ? value.map(entry => entry.id) : [];
+    const oldIds = idsOf(oldValue);
+    const newIds = idsOf(newValue);
+    const changedIds = [
+      ...oldIds.filter(id => !newIds.includes(id)),
+      ...newIds.filter(id => !oldIds.includes(id))
+    ];
 
-  return dispatch(refreshRows(column.toTable, changedIds));
-};
+    return dispatch(refreshRows(column.toTable, changedIds));
+  };

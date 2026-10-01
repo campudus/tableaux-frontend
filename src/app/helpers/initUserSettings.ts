@@ -38,10 +38,7 @@ type TableViews = {
 };
 
 function readLocalStorage(key: string) {
-  return either(localStorage)
-    .map(f.get(key))
-    .map(JSON.parse)
-    .getOrElse({});
+  return either(localStorage).map(f.get(key)).map(JSON.parse).getOrElse({});
 }
 
 /**

@@ -98,9 +98,7 @@ const defaultMessages = {
  * @param messages: Message object to use
  */
 const getMotd = (langtag, messages = defaultMessages) => {
-  const dayOfWeek = Moment()
-    .format("ddd")
-    .toLowerCase();
+  const dayOfWeek = Moment().format("ddd").toLowerCase();
   const messagesInMyLang = getMultiLangValue(
     langtag,
     { generic: ["You're using GRUD."] },

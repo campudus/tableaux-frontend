@@ -135,8 +135,8 @@ export const rowValuesToCells = (table, columns) => {
         column.kind === ColumnKind.concat
           ? getConcatOrigin(table.id, column, row.tableId)
           : originColumn
-          ? { ...column, originColumn }
-          : column;
+            ? { ...column, originColumn }
+            : column;
       return addCellId({
         table,
         kind: column?.kind,

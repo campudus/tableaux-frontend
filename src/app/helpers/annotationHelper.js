@@ -29,8 +29,8 @@ const setCellAnnotation = (annotation, cell) => {
   const action = isTextAnnotation(annotation)
     ? actions.addTextAnnotation
     : isMultilangAnnotation(annotation)
-    ? actions.addAnnotationLangtags
-    : actions.toggleAnnotationFlag;
+      ? actions.addAnnotationLangtags
+      : actions.toggleAnnotationFlag;
   store.dispatch(action(payload));
 };
 
@@ -46,8 +46,8 @@ const deleteCellAnnotation = (annotation, cell) =>
     const action = isTextAnnotation(annotation)
       ? actions.removeTextAnnotation
       : isMultilangAnnotation(annotation)
-      ? actions.removeAnnotationLangtags
-      : actions.toggleAnnotationFlag;
+        ? actions.removeAnnotationLangtags
+        : actions.toggleAnnotationFlag;
     store.dispatch(action(payload));
   });
 

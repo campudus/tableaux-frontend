@@ -171,16 +171,18 @@ export const getUpdatedCellValueToSet = (
   return isRollback ? oldValue : mergeCellValues();
 };
 
-export const promisifyAction = actionCreator => (...params) =>
-  new Promise((resolve, reject) => {
-    const action = doto(
-      actionCreator(...params),
-      f.assoc("onSuccess", resolve),
-      f.assoc("onError", reject)
-    );
-    store.dispatch(action);
-    if (!action.promise) {
-      console.warn("Promisified synchronous action:", action.type);
-      resolve();
-    }
-  });
+export const promisifyAction =
+  actionCreator =>
+  (...params) =>
+    new Promise((resolve, reject) => {
+      const action = doto(
+        actionCreator(...params),
+        f.assoc("onSuccess", resolve),
+        f.assoc("onError", reject)
+      );
+      store.dispatch(action);
+      if (!action.promise) {
+        console.warn("Promisified synchronous action:", action.type);
+        resolve();
+      }
+    });

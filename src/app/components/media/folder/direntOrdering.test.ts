@@ -17,15 +17,15 @@ const attachment = (
   externalName: Multilang | string,
   mimeType: string
 ): Attachment =>
-  (({
+  ({
     externalName:
       typeof externalName === "string"
         ? { "de-DE": externalName }
         : externalName,
     mimeType: { "de-DE": mimeType }
-  } as unknown) as Attachment);
+  }) as unknown as Attachment;
 
-const folder = (name: string): Folder => (({ name } as unknown) as Folder);
+const folder = (name: string): Folder => ({ name }) as unknown as Folder;
 
 const externalNames = (langtag: string) => (attachments: Array<Attachment>) =>
   attachments.map(a => a.externalName[langtag]);
