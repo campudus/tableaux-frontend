@@ -16,49 +16,46 @@ const render = (order: DirentOrder, onChange: (order: DirentOrder) => void) => {
   return container;
 };
 
-const clickButton = (container: HTMLElement, index: number) => {
-  const button = container.querySelectorAll("button").item(index);
+const clickButton = (button: Element) => {
   act(() => {
     button.dispatchEvent(new MouseEvent("click", { bubbles: true }));
   });
 };
 
+const openCriterionMenu = (container: HTMLElement) =>
+  clickButton(container.querySelectorAll("button").item(0));
+
+const menuButtons = () => [
+  ...document.querySelectorAll(".button-action__menu button")
+];
+
 describe("DirentOrderControl", () => {
-  const order: DirentOrder = { criterion: "by-name", direction: "asc" };
+  const order: DirentOrder = { criterion: "by-type", direction: "desc" };
 
-  it("shows icons for criterion and direction, and no text", () => {
-    const container = render(order, () => undefined);
-    expect([...container.querySelectorAll("i")].map(i => i.className)).toEqual([
-      "icon fa fa-font",
-      "icon fa fa-sort-amount-asc"
-    ]);
-    expect(container.textContent).toBe("");
+  it("offers every criterion in a dropdown", () => {
+    openCriterionMenu(render(order, () => undefined));
+    expect(menuButtons()).toHaveLength(3);
   });
 
-  it("keeps the criterion icon when the direction changes", () => {
-    const iconOf = (direction: DirentOrder["direction"]) =>
-      render(
-        { criterion: "by-name", direction },
-        () => undefined
-      ).querySelector("i")?.className;
-    expect(iconOf("desc")).toBe(iconOf("asc"));
-  });
-
-  it("switches to the next criterion with the left button", () => {
+  it("selects the chosen criterion and keeps the direction", () => {
     const onChange = vi.fn();
-    clickButton(render(order, onChange), 0);
+    openCriterionMenu(render(order, onChange));
+    menuButtons().forEach((button, index) => {
+      if (index === 2) clickButton(button);
+    });
     expect(onChange).toHaveBeenCalledWith({
-      criterion: "by-type",
-      direction: "asc"
+      criterion: "by-date",
+      direction: "desc"
     });
   });
 
   it("flips the direction with the right button", () => {
     const onChange = vi.fn();
-    clickButton(render(order, onChange), 1);
+    const container = render(order, onChange);
+    clickButton(container.querySelectorAll("button").item(1));
     expect(onChange).toHaveBeenCalledWith({
-      criterion: "by-name",
-      direction: "desc"
+      criterion: "by-type",
+      direction: "asc"
     });
   });
 });

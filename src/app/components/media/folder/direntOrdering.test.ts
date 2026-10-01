@@ -5,7 +5,6 @@ import {
   arrangeAttachments,
   DirentGroup,
   DirentOrder,
-  nextCriterion,
   sortAttachments,
   sortFolders,
   toggleDirection
@@ -306,30 +305,6 @@ describe("arrangeAttachments", () => {
   it("returns no groups for empty input", () => {
     expect(arrange("by-name", "asc", [])).toEqual([]);
     expect(arrange("by-type", "asc", [])).toEqual([]);
-  });
-});
-
-describe("nextCriterion", () => {
-  it("cycles name, type, date and back to name", () => {
-    const byName: DirentOrder = { criterion: "by-name", direction: "asc" };
-    const byType = nextCriterion(byName);
-    const byDate = nextCriterion(byType);
-    const backToName = nextCriterion(byDate);
-    expect([byName, byType, byDate, backToName].map(o => o.criterion)).toEqual([
-      "by-name",
-      "by-type",
-      "by-date",
-      "by-name"
-    ]);
-  });
-
-  it("keeps the direction and does not mutate its input", () => {
-    const order: DirentOrder = { criterion: "by-type", direction: "desc" };
-    expect(nextCriterion(order)).toEqual({
-      criterion: "by-date",
-      direction: "desc"
-    });
-    expect(order).toEqual({ criterion: "by-type", direction: "desc" });
   });
 });
 

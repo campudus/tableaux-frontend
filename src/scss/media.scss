@@ -80,6 +80,12 @@
     font-weight: bold;
     color: #666;
     overflow: hidden;
+
+    &--tiles {
+      justify-content: center;
+      text-align: center;
+      font-size: 24px;
+    }
   }
 
   .folder-dirent {
