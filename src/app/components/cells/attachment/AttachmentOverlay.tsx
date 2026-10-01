@@ -5,21 +5,13 @@ import AttachmentOverlayBody, {
   AttachmentOverlayBodyProps
 } from "./AttachmentOverlayBody";
 import AttachmentOverlayHeader from "./AttachmentOverlayHeader";
+import { DirentOrder } from "../../media/folder/direntOrdering";
 import { FilterModes } from "../../../constants/TableauxConstants";
 
 export type FilterMode =
   typeof FilterModes.CONTAINS | typeof FilterModes.STARTS_WITH;
 
 export const FILTER_MODE_DEFAULT: FilterMode = FilterModes.CONTAINS;
-
-export const ORDER_MODE = {
-  CREATED_AT: "createdAt",
-  TITLE: "title"
-} as const;
-
-export type OrderMode = (typeof ORDER_MODE)[keyof typeof ORDER_MODE];
-
-export const ORDER_MODE_DEFAULT: OrderMode = ORDER_MODE.TITLE;
 
 export type Layout = "list" | "tiles";
 
@@ -29,7 +21,7 @@ export type SharedData = {
   folder?: Folder;
   filterValue?: string;
   filterMode?: FilterMode;
-  orderMode?: OrderMode;
+  order?: DirentOrder;
 };
 
 export type SharedProps = {

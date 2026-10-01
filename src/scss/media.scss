@@ -748,6 +748,24 @@
   display: grid;
   grid-template-columns: 460px 1fr;
 
+  .folder-dirent-group-header {
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    padding: 0 8px;
+    font-weight: bold;
+    color: #666;
+    overflow: hidden;
+
+    &--tiles {
+      justify-content: center;
+      text-align: center;
+      font-size: 24px;
+    }
+  }
+
   &__content {
     border-left: 1px solid #c4c4c4;
     background: #ffffff;

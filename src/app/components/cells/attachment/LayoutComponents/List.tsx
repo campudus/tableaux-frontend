@@ -1,6 +1,6 @@
 import { ForwardedRef, forwardRef } from "react";
 import { ContextProp, ListProps } from "react-virtuoso";
-import { Attachment, Folder } from "../../../../types/grud";
+import { DirentListEntry } from "../../../media/folder/direntListEntries";
 
 function List(
   {
@@ -9,7 +9,7 @@ function List(
     ...props
   }: ListProps &
     ContextProp<{
-      dirents: (Folder | Attachment)[];
+      entries: DirentListEntry[];
       sortable?: boolean;
     }>,
   ref: ForwardedRef<HTMLDivElement>

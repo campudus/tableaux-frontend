@@ -1,8 +1,12 @@
 import { ReactElement } from "react";
-import { SharedProps, FilterMode, OrderMode } from "./AttachmentOverlay";
+import { SharedProps, FilterMode } from "./AttachmentOverlay";
 import Header from "../../overlay/Header";
 import AttachmentFilter from "./AttachmentFilter";
-import AttachmentOrder from "./AttachmentOrder";
+import DirentOrderControl from "../../media/folder/DirentOrderControl";
+import {
+  DEFAULT_DIRENT_ORDER,
+  DirentOrder
+} from "../../media/folder/direntOrdering";
 
 type AttachmentOverlayHeaderProps = SharedProps;
 
@@ -10,7 +14,11 @@ export default function AttachmentOverlayHeader(
   props: AttachmentOverlayHeaderProps
 ): ReactElement {
   const { sharedData, updateSharedData } = props;
-  const { filterValue, filterMode, orderMode } = sharedData ?? {};
+  const {
+    filterValue,
+    filterMode,
+    order = DEFAULT_DIRENT_ORDER
+  } = sharedData ?? {};
 
   const handleUpdateFilterValue = (value: string) => {
     updateSharedData?.(() => ({
@@ -28,10 +36,10 @@ export default function AttachmentOverlayHeader(
     }));
   };
 
-  const handleUpdateOrderMode = (mode: OrderMode) => {
+  const handleUpdateOrder = (order: DirentOrder) => {
     updateSharedData?.(() => ({
       ...sharedData,
-      orderMode: mode
+      order
     }));
   };
 
@@ -44,10 +52,7 @@ export default function AttachmentOverlayHeader(
           onUpdateValue={handleUpdateFilterValue}
           onUpdateMode={handleUpdateFilterMode}
         />
-        <AttachmentOrder
-          mode={orderMode}
-          onUpdateMode={handleUpdateOrderMode}
-        />
+        <DirentOrderControl order={order} onChange={handleUpdateOrder} />
       </div>
     </Header>
   );

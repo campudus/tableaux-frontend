@@ -26,10 +26,14 @@ import { idsToIndices } from "../../../redux/redux-helpers";
 import {
   FILTER_MODE_DEFAULT,
   Layout,
-  ORDER_MODE_DEFAULT,
   SharedProps,
   ToggleAction
 } from "./AttachmentOverlay";
+import {
+  arrangeAttachments,
+  DEFAULT_DIRENT_ORDER,
+  sortFolders
+} from "../../media/folder/direntOrdering";
 import SearchFunctions from "../../../helpers/searchFunctions";
 import { retrieveTranslation } from "../../../helpers/multiLanguage";
 
@@ -52,7 +56,7 @@ export default function AttachmentOverlayBody({
     folder,
     filterMode = FILTER_MODE_DEFAULT,
     filterValue,
-    orderMode = ORDER_MODE_DEFAULT
+    order = DEFAULT_DIRENT_ORDER
   } = sharedData ?? {};
   const ids = {
     tableId: cell.table.id,
@@ -84,14 +88,14 @@ export default function AttachmentOverlayBody({
     const targetValue = translate(file.title);
     return filter(filterValue, targetValue) as boolean;
   }, folder?.files);
-  const files = f.orderBy(f.prop(orderMode), "desc", filteredFiles);
+  const fileGroups = arrangeAttachments(order, langtag, filteredFiles);
   const hasCreatePermission = !!folder?.permission?.create;
 
   // sort new folder to top
   const subfolders = f.orderBy(
     f.propEq("name", i18n.t("media:new_folder")),
     "desc",
-    folder?.subfolders ?? []
+    sortFolders(order, folder?.subfolders ?? [])
   );
 
   const handleNavigate = async (folderId?: FolderID | null) => {
@@ -250,7 +254,7 @@ export default function AttachmentOverlayBody({
           <AttachmentDirents
             className="attachment-overlay__dirents"
             langtag={langtag}
-            files={files}
+            fileGroups={fileGroups}
             subfolders={subfolders}
             layout={layoutState.nav}
             onNavigate={handleNavigate}
