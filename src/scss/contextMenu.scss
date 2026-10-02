@@ -1,3 +1,8 @@
+:root {
+  --context-menu-min-width: 230px;
+  --context-submenu-width: 250px;
+}
+
 .context-menu {
   position: absolute;
   z-index: 2;
@@ -118,10 +123,15 @@
 .annotation-context-menu {
   display: none;
   padding: 10px 0;
-  width: 250px;
+  width: var(--context-submenu-width);
   position: absolute;
   top: -10px;
   left: 100%;
+
+  .submenu-to-left & {
+    left: auto;
+    right: 100%;
+  }
 }
 
 .annotation-context-menu-button {
