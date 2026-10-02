@@ -23,6 +23,7 @@ import {
   initiateEntityView,
   initiateRowDependency
 } from "../../helpers/rowHelper";
+import { getCssVarNumeric } from "../../helpers/getCssVar";
 import T from "../../helpers/table";
 import { clearSelectedCellValue } from "../../redux/actions/cellActions";
 import ContextMenuServices from "../frontendService/ContextMenuEntries";
@@ -272,7 +273,7 @@ class RowContextMenu extends React.Component {
           x={this.props.x}
           y={this.props.y - 60}
           offset={CLICK_OFFSET}
-          minWidth={230}
+          minWidth={getCssVarNumeric("--context-menu-min-width")}
         >
           <div className="separator">{t("cell")}</div>
           {this.openLinksFilteredItem()}
