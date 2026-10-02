@@ -10,13 +10,16 @@ import React from "react";
 import ReactDom from "react-dom";
 import * as f from "lodash/fp";
 import PropTypes from "prop-types";
+import { getCssVarNumeric } from "../../helpers/getCssVar";
+import { opensSubmenuToLeft } from "./submenuPlacement";
 
 class GenericContextMenu extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       x: props.x,
-      y: props.y
+      y: props.y,
+      submenuToLeft: false
     };
   }
 
@@ -36,7 +39,15 @@ class GenericContextMenu extends React.Component {
       const xPos = noClampX
         ? x + offset - xShift
         : f.clamp(0, window.innerWidth - w, x + offset - xShift);
-      this.setState({ x: xPos });
+      this.setState({
+        x: xPos,
+        submenuToLeft: opensSubmenuToLeft({
+          x: xPos,
+          menuWidth: w,
+          submenuWidth: getCssVarNumeric("--context-submenu-width"),
+          viewportWidth: window.innerWidth
+        })
+      });
     }
 
     if (y) {
@@ -54,13 +65,18 @@ class GenericContextMenu extends React.Component {
   }
 
   render() {
-    const { x, y } = this.state;
+    const { x, y, submenuToLeft } = this.state;
     const cssStyle = f.reduce(f.assign, {}, [
       x ? { left: x } : null,
       y ? { top: y } : null
     ]);
     return (
-      <div className="context-menu row-context-menu" style={cssStyle}>
+      <div
+        className={`context-menu row-context-menu${
+          submenuToLeft ? " submenu-to-left" : ""
+        }`}
+        style={cssStyle}
+      >
         {this.props.menuItems || this.props.children}
       </div>
     );
