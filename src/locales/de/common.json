@@ -37,5 +37,10 @@
     "reconnected-message": "Sie können die Arbeit jetzt fortsetzen.",
     "disconnected-title": "Verbindung zur Datenbank unterbrochen",
     "disconnected-message": "Änderungen seit {{time}} sind möglicherweise verloren gegangen. Bitte überprüfen Sie ihre Netzwerkverbindung."
+  },
+  "environment_marker": {
+    "test": "Testsystem",
+    "staging": "Staging-System",
+    "notice": "Änderungen hier wirken sich nicht auf das Produktivsystem aus."
   }
 }

@@ -19,8 +19,21 @@ const envParams = [
   "enableHistory",
   "showTableDropdown",
   "disableAuth",
-  "injectPermissions"
+  "injectPermissions",
+  "grudEnvironment",
+  "grudEnvironmentColor"
 ];
+
+// Keep in sync with src/app/helpers/environment.ts
+const knownEnvironments = ["production", "staging", "test"];
+
+const warnOnUnknownEnvironment = ({ grudEnvironment }) => {
+  if (grudEnvironment && !knownEnvironments.includes(grudEnvironment)) {
+    console.error(
+      `Warning: Unknown grudEnvironment "${grudEnvironment}", expected one of ${knownEnvironments.join(", ")}. Falling back to production.`
+    );
+  }
+};
 
 const configDefault = {
   enableHistory: true,
@@ -60,7 +73,10 @@ const loadConfig = configPath => {
     return config;
   }, {});
 
-  return { ...configDefault, ...configLocal, ...configEnv };
+  const config = { ...configDefault, ...configLocal, ...configEnv };
+  warnOnUnknownEnvironment(config);
+
+  return config;
 };
 
 export default loadConfig;

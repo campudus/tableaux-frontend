@@ -96,7 +96,7 @@
 
   .attachment-slider-overlay {
     position: fixed;
-    inset: 0;
+    inset: var(--environment-banner-height) 0 0;
     z-index: 1000;
   }
 

@@ -38,5 +38,10 @@
     "reconnected-message": "You may now safely continue working.",
     "disconnected-title": "Connection to server lost",
     "disconnected-message": "Changes since {{time}} might have been lost. Please check your network connection."
+  },
+  "environment_marker": {
+    "test": "Test system",
+    "staging": "Staging system",
+    "notice": "Changes made here do not affect your live system."
   }
 }

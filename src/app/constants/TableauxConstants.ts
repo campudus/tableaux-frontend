@@ -6,6 +6,8 @@ type Config = {
   authServerUrl?: string;
   disableAuth?: boolean;
   enableHistory?: boolean;
+  grudEnvironment?: string;
+  grudEnvironmentColor?: string;
   injectPermissions?: string;
   showTableDropdown?: boolean;
   webhookUrl: string;
