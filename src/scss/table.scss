@@ -287,7 +287,7 @@ body div div.column-header-context-menu {
   position: absolute;
   left: 0;
   right: 0;
-  top: 108px;
+  top: calc(108px + var(--environment-banner-height)); // portalled to body
   text-align: center;
   font-weight: bold;
   z-index: 1;
