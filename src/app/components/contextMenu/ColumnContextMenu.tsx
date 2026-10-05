@@ -5,7 +5,9 @@ import {
   PropsWithChildren,
   ReactElement,
   useEffect,
-  useRef
+  useLayoutEffect,
+  useRef,
+  useState
 } from "react";
 import { outsideClickEffect } from "../../helpers/useOutsideClick";
 import { SortValue } from "../../constants/TableauxConstants";
@@ -13,6 +15,7 @@ import actions from "../../redux/actionCreators";
 import store from "../../redux/store";
 import RowFilters from "../../RowFilters/index";
 import { Column } from "../../types/grud";
+import { placeBelowAnchorRightAligned } from "./placement";
 
 type ContextMenuItemProps = {
   title: string;
@@ -48,18 +51,33 @@ export const ContextMenuItem = ({
 };
 
 type ContextMenuProps = PropsWithChildren<{
-  style: CSSProperties;
+  anchorRect: DOMRect;
   column: Column;
   onClose: () => void;
 }>;
 
 export default function ColumnContextMenu({
-  style,
+  anchorRect,
   column,
   onClose,
   children
 }: ContextMenuProps): ReactElement {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [menuWidth, setMenuWidth] = useState<number | null>(null);
+
+  // Menu width depends on its (translated) content, so it can only be measured after mounting
+  useLayoutEffect(() => {
+    setMenuWidth(containerRef.current?.getBoundingClientRect().width ?? null);
+  }, []);
+
+  const style: CSSProperties =
+    menuWidth === null
+      ? { visibility: "hidden", left: 0, top: anchorRect.bottom }
+      : placeBelowAnchorRightAligned({
+          anchor: anchorRect,
+          menuWidth,
+          viewportWidth: document.documentElement.clientWidth
+        });
 
   const sortByThisColumn = (direction: string) => () => {
     const currentFilters = f.prop(["tableView", "filters"], store.getState());
