@@ -76,7 +76,9 @@ Default project configuration can be overwritten via a `config.json` in the base
   "authRealm": "GRUD",                            // Keycloak realm
   "authClientId": "grud-frontend",                // Keycloak clientId
   "disableAuth": true,                            // disable authentication for frontends behind old proxy (default: false),
-  "injectPermissions": "path/to/perm.json"        // in dev mode, add permissions as if given by authentication and user role
+  "injectPermissions": "path/to/perm.json",       // in dev mode, add permissions as if given by authentication and user role
+  "grudEnvironment": "test",                      // production (default), staging or test; non-production instances show a banner
+  "grudEnvironmentColor": "#c6e31e"               // optional banner color, any CSS color
 }
 ```
 
@@ -98,6 +100,8 @@ Following variable names can be used:
 - AUTH_SERVER_URL
 - AUTH_REALM
 - INJECT_PERMISSIONS # path to a permission JSON to mock auth results in dev mode
+- GRUD_ENVIRONMENT=[production,staging,test] # Mark staging and test instances with a banner and a tab title prefix. Any other value counts as production. Default: production
+- GRUD_ENVIRONMENT_COLOR # Any CSS color for the banner background. Default: lime for test, orange for staging
 
 ```sh
 PORT=3001 npm run start

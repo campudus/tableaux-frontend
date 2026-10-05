@@ -53,3 +53,14 @@ _Avoid_: remote value, external value
 The `<em>` element, the only markup a format pattern may contain. It survives into the link
 chips and is reduced to plain text everywhere else.
 _Avoid_: HTML, rich text — both suggest more is allowed than is
+
+**Environment**:
+What kind of deployment an instance is: production, staging or test. Each instance has
+exactly one, and an instance that is not told staging or test is production.
+_Avoid_: system, stage, Testinstanz — "system" also means the whole GRUD, and "stage" is not
+the set of values we use
+
+**Environment marker**:
+Everything that tells a user they are not looking at production: a banner across the top of
+every page and a prefix on the browser tab title. Production carries no marker.
+_Avoid_: test banner — the marker is shown on staging too, and it is more than the banner

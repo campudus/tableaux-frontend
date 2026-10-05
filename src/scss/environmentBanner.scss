@@ -1,0 +1,40 @@
+// Height is 0 unless the instance is staging or test, so everything offset
+// by it stays where it was in production.
+:root {
+  --environment-banner-height: 0px;
+}
+
+.has-environment-marker {
+  --environment-banner-height: 24px;
+
+  body {
+    box-sizing: border-box;
+    padding-top: var(--environment-banner-height);
+  }
+
+  #tableaux {
+    position: relative;
+  }
+}
+
+.environment-banner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--environment-banner-height);
+  z-index: 1011; // above every overlay, see cellValue.scss
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 1.2rem;
+  white-space: nowrap;
+  overflow: hidden;
+  @include user-select(none);
+
+  .environment-banner-name {
+    font-weight: bold;
+    text-transform: uppercase;
+  }
+}

@@ -110,7 +110,7 @@ body div div.column-header-context-menu {
     &.sticky {
       position: fixed;
       z-index: 9;
-      top: 0;
+      top: var(--environment-banner-height);
       left: 50px;
     }
 

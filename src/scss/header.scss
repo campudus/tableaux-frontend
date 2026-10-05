@@ -15,6 +15,7 @@
     )
     1;
   position: fixed;
+  top: var(--environment-banner-height);
   z-index: 9;
   overflow: visible;
   display: flex;

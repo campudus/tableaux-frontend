@@ -5,6 +5,7 @@ import i18n from "i18next";
 
 import PropTypes from "prop-types";
 
+import EnvironmentBanner from "./EnvironmentBanner";
 import Overlays from "./overlay/Overlays";
 import ViewRenderer from "./ViewRenderer";
 import resources from "../../locales/index";
@@ -53,6 +54,7 @@ export default class Tableaux extends React.Component {
     return (
       <I18nextProvider i18n={i18n}>
         <div id="tableaux-view">
+          <EnvironmentBanner />
           <ViewRenderer
             viewName={initialViewName}
             params={initialParams}

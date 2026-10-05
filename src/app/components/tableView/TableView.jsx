@@ -10,6 +10,7 @@ import {
   RowIdColumn
 } from "../../constants/TableauxConstants";
 import { mapIndexed } from "../../helpers/functools";
+import { prefixTitle } from "../../helpers/environment";
 import { getTableDisplayName } from "../../helpers/multiLanguage";
 import reduxActionHoc from "../../helpers/reduxActionHoc";
 import GrudHeader from "../GrudHeader";
@@ -156,9 +157,9 @@ class TableView extends PureComponent {
 
     if (table) {
       const tableDisplayName = getTableDisplayName(table, langtag);
-      document.title = tableDisplayName
-        ? tableDisplayName + " | " + PageTitle
-        : PageTitle;
+      document.title = prefixTitle(
+        tableDisplayName ? tableDisplayName + " | " + PageTitle : PageTitle
+      );
     }
   };
 
