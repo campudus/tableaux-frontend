@@ -149,10 +149,7 @@ export default function ColumnHeader({
       {isMenuOpen && headerPosition && (
         <Portal>
           <ColumnContextMenu
-            style={{
-              left: headerPosition.left,
-              top: headerPosition.bottom
-            }}
+            anchorRect={headerPosition}
             column={column}
             onClose={handleMenuClose}
           >
