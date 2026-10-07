@@ -1,11 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  getBannerColor,
-  getContrastTextColor,
-  getEnvironment,
-  parseRgb,
-  prefixTitle
-} from "./environment";
+import { getBannerColors, getEnvironment, prefixTitle } from "./environment";
 
 describe("getEnvironment", () => {
   it("recognises staging and test", () => {
@@ -32,47 +26,41 @@ describe("prefixTitle", () => {
   });
 });
 
-describe("getBannerColor", () => {
+describe("getBannerColors", () => {
   const isValid = () => true;
   const isInvalid = () => false;
 
-  it("uses the environment's default without a configured color", () => {
-    expect(getBannerColor("test", undefined, isValid)).toBe("#c6e31e");
-    expect(getBannerColor("staging", "", isValid)).toBe("#f97316");
+  it("uses the environment's defaults without configured colors", () => {
+    expect(getBannerColors("test", {}, isValid)).toEqual({
+      background: "#c6e31e",
+      text: "#000000"
+    });
+    expect(
+      getBannerColors("staging", { background: "", text: "" }, isValid)
+    ).toEqual({
+      background: "#f97316",
+      text: "#000000"
+    });
   });
 
-  it("prefers a valid configured color", () => {
-    expect(getBannerColor("test", "rebeccapurple", isValid)).toBe(
-      "rebeccapurple"
+  it("prefers valid configured colors", () => {
+    expect(
+      getBannerColors("test", { background: "#123456", text: "white" }, isValid)
+    ).toEqual({ background: "#123456", text: "white" });
+  });
+
+  it("falls back for each color on its own", () => {
+    expect(getBannerColors("test", { background: "#123456" }, isValid)).toEqual(
+      {
+        background: "#123456",
+        text: "#000000"
+      }
     );
   });
 
-  it("ignores an invalid configured color", () => {
-    expect(getBannerColor("test", "not-a-color", isInvalid)).toBe("#c6e31e");
-  });
-});
-
-describe("getContrastTextColor", () => {
-  it.each([
-    [[255, 255, 255], "black"],
-    [[198, 227, 30], "black"], // test default
-    [[249, 115, 22], "black"], // staging default
-    [[18, 52, 86], "white"],
-    [[0, 0, 0], "white"]
-  ] as const)("picks %j -> %s", (rgb, expected) => {
-    expect(getContrastTextColor([...rgb])).toBe(expected);
-  });
-});
-
-describe("parseRgb", () => {
-  it("parses computed rgb and rgba values", () => {
-    expect(parseRgb("rgb(18, 52, 86)")).toEqual([18, 52, 86]);
-    expect(parseRgb("rgba(18, 52, 86, 0.5)")).toEqual([18, 52, 86]);
-    expect(parseRgb("#123456")).toEqual([18, 52, 86]);
-  });
-
-  it("returns null for anything else", () => {
-    expect(parseRgb("")).toBeNull();
-    expect(parseRgb("transparent")).toBeNull();
+  it("ignores invalid configured colors", () => {
+    expect(
+      getBannerColors("test", { background: "grün", text: "weiß" }, isInvalid)
+    ).toEqual({ background: "#c6e31e", text: "#000000" });
   });
 });

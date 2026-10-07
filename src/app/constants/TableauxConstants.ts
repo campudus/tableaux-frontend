@@ -7,7 +7,8 @@ type Config = {
   disableAuth?: boolean;
   enableHistory?: boolean;
   grudEnvironment?: string;
-  grudEnvironmentColor?: string;
+  grudEnvironmentBackgroundColor?: string;
+  grudEnvironmentTextColor?: string;
   injectPermissions?: string;
   showTableDropdown?: boolean;
   webhookUrl: string;
