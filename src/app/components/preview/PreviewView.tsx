@@ -3,7 +3,7 @@ import f from "lodash/fp";
 import GrudHeader from "../GrudHeader";
 import { switchLanguageHandler } from "../Router";
 import { useSelector, useDispatch } from "react-redux";
-import { GRUDStore, LinkColumn, Row, UnionColumn } from "../../types/grud";
+import { GRUDStore, LinkColumn, Row } from "../../types/grud";
 import actions from "../../redux/actionCreators";
 import PreviewRowView from "./PreviewRowView";
 import PreviewDetailView from "./PreviewDetailView";
@@ -171,7 +171,7 @@ export default function PreviewView({
       const toTable =
         (selectedColumnAndRow.column as LinkColumn).toTable ||
         (
-          (selectedColumnAndRow.column as UnionColumn).originColumns?.find(
+          selectedColumnAndRow.column.originColumns?.find(
             col => col.tableId === originTableId
           )?.column as LinkColumn
         )?.toTable;

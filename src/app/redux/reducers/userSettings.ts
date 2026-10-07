@@ -2,15 +2,15 @@ import f from "lodash/fp";
 import {
   UserSetting,
   UserSettingBody,
-  UserSettingFilter,
-  UserSettingGlobal,
+  FilterUserSetting,
+  GlobalUserSetting,
   UserSettingKey,
   UserSettingKeyFilter,
   UserSettingKeyGlobal,
   UserSettingKeyTable,
   UserSettingKind,
   UserSettingParams,
-  UserSettingTable,
+  TableUserSetting,
   UserSettingValue
 } from "../../types/userSettings";
 import ActionTypes from "../actionTypes";
@@ -99,7 +99,7 @@ export default (state = initialState, action: UserSettingAction) => {
           [kind, key],
           settings => [
             // filter out settings without id (optimistic updates)
-            ...f.filter<UserSetting>(s => !!s.id, settings),
+            ...f.filter<FilterUserSetting>(s => !!s.id, settings),
             setting
           ],
           state
@@ -117,7 +117,7 @@ export default (state = initialState, action: UserSettingAction) => {
           ...state.global,
           ...f.flow(
             f.filter<UserSetting>(s => isUserSettingOfKind(s, "global")),
-            f.keyBy<UserSettingGlobal>(s => s.key),
+            f.keyBy<GlobalUserSetting>(s => s.key),
             f.mapValues(s => s.value)
           )(settings)
         },
@@ -125,7 +125,7 @@ export default (state = initialState, action: UserSettingAction) => {
           ...state.table,
           ...f.flow(
             f.filter<UserSetting>(s => isUserSettingOfKind(s, "table")),
-            f.groupBy<UserSettingTable>(s => s.tableId),
+            f.groupBy<TableUserSetting>(s => s.tableId),
             f.mapValues(
               f.flow(
                 f.keyBy(s => s.key),
@@ -138,7 +138,7 @@ export default (state = initialState, action: UserSettingAction) => {
           ...state.filter,
           ...f.flow(
             f.filter<UserSetting>(s => isUserSettingOfKind(s, "filter")),
-            f.groupBy<UserSettingFilter>(s => s.key)
+            f.groupBy<FilterUserSetting>(s => s.key)
           )(settings)
         }
       };

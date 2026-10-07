@@ -6,42 +6,52 @@ import {
   formatLinkLabel,
   getLinkAttributeDefinitions,
   hasLinkAttributes,
-  LinkAttributeDefinition,
   parseAttributeInput,
   readLinkAttributes,
   setLinkAttributes,
   toAttributeInputValue,
   usesLinkAttributeFormat
 } from "./linkAttributes";
+import { LinkAttributeDefinition } from "../types/grud";
 
 const percentageDef: LinkAttributeDefinition = {
   name: "percentage",
   kind: "integer",
-  displayName: { "de-DE": "Prozentanteil", "en-GB": "Percentage" }
+  displayName: { "de-DE": "Prozentanteil", "en-GB": "Percentage" },
+  description: {},
+  multilanguage: false
 };
 
 const activeDef: LinkAttributeDefinition = {
   name: "active",
   kind: "boolean",
-  displayName: { "de-DE": "Aktiv" }
+  displayName: { "de-DE": "Aktiv" },
+  description: {},
+  multilanguage: false
 };
 
 const noteDef: LinkAttributeDefinition = {
   name: "note",
   kind: "text",
-  displayName: { "de-DE": "Notiz" }
+  displayName: { "de-DE": "Notiz" },
+  description: {},
+  multilanguage: false
 };
 
 const dateDef: LinkAttributeDefinition = {
   name: "validFrom",
   kind: "date",
-  displayName: { "de-DE": "Gültig ab" }
+  displayName: { "de-DE": "Gültig ab" },
+  description: {},
+  multilanguage: false
 };
 
 const datetimeDef: LinkAttributeDefinition = {
   name: "signedAt",
   kind: "datetime",
-  displayName: { "de-DE": "Unterschrieben am" }
+  displayName: { "de-DE": "Unterschrieben am" },
+  description: {},
+  multilanguage: false
 };
 
 const columnWithFormat = (
@@ -92,7 +102,8 @@ describe("formatAttributeValue", () => {
   });
 
   it("falls back to the definition's name when displayName is missing", () => {
-    const def: LinkAttributeDefinition = { name: "active", kind: "boolean" };
+    // the API always sends displayName, this guards against malformed definitions
+    const def = { name: "active", kind: "boolean" } as LinkAttributeDefinition;
     expect(
       formatAttributeValue({ definition: def, value: true, langtag: "de-DE" })
     ).toBe("active");

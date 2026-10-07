@@ -20,7 +20,7 @@
   },
   "license": "Apache license 2.0",
   "devDependencies": {
-    "@campudus/grud-sdk": "1.2.1",
+    "@campudus/grud-sdk": "1.2.2",
     "@chenglou/pretext": "0.0.8",
     "@codemirror/lang-markdown": "6.5.0",
     "@dnd-kit/core": "6.3.1",
