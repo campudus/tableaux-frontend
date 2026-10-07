@@ -1,10 +1,7 @@
-import { Table } from "@grud/devtools/types";
-import { TableType } from "../constants/TableauxConstants";
+import { Table, TABLE_TYPE } from "@campudus/grud-sdk/types";
 import { doto } from "./functools";
 
-const isUnionTable = (t: Table) =>
-  // TODO: update Table type in @grud/devtools with `type` key, remove type cast
-  (t as Table & { type: TableType }).type === TableType.union;
+const isUnionTable = (table: Table) => table.type === TABLE_TYPE.union;
 
 const getOriginRowId = (row: { id: number; tableId: number }) => {
   const prefix = String(row.tableId);

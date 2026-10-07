@@ -7,7 +7,7 @@ import {
   getLanguageOrCountryIcon
 } from "../../../helpers/multiLanguage";
 import { buildClassName } from "../../../helpers/buildClassName";
-import { formatNumber } from "@grud/devtools/intl";
+import { formatNumber } from "@campudus/grud-sdk/utils";
 
 const Changes = props => {
   const { diff, noCurrency, langtag } = props;
@@ -36,7 +36,8 @@ const Changes = props => {
                       {ifElse(
                         f.isNil,
                         () => "",
-                        () => formatNumber(langtag, value),
+                        () =>
+                          formatNumber({ langtag, value, hasSeparator: true }),
                         value
                       )}
                     </div>
@@ -80,10 +81,11 @@ const CurrentValue = ({ langtag, cell, revision, diff }) => {
         });
         const ccValue = f.isNil(value[cc])
           ? "-,-"
-          : formatNumber(
+          : formatNumber({
               langtag,
-              f.isString(value[cc]) ? parseFloat(value[cc]) : value[cc]
-            );
+              value: f.isString(value[cc]) ? parseFloat(value[cc]) : value[cc],
+              hasSeparator: true
+            });
 
         return (
           <div key={cc} className="country-diff__value-item">

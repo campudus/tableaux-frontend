@@ -30,7 +30,7 @@ const getGroupColumnGroupIds = (columns: Column[] | undefined): number[] => {
 
   columns.forEach(column => {
     if (column.kind === "group") {
-      groupColumnGroupIds.push(...column.groups.map(g => g.id));
+      groupColumnGroupIds.push(...column.groups!.map(g => g.id));
     }
   });
 

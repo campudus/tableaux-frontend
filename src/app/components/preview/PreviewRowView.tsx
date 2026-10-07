@@ -8,7 +8,7 @@ import { ColumnAndRow } from "./helper";
 import { isPreviewTitle } from "./attributes";
 import Notifier from "./Notifier";
 import { setRowFlag } from "../../redux/actions/annotationActions";
-import { GRUDStore, LinkColumn, Row } from "../../types/grud";
+import { GRUDStore, Row } from "../../types/grud";
 import i18n from "i18next";
 import apiUrl, { previewUrl } from "../../helpers/apiUrl";
 import { canUserEditRowAnnotations } from "../../helpers/accessManagementHelper";
@@ -56,7 +56,7 @@ export default function PreviewRowView({
     if (newColumnAndRow.column.kind === "link") {
       const linkedRowIds: number[] =
         newColumnAndRow.row.values.map((r: Row) => r.id) || [];
-      const toTable = (newColumnAndRow.column as LinkColumn).toTable;
+      const toTable = newColumnAndRow.column.toTable!;
 
       dispatch({
         type: actionTypes.preview.PREVIEW_SET_CURRENT_DETAIL_TABLE,

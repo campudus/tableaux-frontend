@@ -8,11 +8,11 @@ import {
   Locale,
   MultilangValue,
   Table
-} from "@grud/devtools/types";
+} from "@campudus/grud-sdk/types";
 import { UserSettingsState } from "../redux/reducers/userSettings";
 import { LinkAttributeDefinition } from "../helpers/linkAttributes";
 
-export * from "@grud/devtools/types";
+export * from "@campudus/grud-sdk/types";
 
 export type Annotation = {
   uuid: string;

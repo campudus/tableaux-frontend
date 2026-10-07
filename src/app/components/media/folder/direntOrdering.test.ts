@@ -1,4 +1,4 @@
-import { Attachment } from "@grud/devtools/types";
+import { Attachment } from "@campudus/grud-sdk/types";
 import { describe, expect, it } from "vitest";
 import { Folder } from "src/app/types/grud";
 import {

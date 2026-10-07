@@ -1,4 +1,4 @@
-import { Column, ColumnID, MultilangValue } from "../types/grud";
+import { Column, MultilangValue } from "../types/grud";
 
 type Config = {
   authClientId?: string;
@@ -95,7 +95,7 @@ export const PageTitle = "GRUD";
 // This is a meta column which doesn't exist in (or is not provided by) the backend
 // but is needed for sorting in the frontend
 export const RowIdColumn: Column = {
-  id: ColumnID(-1),
+  id: -1,
   ordering: -1,
   displayName: { de: "ID" },
   identifier: false,
@@ -104,7 +104,8 @@ export const RowIdColumn: Column = {
   name: "rowId",
   separator: false,
   attributes: {},
-  description: {}
+  description: {},
+  hidden: false
 } as const;
 
 export let Langtags = ["de-DE"];

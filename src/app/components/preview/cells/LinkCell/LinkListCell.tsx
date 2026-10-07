@@ -89,7 +89,7 @@ export default function LinkListCell({
                 link={apiUrl({
                   langtag,
                   tableId: linkColumn.toTable,
-                  columnId: linkColumn.toColumn.id,
+                  columnId: linkColumn.toColumn!.id,
                   rowId: entry.id
                 })}
                 path={[getColumnDisplayName(linkColumn, langtag)]}
