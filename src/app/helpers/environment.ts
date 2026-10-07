@@ -5,9 +5,11 @@ export type Environment = "production" | "staging" | "test";
 
 type MarkedEnvironment = Exclude<Environment, "production">;
 
-const DefaultColors: Record<MarkedEnvironment, string> = {
-  test: "#c6e31e",
-  staging: "#f97316"
+export type BannerColors = { background: string; text: string };
+
+const DefaultColors: Record<MarkedEnvironment, BannerColors> = {
+  test: { background: "#c6e31e", text: "#000000" },
+  staging: { background: "#f97316", text: "#000000" }
 };
 
 const TitlePrefixes: Record<MarkedEnvironment, string> = {
@@ -32,45 +34,20 @@ export const prefixTitle = (
 ): string =>
   isMarked(environment) ? `${TitlePrefixes[environment]} ${title}` : title;
 
-export const getBannerColor = (
+// Each configured color falls back to the environment's default on its own
+export const getBannerColors = (
   environment: MarkedEnvironment,
-  configuredColor?: string,
+  configured: Partial<BannerColors>,
   isValidColor: (color: string) => boolean = color =>
     CSS.supports("color", color)
-): string =>
-  configuredColor && isValidColor(configuredColor)
-    ? configuredColor
-    : DefaultColors[environment];
-
-type RGB = [number, number, number];
-
-// WCAG relative luminance, see https://www.w3.org/TR/WCAG21/#dfn-relative-luminance
-const linearize = (channel: number): number => {
-  const c = channel / 255;
-  return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
-};
-
-const getLuminance = ([r, g, b]: RGB): number =>
-  0.2126 * linearize(r) + 0.7152 * linearize(g) + 0.0722 * linearize(b);
-
-export const getContrastTextColor = (background: RGB): "black" | "white" => {
-  const luminance = getLuminance(background);
-  const contrastWithBlack = (luminance + 0.05) / 0.05;
-  const contrastWithWhite = 1.05 / (luminance + 0.05);
-  return contrastWithBlack >= contrastWithWhite ? "black" : "white";
-};
-
-// parseRgb : "rgb(1, 2, 3)" | "rgba(1, 2, 3, 0.5)" | "#010203" -> RGB
-// Browsers compute colors to rgb(), test DOMs may keep the hex notation.
-export const parseRgb = (computedColor: string): RGB | null => {
-  const rgb = computedColor.match(/rgba?\(\s*(\d+)[\s,]+(\d+)[\s,]+(\d+)/);
-  if (rgb) {
-    return [Number(rgb[1]), Number(rgb[2]), Number(rgb[3])];
-  }
-  const hex = computedColor.match(/^#([\da-f]{2})([\da-f]{2})([\da-f]{2})$/i);
-  return hex
-    ? [parseInt(hex[1]!, 16), parseInt(hex[2]!, 16), parseInt(hex[3]!, 16)]
-    : null;
+): BannerColors => {
+  const pick = (key: keyof BannerColors) => {
+    const color = configured[key];
+    return color && isValidColor(color)
+      ? color
+      : DefaultColors[environment][key];
+  };
+  return { background: pick("background"), text: pick("text") };
 };
 
 // Called once after the config is loaded, before anything is rendered

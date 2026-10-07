@@ -21,7 +21,8 @@ const envParams = [
   "disableAuth",
   "injectPermissions",
   "grudEnvironment",
-  "grudEnvironmentColor"
+  "grudEnvironmentBackgroundColor",
+  "grudEnvironmentTextColor"
 ];
 
 // Keep in sync with src/app/helpers/environment.ts

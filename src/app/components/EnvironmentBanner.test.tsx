@@ -41,12 +41,13 @@ describe("EnvironmentBanner", () => {
     );
   });
 
-  it("uses the configured color", () => {
+  it("uses the configured colors", () => {
     const banner = render({
       grudEnvironment: "test",
-      grudEnvironmentColor: "#123456"
+      grudEnvironmentBackgroundColor: "#123456",
+      grudEnvironmentTextColor: "#ffffff"
     }).querySelector<HTMLElement>(".environment-banner");
     expect(banner?.style.backgroundColor).toMatch(/#123456|rgb\(18, 52, 86\)/);
-    expect(banner?.style.color).toBe("white");
+    expect(banner?.style.color).toMatch(/#ffffff|rgb\(255, 255, 255\)/);
   });
 });

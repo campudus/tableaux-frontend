@@ -78,7 +78,8 @@ Default project configuration can be overwritten via a `config.json` in the base
   "disableAuth": true,                            // disable authentication for frontends behind old proxy (default: false),
   "injectPermissions": "path/to/perm.json",       // in dev mode, add permissions as if given by authentication and user role
   "grudEnvironment": "test",                      // production (default), staging or test; non-production instances show a banner
-  "grudEnvironmentColor": "#c6e31e"               // optional banner color, any CSS color
+  "grudEnvironmentBackgroundColor": "#c6e31e",    // optional banner background, any CSS color
+  "grudEnvironmentTextColor": "#000000"           // optional banner text color, any CSS color
 }
 ```
 
@@ -101,7 +102,8 @@ Following variable names can be used:
 - AUTH_REALM
 - INJECT_PERMISSIONS # path to a permission JSON to mock auth results in dev mode
 - GRUD_ENVIRONMENT=[production,staging,test] # Mark staging and test instances with a banner and a tab title prefix. Any other value counts as production. Default: production
-- GRUD_ENVIRONMENT_COLOR # Any CSS color for the banner background. Default: lime for test, orange for staging
+- GRUD_ENVIRONMENT_BACKGROUND_COLOR # Any CSS color for the banner background. Default: #c6e31e (lime) for test, #f97316 (orange) for staging
+- GRUD_ENVIRONMENT_TEXT_COLOR # Any CSS color for the banner text. Default: #000000. Set it together with a custom background so the text stays readable
 
 ```sh
 PORT=3001 npm run start

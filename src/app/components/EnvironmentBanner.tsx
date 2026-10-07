@@ -1,39 +1,28 @@
 import i18n from "i18next";
-import React, { useLayoutEffect, useRef, useState } from "react";
+import React from "react";
 import { config } from "../constants/TableauxConstants";
 import {
-  getBannerColor,
-  getContrastTextColor,
+  getBannerColors,
   getCurrentEnvironment,
-  isMarked,
-  parseRgb
+  isMarked
 } from "../helpers/environment";
 
 export default function EnvironmentBanner() {
   const environment = getCurrentEnvironment();
-  const bannerRef = useRef<HTMLDivElement>(null);
-  const [textColor, setTextColor] = useState<string>();
-
-  const backgroundColor = isMarked(environment)
-    ? getBannerColor(environment, config.grudEnvironmentColor)
-    : undefined;
-
-  // any CSS color is allowed, so let the browser resolve it to rgb
-  useLayoutEffect(() => {
-    if (!bannerRef.current) return;
-    const rgb = parseRgb(getComputedStyle(bannerRef.current).backgroundColor);
-    setTextColor(rgb ? getContrastTextColor(rgb) : undefined);
-  }, [backgroundColor]);
 
   if (!isMarked(environment)) {
     return null;
   }
 
+  const { background, text } = getBannerColors(environment, {
+    background: config.grudEnvironmentBackgroundColor,
+    text: config.grudEnvironmentTextColor
+  });
+
   return (
     <div
-      ref={bannerRef}
       className="environment-banner"
-      style={{ backgroundColor, color: textColor }}
+      style={{ backgroundColor: background, color: text }}
     >
       <i className="fa fa-flask" />
       <span className="environment-banner-name">
