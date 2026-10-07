@@ -12,7 +12,17 @@ the backend repository's own `CONTEXT.md`.
 
 ## Project setup
 
-Go to project directory and execute:
+GRUD types and helpers come from [`@campudus/grud-sdk`](https://github.com/campudus/grud-sdk). It is
+published to GitHub Packages, not to npmjs.org. The project `.npmrc` maps the `@campudus` scope to
+that registry, but npm still needs a token. Create a
+[personal access token](https://github.com/settings/tokens) with the `read:packages` scope and add
+it to your user-level `~/.npmrc`:
+
+```ini
+//npm.pkg.github.com/:_authToken=YOUR_GITHUB_TOKEN
+```
+
+Then go to project directory and execute:
 
 ```sh
 npm install
@@ -40,6 +50,17 @@ Go to project directory and execute:
 ```sh
  npm run clean && npm run build
 ```
+
+## Build Docker image
+
+The Dockerfile reads the GitHub Packages token from a build secret named `npmrc`. Pass an `.npmrc`
+that contains the token:
+
+```sh
+docker build --secret id=npmrc,src=$HOME/.npmrc -t grud-frontend .
+```
+
+In Jenkins the secret comes from the file credential `npmrc-grud-sdk`.
 
 ## Overview of npm tasks
 

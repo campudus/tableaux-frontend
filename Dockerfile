@@ -13,7 +13,9 @@ WORKDIR /usr/app
 COPY package*.json vite.config* tsconfig.* ./
 COPY .npmrc eslint.config.* .prettierrc.yaml ./
 
-RUN npm ci -d
+# GitHub Packages token comes as build secret, mounted as user config so the project .npmrc stays in effect
+RUN --mount=type=secret,id=npmrc,target=/root/.npmrc \
+    npm ci -d
 
 COPY ./src/ ./src/
 COPY ./public/ ./public/
