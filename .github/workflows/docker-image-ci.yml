@@ -11,8 +11,15 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
 
     steps:
     - uses: actions/checkout@v4
+    - name: Write npmrc for GitHub Packages
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: printf '//npm.pkg.github.com/:_authToken=%s\n' "$NODE_AUTH_TOKEN" > "$RUNNER_TEMP/npmrc"
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag grud-frontend:$(date +%s)
+      run: docker build . --file Dockerfile --tag grud-frontend:$(date +%s) --secret id=npmrc,src="$RUNNER_TEMP/npmrc"
