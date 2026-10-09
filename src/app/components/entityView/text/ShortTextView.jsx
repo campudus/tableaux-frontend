@@ -105,6 +105,7 @@ const ShortTextView = props => {
     <div className="item-content shorttext" tabIndex={1}>
       <input
         type="text"
+        data-testid={`entity-view-shorttext-${column.id}`}
         ref={registerInput}
         disabled={thisUserCantEdit}
         value={value || ""}

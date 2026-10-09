@@ -46,6 +46,7 @@ const HistoryFilterArea = props => {
         value={filter.value}
         icon={<i className="fa fa-search" />}
         placeholder={i18n.t("history:type-to-filter")}
+        testId="history-filter-search"
       />
       <FilterArea
         toggleFilterSettings={toggleFilterSettings}
@@ -92,14 +93,22 @@ const FilterArea = ({
   return (
     <div className="history-filter__popup-area">
       <div className="history-popup__header">
-        <div className={cssClass} onClick={toggleFilterSettings}>
+        <div
+          className={cssClass}
+          onClick={toggleFilterSettings}
+          data-testid="history-filter-toggle"
+        >
           <i className="fa fa-filter" />
           <div className="toggle-filter-button__text">
             {i18n.t("history:toggle-filter-display")}
           </div>
           <i className={arrowClass} />
         </div>
-        <div className={clearButtonClass} onClick={resetFilter}>
+        <div
+          className={clearButtonClass}
+          onClick={resetFilter}
+          data-testid="history-filter-reset"
+        >
           <i className="fa fa-minus-circle" />
           <div className="clear-filter-button__text">
             {i18n.t("history:reset-filters")}
@@ -120,7 +129,7 @@ const FilterArea = ({
 };
 
 const HistoryDatePicker = props => {
-  const { value, handleChange, placeholder } = props;
+  const { value, handleChange, placeholder, testId } = props;
   const [open, setOpen] = useState(false);
   const toggleOpen = () => setOpen(!open);
   const closePopup = () => setOpen(false);
@@ -132,6 +141,7 @@ const HistoryDatePicker = props => {
       <button
         className="history-date-picker__picker-button"
         onClick={toggleOpen}
+        data-testid={testId}
       >
         <i className="fa fa-calendar history-date-picker__button-icon" />
         <div className="history-date-picker__date">
@@ -152,6 +162,7 @@ const HistoryDatePicker = props => {
       <button
         className="history-date-picker__clear-button history-date-picker__button-icon"
         onClick={() => handleChange(null)}
+        data-testid={`${testId}-clear`}
       >
         <i className="fa fa-minus-circle history-date-picker__buton-icon" />
       </button>
@@ -182,6 +193,7 @@ const FilterPopup = ({
           onChange={updateFilter("author")}
           value={filter.author}
           placeholder={i18n.t("history:type-or-pick")}
+          testId="history-filter-author"
         />
       </div>
       <div className="history-popup__item item--small history-popup-item--datepicker item__select-from">
@@ -192,6 +204,7 @@ const FilterPopup = ({
           handleChange={updateFilter("fromDate")}
           placeholder={"history:row_created"}
           value={filter.fromDate}
+          testId="history-filter-from-date"
         />
       </div>
       <div className="history-popup__item item--small history-popup-item--datepicker item__select-to">
@@ -202,6 +215,7 @@ const FilterPopup = ({
           handleChange={updateFilter("toDate")}
           placeholder={"history:current-status"}
           value={filter.toDate}
+          testId="history-filter-to-date"
         />
       </div>
       <div className="history-popup__item item--small item__select-annotations">
@@ -214,6 +228,7 @@ const FilterPopup = ({
           type="checkbox"
           checked={!!showAnnotations}
           onChange={toggle("showAnnotations")}
+          data-testid="history-filter-show-annotations"
         />
       </div>
       <div className="history-popup__item item--small item__select-comments">
@@ -226,6 +241,7 @@ const FilterPopup = ({
           type="checkbox"
           checked={!!showComments}
           onChange={toggle("showComments")}
+          data-testid="history-filter-show-comments"
         />
       </div>
     </div>

@@ -145,6 +145,7 @@ export const RowCreator = props => {
     <div
       className={`row-creator-button${shiftUp ? " shift-up" : ""}`}
       onClick={addAndLinkRow}
+      data-testid="link-overlay-add-new-row"
     >
       <SvgIcon icon="plus" containerClasses="color-primary" />
       <span>
@@ -162,7 +163,11 @@ export const SwitchSortingButton = React.memo(props => {
   );
 
   return (
-    <button className="sort-mode-button" onClick={switchSortMode}>
+    <button
+      className="sort-mode-button"
+      onClick={switchSortMode}
+      data-testid="link-overlay-sort-mode"
+    >
       <i className={sortIcons[sortOrder]} />
     </button>
   );

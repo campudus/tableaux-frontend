@@ -103,7 +103,11 @@ const PlainMarkdownEditor = ({
       </header>
       <div className={cssClass}>
         {shouldCatchOutsideClick && (
-          <div className="catchOutsideClick" onClick={onOutsideClick} />
+          <div
+            className="catchOutsideClick"
+            data-testid="markdown-editor-catch-outside-click"
+            onClick={onOutsideClick}
+          />
         )}
         <div className={`cm-wrapper ${textTooShortErrorCssClass}`}>
           <CodeMirror

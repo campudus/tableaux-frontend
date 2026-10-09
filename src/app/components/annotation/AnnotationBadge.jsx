@@ -6,7 +6,8 @@ export default function AnnotationBadge({
   title,
   onClick,
   active,
-  color
+  color,
+  testId
 }) {
   const style = active
     ? { color: "white", borderColor: color, background: color }
@@ -17,6 +18,7 @@ export default function AnnotationBadge({
       className={buildClassName("annotation-badge", { active }, className)}
       onClick={onClick}
       style={style}
+      data-testid={testId}
     >
       {title}
     </button>

@@ -123,7 +123,8 @@ class RowContextMenu extends React.Component {
       ? this.mkItem(
           () => actions.copyCellValue({ cell, langtag }),
           "copy_cell",
-          "files-o"
+          "files-o",
+          "context-menu-copy-cell"
         )
       : null;
   };
@@ -148,7 +149,8 @@ class RowContextMenu extends React.Component {
           () =>
             pasteCellValue(copySource.cell, copySource.langtag, cell, langtag),
           "paste_cell",
-          "clipboard"
+          "clipboard",
+          "context-menu-paste-cell"
         )
       : null;
   };
@@ -187,7 +189,12 @@ class RowContextMenu extends React.Component {
       }
     } = this.props;
     const label = final ? t("final.set_not_final") : t("final.set_final");
-    return this.mkItem(this.setFinal(!final), label, "lock");
+    return this.mkItem(
+      this.setFinal(!final),
+      label,
+      "lock",
+      "context-menu-toggle-final"
+    );
   };
 
   setArchivedItem = () => {
@@ -203,7 +210,12 @@ class RowContextMenu extends React.Component {
       const label = t(
         archived ? "archived.unset-archived" : "archived.set-archived"
       );
-      return this.mkItem(this.setArchived(!archived), label, "archive");
+      return this.mkItem(
+        this.setArchived(!archived),
+        label,
+        "archive",
+        "context-menu-toggle-archived"
+      );
     }
   };
 
@@ -218,7 +230,12 @@ class RowContextMenu extends React.Component {
     const doOpen = () => {
       window.open(url);
     };
-    return this.mkItem(doOpen, "table:open-link-filtered", "external-link");
+    return this.mkItem(
+      doOpen,
+      "table:open-link-filtered",
+      "external-link",
+      "context-menu-open-links-filtered"
+    );
   };
 
   clearCellValue = () => {
@@ -228,14 +245,22 @@ class RowContextMenu extends React.Component {
     };
     return canUserChangeCell(cell, langtag) &&
       cell.column.kind !== ColumnKinds.group
-      ? this.mkItem(doClear, "table:clear-cell.title", "times")
+      ? this.mkItem(
+          doClear,
+          "table:clear-cell.title",
+          "times",
+          "context-menu-clear-cell"
+        )
       : null;
   };
 
-  mkItem = (action, label, icon, classes = "") => {
+  mkItem = (action, label, icon, testId) => {
     return (
-      <button onClick={f.compose(this.closeRowContextMenu, action)}>
-        <i className={`fa fa-${icon} ${classes}`} />
+      <button
+        onClick={f.compose(this.closeRowContextMenu, action)}
+        data-testid={testId}
+      >
+        <i className={`fa fa-${icon}`} />
         <div className="item-label">{this.props.t(label)}</div>
       </button>
     );
@@ -268,7 +293,11 @@ class RowContextMenu extends React.Component {
       !isSettingsTable && canUserCreateRow({ table });
 
     return (
-      <div className="prevent-scroll" onClick={closeRowContextMenu}>
+      <div
+        className="prevent-scroll"
+        onClick={closeRowContextMenu}
+        data-testid="context-menu-backdrop"
+      >
         <GenericContextMenu
           x={this.props.x}
           y={this.props.y - 60}
@@ -284,7 +313,8 @@ class RowContextMenu extends React.Component {
             ? this.mkItem(
                 () => this.props.openAnnotations(cell),
                 "add-comment",
-                "commenting"
+                "commenting",
+                "context-menu-add-comment"
               )
             : null}
           {f.any(
@@ -294,14 +324,23 @@ class RowContextMenu extends React.Component {
             ? this.mkItem(
                 () => this.props.openAnnotations(cell),
                 "show-comments",
-                "commenting-o"
+                "commenting-o",
+                "context-menu-show-comments"
               )
             : null}
           {config.enableHistory && hasHistory(cell)
-            ? this.mkItem(this.showHistory, "history:show_history", "clock-o")
+            ? this.mkItem(
+                this.showHistory,
+                "history:show_history",
+                "clock-o",
+                "context-menu-show-history"
+              )
             : null}
           {canUserEditCellAnnotations(cell) && (
-            <a className="annotation-context-menu-button">
+            <a
+              className="annotation-context-menu-button"
+              data-testid="context-menu-highlight"
+            >
               <SvgIcon icon="highlight" />
               <div className="item-label">
                 {this.props.t("show-annotations")}
@@ -326,6 +365,7 @@ class RowContextMenu extends React.Component {
                 column: originColumn,
                 row: { id: T.getOriginRowId(cell.row) }
               })}
+              data-testid="context-menu-open-dataset"
             >
               <i className="fa fa-external-link" />
               <div className="item-label">{t("open-dataset")}</div>
@@ -333,11 +373,26 @@ class RowContextMenu extends React.Component {
           ) : null}
           {this.props.table.type === "settings"
             ? ""
-            : this.mkItem(showEntityView, "show_entity_view", "server")}
+            : this.mkItem(
+                showEntityView,
+                "show_entity_view",
+                "server",
+                "context-menu-show-entity-view"
+              )}
           {!T.isUnionTable(this.props.cell.table)
-            ? this.mkItem(showDependency, "show_dependency", "code-fork")
+            ? this.mkItem(
+                showDependency,
+                "show_dependency",
+                "code-fork",
+                "context-menu-show-dependency"
+              )
             : null}
-          {this.mkItem(showTranslations, "show_translation", "flag")}
+          {this.mkItem(
+            showTranslations,
+            "show_translation",
+            "flag",
+            "context-menu-show-translations"
+          )}
           <a
             href={previewUrl({
               langtag: this.props.langtag,
@@ -348,6 +403,7 @@ class RowContextMenu extends React.Component {
             })}
             target="_blank"
             rel="noopener noreferrer"
+            data-testid="context-menu-open-preview"
           >
             <i className="fa fa-eye" />
             <div className="item-label">{t("preview:open_preview_view")}</div>
@@ -358,10 +414,20 @@ class RowContextMenu extends React.Component {
             <div className="separator--internal" />
           ) : null}
           {isDuplicatingRowAllowed
-            ? this.mkItem(duplicateRow, "duplicate_row", "clone")
+            ? this.mkItem(
+                duplicateRow,
+                "duplicate_row",
+                "clone",
+                "context-menu-duplicate-row"
+              )
             : null}
           {isDeletingRowAllowed
-            ? this.mkItem(deleteRow, "delete_row", "trash-o")
+            ? this.mkItem(
+                deleteRow,
+                "delete_row",
+                "trash-o",
+                "context-menu-delete-row"
+              )
             : null}
         </GenericContextMenu>
       </div>

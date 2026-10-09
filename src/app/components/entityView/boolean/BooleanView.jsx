@@ -43,6 +43,7 @@ class BooleanView extends PureComponent {
     return (
       <div
         className="item-content boolean"
+        data-testid={`entity-view-boolean-toggle-${this.props.cell.column.id}`}
         onClick={this.toggleValue}
         onKeyDown={this.toggleOnEnter}
         tabIndex={1}
@@ -53,6 +54,7 @@ class BooleanView extends PureComponent {
         <div className="content-wrapper">
           <input
             className="checkbox"
+            data-testid={`entity-view-boolean-${this.props.cell.column.id}`}
             type="checkbox"
             checked={selected}
             disabled={thisUserCantEdit}

@@ -8,7 +8,14 @@ import { ColumnKinds } from "../../../constants/TableauxConstants";
 import { getColumnDisplayName } from "../../../helpers/multiLanguage";
 import RowFilters from "../../../RowFilters";
 
-const FilterRow = ({ columns, langtag, onChange, onRemove, settings }) => {
+const FilterRow = ({
+  columns,
+  langtag,
+  onChange,
+  onRemove,
+  settings,
+  testId
+}) => {
   const columnsByName = f.indexBy("name", columns);
   const { column, mode, value } = settings;
   const searchableColumns = columns.filter(col =>
@@ -49,9 +56,10 @@ const FilterRow = ({ columns, langtag, onChange, onRemove, settings }) => {
   const selectedMode = mode || f.first(modeOptions)?.label;
 
   return (
-    <div className="filter-row" onKeyDown={handleKeys}>
+    <div className="filter-row" onKeyDown={handleKeys} data-testid={testId}>
       <Select
         className="filter-select"
+        testId={`${testId}-column`}
         options={columnOptions}
         searchable={true}
         clearable={false}
@@ -72,6 +80,7 @@ const FilterRow = ({ columns, langtag, onChange, onRemove, settings }) => {
       <Select
         disabled={!column}
         className="filter-mode-select"
+        testId={`${testId}-mode`}
         options={modeOptions}
         searchable={false}
         clearable={false}
@@ -89,6 +98,7 @@ const FilterRow = ({ columns, langtag, onChange, onRemove, settings }) => {
 
       <button
         className="button button--remove-filter"
+        data-testid="filter-row-remove"
         onClick={clearOrRemoveFilter}
       >
         <i className="fa fa-trash" />
@@ -121,6 +131,7 @@ const ValueInput = ({ column, mode, value, onChange }) => {
   return RowFilters.needsFilterValue(column?.kind, mode) ? (
     <input
       className="filter-input"
+      data-testid="filter-row-value"
       type={inputType}
       value={value || ""}
       onChange={handleSetEventValue}

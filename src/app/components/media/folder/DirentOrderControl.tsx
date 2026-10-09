@@ -54,7 +54,8 @@ export default function DirentOrderControl({
     className: criterion === order.criterion ? "active" : undefined,
     icon: iconFor(criterion),
     label: i18n.t(criterionLabelKeys[criterion]),
-    onClick: () => onChange({ ...order, criterion })
+    onClick: () => onChange({ ...order, criterion }),
+    testId: `dirent-order-criterion-${criterion}`
   }));
 
   return (
@@ -68,6 +69,7 @@ export default function DirentOrderControl({
         icon={iconFor(order.criterion)}
         label={i18n.t(criterionLabelKeys[order.criterion])}
         options={criterionOptions}
+        testId="dirent-order-criterion"
       />
 
       <ButtonAction
@@ -75,6 +77,7 @@ export default function DirentOrderControl({
         icon={<i className={`icon fa ${directionIcons[order.direction]}`} />}
         alt={i18n.t(directionLabelKeys[order.direction])}
         onClick={() => onChange(toggleDirection(order))}
+        testId="dirent-order-direction"
       />
     </div>
   );

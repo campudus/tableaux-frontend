@@ -43,12 +43,14 @@ export default function HistoryButtons({
       <button
         className={buttonClasses + (!canUndo ? " disabled" : "")}
         onClick={canUndo ? modifyHistory("undo") : f.noop}
+        data-testid="history-undo"
       >
         <i className="fa fa-undo" />
       </button>
       <button
         className={buttonClasses + (!canRedo ? " disabled" : "")}
         onClick={canRedo ? modifyHistory("redo") : f.noop}
+        data-testid="history-redo"
       >
         <i className="fa fa-repeat" />
       </button>

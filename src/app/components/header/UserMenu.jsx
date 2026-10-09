@@ -30,13 +30,21 @@ function UserMenu({ langtag, t }) {
 
   return (
     <nav ref={menuRef} className={cn("user-menu", { active: popupOpen })}>
-      <button className="user-menu__toggle" onClick={togglePopup}>
+      <button
+        className="user-menu__toggle"
+        onClick={togglePopup}
+        data-testid="user-menu-toggle"
+      >
         <UserIcon className="user-menu__icon" />
       </button>
 
       <ul className="user-menu__list">
         <li className="user-menu__entry">
-          <Link to={"/" + langtag + "/profile"} className="user-menu__link">
+          <Link
+            to={"/" + langtag + "/profile"}
+            className="user-menu__link"
+            data-testid="user-menu-profile"
+          >
             <i className="fa fa-user-circle" />
             {t("header:menu.profile")}
           </Link>
@@ -44,7 +52,11 @@ function UserMenu({ langtag, t }) {
 
         {!noAuthNeeded() && (
           <li className="user-menu__entry">
-            <button className="user-menu__button" onClick={handleLogout}>
+            <button
+              className="user-menu__button"
+              onClick={handleLogout}
+              data-testid="user-menu-logout"
+            >
               <i className="fa fa-power-off" />
               {t("header:menu.logout")}
               <span className="user-menu__user-name">{`(${userName})`}</span>

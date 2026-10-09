@@ -51,6 +51,7 @@ export default function LinkCellItem({
       <a
         className={`link-cell-item__value  ${getEmptyClassName(displayValue)}`}
         href={link}
+        data-testid="preview-link-item"
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >

@@ -24,8 +24,16 @@ const TaxonomyTableCard = ({ table, langtag }) => (
       <div>{retrieveTranslation(langtag, table.description)}</div>
     </section>
     <footer className="card__footer">
-      <Link to={route.toTable({ tableId: table.id })}>
-        <button className="button default">{i18n.t("common:open")}</button>
+      <Link
+        to={route.toTable({ tableId: table.id })}
+        data-testid={`taxonomy-table-link-${table.id}`}
+      >
+        <button
+          className="button default"
+          data-testid={`taxonomy-table-open-${table.id}`}
+        >
+          {i18n.t("common:open")}
+        </button>
       </Link>
     </footer>
   </div>
@@ -54,6 +62,7 @@ const NoTaxonomiesYet = () => (
 
     <a
       className="support-email-button"
+      data-testid="taxonomy-support-email"
       href={`mailto:
 ${supportDetails.email}`}
     >

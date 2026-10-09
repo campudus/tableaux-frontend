@@ -283,6 +283,7 @@ export default function PreviewView({
             >
               <div
                 className="preview-view__resizer"
+                data-testid="preview-view-resizer"
                 onMouseDown={handleMouseDown}
               >
                 <div className="preview-view__resizer-icon">

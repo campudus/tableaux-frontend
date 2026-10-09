@@ -11,7 +11,7 @@ export default function RowCount({
   rowCountAll = 0
 }: RowCountProps): ReactElement {
   return (
-    <div className="row-count">
+    <div className="row-count" data-testid="row-count">
       {i18n.t("header:pageTitle.row-count", { rowCount, rowCountAll })}
     </div>
   );

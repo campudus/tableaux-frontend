@@ -23,7 +23,11 @@ const stateToMarkdown = f.compose(draftToMarkdown, convertToRaw);
 const Link = props => {
   const { url } = props.contentState.getEntity(props.entityKey).getData();
   return (
-    <a className="markdown-editor__link" href={url}>
+    <a
+      className="markdown-editor__link"
+      href={url}
+      data-testid="markdown-editor-link"
+    >
       {props.children}
     </a>
   );
@@ -106,6 +110,7 @@ class EditorPanel extends React.PureComponent {
     return (
       <div
         className="markdown-editor-wrapper"
+        data-testid="markdown-editor-rich-text"
         onMouseDown={stopPropagation}
         onClick={stopPropagation}
       >
@@ -119,7 +124,11 @@ class EditorPanel extends React.PureComponent {
           />
         )}
 
-        <div className="draft-editor-wrapper" onClick={this.focusEditor}>
+        <div
+          className="draft-editor-wrapper"
+          data-testid="markdown-editor-rich-text-input"
+          onClick={this.focusEditor}
+        >
           <Editor
             readOnly={readOnly}
             ref={editorRef}

@@ -193,6 +193,7 @@ export default function AttachmentOverlayBody({
           href={`/${langtag}/media/${folder?.id}`}
           target="_blank"
           rel="noopener noreferrer"
+          data-testid="attachment-overlay-folder-link"
         >
           <h4 className="attachment-overlay__title">
             {isRoot ? i18n.t("media:root_folder_name") : folder?.name}
@@ -203,16 +204,19 @@ export default function AttachmentOverlayBody({
           <ButtonAction
             variant="outlined"
             icon={<SvgIcon icon={layoutState.nav} />}
+            testId="attachment-overlay-nav-layout"
             options={[
               {
                 label: i18n.t("media:layout_list"),
                 icon: <SvgIcon icon="list" />,
-                onClick: () => handleSelectLayout({ nav: "list" })
+                onClick: () => handleSelectLayout({ nav: "list" }),
+                testId: "attachment-overlay-nav-layout-list"
               },
               {
                 label: i18n.t("media:layout_tiles"),
                 icon: <SvgIcon icon="tiles" />,
-                onClick: () => handleSelectLayout({ nav: "tiles" })
+                onClick: () => handleSelectLayout({ nav: "tiles" }),
+                testId: "attachment-overlay-nav-layout-tiles"
               }
             ]}
           />
@@ -222,6 +226,7 @@ export default function AttachmentOverlayBody({
               variant="outlined"
               icon={<i className="icon fa fa-plus" />}
               onClick={handleClickNewFolder}
+              testId="attachment-overlay-new-folder"
               alt={hasNewFolder ? i18n.t("media:new_folder_exists") : undefined}
               disabled={hasNewFolder}
             />
@@ -232,20 +237,24 @@ export default function AttachmentOverlayBody({
               variant="outlined"
               icon={<i className="icon fa fa-upload" />}
               onClick={handleClickUpload}
+              testId="attachment-overlay-upload"
             />
           )}
         </div>
 
         <Breadcrumbs
           className="attachment-overlay__breadcrumbs"
+          testId="attachment-overlay-breadcrumbs"
           links={[
             {
               label: i18n.t("media:root_folder_name"),
-              onClick: () => handleNavigate()
+              onClick: () => handleNavigate(),
+              testId: "attachment-overlay-breadcrumb-root"
             },
             ...parents.map(({ id, name }) => ({
               onClick: () => handleNavigate(id),
-              label: name ?? `Folder ${id}`
+              label: name ?? `Folder ${id}`,
+              testId: `attachment-overlay-breadcrumb-${id}`
             }))
           ]}
         />
@@ -286,16 +295,19 @@ export default function AttachmentOverlayBody({
             variant="outlined"
             alignmentH="left"
             icon={<SvgIcon icon={layoutState.content} />}
+            testId="attachment-overlay-content-layout"
             options={[
               {
                 label: i18n.t("media:layout_list"),
                 icon: <SvgIcon icon="list" />,
-                onClick: () => handleSelectLayout({ content: "list" })
+                onClick: () => handleSelectLayout({ content: "list" }),
+                testId: "attachment-overlay-content-layout-list"
               },
               {
                 label: i18n.t("media:layout_tiles"),
                 icon: <SvgIcon icon="tiles" />,
-                onClick: () => handleSelectLayout({ content: "tiles" })
+                onClick: () => handleSelectLayout({ content: "tiles" }),
+                testId: "attachment-overlay-content-layout-tiles"
               }
             ]}
           />

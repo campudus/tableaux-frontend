@@ -70,6 +70,9 @@ export default function ColumnHeader({
   const icon = isConcat ? "bookmark" : column.identifier ? "bookmark-o" : null;
   const displayName = title || getColumnDisplayName(column, langtag);
   const description = retrieveTranslation(langtag)(column.description || {});
+  // the row id column has the technical id -1; read the id before isMeta narrows column to never
+  const columnId = column.id;
+  const testIdSuffix = isMeta ? "row-id" : columnId;
   const canEdit =
     !isConcat && !isMeta && canUserEditColumnDisplayProperty({ column });
 
@@ -93,6 +96,7 @@ export default function ColumnHeader({
       key={column.id}
       ref={headerRef}
       className={classNames("column-head", { "context-menu-open": isMenuOpen })}
+      data-testid={`column-head-${testIdSuffix}`}
     >
       <div
         className={classNames("column-name-wrapper", {
@@ -109,6 +113,7 @@ export default function ColumnHeader({
             href={`/${langtag}/tables/${linkTableId}`}
             target="_blank"
             rel="noopener noreferrer"
+            data-testid={`column-head-link-table-${columnId}`}
           >
             <i className="fa fa-columns" />
             {displayName}
@@ -143,6 +148,7 @@ export default function ColumnHeader({
           })}
           draggable={false}
           onClick={isMenuOpen ? handleMenuClose : handleMenuOpen}
+          data-testid={`column-menu-${testIdSuffix}`}
         />
       )}
 
@@ -159,6 +165,7 @@ export default function ColumnHeader({
                 onClose={handleMenuClose}
                 onClick={handleEdit}
                 iconStart="fa-edit"
+                testId="column-menu-edit"
               />
             )}
 
@@ -171,6 +178,7 @@ export default function ColumnHeader({
                 }
                 iconStart="fa-columns"
                 iconEnd="fa-angle-right"
+                testId="column-menu-switch-table"
               />
             )}
 
@@ -180,6 +188,7 @@ export default function ColumnHeader({
                 onClick={handleColumnHide}
                 title="table:hide_column"
                 iconStart="fa-eye"
+                testId="column-menu-hide"
               />
             )}
           </ColumnContextMenu>

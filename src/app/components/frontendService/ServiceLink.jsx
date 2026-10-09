@@ -63,6 +63,7 @@ const ServiceLink = ({
       return (
         <a
           className={classNames}
+          data-testid={`service-link-${service.id}`}
           href={serviceUrl}
           target="_blank"
           rel="noopener noreferrer"
@@ -72,13 +73,23 @@ const ServiceLink = ({
       );
     case "self":
       return (
-        <a className={classNames} href={serviceUrl} target="_self">
+        <a
+          className={classNames}
+          data-testid={`service-link-${service.id}`}
+          href={serviceUrl}
+          target="_self"
+        >
           {children}
         </a>
       );
     case "void":
       return (
-        <a className={classNames} href="#" onClick={handleVoidClick}>
+        <a
+          className={classNames}
+          data-testid={`service-link-${service.id}`}
+          href="#"
+          onClick={handleVoidClick}
+        >
           {children}
         </a>
       );
@@ -87,6 +98,7 @@ const ServiceLink = ({
       return (
         <Link
           className={classNames}
+          data-testid={`service-link-${service.id}`}
           to={route.toFrontendServiceView(service.id, langtag, {
             ...params,
             langtag

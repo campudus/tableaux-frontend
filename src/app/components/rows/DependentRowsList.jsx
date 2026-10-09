@@ -70,6 +70,7 @@ const DependentRowsList = props => {
           <button
             className="item-header"
             onClick={() => window.open(linkToTable, "_blank")}
+            data-testid={`dependent-rows-table-${tableId}`}
           >
             {tableName}
             <SvgIcon icon="tablelink" containerClasses="color-primary" />

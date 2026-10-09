@@ -48,7 +48,11 @@ const AnnotationEntry = props => {
       </div>
       <div className="info-column">
         {canDelete ? (
-          <button className="delete-button" onClick={confirm}>
+          <button
+            className="delete-button"
+            onClick={confirm}
+            data-testid={`annotation-delete-${annotation.uuid}`}
+          >
             <i className="fa fa-trash delete-icon" />
           </button>
         ) : (

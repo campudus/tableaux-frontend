@@ -62,9 +62,10 @@ const DeleteRowHeader = ({
       {i18n.t(bodyTextKey)}
     </div>
     <div className="deletion-info__action-select overlay-subheader__buttons overlay-subheader__buttons--left">
-      {buttons.map(({ textKey, onClick, cssClasses, disabled }) => (
+      {buttons.map(({ textKey, onClick, cssClasses, disabled, testId }) => (
         <Button
           key={textKey}
+          testId={testId}
           onClick={onClick}
           disabled={disabled}
           classNames={cssClasses}
@@ -92,12 +93,14 @@ const DeleteRowFooter = ({ deletionAction, onClose, onSubmit, isWaiting }) => {
           onClick={onSubmit}
           waiting={isWaiting}
           text={i18n.t(deleteTextKey)}
+          testId="delete-row-submit"
         />
         <Button
           className="neutral"
           onClick={onClose}
           waiting={isWaiting}
           text={i18n.t("common:cancel")}
+          testId="delete-row-cancel"
         />
       </div>
     </footer>
@@ -187,7 +190,8 @@ const ButtonConfig = (translationKeyPostfix, effect, cssClasses, disabled) => ({
   textKey: `table:dependent-rows.${translationKeyPostfix}`,
   onClick: effect,
   cssClasses,
-  disabled: !!disabled
+  disabled: !!disabled,
+  testId: `delete-row-${translationKeyPostfix}`
 });
 
 const lookupRowDisplayName = (store, tableId, langtag) => rowId => {

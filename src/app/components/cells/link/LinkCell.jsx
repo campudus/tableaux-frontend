@@ -89,7 +89,11 @@ const LinkCell = props => {
 
   return (
     <>
-      <div className={"cell-content"} onClick={handleClick}>
+      <div
+        className={"cell-content"}
+        onClick={handleClick}
+        data-testid="cell-content"
+      >
         {links}
         {hasMore && !isEditOrSelect && (
           <span key={"more"} className="more">
@@ -98,7 +102,12 @@ const LinkCell = props => {
         )}
       </div>
       {(selected || editing) && !isLocked(cell.row) && (
-        <button key={"add-btn"} className="edit" onClick={handleClick}>
+        <button
+          key={"add-btn"}
+          className="edit"
+          onClick={handleClick}
+          data-testid="cell-edit"
+        >
           <span className="fa fa-pencil" />
         </button>
       )}

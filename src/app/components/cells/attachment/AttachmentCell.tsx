@@ -90,6 +90,7 @@ export default function AttachmentCell({
                 key={attachment.uuid}
                 className={"attachment__action"}
                 onClick={() => handleClickAttachment(attachment)}
+                testId={`cell-attachment-${attachment.uuid}`}
                 icon={
                   <Tooltip tooltip={title} offsetTop={5}>
                     <MediaThumbnail
@@ -124,7 +125,11 @@ export default function AttachmentCell({
       {!isPreview &&
         !isLocked(cell.row) &&
         canUserChangeCell(cell)(langtag) && (
-          <button className="edit" onClick={handleClickEdit}>
+          <button
+            className="edit"
+            onClick={handleClickEdit}
+            data-testid="cell-edit"
+          >
             <span className="fa fa-pencil" />
           </button>
         )}

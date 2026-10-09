@@ -28,6 +28,7 @@ const CompletionItem = React.memo(
           className={`completion-item ${isSelected ? "selected" : ""}`}
           draggable={false}
           onMouseDownCapture={handleClick}
+          data-testid="completion-item"
         >
           <div className="completion-item-label">{value}</div>
         </button>

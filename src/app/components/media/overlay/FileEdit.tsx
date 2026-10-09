@@ -116,6 +116,7 @@ export function FileEditBody({
             langtag={newFileLangtag}
             onChange={handleNewFileLangtag}
             options={fileLangtagsUnset.map(lt => ({ value: lt, label: lt }))}
+            testId="media-file-language-switcher"
           />
         </FileEditItem>
       )}

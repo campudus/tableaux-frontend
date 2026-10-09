@@ -5,7 +5,7 @@ import i18n from "i18next";
 import PropTypes from "prop-types";
 
 const SearchBar = props => {
-  const { onChange, placeholder, debounce, icon } = props;
+  const { onChange, placeholder, debounce, icon, testId } = props;
   const value = props.value || "";
 
   const onChangeAsHandler = event => onChange(event.target.value);
@@ -30,6 +30,7 @@ const SearchBar = props => {
           onChange={handleChange}
           placeholder={i18n.t(placeholder || "")}
           onKeyDown={clearOnEscape}
+          data-testid={testId}
         />
         <div className="search-bar__icon">{icon}</div>
       </div>
@@ -44,5 +45,6 @@ SearchBar.propTypes = {
   placeholder: PropTypes.string,
   value: PropTypes.string,
   debounce: PropTypes.number,
-  icon: PropTypes.element
+  icon: PropTypes.element,
+  testId: PropTypes.string
 };

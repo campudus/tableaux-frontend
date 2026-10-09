@@ -60,6 +60,7 @@ const TableEntry = React.memo(
 
     return (
       <a
+        data-testid={`dashboard-flag-table-${table.id}`}
         className={classNames("table-entry", {
           active,
           selected

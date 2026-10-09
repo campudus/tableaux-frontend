@@ -241,7 +241,8 @@ class TableView extends PureComponent {
     navigate(router.navigate, path);
   };
 
-  renderNewRowButton = () => {
+  // rendered in the header and below the last row, the test id tells them apart
+  renderNewRowButton = testId => {
     const { table, columns, lastRow, langtag, actions } = this.props;
     const { toggleCellSelection, showToast, addEmptyRow } = actions;
 
@@ -266,6 +267,7 @@ class TableView extends PureComponent {
           }}
           lastRow={lastRow}
           showToast={showToast}
+          testId={testId}
         />
       </div>
     );
@@ -350,7 +352,7 @@ class TableView extends PureComponent {
               <ToggleArchivedRowsButton table={table} langtag={langtag} />
               <AnnotationHighlightToggle table={table} langtag={langtag} />
               <HistoryButtons tableId={tableId} history={tableView.history} />
-              {this.renderNewRowButton()}
+              {this.renderNewRowButton("header-new-row-button")}
               {showResetTableViewButton && (
                 <ResetTableViewButton
                   tableId={tableId}

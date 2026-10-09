@@ -68,7 +68,7 @@ class ItemPopupMenu extends Component {
     this.props.funcs.closeItemPopup();
   };
 
-  mkEntry = (_, { title, fn, value, icon, classes }) => {
+  mkEntry = (_, { title, fn, value, icon, classes, testId }) => {
     const clickHandler = f.flow(
       e => {
         e.stopPropagation();
@@ -77,7 +77,7 @@ class ItemPopupMenu extends Component {
       this.closePopup
     );
     return (
-      <button className="entry" onClick={clickHandler}>
+      <button className="entry" onClick={clickHandler} data-testid={testId}>
         <i className={classes || `fa fa-${icon}`} />
         <div>{value ? i18n.t(title, { langtag: value }) : i18n.t(title)}</div>
       </button>
@@ -129,6 +129,7 @@ class ItemPopupMenu extends Component {
       <div className={wrapperClass}>
         <button
           className={buttonClass}
+          data-testid={`entity-view-cell-menu-${cell.column.id}`}
           onMouseLeave={leaveItemPopupButton}
           onMouseDown={popupOpen ? f.noop : this.props.funcs.openItemPopup}
         >
@@ -155,14 +156,16 @@ class ItemPopupMenu extends Component {
                       langtag,
                       cell
                     }),
-                  icon: "code-fork"
+                  icon: "code-fork",
+                  testId: "entity-view-cell-menu-show-dependency"
                 })
               : null}
             {hasHistory(cell)
               ? this.mkEntry(1, {
                   title: "history:show_history",
                   fn: () => void openHistoryOverlay({ cell, langtag }),
-                  icon: "clock-o"
+                  icon: "clock-o",
+                  testId: "entity-view-cell-menu-history"
                 })
               : null}
             {cell.kind !== ColumnKinds.status &&
@@ -170,7 +173,8 @@ class ItemPopupMenu extends Component {
                 title: "table:copy_cell",
                 fn: () =>
                   store.dispatch(actions.copyCellValue({ cell, langtag })),
-                icon: "files-o"
+                icon: "files-o",
+                testId: "entity-view-cell-menu-copy"
               })}
             {thisUserCantEdit
               ? null
@@ -183,7 +187,8 @@ class ItemPopupMenu extends Component {
                       cell,
                       langtag
                     ),
-                  icon: "clipboard"
+                  icon: "clipboard",
+                  testId: "entity-view-cell-menu-paste"
                 })}
             {thisUserCantEdit || cell.column.kind === ColumnKinds.group
               ? null
@@ -192,10 +197,14 @@ class ItemPopupMenu extends Component {
                   fn: () => {
                     clearSelectedCellValue(cell, langtag);
                   },
-                  icon: "times"
+                  icon: "times",
+                  testId: "entity-view-cell-menu-clear"
                 })}
             {canUserEditCellAnnotations(cell) && (
-              <a className="entry annotation-context-menu-button">
+              <a
+                className="entry annotation-context-menu-button"
+                data-testid="entity-view-cell-menu-annotations"
+              >
                 <SvgIcon icon="highlight" />
                 <div>{i18n.t("table:show-annotations")}</div>
                 <i className="fa fa-chevron-right" />
@@ -220,7 +229,8 @@ class ItemPopupMenu extends Component {
                     this.props.funcs.viewElement
                   );
                 },
-                icon: "flag"
+                icon: "flag",
+                testId: "entity-view-cell-menu-translation"
               })}
           </MenuPopup>
         ) : null}

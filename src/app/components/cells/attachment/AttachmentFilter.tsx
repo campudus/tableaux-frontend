@@ -23,12 +23,14 @@ export default function AttachmentFilter({
     {
       mode: FilterModes.CONTAINS,
       label: i18n.t("table:filter.contains"),
-      onClick: () => onUpdateMode(FilterModes.CONTAINS)
+      onClick: () => onUpdateMode(FilterModes.CONTAINS),
+      testId: "attachment-filter-mode-contains"
     },
     {
       mode: FilterModes.STARTS_WITH,
       label: i18n.t("table:filter.starts_with"),
-      onClick: () => onUpdateMode(FilterModes.STARTS_WITH)
+      onClick: () => onUpdateMode(FilterModes.STARTS_WITH),
+      testId: "attachment-filter-mode-starts-with"
     }
   ];
   const modeOption = modeOptions.find(opt => opt.mode === mode);
@@ -46,12 +48,14 @@ export default function AttachmentFilter({
         placeholder={modePlaceholder}
         value={value ?? ""}
         onChange={handleUpdateValue}
+        data-testid="attachment-filter-input"
       />
       <ButtonAction
         className="attachment-filter__mode"
         variant="icon"
         alignmentH="left"
         options={modeOptions}
+        testId="attachment-filter-mode"
         icon={
           <>
             <i className="fa fa-search" />

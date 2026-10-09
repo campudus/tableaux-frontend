@@ -23,14 +23,17 @@ export default function FolderBreadcrumbs({
   return (
     <Breadcrumbs
       className={cn("folder-breadcrumbs", {}, className)}
+      testId="media-breadcrumbs"
       links={[
         {
           path: `/${langtag}/media`,
-          label: i18n.t("media:root_folder_name")
+          label: i18n.t("media:root_folder_name"),
+          testId: "media-breadcrumb-root"
         },
         ...breadcrumbsFolders.map(({ id, name }) => ({
           path: `/${langtag}/media/${id}`,
-          label: <span>{name ?? `Folder ${id}`}</span>
+          label: <span>{name ?? `Folder ${id}`}</span>,
+          testId: `media-breadcrumb-${id}`
         }))
       ]}
     />

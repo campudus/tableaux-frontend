@@ -44,6 +44,12 @@ const MetaCell = ({
   const userCanDeleteRow =
     !expanded && canUserDeleteRow({ table }) && !isFinal && isInSelectedRow;
 
+  // like cells: further languages of an expanded row carry the langtag
+  const testId =
+    expanded && langtag !== Langtags[0]
+      ? `row-meta-${row.id}-${langtag}`
+      : `row-meta-${row.id}`;
+
   const Icon = isRowArchived(row) ? (
     <ArchivedIcon />
   ) : isFinal ? (
@@ -52,7 +58,11 @@ const MetaCell = ({
     <DeleteRowButton onClick={handleDeleteRow} />
   ) : null;
   return (
-    <div className={cellClass} onClick={handleToggleExpanded}>
+    <div
+      className={cellClass}
+      onClick={handleToggleExpanded}
+      data-testid={testId}
+    >
       <div className="cell-content">
         {!expanded || langtag === Langtags[0] ? Icon : null}
         {expanded ? (
@@ -60,7 +70,7 @@ const MetaCell = ({
         ) : (
           <div className="meta-info-collapsed">
             <div className="row-number">{row.id}</div>
-            <div className="row-expand">
+            <div className="row-expand" data-testid="row-expand">
               <i className="fa fa-chevron-down" />
             </div>
           </div>
@@ -78,7 +88,7 @@ const LockStatusIcon = ({ locked }) => (
 
 const DeleteRowButton = ({ onClick }) => (
   <div className="delete-row">
-    <button className="button" onClick={onClick}>
+    <button className="button" onClick={onClick} data-testid="row-delete">
       <i className="fa fa-trash" />
     </button>
   </div>

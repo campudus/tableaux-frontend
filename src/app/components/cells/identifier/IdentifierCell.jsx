@@ -35,7 +35,11 @@ const IdentifierCell = props => {
       : displayValue[langtag];
 
   return (
-    <div className="cell-content" onClick={openEditor}>
+    <div
+      className="cell-content"
+      onClick={openEditor}
+      data-testid="cell-content"
+    >
       {stripFormattingTags(label)}
     </div>
   );

@@ -40,14 +40,17 @@ export default function ProfileSettings({ langtag }: ProfileSettingsProps) {
   return (
     <div className={cn("profile-tab", { settings: true })}>
       <Breadcrumbs
+        testId="profile-breadcrumbs"
         links={[
           {
             path: `/${langtag}/dashboard`,
-            label: t("header:menu.dashboard")
+            label: t("header:menu.dashboard"),
+            testId: "profile-breadcrumb-dashboard"
           },
           {
             path: `/${langtag}/profile/${PROFILE_TAB.SETTINGS}`,
-            label: t("profile:navigation.global-settings")
+            label: t("profile:navigation.global-settings"),
+            testId: "profile-breadcrumb-settings"
           }
         ]}
       />
@@ -81,6 +84,7 @@ export default function ProfileSettings({ langtag }: ProfileSettingsProps) {
             className="profile-tab__toggle"
             checked={settings.filterReset}
             onChange={onChangeFilterReset}
+            testId="profile-setting-filter-reset"
           />
         </div>
 
@@ -99,6 +103,7 @@ export default function ProfileSettings({ langtag }: ProfileSettingsProps) {
             className="profile-tab__toggle"
             checked={settings.columnsReset}
             onChange={onChangeColumnsReset}
+            testId="profile-setting-columns-reset"
           />
         </div>
 
@@ -115,6 +120,7 @@ export default function ProfileSettings({ langtag }: ProfileSettingsProps) {
             className="profile-tab__toggle"
             checked={settings.annotationReset}
             onChange={onChangeAnnotationReset}
+            testId="profile-setting-annotation-reset"
           />
         </div>
 
@@ -133,6 +139,7 @@ export default function ProfileSettings({ langtag }: ProfileSettingsProps) {
             className="profile-tab__toggle"
             checked={settings.sortingReset}
             onChange={onChangeSortingReset}
+            testId="profile-setting-sorting-reset"
           />
         </div>
 
@@ -149,6 +156,7 @@ export default function ProfileSettings({ langtag }: ProfileSettingsProps) {
             className="profile-tab__toggle"
             checked={settings.sortingDesc}
             onChange={onChangeSortingDesc}
+            testId="profile-setting-sorting-desc"
           />
         </div>
       </div>

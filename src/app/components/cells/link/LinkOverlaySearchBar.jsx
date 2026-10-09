@@ -53,7 +53,11 @@ const SearchModePopup = ({
           });
           return (
             <div className={itemClass} key={id}>
-              <button className="menu-item-inner" onClick={updateFilter(id)}>
+              <button
+                className="menu-item-inner"
+                onClick={updateFilter(id)}
+                data-testid={`link-overlay-search-mode-${id}`}
+              >
                 {name}
               </button>
             </div>
@@ -129,8 +133,13 @@ const SearchBar = ({
         placeholder={filterName}
         onInput={handleInputKeys}
         onChange={handleChange}
+        data-testid="link-overlay-search"
       />
-      <button className="popup-button" onClick={togglePopup}>
+      <button
+        className="popup-button"
+        onClick={togglePopup}
+        data-testid="link-overlay-search-mode-toggle"
+      >
         <i className="fa fa-search" />
         <i className="fa fa-angle-down" />
       </button>

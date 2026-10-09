@@ -27,7 +27,11 @@ const ItemButton = props => {
   );
 
   return (
-    <div className={cssClass} onClick={handleClick}>
+    <div
+      className={cssClass}
+      data-testid={`taxonomy-node-${node.id}`}
+      onClick={handleClick}
+    >
       {node.parent ? (
         <>
           <div className="tree-node__border-left" />

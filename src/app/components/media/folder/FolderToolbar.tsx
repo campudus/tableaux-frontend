@@ -41,16 +41,19 @@ export default function FolderToolbar({
       <ButtonAction
         variant="outlined"
         icon={<SvgIcon icon={layout} />}
+        testId="media-layout"
         options={[
           {
             label: i18n.t("media:layout_list"),
             icon: <SvgIcon icon="list" />,
-            onClick: () => handleSelectLayout("list")
+            onClick: () => handleSelectLayout("list"),
+            testId: "media-layout-list"
           },
           {
             label: i18n.t("media:layout_tiles"),
             icon: <SvgIcon icon="tiles" />,
-            onClick: () => handleSelectLayout("tiles")
+            onClick: () => handleSelectLayout("tiles"),
+            testId: "media-layout-tiles"
           }
         ]}
       />
@@ -63,6 +66,7 @@ export default function FolderToolbar({
           icon={<i className="icon fa fa-plus" />}
           label={i18n.t("media:new_folder")}
           onClick={onNewFolderClick}
+          testId="media-new-folder"
           alt={
             !onNewFolderClick ? i18n.t("media:new_folder_exists") : undefined
           }
@@ -76,6 +80,7 @@ export default function FolderToolbar({
           icon={<i className="icon fa fa-upload" />}
           label={i18n.t("media:upload_file")}
           onClick={onUploadClick}
+          testId="media-upload"
         />
       )}
     </div>

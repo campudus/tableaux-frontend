@@ -28,6 +28,7 @@ const TextAnnotationButton = props => {
       className={`text-annotation-button ${
         open ? "ignore-react-onclickoutside" : ""
       }`}
+      data-testid="annotation-popup-toggle"
       onClick={handleClick}
       ref={rememberNode}
     >

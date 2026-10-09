@@ -1,7 +1,10 @@
 import { CSSProperties, ReactElement } from "react";
 import ReactSelect, {
   ActionMeta as RSActionMeta,
+  components,
+  ControlProps,
   DropdownIndicatorProps,
+  OptionProps,
   Theme,
   GroupBase,
   OnChangeValue,
@@ -24,6 +27,8 @@ export default function Select<
 >(
   props: Omit<SelectProps<Option, IsMulti, Group>, "onChange" | "options"> & {
     disabled?: boolean;
+    // react-select hands it on to the custom components as selectProps.testId
+    testId: string;
     // overwrite as required
     options: Option[]; // only support options, not groups
     onChange: (
@@ -84,6 +89,8 @@ export default function Select<
       components={{
         IndicatorSeparator: null,
         DropdownIndicator,
+        Control: ControlWithTestId,
+        Option: OptionWithTestId,
         ...props.components
       }}
     />
@@ -103,4 +110,32 @@ function DropdownIndicator<
       <i style={{ fontSize: "1.3em" }} className={className} />
     </div>
   );
+}
+
+const testIdOf = (selectProps: unknown) =>
+  (selectProps as { testId: string }).testId;
+
+// the control is the click target that opens the menu, its input covers the value
+function ControlWithTestId<
+  Option extends SelectOption,
+  IsMulti extends boolean,
+  Group extends GroupBase<Option>
+>(props: ControlProps<Option, IsMulti, Group>): ReactElement {
+  const innerProps = {
+    ...props.innerProps,
+    "data-testid": testIdOf(props.selectProps)
+  };
+  return <components.Control {...props} innerProps={innerProps} />;
+}
+
+function OptionWithTestId<
+  Option extends SelectOption,
+  IsMulti extends boolean,
+  Group extends GroupBase<Option>
+>(props: OptionProps<Option, IsMulti, Group>): ReactElement {
+  const innerProps = {
+    ...props.innerProps,
+    "data-testid": `${testIdOf(props.selectProps)}-option-${props.data.value}`
+  };
+  return <components.Option {...props} innerProps={innerProps} />;
 }

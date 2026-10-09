@@ -6,6 +6,7 @@ import ButtonAction from "./ButtonAction";
 type BreadcrumbsLink = {
   label: ReactNode;
   isActive?: boolean;
+  testId: string;
 } & (
   | { path: string; onClick?: never }
   | {
@@ -14,12 +15,19 @@ type BreadcrumbsLink = {
     }
 );
 
-function BreadcrumbsLink({ path, label, onClick, isActive }: BreadcrumbsLink) {
+function BreadcrumbsLink({
+  path,
+  label,
+  onClick,
+  isActive,
+  testId
+}: BreadcrumbsLink) {
   return path ? (
     <NavLink
       to={path}
       className={cn("breadcrumbs__link", {}, isActive ? "active" : "")}
       end
+      data-testid={testId}
     >
       {label}
     </NavLink>
@@ -27,6 +35,7 @@ function BreadcrumbsLink({ path, label, onClick, isActive }: BreadcrumbsLink) {
     <button
       onClick={onClick}
       className={cn("breadcrumbs__link", {}, isActive ? "active" : "")}
+      data-testid={testId}
     >
       {label}
     </button>
@@ -37,11 +46,14 @@ export type BreadcrumbsProps = {
   className?: string;
   // Allow either path or onClick, but not both
   links: BreadcrumbsLink[];
+  // page and overlay can show breadcrumbs at the same time
+  testId: string;
 };
 
 export default function Breadcrumbs({
   className,
-  links = []
+  links = [],
+  testId
 }: BreadcrumbsProps) {
   const navigate = useNavigate();
   const needsDropdown = links.length > 3;
@@ -52,16 +64,18 @@ export default function Breadcrumbs({
     const lastLink = links.at(-1);
 
     return (
-      <div className={cn("breadcrumbs", {}, className)}>
+      <div className={cn("breadcrumbs", {}, className)} data-testid={testId}>
         <BreadcrumbsLink {...firstLink!} />
         <i className="fa fa-angle-right breadcrumbs__icon" />
         <ButtonAction
           variant="text"
           label={"..."}
+          testId={`${testId}-more`}
           options={menuLinks.map(link => {
             return {
               label: link.label,
-              onClick: link.onClick ?? (() => navigate(link.path))
+              onClick: link.onClick ?? (() => navigate(link.path)),
+              testId: link.testId
             };
           })}
         />
@@ -72,7 +86,7 @@ export default function Breadcrumbs({
   }
 
   return (
-    <div className={cn("breadcrumbs", {}, className)}>
+    <div className={cn("breadcrumbs", {}, className)} data-testid={testId}>
       {links.map((link, index) => {
         const isFirst = index === 0;
         const isActive = index === links.length - 1;

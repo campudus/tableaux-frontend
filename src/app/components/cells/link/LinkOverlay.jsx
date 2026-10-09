@@ -365,6 +365,7 @@ class LinkOverlay extends PureComponent {
                 <button
                   className="table-link"
                   onClick={() => openInNewTab(targetTable)}
+                  data-testid="link-overlay-table-link"
                 >
                   {getColumnDisplayName(column, langtag)}
                 </button>

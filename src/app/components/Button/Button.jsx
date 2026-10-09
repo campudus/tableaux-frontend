@@ -9,7 +9,8 @@ export const Button = ({
   children,
   text,
   alt,
-  waiting
+  waiting,
+  testId
 }) => {
   const content = text ? (
     <span className="button__text">{text}</span>
@@ -28,6 +29,7 @@ export const Button = ({
       onClick={handleClick}
       disabled={!!disabled}
       title={alt}
+      data-testid={testId}
     >
       <div className="button__spinner">
         <Spinner isLoading={waiting} />

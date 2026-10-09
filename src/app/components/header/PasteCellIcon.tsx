@@ -96,6 +96,7 @@ export default function PasteCellIcon({
   return (
     <Popup
       className="clipboard-icon"
+      testId="clipboard-toggle"
       trigger={<i className={"fa fa-clipboard"} />}
     >
       <div className={"clipboard-popup"}>
@@ -120,6 +121,7 @@ export default function PasteCellIcon({
         <div className="buttons">
           <button
             className="focus-cell-button button positive"
+            data-testid="clipboard-focus-cell"
             onClick={focusCell}
           >
             {i18n.t("header:clipboard.focus")}
@@ -127,6 +129,7 @@ export default function PasteCellIcon({
 
           <button
             className="clear-pasted-button button neutral"
+            data-testid="clipboard-clear"
             onClick={clearCellClipboard}
           >
             {i18n.t("header:clipboard.clear")}

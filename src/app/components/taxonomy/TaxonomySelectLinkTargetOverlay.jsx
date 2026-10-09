@@ -50,7 +50,12 @@ const mkActionButton =
     const handleClick = onSubmit(isAddButton ? node : { id: null });
 
     return (
-      <button className={buttonClass} onClick={handleClick} disabled={disabled}>
+      <button
+        className={buttonClass}
+        onClick={handleClick}
+        disabled={disabled}
+        data-testid={`taxonomy-select-target-${buttonMode}-${node.id}`}
+      >
         <i className={iconClass} />
       </button>
     );

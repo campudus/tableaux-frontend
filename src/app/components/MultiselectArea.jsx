@@ -90,6 +90,7 @@ class MultiselectArea extends PureComponent {
         key={this.getId(item)}
         className="multiselect-tag"
         onClick={this.handleDeselect(item)}
+        data-testid={`multiselect-tag-${this.getId(item)}`}
       >
         {tagElement}
         <div className="multiselect-tag-deselect-icon">{iconElement}</div>
@@ -107,6 +108,7 @@ class MultiselectArea extends PureComponent {
         className="multiselect-list-item"
         key={this.getId(item)}
         onClick={this.handleSelect(item)}
+        data-testid={`multiselect-option-${this.getId(item)}`}
       >
         {listItem}
       </li>
@@ -147,7 +149,11 @@ class MultiselectArea extends PureComponent {
     });
 
     return (
-      <div className={areaClass} onClick={this.openList(!listOpen)}>
+      <div
+        className={areaClass}
+        onClick={this.openList(!listOpen)}
+        data-testid="multiselect-area"
+      >
         {f.isEmpty(selection)
           ? this.getPlaceholder()
           : selection.map(this.renderTag)}

@@ -37,6 +37,7 @@ const TextCell = props => {
       <div
         className={`cell-content ${isMultiLine ? "is-multiline" : ""}`}
         onClick={handleExpandContent}
+        data-testid="cell-text-expand"
       >
         <div>{displayValue[langtag].split("\n")[0]}</div>
         {isMultiLine ? (

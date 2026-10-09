@@ -114,6 +114,7 @@ class DateView extends Component {
     return (
       <div
         className={cssClass}
+        data-testid={`entity-view-date-${this.props.cell.column.id}`}
         onClick={this.setEditing(!editing)}
         tabIndex={1}
         onKeyDown={this.openOnEnter}
@@ -140,7 +141,11 @@ class DateView extends Component {
           )}
         </div>
         {editing && !thisUserCantEdit ? (
-          <div className="datetime-popup" onClick={stopPropagation}>
+          <div
+            className="datetime-popup"
+            data-testid="entity-view-date-popup"
+            onClick={stopPropagation}
+          >
             <Datetime
               handleClickOutside={this.handleClickOutside}
               onChange={this.handleChange}
@@ -151,6 +156,7 @@ class DateView extends Component {
                   {renderDefault()}
                   <div
                     className="clear-datetime"
+                    data-testid="entity-view-date-clear"
                     onClick={() => {
                       this.handleChange(null);
                       this.saveEditsAndClose(null);

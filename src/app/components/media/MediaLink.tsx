@@ -22,6 +22,7 @@ export default function MediaLink({
   return (
     <a
       className={cn("media-link", {}, className)}
+      data-testid={`media-link-${langtag}`}
       href={url}
       rel="noopener noreferrer"
       target="_blank"

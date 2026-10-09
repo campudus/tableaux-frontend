@@ -24,7 +24,11 @@ const GrudHeader = ({
       <header className="grud-header">
         <Navigation langtag={langtag} />
         {children || <div className="header-separator" />}
-        <LanguageSwitcher langtag={langtag} onChange={handleLanguageSwitch} />
+        <LanguageSwitcher
+          langtag={langtag}
+          onChange={handleLanguageSwitch}
+          testId="language-switcher"
+        />
         <ConnectionStatus isConnected={connectedToBackend} />
         <UserMenu langtag={langtag} />
       </header>

@@ -125,10 +125,12 @@ const FilterPopup = ({
       <div
         className="full-screen capture-outside-click"
         onClick={onClickedOutside}
+        data-testid="filter-popup-backdrop"
       />
       <div
         className="filter-popup"
         onClick={evt => void evt.stopPropagation()}
+        data-testid="filter-popup"
         onKeyDown={handleKeyPress}
       >
         <section className="filter-popup__content-section">
@@ -138,6 +140,7 @@ const FilterPopup = ({
             </div>
             <button
               className="button button--open-save-overlay"
+              data-testid="filter-save-open"
               onClick={() => setShowFilterSavePopup(true)}
               disabled={!settingsAreValid}
             >
@@ -216,12 +219,14 @@ const SortingArea = ({ columns, onChange, ordering, langtag }) => {
       </header>
       <div className="content sorting-area__content">
         <Select
+          testId="filter-sorting-column"
           options={options}
           value={ordering?.colName || "rowId"}
           onChange={handleChangeColumn}
           placehoder={t("filter:input.sort")}
         />
         <Select
+          testId="filter-sorting-direction"
           options={[
             { value: SortValue.asc, label: t("filter:help.sortasc") },
             { value: SortValue.desc, label: t("filter:help.sortdesc") }
@@ -232,6 +237,7 @@ const SortingArea = ({ columns, onChange, ordering, langtag }) => {
         />
         <button
           className="button button--reset-sorting"
+          data-testid="filter-sorting-clear"
           disabled={!ordering.colName}
           onClick={handleClear}
         >
@@ -280,6 +286,7 @@ const AnnotationFilterArea = ({ onToggle, filters, options, langtag }) => {
               className="annotation-filter"
               key={kind}
               onClick={onToggle(kind)}
+              data-testid={`filter-annotation-option-${kind}`}
             >
               <div className="annotation-filter__label">
                 {getAnnotationTitle(kind, langtag)}
@@ -287,6 +294,7 @@ const AnnotationFilterArea = ({ onToggle, filters, options, langtag }) => {
               <div className="annotation-filter__checkbox">
                 <input
                   type="checkbox"
+                  data-testid={`filter-annotation-${kind}`}
                   checked={Boolean(filters[kind])}
                   onChange={f.noop}
                 />
@@ -305,6 +313,7 @@ const AnnotationFilterArea = ({ onToggle, filters, options, langtag }) => {
             .map(kind => (
               <AnnotationBadge
                 key={kind}
+                testId={`filter-annotation-badge-${kind}`}
                 onClick={onToggle(kind)}
                 active={Boolean(filters[kind])}
                 color={getAnnotationColor(kind)}
@@ -328,6 +337,7 @@ const ColumnFilterArea = ({ columns, filters, langtag, onChange }) => {
         {filters.map((filterRow, idx) => (
           <FilterRow
             key={idx}
+            testId={`filter-row-${idx}`}
             columns={columns}
             langtag={langtag}
             settings={filterRow}
@@ -340,7 +350,11 @@ const ColumnFilterArea = ({ columns, filters, langtag, onChange }) => {
           />
         ))}
       </div>
-      <button className="button button--add-filter" onClick={addFilterRow}>
+      <button
+        className="button button--add-filter"
+        data-testid="filter-add-row"
+        onClick={addFilterRow}
+      >
         <i className="fa fa-plus" />
         {t("table:filter.add-filter")}
       </button>

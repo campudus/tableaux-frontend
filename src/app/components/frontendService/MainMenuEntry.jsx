@@ -5,7 +5,10 @@ import { retrieveTranslation } from "../../helpers/multiLanguage";
 import ServiceLink from "./ServiceLink";
 
 const MainMenuEntry = ({ service, service: { displayName }, langtag }) => (
-  <li className="main-navigation__entry">
+  <li
+    className="main-navigation__entry"
+    data-testid={`main-navigation-service-${service.id}`}
+  >
     <ServiceLink
       classNames="main-navigation__entry-button"
       langtag={langtag}

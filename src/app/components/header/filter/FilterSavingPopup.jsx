@@ -42,6 +42,7 @@ const FilterSavingPopup = ({ filters, onClose, onSubmit }) => {
       </header>
       <input
         className="save-template__name-input"
+        data-testid="filter-save-name"
         type="text"
         value={title}
         onChange={handleTitleChange}
@@ -50,11 +51,16 @@ const FilterSavingPopup = ({ filters, onClose, onSubmit }) => {
         onKeyDown={handleKeyDown}
       />
       <footer className="save-template-popup__footer">
-        <button className="button neutral button-cancel" onClick={onClose}>
+        <button
+          className="button neutral button-cancel"
+          data-testid="filter-save-cancel"
+          onClick={onClose}
+        >
           {i18n.t("common:cancel")}
         </button>
         <button
           className="button button-save"
+          data-testid="filter-save-submit"
           disabled={f.isEmpty(title)}
           onClick={handleSaveTemplate}
         >
@@ -112,12 +118,14 @@ export const RestoreSavedFiltersArea = ({
             <span className="stored-filter__name">{filter.name}</span>
             <button
               className="button button--set-stored-filter"
+              data-testid={`filter-stored-apply-${filter.id}`}
               onClick={() => onSubmit(filter)}
             >
               Anwenden
             </button>
             <button
               className="button button--delete-stored-filter"
+              data-testid={`filter-stored-delete-${filter.id}`}
               onClick={() => clearFilter(filter)}
             >
               <i className="fa fa-trash" />

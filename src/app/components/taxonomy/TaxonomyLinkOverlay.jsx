@@ -22,10 +22,11 @@ const EXPANDED_NODE_KEY = "expandedNode";
 // NodeActionButton :
 //   { onClick : (TreeNode -> ())
 //   , icon : string
-//   , idsToDisable : Set Int | () }
+//   , idsToDisable : Set Int | ()
+//   , testId : string }
 // -> { node : TreeNode } -> React.Element
 const mkNodeActionButton =
-  ({ onClick, icon, idsToDisable }) =>
+  ({ onClick, icon, idsToDisable, testId }) =>
   ({ node }) => {
     const handleClick = useCallback(() => {
       f.isFunction(onClick) && onClick(node);
@@ -35,7 +36,12 @@ const mkNodeActionButton =
     const buttonClass = buildClassName("set-link-button", { disabled });
 
     return (
-      <button disabled={disabled} className={buttonClass} onClick={handleClick}>
+      <button
+        disabled={disabled}
+        className={buttonClass}
+        onClick={handleClick}
+        data-testid={`${testId}-${node.id}`}
+      >
         <i className={`fa ${icon}`} />
       </button>
     );
@@ -65,6 +71,7 @@ export const LinkedItem = ({
                 <span
                   key={n.id}
                   className="linked-item__path-step"
+                  data-testid={`taxonomy-link-path-step-${n.id}`}
                   title={title}
                   onClick={() => onFocusNode(n)}
                 >
@@ -179,7 +186,8 @@ const TaxonomyLinkOverlayBody = ({
                   onFocusNode={handleFocusFX}
                   ActionButton={mkNodeActionButton({
                     onClick: onUnlinkNode,
-                    icon: "fa-minus"
+                    icon: "fa-minus",
+                    testId: "taxonomy-link-remove"
                   })}
                 />
               ))}
@@ -196,7 +204,8 @@ const TaxonomyLinkOverlayBody = ({
           NodeActionItem={mkNodeActionButton({
             onClick: onLinkNode,
             icon: "fa-plus",
-            idsToDisable: idsToDisableAdding
+            idsToDisable: idsToDisableAdding,
+            testId: "taxonomy-link-add"
           })}
         />
       </section>

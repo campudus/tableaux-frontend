@@ -56,7 +56,11 @@ const ResultItem = ({ langtag, node, onSelect }) => {
   };
 
   return (
-    <li className={className} onClick={handleSelect}>
+    <li
+      className={className}
+      data-testid={`taxonomy-search-result-${node.id}`}
+      onClick={handleSelect}
+    >
       <div className="taxonomy-search__result-item__wrapper">
         <div className="taxonomy-search__result-item__path">{path}</div>
         <div className="taxonomy-search__result-item__content">
@@ -139,6 +143,7 @@ const TaxonomySearch = ({
     <div className={`taxonomy-search ${classNames || ""}`} ref={containerRef}>
       <div className="taxonomy-search__wrapper">
         <input
+          data-testid="taxonomy-search-input"
           onFocus={handleFocusInput}
           className={inputClass}
           type="text"

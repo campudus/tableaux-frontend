@@ -12,7 +12,7 @@ import { createTextFilter } from "../../helpers/searchFunctions";
 import * as t from "../../helpers/transduce";
 import actions from "../../redux/actionCreators";
 import store from "../../redux/store";
-import SearchBar from "../cells/link/LinkOverlaySearchBar";
+import LinkOverlaySearchBar from "../cells/link/LinkOverlaySearchBar";
 import Empty from "../helperComponents/emptyEntry";
 import SvgIcon from "../helperComponents/SvgIcon";
 import Header from "./Header";
@@ -36,6 +36,7 @@ const ListItem = ({ isLinked, item, onChange, onEdit, style, langtag }) => {
       <div className="list-item">
         <div
           className="linkButton"
+          data-testid={`select-link-target-toggle-${item.id}`}
           onClick={() => onChange(isLinked ? undefined : item.id)}
         >
           <SvgIcon
@@ -43,7 +44,11 @@ const ListItem = ({ isLinked, item, onChange, onEdit, style, langtag }) => {
             containerClasses="color-primary"
           />
         </div>
-        <div className="linkButton" onClick={() => onEdit(item.id)}>
+        <div
+          className="linkButton"
+          data-testid={`select-link-target-edit-${item.id}`}
+          onClick={() => onEdit(item.id)}
+        >
           <SvgIcon icon="edit" containerClasses="color-primary" />
         </div>
         <div className="left link-display-value">{displayValue}</div>
@@ -85,7 +90,11 @@ const RowCreator = ({ noRowsAvailable, table, onClick, langtag }) => {
   const tableName = getTableDisplayName(table, langtag);
 
   return (
-    <div onClick={onClick} className={cssClass}>
+    <div
+      onClick={onClick}
+      className={cssClass}
+      data-testid="select-link-target-new-row"
+    >
       <SvgIcon icon="plus" containerClasses="color-primary" />
       <span>{i18n.t("table:link-overlay-add-new-row", { tableName })}</span>
     </div>
@@ -303,7 +312,7 @@ const SelectLinkTargetOverlayHeader = props => {
       context={i18n.t("table:select-link-target.context")}
       title={<OverlayHeadRowIdentificator cell={cell} langtag={langtag} />}
     >
-      <SearchBar
+      <LinkOverlaySearchBar
         id={id}
         langtag={langtag}
         filterMode={sharedData.filterMode}

@@ -11,12 +11,14 @@ import { outsideClickEffect } from "../../helpers/useOutsideClick";
 type PopupProps = PropsWithChildren<{
   className?: string;
   trigger: ReactNode;
+  testId: string;
 }>;
 
 export default function Popup({
   className = "",
   trigger,
-  children
+  children,
+  testId
 }: PopupProps): ReactElement {
   const containerRef = useRef<HTMLDivElement>(null);
   const [isOpen, setIsOpen] = useState(false);
@@ -44,6 +46,7 @@ export default function Popup({
       style={{ cursor: "pointer" }}
       className={`${className} ${isOpen ? "popup-open" : ""}`}
       onClick={togglePopup}
+      data-testid={testId}
     >
       {trigger}
       {isOpen && children}

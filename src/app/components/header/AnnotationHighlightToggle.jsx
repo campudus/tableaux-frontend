@@ -58,6 +58,7 @@ const AnnotationHighlightToggle = ({ langtag }) => {
         <button
           className="small-button annotation-highlight-toggle__popup-button"
           onClick={togglePopup}
+          data-testid="annotation-highlight-toggle"
         >
           <SvgIcon icon="highlight" />
         </button>
@@ -68,6 +69,7 @@ const AnnotationHighlightToggle = ({ langtag }) => {
           {flagConfigs.map(config => (
             <AnnotationBadge
               key={config.name}
+              testId={`annotation-highlight-${config.name}`}
               onClick={
                 annotationHighlight === config.name
                   ? clearAnnotationHighlight()

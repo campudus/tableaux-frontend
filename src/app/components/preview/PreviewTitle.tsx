@@ -73,7 +73,7 @@ function PreviewTitleContent({
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
-        <a href={defaultTitle.link}>
+        <a href={defaultTitle.link} data-testid="preview-title-link">
           <span>{stripFormattingTags(defaultTitle.value)}</span>
         </a>
 
@@ -105,6 +105,7 @@ function PreviewTitleContent({
             >
               <a
                 className="preview-cell-value"
+                data-testid={`preview-cell-value-${tableId}-${column.id}-${row.id}`}
                 href={apiUrl({
                   langtag,
                   tableId,
@@ -131,6 +132,7 @@ function PreviewTitleContent({
           <PreviewCellValue
             key={column.id}
             langtag={langtag}
+            tableId={tableId}
             column={column}
             row={row}
             link={apiUrl({

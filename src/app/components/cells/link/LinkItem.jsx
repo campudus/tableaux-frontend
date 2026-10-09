@@ -31,7 +31,13 @@ const isViewableUrl = url => {
   );
 };
 
-const LinkButton = ({ className, onClick, disabled = !onClick, children }) => {
+const LinkButton = ({
+  className,
+  onClick,
+  disabled = !onClick,
+  children,
+  testId
+}) => {
   const cssClass = buildClassName("linkButton", { disabled }, className);
   return (
     <button
@@ -39,13 +45,14 @@ const LinkButton = ({ className, onClick, disabled = !onClick, children }) => {
       onClick={onClick}
       draggable={false}
       disabled={disabled}
+      data-testid={testId}
     >
       {children}
     </button>
   );
 };
 
-const OpenAttachmentButton = ({ url, className }) => {
+const OpenAttachmentButton = ({ url, className, testId }) => {
   const shouldOpenWindow = f.isString(url) && isViewableUrl(url);
   const disabled = !shouldOpenWindow;
   const handleOpenNewWindow = evt => {
@@ -54,7 +61,12 @@ const OpenAttachmentButton = ({ url, className }) => {
   };
   const cssClass = buildClassName("linkButton", { disabled }, className);
   return (
-    <Link className={cssClass} to={url} onClick={handleOpenNewWindow}>
+    <Link
+      className={cssClass}
+      to={url}
+      onClick={handleOpenNewWindow}
+      data-testid={testId}
+    >
       <i className="fa fa-eye" />
     </Link>
   );
@@ -150,6 +162,7 @@ const LinkItem = props => {
             className={secondaryButtonClass}
             onClick={handleClickToggle}
             disabled={isDisabled}
+            testId={`link-item-toggle-${props.row.id}`}
           >
             {props.isLinked ? (
               <SvgIcon icon="minus" containerClasses="color-primary" />
@@ -162,11 +175,13 @@ const LinkItem = props => {
           <OpenAttachmentButton
             className={secondaryButtonClass}
             url={viewUrl}
+            testId={`link-item-open-${props.row.id}`}
           />
         ) : (
           <LinkButton
             className={secondaryButtonClass}
             onClick={handleClickEdit}
+            testId={`link-item-edit-${props.row.id}`}
           >
             {archived ? (
               <i className="fa fa-eye" />
@@ -179,6 +194,7 @@ const LinkItem = props => {
           ref={refs.setReference}
           className={mainButtonClass}
           onClick={canEditAttributes ? handleOpenAttributesPopover : undefined}
+          data-testid={`link-item-${props.row.id}`}
         >
           <div draggable={false}>
             {isPermissionDenied ? (

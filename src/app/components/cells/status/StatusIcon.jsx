@@ -29,6 +29,7 @@ const StatusIcon = props => {
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       onClick={() => !blockMode && clickHandler(filterValue)}
+      data-testid={filterValue ? `status-icon-${filterValue}` : "status-icon"}
     >
       {!blockMode && tooltipVisible ? <Tooltip>{nameToDisplay}</Tooltip> : null}
       <FontIcon style={{ color }} fontIconKey={value} />

@@ -116,7 +116,11 @@ class TableSwitcherButton extends React.PureComponent {
     return (
       <>
         <div id="tableswitcher-wrapper" className={cssClass}>
-          <button className={buttonClass} onClick={this.togglePopup}>
+          <button
+            className={buttonClass}
+            onClick={this.togglePopup}
+            data-testid="table-switcher-toggle"
+          >
             <i className="fa fa-columns" />
             {tableDisplayName}
             <div className="separator-v" />

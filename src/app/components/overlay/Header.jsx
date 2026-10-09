@@ -65,6 +65,7 @@ class Header extends PureComponent {
         <button
           className={"button " + className}
           onClick={dontClose ? fn || f.noop : execAndClose}
+          data-testid={`overlay-button-${className}`}
         >
           {text}
         </button>
@@ -91,6 +92,7 @@ class Header extends PureComponent {
           onClick={() => {
             actions.closeOverlay(id);
           }}
+          data-testid="overlay-close"
         >
           <SvgIcon icon="cross" containerClasses="color-white" center={true} />
         </button>
@@ -118,6 +120,7 @@ export const SimpleHeader = props => {
         onClick={() => {
           store.dispatch(ReduxAction.closeOverlay(id));
         }}
+        data-testid="overlay-close"
       >
         <SvgIcon icon="cross" containerClasses="color-white" />
       </button>

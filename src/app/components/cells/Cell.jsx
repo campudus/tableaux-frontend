@@ -269,6 +269,7 @@ class Cell extends React.Component {
       editing,
       inMultiSelection,
       inSelectedRow,
+      isExpandedCell,
       focusTable,
       toggleAnnotationPopup,
       width,
@@ -292,6 +293,11 @@ class Cell extends React.Component {
     const CellKind =
       kind === "disabled" ? DisabledCell : Cell.cellKinds[kind] || TextCell;
 
+    // further languages of an expanded row repeat the cell, the langtag tells them apart
+    const testId = isExpandedCell
+      ? `cell-${column.id}-${row.id}-${langtag}`
+      : `cell-${column.id}-${row.id}`;
+
     const annotationColor = getAnnotationColor(annotationHighlight, "#ffffff");
     const hexTransparency = "33"; // hex transparency of 20%
     const highlightColor = annotationColor + hexTransparency;
@@ -308,6 +314,7 @@ class Cell extends React.Component {
           ...(shouldHighlight && { backgroundColor: highlightColor })
         }}
         className={cssClass}
+        data-testid={testId}
         onClick={this.cellClicked}
         onMouseDown={this.preventTextRangeSelection}
         onContextMenu={this.rightClicked}
@@ -388,6 +395,7 @@ const RepeaterCell = React.memo(props => {
       style={props.style}
       className="cell repeat placeholder"
       onContextMenu={onContextMenu}
+      data-testid={`cell-${cell.column.id}-${cell.row.id}-${langtag}`}
     >
       —.—
     </div>

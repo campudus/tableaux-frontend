@@ -8,13 +8,15 @@ type NewRowButtonProps = {
   onAdd: () => Promise<Row>;
   onSelect: (row: Row) => void;
   showToast: (toast: { content: ReactNode; duration: number }) => void;
+  testId: string;
 };
 
 export default function NewRowButton({
   showToast,
   lastRow,
   onAdd,
-  onSelect
+  onSelect,
+  testId
 }: NewRowButtonProps): ReactElement {
   const isEmpty: (rowValues: Row["values"]) => boolean = f.cond([
     [f.isArray, element => f.isEmpty(element) || f.every(isEmpty, element)],
@@ -39,7 +41,11 @@ export default function NewRowButton({
   };
 
   return (
-    <button className="button new-row-button" onClick={addNewRow}>
+    <button
+      className="button new-row-button"
+      onClick={addNewRow}
+      data-testid={testId}
+    >
       <i className="fa fa-plus" />
       <span>{i18n.t("table:add_new_row")}</span>
     </button>

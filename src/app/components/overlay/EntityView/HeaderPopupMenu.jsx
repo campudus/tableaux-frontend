@@ -31,13 +31,13 @@ class HeaderPopupMenu extends Component {
     };
   }
 
-  mkEntry = (id, { title, fn, icon }) => {
+  mkEntry = (id, { title, fn, icon, testId }) => {
     const clickHandler = () => {
       f.isFunction(fn) ? fn() : console.log("handler function:", typeof fn, fn);
       this.setState({ open: false });
     };
     return (
-      <button className="entry" onClick={clickHandler}>
+      <button className="entry" onClick={clickHandler} data-testid={testId}>
         <i className={`fa fa-${icon}`} />
         <div>{i18n.t(title)}</div>
       </button>
@@ -131,6 +131,7 @@ class HeaderPopupMenu extends Component {
       <div className="header-popup-wrapper">
         <button
           className={buttonClass}
+          data-testid="entity-view-menu"
           onMouseLeave={this.handleMouseLeave}
           onClick={event => {
             event.stopPropagation();
@@ -154,13 +155,15 @@ class HeaderPopupMenu extends Component {
                 ? this.mkEntry(0, {
                     title: "table:show_dependency",
                     fn: () => openShowDependency({ table, row, langtag, cell }),
-                    icon: "code-fork"
+                    icon: "code-fork",
+                    testId: "entity-view-menu-show-dependency"
                   })
                 : null}
               {this.mkEntry(1, {
                 title: "table:show_translation",
                 fn: () => funcs.setTranslationView(translationInfo),
-                icon: "flag"
+                icon: "flag",
+                testId: "entity-view-menu-translation"
               })}
               {this.mkEntry(2, {
                 title: "table:open-dataset",
@@ -171,7 +174,8 @@ class HeaderPopupMenu extends Component {
                     langtag,
                     filter: true
                   }),
-                icon: "external-link"
+                icon: "external-link",
+                testId: "entity-view-menu-open-dataset"
               })}
               <div className="separator">{i18n.t("table:menus.edit")}</div>
               {isLocked(row)
@@ -179,20 +183,23 @@ class HeaderPopupMenu extends Component {
                 : this.mkEntry(3, {
                     title: "table:delete_row",
                     fn: () => initiateDeleteRow({ table, row, langtag }, id),
-                    icon: "trash"
+                    icon: "trash",
+                    testId: "entity-view-menu-delete-row"
                   })}
               {canUndo
                 ? this.mkEntry(3, {
                     title: "table:undo",
                     fn: () => actions.modifyHistory("undo", tableId),
-                    icon: "undo"
+                    icon: "undo",
+                    testId: "entity-view-menu-undo"
                   })
                 : null}
               {canRedo
                 ? this.mkEntry(3, {
                     title: "table:redo",
                     fn: () => actions.modifyHistory("redo", tableId),
-                    icon: "repeat"
+                    icon: "repeat",
+                    testId: "entity-view-menu-redo"
                   })
                 : null}
               {this.mkEntry(4, {
@@ -205,7 +212,8 @@ class HeaderPopupMenu extends Component {
                     langtag,
                     rowId: row.id
                   }),
-                icon: "clone"
+                icon: "clone",
+                testId: "entity-view-menu-duplicate-row"
               })}
               {this.mkEntry(5, {
                 title: row.final
@@ -218,7 +226,8 @@ class HeaderPopupMenu extends Component {
                     flagName: "final",
                     flagValue: !row.final
                   }),
-                icon: "lock"
+                icon: "lock",
+                testId: "entity-view-menu-toggle-final"
               })}
             </div>
           </div>

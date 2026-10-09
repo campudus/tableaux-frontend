@@ -12,6 +12,7 @@ const NameEditorInput = ({ onChange, onKeyDown, value }) => (
   <input
     type="text"
     className="input"
+    data-testid="table-settings-rename-input"
     value={value}
     autoFocus
     onKeyDown={onKeyDown}
@@ -78,7 +79,12 @@ const NameEditor = ({ table, langtag, changeTableName, locked }) => {
   );
 
   return (
-    <button className={cssClass} onClick={enterEditMode} ref={container}>
+    <button
+      className={cssClass}
+      data-testid="table-settings-rename"
+      onClick={enterEditMode}
+      ref={container}
+    >
       {editMode ? (
         <NameEditorInput
           onChange={handleChange}
