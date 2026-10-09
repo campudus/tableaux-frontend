@@ -204,16 +204,19 @@ export default function AttachmentOverlayBody({
           <ButtonAction
             variant="outlined"
             icon={<SvgIcon icon={layoutState.nav} />}
+            testId="attachment-overlay-nav-layout"
             options={[
               {
                 label: i18n.t("media:layout_list"),
                 icon: <SvgIcon icon="list" />,
-                onClick: () => handleSelectLayout({ nav: "list" })
+                onClick: () => handleSelectLayout({ nav: "list" }),
+                testId: "attachment-overlay-nav-layout-list"
               },
               {
                 label: i18n.t("media:layout_tiles"),
                 icon: <SvgIcon icon="tiles" />,
-                onClick: () => handleSelectLayout({ nav: "tiles" })
+                onClick: () => handleSelectLayout({ nav: "tiles" }),
+                testId: "attachment-overlay-nav-layout-tiles"
               }
             ]}
           />
@@ -223,6 +226,7 @@ export default function AttachmentOverlayBody({
               variant="outlined"
               icon={<i className="icon fa fa-plus" />}
               onClick={handleClickNewFolder}
+              testId="attachment-overlay-new-folder"
               alt={hasNewFolder ? i18n.t("media:new_folder_exists") : undefined}
               disabled={hasNewFolder}
             />
@@ -233,6 +237,7 @@ export default function AttachmentOverlayBody({
               variant="outlined"
               icon={<i className="icon fa fa-upload" />}
               onClick={handleClickUpload}
+              testId="attachment-overlay-upload"
             />
           )}
         </div>
@@ -289,16 +294,19 @@ export default function AttachmentOverlayBody({
             variant="outlined"
             alignmentH="left"
             icon={<SvgIcon icon={layoutState.content} />}
+            testId="attachment-overlay-content-layout"
             options={[
               {
                 label: i18n.t("media:layout_list"),
                 icon: <SvgIcon icon="list" />,
-                onClick: () => handleSelectLayout({ content: "list" })
+                onClick: () => handleSelectLayout({ content: "list" }),
+                testId: "attachment-overlay-content-layout-list"
               },
               {
                 label: i18n.t("media:layout_tiles"),
                 icon: <SvgIcon icon="tiles" />,
-                onClick: () => handleSelectLayout({ content: "tiles" })
+                onClick: () => handleSelectLayout({ content: "tiles" }),
+                testId: "attachment-overlay-content-layout-tiles"
               }
             ]}
           />

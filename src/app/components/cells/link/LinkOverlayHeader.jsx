@@ -1,6 +1,6 @@
 import React from "react";
 import Header from "../../overlay/Header";
-import SearchBar from "./LinkOverlaySearchBar";
+import LinkOverlaySearchBar from "./LinkOverlaySearchBar";
 import { SwitchSortingButton } from "./LinkOverlayFragments";
 import Spinner from "../../header/Spinner";
 import { retrieveTranslation } from "../../../helpers/multiLanguage";
@@ -30,7 +30,7 @@ const LinkOverlayHeader = props => {
 
   return (
     <Header context={tableName} id={props.id} {...props}>
-      <SearchBar
+      <LinkOverlaySearchBar
         langtag={langtag}
         id={id}
         onKeyStroke={passKeystrokeToBody}

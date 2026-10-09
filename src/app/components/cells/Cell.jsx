@@ -271,7 +271,6 @@ class Cell extends React.Component {
       inSelectedRow,
       isExpandedCell,
       focusTable,
-
       toggleAnnotationPopup,
       width,
       rowIndex,
@@ -317,7 +316,6 @@ class Cell extends React.Component {
         className={cssClass}
         data-testid={testId}
         onClick={this.cellClicked}
-
         onMouseDown={this.preventTextRangeSelection}
         onContextMenu={this.rightClicked}
         tabIndex="1"

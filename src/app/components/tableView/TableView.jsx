@@ -353,7 +353,6 @@ class TableView extends PureComponent {
               <AnnotationHighlightToggle table={table} langtag={langtag} />
               <HistoryButtons tableId={tableId} history={tableView.history} />
               {this.renderNewRowButton("header-new-row-button")}
-
               {showResetTableViewButton && (
                 <ResetTableViewButton
                   tableId={tableId}

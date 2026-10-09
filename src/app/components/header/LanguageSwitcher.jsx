@@ -7,7 +7,7 @@ import Select from "../GrudSelect";
 import { Langtags } from "./../../constants/TableauxConstants";
 
 const LanguageSwitcher = props => {
-  const { disabled, langtag, limitLanguages, onChange } = props;
+  const { disabled, langtag, limitLanguages, onChange, testId } = props;
   const languages = f.isNil(props.languages) ? Langtags : props.languages;
   // Inside select box show user just the languages he has access to
   const languagesToDisplay =
@@ -40,21 +40,23 @@ const LanguageSwitcher = props => {
       onChange={handleChange}
       components={{ Control, Option, SingleValue }}
       Disabled={disabled}
+      // react-select hands unknown props to the custom components as selectProps
+      testId={testId}
     />
   );
 };
 
 const renderFlagAndText = key => props => {
-  const testId =
+  const { testId } = props.selectProps;
+  const optionTestId =
     key === "option"
-      ? `language-switcher-option-${props.data.value}`
-      : "language-switcher-value";
+      ? `${testId}-option-${props.data.value}`
+      : `${testId}-value`;
 
   return (
     <span
       className="language-switcher__option"
-      data-testid={testId}
-
+      data-testid={optionTestId}
       onClick={() => props.selectOption(props.data)}
       style={props.getStyles(key, props)}
     >
@@ -66,11 +68,13 @@ const renderFlagAndText = key => props => {
 const Control = props => (
   <components.Control
     {...props}
-    innerProps={{ ...props.innerProps, "data-testid": "language-switcher" }}
+    innerProps={{
+      ...props.innerProps,
+      "data-testid": props.selectProps.testId
+    }}
   />
 );
 const Option = renderFlagAndText("option");
-
 const SingleValue = renderFlagAndText("singleValue");
 
 LanguageSwitcher.propTypes = {
@@ -79,7 +83,8 @@ LanguageSwitcher.propTypes = {
   openOnTop: PropTypes.bool,
   options: PropTypes.array,
   disabled: PropTypes.bool,
-  limitLanguages: PropTypes.array
+  limitLanguages: PropTypes.array,
+  testId: PropTypes.string.isRequired
 };
 
 export default LanguageSwitcher;

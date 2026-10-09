@@ -52,7 +52,7 @@ const LinkButton = ({
   );
 };
 
-const OpenAttachmentButton = ({ url, className }) => {
+const OpenAttachmentButton = ({ url, className, testId }) => {
   const shouldOpenWindow = f.isString(url) && isViewableUrl(url);
   const disabled = !shouldOpenWindow;
   const handleOpenNewWindow = evt => {
@@ -61,7 +61,12 @@ const OpenAttachmentButton = ({ url, className }) => {
   };
   const cssClass = buildClassName("linkButton", { disabled }, className);
   return (
-    <Link className={cssClass} to={url} onClick={handleOpenNewWindow}>
+    <Link
+      className={cssClass}
+      to={url}
+      onClick={handleOpenNewWindow}
+      data-testid={testId}
+    >
       <i className="fa fa-eye" />
     </Link>
   );
@@ -170,6 +175,7 @@ const LinkItem = props => {
           <OpenAttachmentButton
             className={secondaryButtonClass}
             url={viewUrl}
+            testId={`link-item-open-${props.row.id}`}
           />
         ) : (
           <LinkButton

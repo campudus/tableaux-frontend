@@ -12,7 +12,7 @@ import { createTextFilter } from "../../helpers/searchFunctions";
 import * as t from "../../helpers/transduce";
 import actions from "../../redux/actionCreators";
 import store from "../../redux/store";
-import SearchBar from "../cells/link/LinkOverlaySearchBar";
+import LinkOverlaySearchBar from "../cells/link/LinkOverlaySearchBar";
 import Empty from "../helperComponents/emptyEntry";
 import SvgIcon from "../helperComponents/SvgIcon";
 import Header from "./Header";
@@ -312,7 +312,7 @@ const SelectLinkTargetOverlayHeader = props => {
       context={i18n.t("table:select-link-target.context")}
       title={<OverlayHeadRowIdentificator cell={cell} langtag={langtag} />}
     >
-      <SearchBar
+      <LinkOverlaySearchBar
         id={id}
         langtag={langtag}
         filterMode={sharedData.filterMode}

@@ -160,7 +160,7 @@ class View extends PureComponent {
             }
           : null;
 
-        return annotation ? [{ title, color, action }] : [];
+        return annotation ? [{ name: config.name, title, color, action }] : [];
       })
     )(AnnotationConfigs);
 
@@ -216,9 +216,10 @@ class View extends PureComponent {
           }
         >
           <div className="action-tags">
-            {annotationItems.map(({ title, color, action }) => (
+            {annotationItems.map(({ name, title, color, action }) => (
               <AnnotationBadge
                 key={title}
+                testId={`entity-view-annotation-${column.id}-${name}`}
                 onClick={action}
                 active={true}
                 color={color}

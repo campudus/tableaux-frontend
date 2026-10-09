@@ -51,6 +51,7 @@ function FolderDirentNav(
         }
         label={<span className="folder-dirent__label">{label}</span>}
         onClick={onClick}
+        testId="media-dirent-nav"
       />
     </div>
   );

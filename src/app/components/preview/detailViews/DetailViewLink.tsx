@@ -264,6 +264,7 @@ export default function DetailViewLink({
                     >
                       <PreviewCellValue
                         langtag={langtag}
+                        tableId={currentDetailTable}
                         column={column}
                         row={row}
                         link={apiUrl({

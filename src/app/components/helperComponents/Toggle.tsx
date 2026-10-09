@@ -6,7 +6,7 @@ type ToggleProps = {
   className?: string;
   checked?: boolean;
   onChange?: ChangeEventHandler<HTMLInputElement>;
-  testId?: string;
+  testId: string;
 };
 
 export default function Toggle({

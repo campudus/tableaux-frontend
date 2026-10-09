@@ -90,6 +90,7 @@ export default function AttachmentCell({
                 key={attachment.uuid}
                 className={"attachment__action"}
                 onClick={() => handleClickAttachment(attachment)}
+                testId={`cell-attachment-${attachment.uuid}`}
                 icon={
                   <Tooltip tooltip={title} offsetTop={5}>
                     <MediaThumbnail

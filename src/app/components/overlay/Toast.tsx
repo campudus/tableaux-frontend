@@ -42,7 +42,6 @@ export default function Toast({
     <div
       className="toast-wrapper"
       data-testid="toast"
-
       onMouseOver={clearTimer}
       onMouseOut={setTimer}
     >

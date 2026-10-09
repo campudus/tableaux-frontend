@@ -11,7 +11,7 @@ import { outsideClickEffect } from "../../helpers/useOutsideClick";
 type PopupProps = PropsWithChildren<{
   className?: string;
   trigger: ReactNode;
-  testId?: string;
+  testId: string;
 }>;
 
 export default function Popup({

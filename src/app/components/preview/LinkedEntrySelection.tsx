@@ -51,6 +51,7 @@ export default function LinkedEntrySelection({
             icon={entry.archived && <i className="fa fa-archive" />}
             label={stripFormattingTags(values.at(index))}
             onClick={() => handleClick(entry.id)}
+            testId={`linked-entry-selection-${entry.id}`}
             isActive={isActive}
           />
         );

@@ -41,16 +41,19 @@ export default function FolderToolbar({
       <ButtonAction
         variant="outlined"
         icon={<SvgIcon icon={layout} />}
+        testId="media-layout"
         options={[
           {
             label: i18n.t("media:layout_list"),
             icon: <SvgIcon icon="list" />,
-            onClick: () => handleSelectLayout("list")
+            onClick: () => handleSelectLayout("list"),
+            testId: "media-layout-list"
           },
           {
             label: i18n.t("media:layout_tiles"),
             icon: <SvgIcon icon="tiles" />,
-            onClick: () => handleSelectLayout("tiles")
+            onClick: () => handleSelectLayout("tiles"),
+            testId: "media-layout-tiles"
           }
         ]}
       />

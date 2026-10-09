@@ -51,6 +51,7 @@ function AttachmentDirentNav(
         }
         label={<span className="attachment-dirent__label">{label}</span>}
         onClick={onClick}
+        testId="attachment-dirent-nav"
       />
     </div>
   );

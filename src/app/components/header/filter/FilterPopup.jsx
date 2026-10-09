@@ -311,6 +311,7 @@ const AnnotationFilterArea = ({ onToggle, filters, options, langtag }) => {
             .map(kind => (
               <AnnotationBadge
                 key={kind}
+                testId={`filter-annotation-badge-${kind}`}
                 onClick={onToggle(kind)}
                 active={Boolean(filters[kind])}
                 color={getAnnotationColor(kind)}

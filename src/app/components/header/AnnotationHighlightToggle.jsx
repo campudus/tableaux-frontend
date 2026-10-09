@@ -69,6 +69,7 @@ const AnnotationHighlightToggle = ({ langtag }) => {
           {flagConfigs.map(config => (
             <AnnotationBadge
               key={config.name}
+              testId={`annotation-highlight-${config.name}`}
               onClick={
                 annotationHighlight === config.name
                   ? clearAnnotationHighlight()

@@ -6,7 +6,7 @@ import ButtonAction from "./ButtonAction";
 type BreadcrumbsLink = {
   label: ReactNode;
   isActive?: boolean;
-  testId?: string;
+  testId: string;
 } & (
   | { path: string; onClick?: never }
   | {
@@ -27,6 +27,7 @@ function BreadcrumbsLink({
       to={path}
       className={cn("breadcrumbs__link", {}, isActive ? "active" : "")}
       end
+      data-testid={testId}
     >
       {label}
     </NavLink>
@@ -66,6 +67,7 @@ export default function Breadcrumbs({
         <ButtonAction
           variant="text"
           label={"..."}
+          testId="breadcrumbs-more"
           options={menuLinks.map(link => {
             return {
               label: link.label,

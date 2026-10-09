@@ -59,7 +59,8 @@ export function DirentMoveHeader(props: DirentMoveProps): ReactElement {
           links={[
             {
               label: i18n.t("media:root_folder_name"),
-              onClick: () => handleNavigate()
+              onClick: () => handleNavigate(),
+              testId: "media-move-breadcrumb-root"
             },
             ...folders.map(({ id, name }) => ({
               onClick: () => handleNavigate(id),
@@ -68,7 +69,8 @@ export function DirentMoveHeader(props: DirentMoveProps): ReactElement {
                   <i className="fa fa-folder-open" />
                   <span>{name ?? `Folder ${id}`}</span>
                 </>
-              )
+              ),
+              testId: `media-move-breadcrumb-${id}`
             }))
           ]}
         />

@@ -17,6 +17,7 @@ import LinkCell from "./cells/LinkCell/LinkCell";
 
 type PreviewCellValueProps = {
   langtag: string;
+  tableId: number;
   column: Column;
   row: Row;
   link: string;
@@ -128,6 +129,7 @@ const PreviewWithoutLink = ({
 
 export default function PreviewCellValue({
   langtag,
+  tableId,
   column,
   row,
   link,
@@ -139,7 +141,10 @@ export default function PreviewCellValue({
   const Preview = preventLink ? PreviewWithoutLink : PreviewWithLink;
 
   return (
-    <Preview href={link} testId={`preview-cell-value-${column.id}-${row.id}`}>
+    <Preview
+      href={link}
+      testId={`preview-cell-value-${tableId}-${column.id}-${row.id}`}
+    >
       <PreviewContent
         column={column}
         row={row}

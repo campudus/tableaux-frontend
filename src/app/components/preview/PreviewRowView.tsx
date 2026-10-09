@@ -198,6 +198,7 @@ export default function PreviewRowView({
                   <td className="preview-row-view__column preview-row-view__column-value">
                     <PreviewCellValue
                       langtag={langtag}
+                      tableId={tableId}
                       column={column}
                       row={row}
                       link={cellLink}

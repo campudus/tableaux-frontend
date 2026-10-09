@@ -6,12 +6,14 @@ test IDs are a contract with those tests: don't rename or remove one without ada
 
 ## Rule
 
-Every `a`, `button`, `input`, `select` and `textarea` needs a `data-testid`, and so does every
-other HTML element with `onClick`, `onDoubleClick`, `onMouseDown`, `onMouseUp` or `onContextMenu`
+Every `a`, `button`, `input`, `select` and `textarea` (and router `Link`/`NavLink`) needs a
+`data-testid`, and so does every other HTML element with `onClick`, `onDoubleClick`, `onMouseDown`, `onMouseUp` or `onContextMenu`
 (cells, menu entries, popup backdrops). eslint enforces both (`no-restricted-syntax` in
 `eslint.config.js`). Elements with spread props are exempt, the spread may carry the ID. Reusable
 components that render such an element take a `testId` prop and pass it on (`Button`,
-`ButtonAction`, `NumberInput`, `NewRowButton`, `ContextMenuItem`, `Toggle`, `SearchBar`).
+`ButtonAction`, `NumberInput`, `NewRowButton`, `ContextMenuItem`, `Toggle`, `SearchBar`,
+`AnnotationBadge`, `LanguageSwitcher`, `Chip` with `onClick`); eslint or the prop types require it
+there too.
 
 ## Naming
 
@@ -21,6 +23,11 @@ components that render such an element take a `testId` prop and pass it on (`But
   `media-folder-${folderId}`, `language-switcher-option-${langtag}`
 - repeated elements without own ID get one name and are scoped by their container in the test:
   `getByTestId("media-folder-3").getByTestId("media-dirent-remove")`
+- menus of `ButtonAction` (`options`) render into a portal outside their container, so their entries
+  can't be scoped; only one menu is open at a time, open it via the scoped trigger and address the
+  entry unscoped: `media-dirent-menu` → `media-dirent-remove`
+- components rendered more than once on a page take the ID (or a prefix) from the caller:
+  `LanguageSwitcher` uses `testId`, `${testId}-value` and `${testId}-option-${langtag}`
 - never array indices: they change with sorting and filtering
 
 ## Table view

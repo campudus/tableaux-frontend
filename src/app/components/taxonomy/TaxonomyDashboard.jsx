@@ -24,7 +24,10 @@ const TaxonomyTableCard = ({ table, langtag }) => (
       <div>{retrieveTranslation(langtag, table.description)}</div>
     </section>
     <footer className="card__footer">
-      <Link to={route.toTable({ tableId: table.id })}>
+      <Link
+        to={route.toTable({ tableId: table.id })}
+        data-testid={`taxonomy-table-link-${table.id}`}
+      >
         <button
           className="button default"
           data-testid={`taxonomy-table-open-${table.id}`}

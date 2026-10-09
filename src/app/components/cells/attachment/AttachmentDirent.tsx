@@ -88,9 +88,15 @@ function AttachmentDirent(
     <div
       ref={direntRef}
       className={cn("attachment-dirent", { [layout]: true }, className)}
+      data-testid={
+        isFile
+          ? `attachment-file-${dirent.uuid}`
+          : `attachment-folder-${dirent.id}`
+      }
     >
       <ButtonAction
         className={cn("attachment-dirent__action", { main: true })}
+        testId="attachment-dirent-open"
         icon={
           isFile ? (
             <MediaThumbnail
@@ -132,6 +138,7 @@ function AttachmentDirent(
               icon={<SvgIcon icon="download" />}
               alt={i18n.t(`media:download_${direntKey}`)}
               onClick={handleDownload}
+              testId="attachment-dirent-download"
             />
           )}
           {isFile && toggleAction === "remove" && (
@@ -142,6 +149,7 @@ function AttachmentDirent(
               icon={<i className="fa fa-folder" />}
               alt={i18n.t(`media:folder_${direntKey}`)}
               onClick={handleNavigateToMediaFolder}
+              testId="attachment-dirent-folder"
             />
           )}
           {isFile && (
@@ -152,6 +160,7 @@ function AttachmentDirent(
               icon={<SvgIcon icon="edit" />}
               alt={i18n.t(`media:change_${direntKey}`)}
               onClick={handleNavigateToMediaFile}
+              testId="attachment-dirent-edit"
             />
           )}
           {isFile && toggleAction ? (
@@ -165,6 +174,7 @@ function AttachmentDirent(
               }
               alt={i18n.t(`media:link_${toggleAction}`)}
               onClick={handleToggle}
+              testId={`attachment-dirent-${toggleAction}`}
             />
           ) : (
             <div></div>
@@ -180,6 +190,7 @@ function AttachmentDirent(
                 menu: true
               })}
               icon={<SvgIcon icon="hdots" />}
+              testId="attachment-dirent-menu"
               options={[
                 {
                   className: cn("attachment-dirent__action", {
@@ -187,7 +198,8 @@ function AttachmentDirent(
                   }),
                   label: i18n.t(`media:change_${direntKey}`),
                   icon: <SvgIcon icon="edit" />,
-                  onClick: handleNavigateToMediaFile
+                  onClick: handleNavigateToMediaFile,
+                  testId: "attachment-dirent-edit"
                 },
                 ...(toggleAction === "remove"
                   ? [
@@ -197,7 +209,8 @@ function AttachmentDirent(
                         }),
                         label: i18n.t(`media:folder_${direntKey}`),
                         icon: <i className="icon fa fa-folder" />,
-                        onClick: handleNavigateToMediaFolder
+                        onClick: handleNavigateToMediaFolder,
+                        testId: "attachment-dirent-folder"
                       }
                     ]
                   : []),
@@ -207,7 +220,8 @@ function AttachmentDirent(
                   }),
                   label: i18n.t(`media:download_${direntKey}`),
                   icon: <SvgIcon icon="download" />,
-                  onClick: handleDownload
+                  onClick: handleDownload,
+                  testId: "attachment-dirent-download"
                 }
               ]}
             />
@@ -223,6 +237,7 @@ function AttachmentDirent(
               }
               alt={i18n.t(`media:link_${toggleAction}`)}
               onClick={handleToggle}
+              testId={`attachment-dirent-${toggleAction}`}
             />
           ) : (
             <div></div>

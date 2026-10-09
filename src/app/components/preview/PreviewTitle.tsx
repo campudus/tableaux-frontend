@@ -105,7 +105,7 @@ function PreviewTitleContent({
             >
               <a
                 className="preview-cell-value"
-                data-testid={`preview-cell-value-${column.id}-${row.id}`}
+                data-testid={`preview-cell-value-${tableId}-${column.id}-${row.id}`}
                 href={apiUrl({
                   langtag,
                   tableId,
@@ -132,6 +132,7 @@ function PreviewTitleContent({
           <PreviewCellValue
             key={column.id}
             langtag={langtag}
+            tableId={tableId}
             column={column}
             row={row}
             link={apiUrl({

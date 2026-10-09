@@ -79,7 +79,10 @@ const FlagWidget = props => {
   } = props;
 
   return (
-    <div className={"flag-widget tile " + flag}>
+    <div
+      className={"flag-widget tile " + flag}
+      data-testid={`dashboard-flag-widget-${flag}`}
+    >
       <Header {...props} />
       <div
         onMouseLeave={handleMouseLeave}
@@ -108,6 +111,7 @@ const LoadingFlagWidget = props => (
     className={classNames("flag-widget tile", {
       wide: props.flag === "needs_translation"
     })}
+    data-testid={`dashboard-flag-widget-${props.flag}`}
   >
     <Header {...props} />
     <Spinner isLoading />

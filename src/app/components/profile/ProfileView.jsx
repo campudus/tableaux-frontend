@@ -32,6 +32,7 @@ function ProfileView({ langtag, profileTab }) {
             <NavLink
               to={`/${langtag}/profile`}
               className="profile-view__link"
+              data-testid="profile-nav-personal"
               end
             >
               <i className="fa fa-user-circle" />
@@ -41,6 +42,7 @@ function ProfileView({ langtag, profileTab }) {
             <NavLink
               to={`/${langtag}/profile/${PROFILE_TAB.SETTINGS}`}
               className="profile-view__link"
+              data-testid="profile-nav-settings"
               end
             >
               <i className="fa fa-sliders" />

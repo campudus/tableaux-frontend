@@ -8,7 +8,7 @@ export type ButtonActionOption = {
   icon?: ReactNode;
   label?: ReactNode;
   onClick: (event: MouseEvent<HTMLButtonElement>) => void;
-  testId?: string;
+  testId: string;
 };
 
 type ButtonActionProps = {
@@ -20,7 +20,7 @@ type ButtonActionProps = {
   disabled?: boolean;
   alignmentH?: "left" | "right";
   children?: JSX.Element | JSX.Element[];
-  testId?: string;
+  testId: string;
 } & (
   | { options: ButtonActionOption[]; onClick?: never }
   | {

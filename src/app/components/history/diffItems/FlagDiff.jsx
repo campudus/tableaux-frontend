@@ -18,6 +18,7 @@ const FlagDiff = props => {
     <AnnotationBadge
       key={value}
       className={event}
+      testId={`history-flag-${value}`}
       active={true}
       color={getAnnotationColor(value)}
       title={getAnnotationTitle(value, langtag)}

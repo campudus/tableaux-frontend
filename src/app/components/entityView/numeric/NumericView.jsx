@@ -118,6 +118,7 @@ const NumericView = props => {
         onBlur={saveChanges}
         integer={isYear}
         localize={!isYear}
+        testId={`entity-view-numeric-${cell.column.id}`}
       />
       {children}
     </div>

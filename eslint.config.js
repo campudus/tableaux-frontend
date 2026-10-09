@@ -150,7 +150,7 @@ export default [
         {
           // spread props may carry the test id, e.g. NumberFormat or react-select inner props
           selector:
-            "JSXOpeningElement[name.name=/^(a|button|input|select|textarea)$/]:not(:has(JSXAttribute[name.name='data-testid'])):not(:has(JSXSpreadAttribute))",
+            "JSXOpeningElement[name.name=/^(a|button|input|select|textarea|Link|NavLink)$/]:not(:has(JSXAttribute[name.name='data-testid'])):not(:has(JSXSpreadAttribute))",
           message:
             "Interactive elements need a data-testid for E2E tests (see docs/testing/test-ids.md)."
         },
@@ -160,6 +160,13 @@ export default [
             "JSXOpeningElement[name.name=/^[a-z]/]:not([name.name=/^(a|button|input|select|textarea)$/]):has(JSXAttribute[name.name=/^on(Click|DoubleClick|MouseDown|MouseUp|ContextMenu)$/]):not(:has(JSXAttribute[name.name='data-testid'])):not(:has(JSXSpreadAttribute))",
           message:
             "Elements with click handlers need a data-testid for E2E tests (see docs/testing/test-ids.md)."
+        },
+        {
+          // reusable components pass testId on to their interactive element, an omitted one renders none
+          selector:
+            "JSXOpeningElement:matches([name.name=/^(Button|ButtonAction|NumberInput|Toggle|SearchBar|AnnotationBadge|LanguageSwitcher)$/], [name.name='Chip']:has(JSXAttribute[name.name='onClick'])):not(:has(JSXAttribute[name.name='testId'])):not(:has(JSXSpreadAttribute))",
+          message:
+            "Components rendering interactive elements need a testId for E2E tests (see docs/testing/test-ids.md)."
         }
       ]
     }
