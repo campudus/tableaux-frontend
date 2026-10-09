@@ -7,6 +7,7 @@ import i18n from "i18next";
 
 import { formatDateTime } from "./multiLanguage";
 import { makeRequest } from "./apiHelper";
+import { authSelector, noAuthNeeded } from "./authenticate";
 import { showDialog } from "../components/overlay/GenericOverlay";
 import actions from "../redux/actionCreators";
 import store from "../redux/store";
@@ -25,6 +26,12 @@ const getPingDelay = connected =>
 
 const pingDelayed = (delay, connectedBefore = false) =>
   window.setTimeout(async () => {
+    // before login there is no token yet, the ping would fail with 401 and report a lost connection
+    if (!noAuthNeeded() && !authSelector(store.getState())) {
+      pingDelayed(ERROR_PING_DELAY, connectedBefore);
+      return;
+    }
+
     const connected = await makeRequest({ apiRoute: "/system/versions" })
       .then(() => true)
       .catch(() => false);
