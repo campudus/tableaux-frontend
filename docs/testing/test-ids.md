@@ -11,7 +11,7 @@ Every `a`, `button`, `input`, `select` and `textarea` (and router `Link`/`NavLin
 (cells, menu entries, popup backdrops). eslint enforces both (`no-restricted-syntax` in
 `eslint.config.js`). Elements with spread props are exempt, the spread may carry the ID. Reusable
 components that render such an element take a `testId` prop and pass it on (`Button`,
-`ButtonAction`, `NumberInput`, `NewRowButton`, `ContextMenuItem`, `Toggle`, `SearchBar`,
+`ButtonAction`, `NumberInput`, `CurrencyInput`, `NewRowButton`, `ContextMenuItem`, `Toggle`, `SearchBar`,
 `AnnotationBadge`, `LanguageSwitcher`, `Breadcrumbs`, `Select`, `Chip` with `onClick`); eslint or the prop types require it
 there too.
 
@@ -39,6 +39,7 @@ there too.
 | ----------------------------------------------- | --------------------------------------------------------------- |
 | `cell-${columnId}-${rowId}`                     | cell; further languages of an expanded row append `-${langtag}` |
 | `cell-editor`                                   | input of the cell being edited (shorttext, numeric)             |
+| `currency-input-${country}`                     | currency input in a cell, one per country while editing         |
 | `text-editor`                                   | textarea of the text overlay                                    |
 | `column-head-${columnId}`, `column-head-row-id` | column header, row id column                                    |
 | `column-menu-${columnId}`                       | column header menu button; items `column-menu-sort-asc` etc.    |

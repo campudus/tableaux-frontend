@@ -106,6 +106,7 @@ export default function CurrencyCell({
                 value={value}
                 onBlur={handleBlur}
                 disabled={!editing || !canEdit}
+                testId={`currency-input-${country}`}
               />
 
               <div className="currency-code">{getCurrencyCode(country)}</div>

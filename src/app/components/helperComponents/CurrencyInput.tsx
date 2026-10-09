@@ -23,6 +23,7 @@ type CurrencyInputProps = {
   onClick?: (evt: MouseEvent<HTMLInputElement>) => void;
   onBlur: (country: string, value?: number | null) => void;
   disabled?: boolean;
+  testId: string;
 };
 
 export default function CurrencyInput({
@@ -32,7 +33,8 @@ export default function CurrencyInput({
   value,
   onClick,
   onBlur,
-  disabled
+  disabled,
+  testId
 }: CurrencyInputProps): ReactElement {
   const [values, setValues] = useState<Partial<CurrencyInputOnChangeValues>>();
 
@@ -104,6 +106,7 @@ export default function CurrencyInput({
         onFocus={handleFocus}
         onValueChange={handleChange}
         onBlur={handleBlur}
+        data-testid={testId}
       />
     </div>
   );

@@ -79,6 +79,7 @@ export default function CurrencyView({
                 onClick={handleClick}
                 onBlur={handleBlur}
                 disabled={disabled}
+                testId={`entity-view-currency-${cell.column.id}-${country}`}
               />
 
               <div className="currency-code">{getCurrencyCode(country)}</div>
