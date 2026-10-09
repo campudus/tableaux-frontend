@@ -99,7 +99,7 @@ export default function ButtonAction({
           <div ref={menuRef} style={style} className="button-action__menu">
             {options.map(option => (
               <ButtonAction
-                key={option.label?.toString()}
+                key={option.testId}
                 className={option.className}
                 label={option.label}
                 icon={option.icon}

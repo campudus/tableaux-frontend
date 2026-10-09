@@ -335,6 +335,7 @@ const ColumnFilterArea = ({ columns, filters, langtag, onChange }) => {
         {filters.map((filterRow, idx) => (
           <FilterRow
             key={idx}
+            testId={`filter-row-${idx}`}
             columns={columns}
             langtag={langtag}
             settings={filterRow}

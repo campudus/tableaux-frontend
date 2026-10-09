@@ -23,6 +23,7 @@ export default function FolderBreadcrumbs({
   return (
     <Breadcrumbs
       className={cn("folder-breadcrumbs", {}, className)}
+      testId="media-breadcrumbs"
       links={[
         {
           path: `/${langtag}/media`,

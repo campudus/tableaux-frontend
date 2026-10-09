@@ -12,6 +12,7 @@ export default function ProfilePersonal({ langtag }) {
   return (
     <div className={cn("profile-tab", { personal: true })}>
       <Breadcrumbs
+        testId="profile-breadcrumbs"
         links={[
           {
             path: `/${langtag}/dashboard`,

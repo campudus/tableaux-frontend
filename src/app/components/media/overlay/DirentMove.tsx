@@ -56,6 +56,7 @@ export function DirentMoveHeader(props: DirentMoveProps): ReactElement {
       {...props}
       title={
         <Breadcrumbs
+          testId="media-move-breadcrumbs"
           links={[
             {
               label: i18n.t("media:root_folder_name"),

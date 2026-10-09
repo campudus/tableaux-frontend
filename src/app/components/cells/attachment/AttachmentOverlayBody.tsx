@@ -244,6 +244,7 @@ export default function AttachmentOverlayBody({
 
         <Breadcrumbs
           className="attachment-overlay__breadcrumbs"
+          testId="attachment-overlay-breadcrumbs"
           links={[
             {
               label: i18n.t("media:root_folder_name"),

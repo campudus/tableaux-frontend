@@ -8,7 +8,14 @@ import { ColumnKinds } from "../../../constants/TableauxConstants";
 import { getColumnDisplayName } from "../../../helpers/multiLanguage";
 import RowFilters from "../../../RowFilters";
 
-const FilterRow = ({ columns, langtag, onChange, onRemove, settings }) => {
+const FilterRow = ({
+  columns,
+  langtag,
+  onChange,
+  onRemove,
+  settings,
+  testId
+}) => {
   const columnsByName = f.indexBy("name", columns);
   const { column, mode, value } = settings;
   const searchableColumns = columns.filter(col =>
@@ -49,7 +56,7 @@ const FilterRow = ({ columns, langtag, onChange, onRemove, settings }) => {
   const selectedMode = mode || f.first(modeOptions)?.label;
 
   return (
-    <div className="filter-row" onKeyDown={handleKeys}>
+    <div className="filter-row" onKeyDown={handleKeys} data-testid={testId}>
       <Select
         className="filter-select"
         options={columnOptions}

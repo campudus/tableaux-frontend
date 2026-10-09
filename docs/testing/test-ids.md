@@ -28,7 +28,9 @@ there too.
   entry unscoped: `media-dirent-menu` → `media-dirent-remove`
 - components rendered more than once on a page take the ID (or a prefix) from the caller:
   `LanguageSwitcher` uses `testId`, `${testId}-value` and `${testId}-option-${langtag}`
-- never array indices: they change with sorting and filtering
+- never array indices: they change with sorting and filtering. Exception: rows the user adds
+  without an ID of their own (filter rows, column attributes) keep their order and are named by
+  position: `filter-row-${index}`, `column-editor-attribute-${index}`
 
 ## Table view
 

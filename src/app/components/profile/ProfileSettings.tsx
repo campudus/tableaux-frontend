@@ -40,6 +40,7 @@ export default function ProfileSettings({ langtag }: ProfileSettingsProps) {
   return (
     <div className={cn("profile-tab", { settings: true })}>
       <Breadcrumbs
+        testId="profile-breadcrumbs"
         links={[
           {
             path: `/${langtag}/dashboard`,

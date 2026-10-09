@@ -236,7 +236,11 @@ export function ColumnEditorOverlayBody({
           const typeOption = getAttributeTypeOption(attribute.type);
 
           return (
-            <div key={identifier} className="item-row">
+            <div
+              key={identifier}
+              className="item-row"
+              data-testid={`column-editor-attribute-${index}`}
+            >
               <div className="item-content">
                 <Select
                   className="attribute-select"

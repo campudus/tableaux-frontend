@@ -46,11 +46,14 @@ export type BreadcrumbsProps = {
   className?: string;
   // Allow either path or onClick, but not both
   links: BreadcrumbsLink[];
+  // page and overlay can show breadcrumbs at the same time
+  testId: string;
 };
 
 export default function Breadcrumbs({
   className,
-  links = []
+  links = [],
+  testId
 }: BreadcrumbsProps) {
   const navigate = useNavigate();
   const needsDropdown = links.length > 3;
@@ -61,13 +64,13 @@ export default function Breadcrumbs({
     const lastLink = links.at(-1);
 
     return (
-      <div className={cn("breadcrumbs", {}, className)}>
+      <div className={cn("breadcrumbs", {}, className)} data-testid={testId}>
         <BreadcrumbsLink {...firstLink!} />
         <i className="fa fa-angle-right breadcrumbs__icon" />
         <ButtonAction
           variant="text"
           label={"..."}
-          testId="breadcrumbs-more"
+          testId={`${testId}-more`}
           options={menuLinks.map(link => {
             return {
               label: link.label,
@@ -83,7 +86,7 @@ export default function Breadcrumbs({
   }
 
   return (
-    <div className={cn("breadcrumbs", {}, className)}>
+    <div className={cn("breadcrumbs", {}, className)} data-testid={testId}>
       {links.map((link, index) => {
         const isFirst = index === 0;
         const isActive = index === links.length - 1;
