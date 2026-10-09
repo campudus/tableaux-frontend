@@ -8,7 +8,7 @@ import getDisplayValue, {
   applyLinkAttributeFormat
 } from "../../helpers/getDisplayValue";
 import { buildLinkDisplayValueCache } from "../../helpers/linkHelper";
-import { ColumnKind } from "@grud/devtools/types";
+import { COLUMN_KIND } from "@campudus/grud-sdk/types";
 
 const mapWithIndex = f.map.convert({ cap: false });
 
@@ -47,7 +47,7 @@ onmessage = function (e) {
       const originColumn = getOriginColumn(column.id, row.tableId);
       const toTableId = row.tableId ?? originColumn?.toTable ?? column.toTable;
       switch (column.kind) {
-        case ColumnKind.link:
+        case COLUMN_KIND.link:
           // The cache holds identifiers, so the label is composed here, where
           // the individual link is known.
           return value.map(link =>
@@ -57,7 +57,7 @@ onmessage = function (e) {
               getLinkDisplayValue(toTableId, link.id)
             )
           );
-        case ColumnKind.concat: {
+        case COLUMN_KIND.concat: {
           const concatColumn = getConcatOrigin(
             tableId,
             column,

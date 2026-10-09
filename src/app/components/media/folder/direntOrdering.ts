@@ -1,5 +1,5 @@
 import f from "lodash/fp";
-import { Attachment } from "@grud/devtools/types";
+import { Attachment } from "@campudus/grud-sdk/types";
 import { getMultiLangValue } from "../../../helpers/multiLanguage";
 import { Folder } from "src/app/types/grud";
 import { ifElse } from "pragmatic-fp-ts";
@@ -39,7 +39,8 @@ const getFileExtension: GetAttachmentProp = langtag => att =>
     f.split(".")
   )(getExternalName(langtag, att));
 
-const getFileUpdateTimestamp: GetAttachmentProp = _ => att => att.updatedAt;
+const getFileUpdateTimestamp: GetAttachmentProp = _ => att =>
+  att.updatedAt ?? "";
 
 const attachmentProps: Record<Criterion, Array<GetAttachmentProp>> = {
   "by-name": [getFileNameWithoutCase],

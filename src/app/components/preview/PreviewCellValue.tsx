@@ -4,8 +4,7 @@ import {
   Column,
   CurrencyColumn,
   LinkColumn,
-  Row,
-  UnionColumn
+  Row
 } from "../../types/grud";
 import getDisplayValue from "../../helpers/getDisplayValue";
 import BooleanCell from "./cells/BooleanCell";
@@ -64,8 +63,8 @@ const PreviewContent = ({
       );
     case ColumnKind.link: {
       let originColumn;
-      if ((column as UnionColumn).originColumns) {
-        originColumn = (column as UnionColumn).originColumns?.find(
+      if (column.originColumns) {
+        originColumn = column.originColumns?.find(
           oc => oc.tableId === row.tableId
         )?.column;
       }

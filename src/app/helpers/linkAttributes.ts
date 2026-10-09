@@ -9,6 +9,7 @@ import {
   FallbackLanguage
 } from "../constants/TableauxConstants";
 import { getLanguageOfLangtag, retrieveTranslation } from "./multiLanguage";
+import { LinkAttributeDefinition } from "../types/grud";
 
 // Date/datetime attributes are edited with react-datetime (see
 // LinkAttributesPopover), so their "input value" is a Moment, not a string.
@@ -16,20 +17,6 @@ type MomentInstance = ReturnType<typeof Moment>;
 
 // `attributes[i]` belongs to `linkAttributes[i]` -- never match by name, see
 // docs/adr/0006-link-attribute-values-stay-positional-in-the-client.md.
-
-export type LinkAttributeKind =
-  "text" | "numeric" | "integer" | "boolean" | "date" | "datetime";
-
-export type LangObject = Record<string, string | null | undefined>;
-
-export type LinkAttributeDefinition = {
-  name: string;
-  kind: LinkAttributeKind;
-  displayName?: LangObject;
-  description?: LangObject;
-  multilanguage?: boolean;
-  decimalDigits?: number;
-};
 
 export type LinkAttributeValue = any;
 

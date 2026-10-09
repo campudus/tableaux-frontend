@@ -61,17 +61,19 @@ pipeline {
 
     stage('Build dist') {
       steps {
-        script {
-          def image = docker.build("${IMAGE_NAME}builder", "--target build -f Dockerfile . --build-arg BUILD_ID=${COMMIT_INFO}")
+        withCredentials([file(credentialsId: 'npmrc-grud-sdk', variable: 'NPMRC_FILE')]) {
+          script {
+            def image = docker.build("${IMAGE_NAME}builder", "--target build -f Dockerfile . --build-arg BUILD_ID=${COMMIT_INFO} --secret id=npmrc,src=\$NPMRC_FILE")
 
-          image.inside {
-            /*
-            * Jenkins Docker Plugin automatically mounts WORKSPACE on host to the same directory within the container.
-            * Also, we need to explicitly use the defined BUILDER_WORKING_DIRECTORY
-            * because Jenkins runs the docker container automatically within the WORKSPACE directory.
-            */
-            sh "cd /usr/app && ls -la && tar -czf ${WORKSPACE}/${DEPLOY_DIR}/${ARCHIVE_FILENAME_DIST} node_modules out package.json"
-            sh "cd /usr/app && ls -la && cp ${TEST_COVERAGE_FILE} ${WORKSPACE}/${TEST_COVERAGE_FILE}"
+            image.inside {
+              /*
+              * Jenkins Docker Plugin automatically mounts WORKSPACE on host to the same directory within the container.
+              * Also, we need to explicitly use the defined BUILDER_WORKING_DIRECTORY
+              * because Jenkins runs the docker container automatically within the WORKSPACE directory.
+              */
+              sh "cd /usr/app && ls -la && tar -czf ${WORKSPACE}/${DEPLOY_DIR}/${ARCHIVE_FILENAME_DIST} node_modules out package.json"
+              sh "cd /usr/app && ls -la && cp ${TEST_COVERAGE_FILE} ${WORKSPACE}/${TEST_COVERAGE_FILE}"
+            }
           }
         }
       }
@@ -84,15 +86,18 @@ pipeline {
 
     stage('Build docker image') {
       steps {
-        sh """
-          docker build \
-          --build-arg BUILD_ID=${COMMIT_INFO} \
-          --label "GIT_COMMIT=${GIT_COMMIT}" \
-          --label "GIT_COMMIT_DATE=${GIT_COMMIT_DATE}" \
-          --label "BUILD_DATE=${BUILD_DATE}" \
-          -t ${IMAGE_NAME}:${IMAGE_TAG} \
-          -f Dockerfile --rm .
-        """
+        withCredentials([file(credentialsId: 'npmrc-grud-sdk', variable: 'NPMRC_FILE')]) {
+          sh """
+            docker build \
+            --build-arg BUILD_ID=${COMMIT_INFO} \
+            --label "GIT_COMMIT=${GIT_COMMIT}" \
+            --label "GIT_COMMIT_DATE=${GIT_COMMIT_DATE}" \
+            --label "BUILD_DATE=${BUILD_DATE}" \
+            --secret id=npmrc,src=\${NPMRC_FILE} \
+            -t ${IMAGE_NAME}:${IMAGE_TAG} \
+            -f Dockerfile --rm .
+          """
+        }
       }
     }
 

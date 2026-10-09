@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { ConcatColumn, LinkColumn } from "@grud/devtools/types";
+import { ConcatColumn, LinkColumn } from "@campudus/grud-sdk/types";
 import { ReactElement } from "react";
 import { getEmptyClassName } from "../../helper";
 import LinkListCell from "./LinkListCell";
@@ -30,7 +30,7 @@ const EmptyLink = ({ link, values }: { link: string; values: any[] }) => {
 // pattern, the entry shows its target column's own display value.
 const SingleLinkItems = ({ langtag, column, values }: LinkCellProps) => {
   const isFormatted = usesLinkAttributeFormat(column);
-  const currentColumn = column.toColumn;
+  const currentColumn = column.toColumn!;
   return (
     <>
       {values.map((entry, index) => (
@@ -123,7 +123,7 @@ export default function LinkCell(props: LinkCellProps): ReactElement {
     );
   }
 
-  if (column.toColumn.kind !== "concat") {
+  if (column.toColumn!.kind !== "concat") {
     return (
       <div className={cssClass}>
         <SingleLinkItems {...props} />

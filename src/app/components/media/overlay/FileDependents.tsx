@@ -4,8 +4,8 @@ import { AutoSizer, List } from "react-virtualized";
 import { ReactElement, useEffect, useState } from "react";
 import {
   Attachment,
-  FileDependentRow,
-  FileDependentRowItem
+  FileDependentRowItem,
+  FileDependentRow
 } from "../../../types/grud";
 import { makeRequest } from "../../../helpers/apiHelper";
 import { toFileDependents } from "../../../helpers/apiRoutes";
@@ -29,7 +29,9 @@ export default function FileDependentsBody({
   file
 }: FileDependentsProps): ReactElement {
   const [isLoading, setIsLoading] = useState(false);
-  const [dependentRows, setDependentRows] = useState<FileDependentRow[]>([]);
+  const [dependentRows, setDependentRows] = useState<FileDependentRowItem[]>(
+    []
+  );
 
   const loadDependentRows = async () => {
     const apiRoute = toFileDependents(file.uuid);
@@ -79,7 +81,7 @@ function FileDependentsTable({
   table,
   column: idColumn,
   rows
-}: FileDependentRow & { langtag: string }) {
+}: FileDependentRowItem & { langtag: string }) {
   const rowItemsByColId = f.groupBy(({ toColumn: { id } }) => id, rows);
   const toColumns = f.uniqBy("id", f.map("toColumn", rows));
   const tableName = getTableDisplayName(table, langtag);
@@ -138,8 +140,8 @@ function FileDependentsTableColumn({
   column: idColumn,
   rows,
   toColumn
-}: { langtag: string } & FileDependentRow &
-  Pick<FileDependentRowItem, "toColumn">) {
+}: { langtag: string } & FileDependentRowItem &
+  Pick<FileDependentRow, "toColumn">) {
   const [expanded, setExpanded] = useState(false);
   const columnName = getColumnDisplayName(toColumn, langtag);
   const maxRowCount = expanded ? rows.length : 4;
@@ -203,7 +205,7 @@ function FileDependentsTableRow({
   column: idColumn,
   row,
   toColumn
-}: { langtag: string } & FileDependentRow & FileDependentRowItem) {
+}: { langtag: string } & FileDependentRowItem & FileDependentRow) {
   const idValue = row.values.at(0);
   const rowDpV = getDisplayValue(idColumn)(idValue);
   const rowName = f.isArray(rowDpV)

@@ -12,7 +12,7 @@ import {
   idsToIndices
 } from "../redux-helpers";
 import { performRowDeletion } from "../updateDependentTables";
-import { ColumnKind } from "@grud/devtools/types";
+import { COLUMN_KIND } from "@campudus/grud-sdk/types";
 
 const {
   ALL_ROWS_LOADING_DATA,
@@ -132,7 +132,7 @@ export const rowValuesToCells = (table, columns) => {
       const originColumn = getOriginColumn(column.id, row.tableId);
 
       const updatedColumn =
-        column.kind === ColumnKind.concat
+        column.kind === COLUMN_KIND.concat
           ? getConcatOrigin(table.id, column, row.tableId)
           : originColumn
             ? { ...column, originColumn }

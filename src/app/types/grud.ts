@@ -1,38 +1,22 @@
 import {
-  Attachment as _Attachment,
+  Attachment,
   CellValue,
   Column,
   ColumnKind,
   FolderID,
-  LinkColumn,
   Locale,
   MultilangValue,
   Table
-} from "@grud/devtools/types";
+} from "@campudus/grud-sdk/types";
 import { UserSettingsState } from "../redux/reducers/userSettings";
-import { LinkAttributeDefinition } from "../helpers/linkAttributes";
 
-export * from "@grud/devtools/types";
+export * from "@campudus/grud-sdk/types";
 
 export type Annotation = {
   uuid: string;
   type: string;
   value: string;
   createdAt: string; // ISOString
-};
-
-// TODO: remove this type when the grud-sdk is getting used
-export type UnionColumn = Column & {
-  originColumns?: Array<{
-    tableId: number;
-    column: Column;
-  }>;
-};
-
-// @grud/devtools' LinkColumn doesn't know these two yet.
-export type LinkAttributeColumn = LinkColumn & {
-  linkAttributes?: LinkAttributeDefinition[];
-  formatPattern?: string;
 };
 
 export type Row = {
@@ -51,9 +35,6 @@ export type TableParams = {
   rowId: string | number;
 };
 
-// Fix in grud-devtools
-export type Attachment = _Attachment & { dependentRowCount: number };
-
 export type Folder = {
   id: FolderID;
   name: string;
@@ -70,17 +51,6 @@ export type Folder = {
     delete: boolean;
     edit: boolean;
   };
-};
-
-export type FileDependentRowItem = {
-  row: Row;
-  toColumn: Column;
-};
-
-export type FileDependentRow = {
-  table: Table;
-  column: Column;
-  rows: FileDependentRowItem[];
 };
 
 export type Cell = {
