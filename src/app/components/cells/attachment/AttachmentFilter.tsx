@@ -46,6 +46,7 @@ export default function AttachmentFilter({
         placeholder={modePlaceholder}
         value={value ?? ""}
         onChange={handleUpdateValue}
+        data-testid="attachment-filter-input"
       />
       <ButtonAction
         className="attachment-filter__mode"

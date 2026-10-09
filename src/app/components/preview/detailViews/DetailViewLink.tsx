@@ -123,7 +123,10 @@ export default function DetailViewLink({
   }
 
   return (
-    <div className="detail-view-link">
+    <div
+      className="detail-view-link"
+      data-testid={`preview-detail-view-${currentDetailTable}`}
+    >
       <div className="detail-view-link__header">
         <h2 className="detail-view-link__title">
           {linkedCells.length > 1 ? `${title} (${linkedCells.length})` : title}
@@ -137,6 +140,7 @@ export default function DetailViewLink({
             >
               <input
                 id={`detail-link-select-all-${currentDetailTable}`}
+                data-testid="preview-detail-select-all"
                 type="checkbox"
                 checked={selectAll}
                 onChange={e => handleSelectAll(e.currentTarget.checked)}
@@ -154,6 +158,7 @@ export default function DetailViewLink({
             >
               <input
                 id={`detail-link-show-differences-${currentDetailTable}`}
+                data-testid="preview-detail-show-differences"
                 type="checkbox"
                 checked={showDifferences}
                 onChange={e => setShowDifferences(e.currentTarget.checked)}
@@ -244,7 +249,10 @@ export default function DetailViewLink({
                   })}
                 >
                   <td className="detail-view-link__column detail-view-link__column-name">
-                    <a href={columnNameLink}>
+                    <a
+                      href={columnNameLink}
+                      data-testid={`preview-detail-column-${column.id}`}
+                    >
                       {getColumnDisplayName(column, langtag)}
                     </a>
                   </td>

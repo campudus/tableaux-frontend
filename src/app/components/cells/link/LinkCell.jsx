@@ -98,7 +98,12 @@ const LinkCell = props => {
         )}
       </div>
       {(selected || editing) && !isLocked(cell.row) && (
-        <button key={"add-btn"} className="edit" onClick={handleClick}>
+        <button
+          key={"add-btn"}
+          className="edit"
+          onClick={handleClick}
+          data-testid="cell-edit"
+        >
           <span className="fa fa-pencil" />
         </button>
       )}

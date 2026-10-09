@@ -1,0 +1,40 @@
+# Test IDs
+
+The browser tests in [grud-test-suite](https://github.com/campudus/grud-test-suite) locate elements
+by `data-testid` (`page.getByTestId(...)`). CSS classes and texts change with styling and language,
+test IDs are a contract with those tests: don't rename or remove one without adapting the tests.
+
+## Rule
+
+Every `a`, `button`, `input`, `select` and `textarea` needs a `data-testid`; eslint enforces it
+(`no-restricted-syntax` in `eslint.config.js`). Elements with spread props are exempt, the spread
+may carry the ID. Reusable components that render such an element take a `testId` prop and pass it
+on (`Button`, `ButtonAction`, `NumberInput`, `NewRowButton`, `ContextMenuItem`).
+
+## Naming
+
+- kebab-case, `<area>-<element>`: `filter-toggle`, `user-menu-logout`, `media-new-folder`
+- elements repeated per entity end with the entity's API ID, so tests can build the ID from an API
+  response: `cell-${columnId}-${rowId}`, `column-head-${columnId}`, `table-switcher-table-${tableId}`,
+  `media-folder-${folderId}`, `language-switcher-option-${langtag}`
+- repeated elements without own ID get one name and are scoped by their container in the test:
+  `getByTestId("media-folder-3").getByTestId("media-dirent-remove")`
+- never array indices: they change with sorting and filtering
+
+## Table view
+
+| Test ID                                         | Element                                                         |
+| ----------------------------------------------- | --------------------------------------------------------------- |
+| `cell-${columnId}-${rowId}`                     | cell; further languages of an expanded row append `-${langtag}` |
+| `cell-editor`                                   | input of the cell being edited (shorttext, numeric)             |
+| `text-editor`                                   | textarea of the text overlay                                    |
+| `column-head-${columnId}`, `column-head-row-id` | column header, row id column                                    |
+| `column-menu-${columnId}`                       | column header menu button; items `column-menu-sort-asc` etc.    |
+| `row-meta-${rowId}`                             | row id cell; `row-expand` (visible on hover), `row-delete`      |
+| `context-menu-<action>`                         | cell context menu items, e.g. `context-menu-delete-row`         |
+| `header-new-row-button`, `table-new-row-button` | "add row" in the header and below the last row                  |
+| `row-count`                                     | "x of y rows"                                                   |
+
+## Overlays
+
+`overlay` (each open overlay), `overlay-close`, `overlay-button-positive|negative|neutral`, `toast`.

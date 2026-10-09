@@ -36,6 +36,7 @@ const BooleanCell = props => {
         type="checkbox"
         checked={getCheckboxValue()}
         readOnly={true}
+        data-testid="cell-checkbox"
       />
     </div>
   );

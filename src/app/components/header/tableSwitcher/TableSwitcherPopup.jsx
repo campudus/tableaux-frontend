@@ -311,8 +311,18 @@ class SwitcherPopup extends React.PureComponent {
           tabIndex={0}
           ref={this.storeTableRef(tableId)}
         >
-          <div onClick={onClickFn}>{displayName}</div>
-          <a target="_blank" rel="noopener noreferrer" href={newUrl}>
+          <div
+            onClick={onClickFn}
+            data-testid={`table-switcher-table-${table.id}`}
+          >
+            {displayName}
+          </div>
+          <a
+            target="_blank"
+            rel="noopener noreferrer"
+            href={newUrl}
+            data-testid={`table-switcher-open-in-new-tab-${table.id}`}
+          >
             <i className="fa fa-external-link" />
           </a>
         </li>
@@ -362,6 +372,7 @@ class SwitcherPopup extends React.PureComponent {
                 placeholder={t("tableSwitcher.search")}
                 type="text"
                 className="tableswitcher-input"
+                data-testid="table-switcher-search"
                 ref={this.storeInputRef}
                 onChange={this.filterInputChange}
                 onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(
@@ -396,7 +407,7 @@ class SwitcherPopup extends React.PureComponent {
     const { filteredTables } = this.state;
 
     return (
-      <div id="tableswitcher-popup">
+      <div id="tableswitcher-popup" data-testid="table-switcher-popup">
         <div id="tableswitcher-popup-internal-wrapper">
           {this.renderGroups(groups)}
           {this.renderTables(groups, filteredTables)}

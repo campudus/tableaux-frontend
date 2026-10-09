@@ -45,6 +45,7 @@ class FilterBar extends Component {
       <div className="header-filter-bar-wrapper">
         <input
           className="header-filter-bar"
+          data-testid="entity-view-search"
           onChange={this.handleChange}
           onKeyDown={this.handleInput}
           value={value}

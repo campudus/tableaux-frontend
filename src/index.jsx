@@ -25,9 +25,8 @@ fetch("/config.json")
     // postpone loading of this imports after config is loaded
     // this is needed, else the disabled authentication will not work as it memoize the config value without the config being loaded
     await import("./app/helpers/connectionWatcher");
-    const { applyEnvironmentMarker } = await import(
-      "./app/helpers/environment"
-    );
+    const { applyEnvironmentMarker } =
+      await import("./app/helpers/environment");
     applyEnvironmentMarker();
     const GRUDRouter = (await import("./app/components/Router.jsx")).default;
     const store = (await import("./app/redux/store")).default;

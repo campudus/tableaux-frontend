@@ -173,7 +173,9 @@ class GenericOverlay extends Component {
     return (
       <div
         className={overlayWrapperClass}
+        data-testid="overlay"
         tabIndex="1"
+
         onKeyDown={KeyboardShortcutsHelper.onKeyboardShortcut(
           this.getKeyboardShortcuts
         )}

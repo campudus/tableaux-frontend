@@ -49,6 +49,7 @@ class RowSwitcher extends PureComponent {
         {this.getNextRow(Directions.UP) ? (
           <button
             className="button clickable"
+            data-testid="entity-view-previous-row"
             onClick={this.switchRow(Directions.UP)}
           >
             <i className="fa fa-angle-left" />
@@ -59,6 +60,7 @@ class RowSwitcher extends PureComponent {
         {this.getNextRow(Directions.DOWN) ? (
           <button
             className="button clickable"
+            data-testid="entity-view-next-row"
             onClick={this.switchRow(Directions.DOWN)}
           >
             <i className="fa fa-angle-right" />

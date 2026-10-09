@@ -139,5 +139,22 @@ export default [
     rules: {
       ...vitestPlugin.configs.recommended.rules
     }
+  },
+  {
+    // E2E tests (grud-test-suite) locate elements by data-testid; also makes eslint pick up .jsx files
+    files: ["src/**/*.{jsx,tsx}"],
+    ignores: ["**/*.test.{jsx,tsx}"],
+    rules: {
+      "no-restricted-syntax": [
+        "error",
+        {
+          // spread props may carry the test id, e.g. NumberFormat or react-select inner props
+          selector:
+            "JSXOpeningElement[name.name=/^(a|button|input|select|textarea)$/]:not(:has(JSXAttribute[name.name='data-testid'])):not(:has(JSXSpreadAttribute))",
+          message:
+            "Interactive elements need a data-testid for E2E tests (see docs/testing/test-ids.md)."
+        }
+      ]
+    }
   }
 ];

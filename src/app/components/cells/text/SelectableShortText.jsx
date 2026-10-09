@@ -194,6 +194,7 @@ const SelectableShortText = props => {
         onClick={stopPropagation}
         autoFocus
         ref={editorRef}
+        data-testid="cell-editor"
       />
       <div className="selectable-shorttext_text-limits">
         <div className={textTooShortErrorCssClass}>{minLengthText}</div>

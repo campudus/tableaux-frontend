@@ -25,6 +25,7 @@ export default function ResetTableViewButton({ tableId, langtag, navigate }) {
           <p>{t("table:reset-table-view.message")}</p>
           <button
             className="reset-table-view-link"
+            data-testid="reset-table-view-settings-link"
             onClick={navigateToSettings}
           >
             {t("profile:navigation.global-settings")}
@@ -39,7 +40,11 @@ export default function ResetTableViewButton({ tableId, langtag, navigate }) {
     });
 
   return (
-    <button className="reset-table-view-button" onClick={openResetDialog}>
+    <button
+      className="reset-table-view-button"
+      data-testid="reset-table-view-button"
+      onClick={openResetDialog}
+    >
       {t("table:reset-table-view.button")}
     </button>
   );

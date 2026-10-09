@@ -89,7 +89,9 @@ function FileUpload(
       )}
 
       <Dropzone ref={ref} onDrop={onDrop} className="file-upload__dropzone">
-        <a>{i18n.t("media:upload_click_or_drop")}</a>
+        <a data-testid="media-upload-dropzone">
+          {i18n.t("media:upload_click_or_drop")}
+        </a>
       </Dropzone>
     </div>
   );

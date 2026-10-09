@@ -310,7 +310,11 @@ class EntityViewBody extends Component {
             <span>{i18n.t(barTitle)}</span>
           </div>
           {!rowIsArchived && rowIsLocked && (
-            <button className={buttonClass} onClick={unlock}>
+            <button
+              className={buttonClass}
+              data-testid="entity-view-unlock-row"
+              onClick={unlock}
+            >
               {i18n.t(buttonAction)}
             </button>
           )}

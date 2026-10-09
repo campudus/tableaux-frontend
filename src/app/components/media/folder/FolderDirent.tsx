@@ -163,9 +163,13 @@ function FolderDirent(
         { modified: isModified, [layout]: true },
         className
       )}
+      data-testid={
+        isFile ? `media-file-${dirent.uuid}` : `media-folder-${dirent.id}`
+      }
     >
       <ButtonAction
         className={cn("folder-dirent__action", { main: true })}
+        testId="media-dirent-open"
         icon={
           isFile ? (
             <MediaThumbnail
@@ -201,6 +205,7 @@ function FolderDirent(
           className={cn("folder-dirent__action", { dependents: true })}
           variant="link"
           label={depLabel}
+          testId="media-dirent-dependents"
           onClick={handleOpenDependentsOverlay}
         />
       )}
@@ -213,6 +218,7 @@ function FolderDirent(
               icon={<SvgIcon icon="download" />}
               alt={i18n.t(`media:download_${direntKey}`)}
               onClick={handleDownload}
+              testId="media-dirent-download"
             />
           )}
           {canEdit && (
@@ -221,6 +227,7 @@ function FolderDirent(
               icon={<SvgIcon icon="move" />}
               alt={i18n.t(`media:move_${direntKey}`)}
               onClick={handleOpenMoveOverlay}
+              testId="media-dirent-move"
             />
           )}
           {canEdit && (
@@ -229,6 +236,7 @@ function FolderDirent(
               icon={<SvgIcon icon="edit" />}
               alt={i18n.t(`media:change_${direntKey}`)}
               onClick={handleOpenEditOverlay}
+              testId="media-dirent-edit"
             />
           )}
           {canDelete && (
@@ -237,6 +245,7 @@ function FolderDirent(
               icon={<SvgIcon icon="trash" />}
               alt={i18n.t(`media:delete_${direntKey}`)}
               onClick={handleRemove}
+              testId="media-dirent-remove"
             />
           )}
         </>
@@ -246,30 +255,35 @@ function FolderDirent(
         <ButtonAction
           className={cn("folder-dirent__action", { menu: true })}
           icon={<SvgIcon icon="hdots" />}
+          testId="media-dirent-menu"
           options={f.compact([
             isFile && {
               className: cn("folder-dirent__action", { download: true }),
               label: i18n.t(`media:download_${direntKey}`),
               icon: <SvgIcon icon="download" />,
-              onClick: handleDownload
+              onClick: handleDownload,
+              testId: "media-dirent-download"
             },
             canEdit && {
               className: cn("folder-dirent__action", { move: true }),
               label: i18n.t(`media:move_${direntKey}`),
               icon: <SvgIcon icon="move" />,
-              onClick: handleOpenMoveOverlay
+              onClick: handleOpenMoveOverlay,
+              testId: "media-dirent-move"
             },
             canEdit && {
               className: cn("folder-dirent__action", { edit: true }),
               label: i18n.t(`media:change_${direntKey}`),
               icon: <SvgIcon icon="edit" />,
-              onClick: handleOpenEditOverlay
+              onClick: handleOpenEditOverlay,
+              testId: "media-dirent-edit"
             },
             canDelete && {
               className: cn("folder-dirent__action", { remove: true }),
               label: i18n.t(`media:delete_${direntKey}`),
               icon: <SvgIcon icon="trash" />,
-              onClick: handleRemove
+              onClick: handleRemove,
+              testId: "media-dirent-remove"
             }
           ])}
         />

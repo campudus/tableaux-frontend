@@ -110,6 +110,7 @@ export default function LinkListCell({
       {showToggleButton && (
         <button
           className="link-list-cell__toggle"
+          data-testid="preview-link-list-toggle"
           onClick={() => setShowAll(prev => !prev)}
         >
           <i

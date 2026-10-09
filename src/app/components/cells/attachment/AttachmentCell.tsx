@@ -124,7 +124,11 @@ export default function AttachmentCell({
       {!isPreview &&
         !isLocked(cell.row) &&
         canUserChangeCell(cell)(langtag) && (
-          <button className="edit" onClick={handleClickEdit}>
+          <button
+            className="edit"
+            onClick={handleClickEdit}
+            data-testid="cell-edit"
+          >
             <span className="fa fa-pencil" />
           </button>
         )}

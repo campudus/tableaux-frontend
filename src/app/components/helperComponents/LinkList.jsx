@@ -146,7 +146,11 @@ const LinkList = props => {
     <div className="link-list">
       {ListRenderer}
       {canExpand ? (
-        <button className="expand-button" onClick={toggleExpand}>
+        <button
+          className="expand-button"
+          onClick={toggleExpand}
+          data-testid="link-list-expand"
+        >
           <i className={expanded ? "fa fa-angle-up" : "fa fa-angle-down"} />
           {expanded
             ? i18n.t("table:show_less")

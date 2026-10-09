@@ -60,6 +60,7 @@ export function FolderEditBody({
 
         <div className="folder-edit-item__content">
           <input
+            data-testid="media-folder-name"
             disabled={!canUserEditFolders()}
             type="text"
             value={folderMeta.name}

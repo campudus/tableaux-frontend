@@ -55,6 +55,7 @@ const RevisionItem = props => {
           <button
             className="revision-item-header__revert-button"
             onClick={revertHere}
+            data-testid={`history-revert-${revision.revision}`}
           >
             <div className="revert-button__text">
               {i18n.t("history:revert")}

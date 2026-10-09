@@ -6,9 +6,15 @@ type ToggleProps = {
   className?: string;
   checked?: boolean;
   onChange?: ChangeEventHandler<HTMLInputElement>;
+  testId?: string;
 };
 
-export default function Toggle({ className, checked, onChange }: ToggleProps) {
+export default function Toggle({
+  className,
+  checked,
+  onChange,
+  testId
+}: ToggleProps) {
   const id = uniqueId("toggle");
 
   return (
@@ -19,6 +25,7 @@ export default function Toggle({ className, checked, onChange }: ToggleProps) {
         type="checkbox"
         checked={checked ?? false}
         onChange={onChange}
+        data-testid={testId}
       />
       <div className="toggle__fill"></div>
     </label>

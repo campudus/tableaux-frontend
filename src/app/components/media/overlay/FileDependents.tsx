@@ -98,6 +98,7 @@ function FileDependentsTable({
       <div className="file-dependents-table__headers">
         <a
           className="file-dependents-table__header item-header"
+          data-testid={`media-dependents-table-${table.id}`}
           href={tableUrl}
           target="_blank"
           rel="noopener noreferrer"
@@ -108,6 +109,7 @@ function FileDependentsTable({
 
         <a
           className="file-dependents-table__header"
+          data-testid={`media-dependents-rows-${table.id}`}
           href={rowUrl}
           target="_blank"
           rel="noopener noreferrer"
@@ -187,6 +189,7 @@ function FileDependentsTableColumn({
       {rows.length > 4 && (
         <button
           className="file-dependents-table-column__expand"
+          data-testid={`media-dependents-expand-${table.id}-${toColumn.id}`}
           onClick={handleToggleExpanded}
         >
           <i className={expanded ? "fa fa-angle-up" : "fa fa-angle-down"} />
@@ -217,6 +220,7 @@ function FileDependentsTableRow({
   return (
     <a
       className="file-dependents-table-row"
+      data-testid={`media-dependents-row-${table.id}-${toColumn.id}-${row.id}`}
       href={rowUrl}
       target="_blank"
       rel="noopener noreferrer"

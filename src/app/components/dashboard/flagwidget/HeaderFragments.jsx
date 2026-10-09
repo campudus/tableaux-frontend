@@ -40,6 +40,7 @@ const HeaderWithLangTabs = ({
       langtag => (
         <button
           key={langtag}
+          data-testid={`dashboard-flag-language-tab-${langtag}`}
           className={classNames("language-tab", {
             active: langtag === selectedLang
           })}

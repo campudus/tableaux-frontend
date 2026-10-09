@@ -18,7 +18,11 @@ type LinkCellProps = {
 
 const EmptyLink = ({ link, values }: { link: string; values: any[] }) => {
   return (
-    <a className={`link-cell__item ${getEmptyClassName(values)}`} href={link}>
+    <a
+      className={`link-cell__item ${getEmptyClassName(values)}`}
+      href={link}
+      data-testid="preview-link-empty"
+    >
       {i18n.t("preview:empty")}
     </a>
   );

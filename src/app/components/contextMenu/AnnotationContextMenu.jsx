@@ -66,6 +66,7 @@ export default function AnnotationContextMenu({
 
       return [
         {
+          name: config.name,
           title: getAnnotationTitle(config.name, langtag, cell),
           color: getAnnotationColor(config.name),
           annotation,
@@ -84,11 +85,15 @@ export default function AnnotationContextMenu({
         classNames
       )}
     >
-      {annotationItems.map(({ title, color, annotation, action }) => {
+      {annotationItems.map(({ name, title, color, annotation, action }) => {
         const hasAnnotation = !!annotation;
 
         return (
-          <button key={title} onClick={f.compose(closeAction, action)}>
+          <button
+            key={title}
+            onClick={f.compose(closeAction, action)}
+            data-testid={`context-menu-annotation-${name}`}
+          >
             <AnnotationDot
               className="item-dot"
               color={color}

@@ -64,6 +64,7 @@ class RowHeadline extends React.Component {
           toTableVisible ? (
             <button
               className="title-wrapper"
+              data-testid={`entity-view-open-link-table-${column.id}`}
               onClick={() => window.open(url, "_blank")}
             >
               {colName}
@@ -78,6 +79,7 @@ class RowHeadline extends React.Component {
         {thisUserCantEdit ? (
           <button
             className=" button--disabled neutral"
+            data-testid={`entity-view-edit-links-${column.id}`}
             ref={el => {
               funcs.register(el);
             }}
@@ -87,6 +89,7 @@ class RowHeadline extends React.Component {
         ) : (
           <button
             className="column-icon button"
+            data-testid={`entity-view-edit-links-${column.id}`}
             onClick={() => openLinkOverlay({ cell, langtag, actions })}
             ref={el => {
               funcs.register(el);
@@ -112,6 +115,7 @@ class RowHeadline extends React.Component {
         {thisUserCantEdit ? (
           <button
             className="button neutral column-icon"
+            data-testid={`entity-view-edit-attachments-${this.props.column.id}`}
             ref={el => {
               funcs.register(el);
             }}
@@ -121,6 +125,7 @@ class RowHeadline extends React.Component {
         ) : (
           <button
             className="button column-icon"
+            data-testid={`entity-view-edit-attachments-${this.props.column.id}`}
             onClick={this.openAttachmentOverlay}
             ref={el => {
               funcs.register(el);
@@ -144,6 +149,7 @@ class RowHeadline extends React.Component {
     <BasicHeadline {...this.props}>
       <button
         className="column-icon button"
+        data-testid={`entity-view-open-markdown-editor-${this.props.column.id}`}
         onClick={() =>
           openMarkdownEditor({
             cell: this.props.cell,

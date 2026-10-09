@@ -119,11 +119,16 @@ const ColumnFilterPopup = ({
       >
         <input
           type="checkbox"
+          data-testid={`column-visibility-column-${column.id}`}
           checked={column.visible}
           onChange={f.noop} // to avoid React warning "unmanaged input"
         />
         {name}
-        <button className={buttonClass} onClick={handleFocusColumn}>
+        <button
+          className={buttonClass}
+          data-testid={`column-visibility-go-to-column-${column.id}`}
+          onClick={handleFocusColumn}
+        >
           {i18n.t("table:go-to-column")}
           <i className="to-column-item__icon fa fa-long-arrow-right" />
         </button>
@@ -142,6 +147,7 @@ const ColumnFilterPopup = ({
           <input
             type="text"
             className="input"
+            data-testid="column-visibility-search"
             placeholder={i18n.t("table:filter_columns")}
             onChange={handleSetSearch}
             autoFocus
@@ -168,6 +174,7 @@ const ColumnFilterPopup = ({
         <div className="row">
           <button
             className="button positive"
+            data-testid="column-visibility-show-all"
             onClick={() =>
               columnActions.setColumnsVisible(f.map("id", allColumns))
             }
@@ -176,6 +183,7 @@ const ColumnFilterPopup = ({
           </button>
           <button
             className="button neutral"
+            data-testid="column-visibility-hide-all"
             onClick={() => columnActions.hideAllColumns(tableId, allColumns)}
           >
             {i18n.t("table:hide_all_columns")}

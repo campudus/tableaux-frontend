@@ -222,6 +222,7 @@ class AnnotationPopup extends Component {
                     onKeyDown={this.handleInputKeys}
                     value={this.state.comment}
                     onBlur={this.focusInput}
+                    data-testid="annotation-popup-input"
                   />
                   <div className="button" onClick={this.saveComment}>
                     {i18n.t("common:add")}

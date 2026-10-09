@@ -73,6 +73,8 @@ const TextEditOverlay = props => {
             value={editedValue}
             placeholder={i18n.t("table:empty.text")}
             onChange={onChange}
+            data-testid="text-editor"
+
             onBlur={onBlur}
           />
         </div>

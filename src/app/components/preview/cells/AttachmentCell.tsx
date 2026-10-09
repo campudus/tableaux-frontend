@@ -30,7 +30,11 @@ export default function AttachmentCell({
     (!otherAttachments || otherAttachments.length === 0)
   ) {
     return (
-      <a className={`attachment-cell  ${getEmptyClassName()}`} href={link}>
+      <a
+        className={`attachment-cell  ${getEmptyClassName()}`}
+        href={link}
+        data-testid="preview-attachments-empty"
+      >
         {i18n.t("preview:empty")}
       </a>
     );
@@ -50,6 +54,7 @@ export default function AttachmentCell({
         <>
           <button
             className="attachment-cell__images attachment-cell__images__link"
+            data-testid="preview-attachments-show-images"
             onClick={() => setOpen(true)}
             type="button"
           >
@@ -94,6 +99,7 @@ export default function AttachmentCell({
 
                 <button
                   className="attachment-slider-close"
+                  data-testid="preview-attachments-slider-close"
                   onClick={() => setOpen(false)}
                 >
                   <SvgIcon icon={"cross"} containerClasses={"color-white"} />
@@ -105,7 +111,11 @@ export default function AttachmentCell({
       )}
 
       {otherAttachments && otherAttachments.length > 0 && (
-        <a className="attachment-cell__others" href={link}>
+        <a
+          className="attachment-cell__others"
+          href={link}
+          data-testid="preview-attachments-others"
+        >
           {otherAttachments.map((att, index) => (
             <>
               <div key={att.uuid}>

@@ -86,6 +86,7 @@ class NumericEditCell extends React.Component {
           onClick={stopPropagation}
           onMouseDown={stopPropagation}
           separator={separator}
+          testId="cell-editor"
         />
       </div>
     );

@@ -111,7 +111,7 @@ export default function PreviewRowView({
   };
 
   return (
-    <div className="preview-row-view">
+    <div className="preview-row-view" data-testid="preview-row-view">
       <div className="preview-row-view__header">
         <Notifier
           className="preview-row-view__notifier"
@@ -124,6 +124,7 @@ export default function PreviewRowView({
           button={
             !isUnionTable && (
               <button
+                data-testid="preview-row-final-toggle"
                 onClick={handleUpdateRowFinalStatus}
                 disabled={!canEditRowAnnotations}
               >
@@ -174,6 +175,7 @@ export default function PreviewRowView({
                   <td className="preview-row-view__column preview-row-view__column-selection">
                     {(column.kind === "link" || column.kind === "richtext") && (
                       <input
+                        data-testid={`preview-row-column-select-${column.id}`}
                         type="radio"
                         name="column-selection"
                         checked={columnId === column.id}
@@ -185,7 +187,10 @@ export default function PreviewRowView({
                   </td>
 
                   <td className="preview-row-view__column preview-row-view__column-name">
-                    <a href={cellLink}>
+                    <a
+                      href={cellLink}
+                      data-testid={`preview-row-column-${column.id}`}
+                    >
                       {getColumnDisplayName(column, langtag)}
                     </a>
                   </td>

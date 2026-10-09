@@ -89,6 +89,7 @@ const FilterRow = ({ columns, langtag, onChange, onRemove, settings }) => {
 
       <button
         className="button button--remove-filter"
+        data-testid="filter-row-remove"
         onClick={clearOrRemoveFilter}
       >
         <i className="fa fa-trash" />
@@ -121,6 +122,7 @@ const ValueInput = ({ column, mode, value, onChange }) => {
   return RowFilters.needsFilterValue(column?.kind, mode) ? (
     <input
       className="filter-input"
+      data-testid="filter-row-value"
       type={inputType}
       value={value || ""}
       onChange={handleSetEventValue}

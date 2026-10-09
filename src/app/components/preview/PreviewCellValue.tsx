@@ -102,18 +102,28 @@ const PreviewContent = ({
 
 const PreviewWithLink = ({
   href,
+  testId,
   children
 }: {
   href: string;
+  testId: string;
   children: ReactElement;
 }) => (
-  <a className={cssClass} href={href}>
+  <a className={cssClass} href={href} data-testid={testId}>
     {children}
   </a>
 );
 
-const PreviewWithoutLink = ({ children }: { children: ReactElement }) => (
-  <div className={cssClass}>{children}</div>
+const PreviewWithoutLink = ({
+  testId,
+  children
+}: {
+  testId: string;
+  children: ReactElement;
+}) => (
+  <div className={cssClass} data-testid={testId}>
+    {children}
+  </div>
 );
 
 export default function PreviewCellValue({
@@ -129,7 +139,7 @@ export default function PreviewCellValue({
   const Preview = preventLink ? PreviewWithoutLink : PreviewWithLink;
 
   return (
-    <Preview href={link}>
+    <Preview href={link} testId={`preview-cell-value-${column.id}-${row.id}`}>
       <PreviewContent
         column={column}
         row={row}

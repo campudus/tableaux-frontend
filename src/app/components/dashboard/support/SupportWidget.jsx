@@ -54,14 +54,22 @@ const SupportWidget = () => {
           <div className="contact-data">
             <div className="details title">{title}</div>
             <div>
-              <a href={`tel:${phone.replace(/ /g, "")}`} className="details">
+              <a
+                href={`tel:${phone.replace(/ /g, "")}`}
+                className="details"
+                data-testid="dashboard-support-phone"
+              >
                 <i className="fa fa-phone" />
                 <span>{phone}</span>
               </a>
             </div>
 
             <div>
-              <a href={`mailto:${email}`} className="details">
+              <a
+                href={`mailto:${email}`}
+                className="details"
+                data-testid="dashboard-support-email"
+              >
                 <i className="fa fa-envelope-open" />
                 <span>{email}</span>
               </a>
@@ -75,6 +83,7 @@ const SupportWidget = () => {
             <div className="feedback">
               <div className="heading">Feedback</div>
               <textarea
+                data-testid="dashboard-support-feedback"
                 className="input"
                 value={feedback}
                 onChange={handleChange}

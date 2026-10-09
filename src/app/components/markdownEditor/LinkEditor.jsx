@@ -79,6 +79,7 @@ const UrlInput = ({ setLinkUrl, editorState, onClose }) => {
           value={url}
           onChange={handleChange}
           onKeyDown={handleKeyDown}
+          data-testid="link-editor-url"
         />
         <div className="link-editor-body__label col-one row-three">
           <div className="link-editor-label__text">
@@ -91,12 +92,14 @@ const UrlInput = ({ setLinkUrl, editorState, onClose }) => {
           type="text"
           value={linkTitle}
           disabled={true}
+          data-testid="link-editor-title"
         />
       </section>
       <footer className="link-editor__footer">
         <button
           className="link-editor__cancel-button button neutral"
           onClick={onClose}
+          data-testid="link-editor-cancel"
         >
           {i18n.t("common:cancel")}
         </button>
@@ -104,6 +107,7 @@ const UrlInput = ({ setLinkUrl, editorState, onClose }) => {
         <button
           className="link-editor__confirm-button button"
           onClick={() => setLinkUrl(url)}
+          data-testid="link-editor-confirm"
         >
           {i18n.t("table:link-editor.insert-link")}
         </button>

@@ -404,7 +404,7 @@ class VirtualTable extends PureComponent {
       columnIndex === rowButtonColumn &&
       canUserCreateRow({ table })
     ) {
-      return renderNewRowButton();
+      return renderNewRowButton("table-new-row-button");
     }
     return (
       <div

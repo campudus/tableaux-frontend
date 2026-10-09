@@ -23,7 +23,11 @@ const stateToMarkdown = f.compose(draftToMarkdown, convertToRaw);
 const Link = props => {
   const { url } = props.contentState.getEntity(props.entityKey).getData();
   return (
-    <a className="markdown-editor__link" href={url}>
+    <a
+      className="markdown-editor__link"
+      href={url}
+      data-testid="markdown-editor-link"
+    >
       {props.children}
     </a>
   );

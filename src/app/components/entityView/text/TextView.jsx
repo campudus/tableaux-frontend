@@ -84,6 +84,7 @@ class TextView extends React.PureComponent {
     return (
       <div className="item-content shorttext" tabIndex={1}>
         <textarea
+          data-testid={`entity-view-text-${column.id}`}
           value={editValue}
           placeholder={i18n.t("table:empty.text")}
           disabled={thisUserCantEdit}

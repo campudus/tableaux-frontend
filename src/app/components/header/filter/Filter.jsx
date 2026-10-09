@@ -47,7 +47,11 @@ const FilterButton = ({
 
   return (
     <div className={cssClass}>
-      <button className={buttonCssClass} onClick={togglePopup}>
+      <button
+        className={buttonCssClass}
+        onClick={togglePopup}
+        data-testid="filter-toggle"
+      >
         <i className="fa fa-filter" />
         {t("button.title")}
       </button>

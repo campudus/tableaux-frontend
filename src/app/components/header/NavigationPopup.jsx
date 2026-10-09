@@ -22,6 +22,7 @@ const NavigationPopup = props => {
             <Link
               to={"/" + langtag + "/dashboard"}
               className="main-navigation__entry-button"
+              data-testid="main-navigation-dashboard"
             >
               <i className="fa fa-dashboard" />
               {t("header:menu.dashboard")}
@@ -33,6 +34,7 @@ const NavigationPopup = props => {
           <Link
             to={"/" + langtag + "/tables"}
             className="main-navigation__entry-button"
+            data-testid="main-navigation-tables"
           >
             <i className="fa fa-columns" />
             {t("header:menu.tables")}
@@ -43,6 +45,7 @@ const NavigationPopup = props => {
           <Link
             to={"/" + langtag + "/taxonomies"}
             className="main-navigation__entry-button"
+            data-testid="main-navigation-taxonomies"
           >
             <div className="service-icon icon-taxonomy">
               <SvgIcon icon="addSubItem" />
@@ -55,6 +58,7 @@ const NavigationPopup = props => {
           <Link
             to={"/" + langtag + "/media"}
             className="main-navigation__entry-button"
+            data-testid="main-navigation-media"
           >
             <i className="fa fa-file" />
             {t("header:menu.media")}

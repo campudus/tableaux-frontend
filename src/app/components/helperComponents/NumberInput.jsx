@@ -45,7 +45,8 @@ const NumberInput = (props, ref) => {
     localize = true,
     onClick = f.noop,
     onMouseDown = f.noop,
-    separator
+    separator,
+    testId
   } = props;
 
   const decimalSeparator = getLocaleDecimalSeparator();
@@ -118,6 +119,7 @@ const NumberInput = (props, ref) => {
       onFocus={onFocus}
       onClick={onClick}
       onMouseDown={onMouseDown}
+      data-testid={testId}
     />
   );
 };
@@ -135,5 +137,6 @@ NumberInput.propTypes = {
   placeholder: PropTypes.string,
   className: PropTypes.string,
   integer: PropTypes.bool,
-  localize: PropTypes.bool
+  localize: PropTypes.bool,
+  testId: PropTypes.string
 };

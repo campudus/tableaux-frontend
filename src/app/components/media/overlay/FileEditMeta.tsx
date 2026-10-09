@@ -51,6 +51,7 @@ export default function FileEditMeta({
           </div>
 
           <input
+            data-testid={`media-file-meta-${name}-${fileLangtag}`}
             disabled={!canUserEditFiles()}
             type="text"
             lang={fileLangtag}

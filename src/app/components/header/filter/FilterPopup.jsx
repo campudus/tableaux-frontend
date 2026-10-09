@@ -138,6 +138,7 @@ const FilterPopup = ({
             </div>
             <button
               className="button button--open-save-overlay"
+              data-testid="filter-save-open"
               onClick={() => setShowFilterSavePopup(true)}
               disabled={!settingsAreValid}
             >
@@ -232,6 +233,7 @@ const SortingArea = ({ columns, onChange, ordering, langtag }) => {
         />
         <button
           className="button button--reset-sorting"
+          data-testid="filter-sorting-clear"
           disabled={!ordering.colName}
           onClick={handleClear}
         >
@@ -287,6 +289,7 @@ const AnnotationFilterArea = ({ onToggle, filters, options, langtag }) => {
               <div className="annotation-filter__checkbox">
                 <input
                   type="checkbox"
+                  data-testid={`filter-annotation-${kind}`}
                   checked={Boolean(filters[kind])}
                   onChange={f.noop}
                 />
@@ -340,7 +343,11 @@ const ColumnFilterArea = ({ columns, filters, langtag, onChange }) => {
           />
         ))}
       </div>
-      <button className="button button--add-filter" onClick={addFilterRow}>
+      <button
+        className="button button--add-filter"
+        data-testid="filter-add-row"
+        onClick={addFilterRow}
+      >
         <i className="fa fa-plus" />
         {t("table:filter.add-filter")}
       </button>

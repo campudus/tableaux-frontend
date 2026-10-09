@@ -139,6 +139,7 @@ const TaxonomySearch = ({
     <div className={`taxonomy-search ${classNames || ""}`} ref={containerRef}>
       <div className="taxonomy-search__wrapper">
         <input
+          data-testid="taxonomy-search-input"
           onFocus={handleFocusInput}
           className={inputClass}
           type="text"

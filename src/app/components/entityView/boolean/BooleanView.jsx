@@ -53,6 +53,7 @@ class BooleanView extends PureComponent {
         <div className="content-wrapper">
           <input
             className="checkbox"
+            data-testid={`entity-view-boolean-${this.props.cell.column.id}`}
             type="checkbox"
             checked={selected}
             disabled={thisUserCantEdit}

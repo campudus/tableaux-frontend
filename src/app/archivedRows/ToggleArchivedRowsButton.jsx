@@ -36,6 +36,7 @@ const Item = ({ onClick, active, content }) => {
       className={cssClass}
       onClick={active ? undefined : onClick}
       disabled={active}
+      data-testid={`archive-mode-option-${content.trnKey}`}
     >
       {content.icon}
       <span>{t(`table:archived.${content.trnKey}`)}</span>
@@ -83,6 +84,7 @@ const ToggleArchivedRowsButton = ({ table, langtag }) => {
         <button
           className="small-button archive-mode-toggle__popup-button"
           onClick={togglePopup}
+          data-testid="archive-mode-toggle"
         >
           {StateCfg[showArchivedMode || ShowArchived.hide]?.icon}
         </button>

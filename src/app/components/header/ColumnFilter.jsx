@@ -35,7 +35,11 @@ class ColumnFilter extends React.Component {
     });
     return (
       <div id="column-filter-wrapper" className={cssClass}>
-        <button className={buttonClass} onClick={this.togglePopup}>
+        <button
+          className={buttonClass}
+          onClick={this.togglePopup}
+          data-testid="column-visibility-toggle"
+        >
           <i className="fa fa-eye" />
           {nHidden > 0 ? <span className="infotext">{message}</span> : null}
         </button>

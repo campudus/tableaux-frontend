@@ -23,6 +23,7 @@ type ContextMenuItemProps = {
   onClose: () => void;
   iconStart?: string;
   iconEnd?: string;
+  testId: string;
 };
 
 export const ContextMenuItem = ({
@@ -30,7 +31,8 @@ export const ContextMenuItem = ({
   onClick,
   onClose,
   iconStart,
-  iconEnd
+  iconEnd,
+  testId
 }: ContextMenuItemProps) => {
   const handleClick = () => {
     onClick();
@@ -38,7 +40,11 @@ export const ContextMenuItem = ({
   };
 
   return (
-    <div className="column-context-menu__item" onClick={handleClick}>
+    <div
+      className="column-context-menu__item"
+      onClick={handleClick}
+      data-testid={testId}
+    >
       {iconStart && (
         <i className={`column-context-menu-item__icon fa ${iconStart}`} />
       )}
@@ -111,12 +117,14 @@ export default function ColumnContextMenu({
             onClick={sortByThisColumn(SortValue.asc)}
             title="filter:help.sortasc"
             iconStart="fa-sort-alpha-asc"
+            testId="column-menu-sort-asc"
           />
           <ContextMenuItem
             onClose={onClose}
             onClick={sortByThisColumn(SortValue.desc)}
             title="filter:help.sortdesc"
             iconStart="fa-sort-alpha-desc"
+            testId="column-menu-sort-desc"
           />
         </>
       )}

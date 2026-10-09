@@ -34,12 +34,14 @@ const DefaultFooter = ({ clearFilters, canApplyFilters, applyFilters }) => {
     <>
       <button
         className="filter-popup__clear-filters-button neutral"
+        data-testid="filter-clear"
         onClick={clearFilters}
       >
         {i18n.t("filter:button.clearFilter")}
       </button>
       <button
         disabled={!canApplyFilters}
+        data-testid="filter-apply"
         className={
           "filter-popup__apply-filters-button " +
           (canApplyFilters ? "" : "neutral")

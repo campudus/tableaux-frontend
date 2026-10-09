@@ -10,7 +10,7 @@ const GreeterWidget = ({ langtag }) => {
   const motd = getMotd(langtag);
 
   return (
-    <div className="greeter tile wide">
+    <div className="greeter tile wide" data-testid="dashboard-greeter">
       <div className="heading">
         <span className="default-text">
           {i18n.t("dashboard:greeter.hello")}

@@ -22,6 +22,7 @@ const Popup = ({ langtag, handleLangtagSwitch, onClose }) => {
           <div key={lt} className="language-switcher__menu-item">
             <button
               className="language-switcher__switch-language-button"
+              data-testid={`overlay-language-switcher-option-${lt}`}
               onClick={handleLangtagSwitch(lt)}
             >
               {getLanguageOrCountryIcon(lt, LanguageType.language)}

@@ -31,7 +31,13 @@ const isViewableUrl = url => {
   );
 };
 
-const LinkButton = ({ className, onClick, disabled = !onClick, children }) => {
+const LinkButton = ({
+  className,
+  onClick,
+  disabled = !onClick,
+  children,
+  testId
+}) => {
   const cssClass = buildClassName("linkButton", { disabled }, className);
   return (
     <button
@@ -39,6 +45,7 @@ const LinkButton = ({ className, onClick, disabled = !onClick, children }) => {
       onClick={onClick}
       draggable={false}
       disabled={disabled}
+      data-testid={testId}
     >
       {children}
     </button>
@@ -150,6 +157,7 @@ const LinkItem = props => {
             className={secondaryButtonClass}
             onClick={handleClickToggle}
             disabled={isDisabled}
+            testId={`link-item-toggle-${props.row.id}`}
           >
             {props.isLinked ? (
               <SvgIcon icon="minus" containerClasses="color-primary" />
@@ -167,6 +175,7 @@ const LinkItem = props => {
           <LinkButton
             className={secondaryButtonClass}
             onClick={handleClickEdit}
+            testId={`link-item-edit-${props.row.id}`}
           >
             {archived ? (
               <i className="fa fa-eye" />

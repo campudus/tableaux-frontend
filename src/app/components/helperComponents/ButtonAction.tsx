@@ -8,6 +8,7 @@ export type ButtonActionOption = {
   icon?: ReactNode;
   label?: ReactNode;
   onClick: (event: MouseEvent<HTMLButtonElement>) => void;
+  testId?: string;
 };
 
 type ButtonActionProps = {
@@ -19,6 +20,7 @@ type ButtonActionProps = {
   disabled?: boolean;
   alignmentH?: "left" | "right";
   children?: JSX.Element | JSX.Element[];
+  testId?: string;
 } & (
   | { options: ButtonActionOption[]; onClick?: never }
   | {
@@ -37,7 +39,8 @@ export default function ButtonAction({
   options,
   onClick,
   disabled,
-  alignmentH = "right"
+  alignmentH = "right",
+  testId
 }: ButtonActionProps) {
   const buttonRef = useRef<HTMLButtonElement>(null);
   const { left, right, bottom } =
@@ -81,6 +84,7 @@ export default function ButtonAction({
         onClick={handleClick}
         title={alt}
         disabled={disabled}
+        data-testid={testId}
       >
         {children || (
           <>
@@ -99,6 +103,7 @@ export default function ButtonAction({
                 className={option.className}
                 label={option.label}
                 icon={option.icon}
+                testId={option.testId}
                 onClick={event => {
                   option.onClick(event);
                   handleCloseMenu();

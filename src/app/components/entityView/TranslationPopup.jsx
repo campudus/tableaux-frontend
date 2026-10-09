@@ -89,6 +89,7 @@ const LanguageView = ({
     <div className={wrapperClass}>
       <button
         className={`item-header ${isMain ? "main" : ""}`}
+        data-testid={`entity-view-translation-language-${langtag}`}
         onClick={switchLanguage}
       >
         {getLanguageOrCountryIcon(langtag, cell.column.languageType)}
@@ -96,7 +97,11 @@ const LanguageView = ({
       <div className="item-content">
         <div className="content-box">{displayCell(cell, langtag)}</div>
       </div>
-      <button className="toggle-button" onClick={toggleExpand}>
+      <button
+        className="toggle-button"
+        data-testid={`entity-view-translation-hide-${langtag}`}
+        onClick={toggleExpand}
+      >
         <SvgIcon icon="cross" />
       </button>
     </div>
@@ -171,11 +176,19 @@ const TranslationPopup = ({
   return (
     <div className="translation-view">
       <div className="pseudo-header">
-        <button className="pseudo-header__close-button" onClick={handleClose}>
+        <button
+          className="pseudo-header__close-button"
+          data-testid="entity-view-translation-close"
+          onClick={handleClose}
+        >
           <SvgIcon icon="cross" containerClasses="color-white" center={true} />
         </button>
         <div className="title">{title}</div>
-        <button className="toggle-all-button" onClick={toggleAllTranslations}>
+        <button
+          className="toggle-all-button"
+          data-testid="entity-view-translation-toggle-all"
+          onClick={toggleAllTranslations}
+        >
           {i18n.t(
             isAnyLangtagHidden
               ? "table:translations.expand_all"

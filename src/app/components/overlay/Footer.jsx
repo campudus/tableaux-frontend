@@ -33,6 +33,7 @@ class Footer extends Component {
         <button
           className={"button " + className}
           onClick={this.wrapButtonFn(className, fn)}
+          data-testid={`overlay-button-${className}`}
         >
           {text}
         </button>

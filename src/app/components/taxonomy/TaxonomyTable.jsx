@@ -109,6 +109,7 @@ const mkTableEditor =
     return (
       <button
         className={buttonClass}
+        data-testid={`taxonomy-node-menu-${node.id}`}
         onClick={handleTogglePopup}
         ref={containerRef}
       >
@@ -166,7 +167,11 @@ const EmptyTable = ({ createFirstNode }) => (
           </>
         ))}
     </div>
-    <button className="create-row-button" onClick={createFirstNode}>
+    <button
+      className="create-row-button"
+      data-testid="taxonomy-create-first-node"
+      onClick={createFirstNode}
+    >
       <i className="fa fa-plus"></i>
       <span className="create-row-button__text">
         {i18n.t("table:taxonomy.create-new-category")}

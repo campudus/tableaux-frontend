@@ -39,7 +39,7 @@ const RootButton = props => {
     );
   return (
     <div className="breadcrumb-wrapper">
-      <button onClick={closeAllButRoot}>
+      <button onClick={closeAllButRoot} data-testid="overlay-root-button">
         <div className="context">{context}</div>
         <div className="title">
           <i className="fa fa-long-arrow-left" />

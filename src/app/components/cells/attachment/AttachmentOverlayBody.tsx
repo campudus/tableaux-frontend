@@ -193,6 +193,7 @@ export default function AttachmentOverlayBody({
           href={`/${langtag}/media/${folder?.id}`}
           target="_blank"
           rel="noopener noreferrer"
+          data-testid="attachment-overlay-folder-link"
         >
           <h4 className="attachment-overlay__title">
             {isRoot ? i18n.t("media:root_folder_name") : folder?.name}
@@ -241,11 +242,13 @@ export default function AttachmentOverlayBody({
           links={[
             {
               label: i18n.t("media:root_folder_name"),
-              onClick: () => handleNavigate()
+              onClick: () => handleNavigate(),
+              testId: "attachment-overlay-breadcrumb-root"
             },
             ...parents.map(({ id, name }) => ({
               onClick: () => handleNavigate(id),
-              label: name ?? `Folder ${id}`
+              label: name ?? `Folder ${id}`,
+              testId: `attachment-overlay-breadcrumb-${id}`
             }))
           ]}
         />

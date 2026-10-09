@@ -162,7 +162,11 @@ export const SwitchSortingButton = React.memo(props => {
   );
 
   return (
-    <button className="sort-mode-button" onClick={switchSortMode}>
+    <button
+      className="sort-mode-button"
+      onClick={switchSortMode}
+      data-testid="link-overlay-sort-mode"
+    >
       <i className={sortIcons[sortOrder]} />
     </button>
   );

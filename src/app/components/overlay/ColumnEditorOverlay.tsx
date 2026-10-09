@@ -201,6 +201,7 @@ export function ColumnEditorOverlayBody({
           type="text"
           autoFocus
           className="item-content"
+          data-testid="column-editor-name"
           onChange={handleUpdateDisplayName}
           onBlur={handleUpdateDisplayName}
           value={displayName}
@@ -211,6 +212,7 @@ export function ColumnEditorOverlayBody({
         <textarea
           className="item-content"
           rows={6}
+          data-testid="column-editor-description"
           onChange={handleUpdateDescription}
           onBlur={handleUpdateDescription}
           value={description}
@@ -253,6 +255,7 @@ export function ColumnEditorOverlayBody({
                   })}
                   type="text"
                   name={identifier}
+                  data-testid="column-editor-attribute-key"
                   placeholder={i18n.t("table:editor.attribute-key-ph")}
                   onChange={handleUpdateAttributeKey}
                   onBlur={handleUpdateAttributeKey}
@@ -268,6 +271,7 @@ export function ColumnEditorOverlayBody({
                         className="attribute-input"
                         type="checkbox"
                         name={identifier}
+                        data-testid="column-editor-attribute-value"
                         onChange={handleUpdateAttributeValue}
                         onBlur={handleUpdateAttributeValue}
                         checked={
@@ -288,6 +292,7 @@ export function ColumnEditorOverlayBody({
                     className="attribute-input"
                     type="text"
                     name={identifier}
+                    data-testid="column-editor-attribute-value"
                     placeholder={i18n.t("table:editor.attribute-value-ph")}
                     onChange={handleUpdateAttributeValue}
                     onBlur={handleUpdateAttributeValue}
@@ -299,6 +304,7 @@ export function ColumnEditorOverlayBody({
                     className="attribute-input"
                     type="number"
                     name={identifier}
+                    data-testid="column-editor-attribute-value"
                     placeholder={i18n.t("table:editor.attribute-value-ph")}
                     onChange={handleUpdateAttributeValue}
                     onBlur={handleUpdateAttributeValue}
@@ -309,6 +315,7 @@ export function ColumnEditorOverlayBody({
               <button
                 className={cn("button", { delete: true })}
                 name={identifier}
+                data-testid="column-editor-attribute-delete"
                 onClick={handleDeleteAttribute}
               >
                 <i className="fa fa-trash"></i>
@@ -319,6 +326,7 @@ export function ColumnEditorOverlayBody({
 
         <button
           className={cn("button", { add: true })}
+          data-testid="column-editor-attribute-add"
           onClick={handleAddAttribute}
         >
           <i className="fa fa-plus"></i>

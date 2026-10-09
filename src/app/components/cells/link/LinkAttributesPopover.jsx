@@ -43,6 +43,7 @@ const DateAttributeInput = ({ definition, value, onChange, autoFocus }) => {
         className="link-attributes-popover__date-trigger"
         onClick={() => setOpen(o => !o)}
         autoFocus={autoFocus}
+        data-testid={`link-attributes-input-${definition.name}`}
       >
         <i className="fa fa-calendar" />
         <span>
@@ -56,6 +57,7 @@ const DateAttributeInput = ({ definition, value, onChange, autoFocus }) => {
           type="button"
           className="link-attributes-popover__date-clear"
           onClick={() => onChange(null)}
+          data-testid={`link-attributes-date-clear-${definition.name}`}
         >
           <i className="fa fa-minus-circle" />
         </button>
@@ -93,6 +95,7 @@ const AttributeInput = ({ definition, value, onChange, autoFocus }) => {
         value={value ?? ""}
         disabled
         placeholder={i18n.t("table:link-attributes.multilanguage-unsupported")}
+        data-testid={`link-attributes-input-${definition.name}`}
       />
     );
   }
@@ -106,6 +109,7 @@ const AttributeInput = ({ definition, value, onChange, autoFocus }) => {
           className="link-attributes-popover__toggle"
           checked={value === true}
           onChange={evt => onChange(evt.target.checked)}
+          testId={`link-attributes-input-${definition.name}`}
         />
       );
     case ColumnKinds.numeric:
@@ -117,6 +121,7 @@ const AttributeInput = ({ definition, value, onChange, autoFocus }) => {
           decimalDigits={getDecimalDigits(definition)}
           onChange={onChange}
           autoFocus={autoFocus}
+          testId={`link-attributes-input-${definition.name}`}
         />
       );
     case ColumnKinds.date:
@@ -138,6 +143,7 @@ const AttributeInput = ({ definition, value, onChange, autoFocus }) => {
           value={value ?? ""}
           onChange={evt => onChange(evt.target.value)}
           autoFocus={autoFocus}
+          data-testid={`link-attributes-input-${definition.name}`}
         />
       );
   }

@@ -120,6 +120,7 @@ export default function PasteCellIcon({
         <div className="buttons">
           <button
             className="focus-cell-button button positive"
+            data-testid="clipboard-focus-cell"
             onClick={focusCell}
           >
             {i18n.t("header:clipboard.focus")}
@@ -127,6 +128,7 @@ export default function PasteCellIcon({
 
           <button
             className="clear-pasted-button button neutral"
+            data-testid="clipboard-clear"
             onClick={clearCellClipboard}
           >
             {i18n.t("header:clipboard.clear")}
