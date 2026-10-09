@@ -244,6 +244,7 @@ export function ColumnEditorOverlayBody({
               <div className="item-content">
                 <Select
                   className="attribute-select"
+                  testId="column-editor-attribute-type"
                   isMulti={false}
                   name={identifier}
                   value={typeOption}

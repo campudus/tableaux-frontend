@@ -219,12 +219,14 @@ const SortingArea = ({ columns, onChange, ordering, langtag }) => {
       </header>
       <div className="content sorting-area__content">
         <Select
+          testId="filter-sorting-column"
           options={options}
           value={ordering?.colName || "rowId"}
           onChange={handleChangeColumn}
           placehoder={t("filter:input.sort")}
         />
         <Select
+          testId="filter-sorting-direction"
           options={[
             { value: SortValue.asc, label: t("filter:help.sortasc") },
             { value: SortValue.desc, label: t("filter:help.sortdesc") }

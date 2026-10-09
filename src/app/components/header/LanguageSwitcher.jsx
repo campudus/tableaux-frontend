@@ -1,7 +1,6 @@
 import f from "lodash/fp";
 import PropTypes from "prop-types";
 import React, { useCallback } from "react";
-import { components } from "react-select";
 import { getLanguageOrCountryIcon } from "../../helpers/multiLanguage";
 import Select from "../GrudSelect";
 import { Langtags } from "./../../constants/TableauxConstants";
@@ -38,9 +37,8 @@ const LanguageSwitcher = props => {
       clearable={false}
       value={langtag}
       onChange={handleChange}
-      components={{ Control, Option, SingleValue }}
+      components={{ Option, SingleValue }}
       Disabled={disabled}
-      // react-select hands unknown props to the custom components as selectProps
       testId={testId}
     />
   );
@@ -64,16 +62,6 @@ const renderFlagAndText = key => props => {
     </span>
   );
 };
-// the control is the click target that opens the menu, its input covers the value
-const Control = props => (
-  <components.Control
-    {...props}
-    innerProps={{
-      ...props.innerProps,
-      "data-testid": props.selectProps.testId
-    }}
-  />
-);
 const Option = renderFlagAndText("option");
 const SingleValue = renderFlagAndText("singleValue");
 

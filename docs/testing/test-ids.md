@@ -12,7 +12,7 @@ Every `a`, `button`, `input`, `select` and `textarea` (and router `Link`/`NavLin
 `eslint.config.js`). Elements with spread props are exempt, the spread may carry the ID. Reusable
 components that render such an element take a `testId` prop and pass it on (`Button`,
 `ButtonAction`, `NumberInput`, `NewRowButton`, `ContextMenuItem`, `Toggle`, `SearchBar`,
-`AnnotationBadge`, `LanguageSwitcher`, `Chip` with `onClick`); eslint or the prop types require it
+`AnnotationBadge`, `LanguageSwitcher`, `Breadcrumbs`, `Select`, `Chip` with `onClick`); eslint or the prop types require it
 there too.
 
 ## Naming
@@ -27,7 +27,8 @@ there too.
   can't be scoped; only one menu is open at a time, open it via the scoped trigger and address the
   entry unscoped: `media-dirent-menu` → `media-dirent-remove`
 - components rendered more than once on a page take the ID (or a prefix) from the caller:
-  `LanguageSwitcher` uses `testId`, `${testId}-value` and `${testId}-option-${langtag}`
+  `Select` (`GrudSelect`) puts `testId` on the control and `${testId}-option-${value}` on each
+  option, `LanguageSwitcher` adds `${testId}-value`, `Breadcrumbs` adds `${testId}-more`
 - never array indices: they change with sorting and filtering. Exception: rows the user adds
   without an ID of their own (filter rows, column attributes) keep their order and are named by
   position: `filter-row-${index}`, `column-editor-attribute-${index}`

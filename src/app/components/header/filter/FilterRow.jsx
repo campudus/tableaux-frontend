@@ -59,6 +59,7 @@ const FilterRow = ({
     <div className="filter-row" onKeyDown={handleKeys} data-testid={testId}>
       <Select
         className="filter-select"
+        testId={`${testId}-column`}
         options={columnOptions}
         searchable={true}
         clearable={false}
@@ -79,6 +80,7 @@ const FilterRow = ({
       <Select
         disabled={!column}
         className="filter-mode-select"
+        testId={`${testId}-mode`}
         options={modeOptions}
         searchable={false}
         clearable={false}

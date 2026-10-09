@@ -164,7 +164,7 @@ export default [
         {
           // reusable components pass testId on to their interactive element, an omitted one renders none
           selector:
-            "JSXOpeningElement:matches([name.name=/^(Button|ButtonAction|NumberInput|Toggle|SearchBar|AnnotationBadge|LanguageSwitcher|Breadcrumbs)$/], [name.name='Chip']:has(> JSXAttribute[name.name='onClick'])):not(:has(> JSXAttribute[name.name='testId'])):not(:has(> JSXSpreadAttribute))",
+            "JSXOpeningElement:matches([name.name=/^(Button|ButtonAction|NumberInput|Toggle|SearchBar|AnnotationBadge|LanguageSwitcher|Breadcrumbs|Select)$/], [name.name='Chip']:has(> JSXAttribute[name.name='onClick'])):not(:has(> JSXAttribute[name.name='testId'])):not(:has(> JSXSpreadAttribute))",
           message:
             "Components rendering interactive elements need a testId for E2E tests (see docs/testing/test-ids.md)."
         }
