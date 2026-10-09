@@ -30,7 +30,11 @@ const BooleanCell = props => {
   };
 
   return (
-    <div className={"cell-content"} onClick={handleClick}>
+    <div
+      className={"cell-content"}
+      onClick={handleClick}
+      data-testid="cell-content"
+    >
       <input
         className="checkbox"
         type="checkbox"

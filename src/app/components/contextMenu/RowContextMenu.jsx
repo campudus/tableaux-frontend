@@ -293,7 +293,11 @@ class RowContextMenu extends React.Component {
       !isSettingsTable && canUserCreateRow({ table });
 
     return (
-      <div className="prevent-scroll" onClick={closeRowContextMenu}>
+      <div
+        className="prevent-scroll"
+        onClick={closeRowContextMenu}
+        data-testid="context-menu-backdrop"
+      >
         <GenericContextMenu
           x={this.props.x}
           y={this.props.y - 60}

@@ -145,6 +145,7 @@ export const RowCreator = props => {
     <div
       className={`row-creator-button${shiftUp ? " shift-up" : ""}`}
       onClick={addAndLinkRow}
+      data-testid="link-overlay-add-new-row"
     >
       <SvgIcon icon="plus" containerClasses="color-primary" />
       <span>

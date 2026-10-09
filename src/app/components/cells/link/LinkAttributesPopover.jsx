@@ -275,6 +275,7 @@ const LinkAttributesPopover = ({
       <div
         ref={setRefs}
         className="link-attributes-popover"
+        data-testid="link-attributes-popover"
         style={floatingStyles}
         onClick={evt => evt.stopPropagation()}
       >

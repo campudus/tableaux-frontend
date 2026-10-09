@@ -93,14 +93,22 @@ const FilterArea = ({
   return (
     <div className="history-filter__popup-area">
       <div className="history-popup__header">
-        <div className={cssClass} onClick={toggleFilterSettings}>
+        <div
+          className={cssClass}
+          onClick={toggleFilterSettings}
+          data-testid="history-filter-toggle"
+        >
           <i className="fa fa-filter" />
           <div className="toggle-filter-button__text">
             {i18n.t("history:toggle-filter-display")}
           </div>
           <i className={arrowClass} />
         </div>
-        <div className={clearButtonClass} onClick={resetFilter}>
+        <div
+          className={clearButtonClass}
+          onClick={resetFilter}
+          data-testid="history-filter-reset"
+        >
           <i className="fa fa-minus-circle" />
           <div className="clear-filter-button__text">
             {i18n.t("history:reset-filters")}

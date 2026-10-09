@@ -64,7 +64,11 @@ const TextEditOverlay = props => {
     <div className="content-items richtext-cell-editor">
       <div className="item">
         {shouldCatchOutsideClick && (
-          <div className="catchOutsideClick" onClick={onOutsideClick} />
+          <div
+            className="catchOutsideClick"
+            onClick={onOutsideClick}
+            data-testid="text-editor-backdrop"
+          />
         )}
         <div className="item-content shorttext textarea_wrapper" tabIndex={1}>
           <textarea

@@ -40,13 +40,17 @@ export default function FileEditMeta({
   return (
     <div
       className="file-edit-meta"
+      data-testid={`media-file-meta-${name}`}
       onClick={isMultilang ? handleToggle : f.noop}
     >
       <div className="file-edit-meta__header">{label}</div>
 
       {fileLangtags.map(fileLangtag => (
         <div key={fileLangtag} className="file-edit-meta__content">
-          <div onClick={isMultilang ? handleToggle : f.noop}>
+          <div
+            data-testid={`media-file-meta-toggle-${name}-${fileLangtag}`}
+            onClick={isMultilang ? handleToggle : f.noop}
+          >
             {getLangIcon(fileLangtag)}
           </div>
 

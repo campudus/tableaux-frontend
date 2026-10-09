@@ -7,6 +7,7 @@ type ChipProps = {
   label: string;
   onClick?: () => void;
   isActive?: boolean;
+  testId?: string;
 };
 
 export default function Chip({
@@ -14,7 +15,8 @@ export default function Chip({
   icon,
   label,
   onClick,
-  isActive = false
+  isActive = false,
+  testId
 }: ChipProps): ReactElement {
   return (
     <div
@@ -24,6 +26,7 @@ export default function Chip({
         className
       )}
       onClick={onClick}
+      data-testid={testId}
       role={onClick ? "button" : undefined}
     >
       {icon && <span className="chip__icon">{icon}</span>}

@@ -209,7 +209,11 @@ class GenericOverlay extends Component {
             </footer>
           ) : null}
         </div>
-        <div onClick={this.backgroundClick} className="background" />
+        <div
+          onClick={this.backgroundClick}
+          className="background"
+          data-testid="overlay-background"
+        />
       </div>
     );
   }

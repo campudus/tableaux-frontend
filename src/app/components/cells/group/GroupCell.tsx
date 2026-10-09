@@ -35,7 +35,7 @@ export default function GroupCell({
   });
 
   return (
-    <div className={className} onClick={openEditor}>
+    <div className={className} onClick={openEditor} data-testid="cell-content">
       <GroupDisplayValue
         column={cell.column}
         value={cell.value}

@@ -94,7 +94,11 @@ const MarkdownEditor = ({ value, cell, actions, langtag, readOnly }, ref) => {
   ];
 
   return (
-    <div className={cssClass} onClick={focusInput}>
+    <div
+      className={cssClass}
+      data-testid="markdown-editor"
+      onClick={focusInput}
+    >
       <UserEditor
         cell={cell}
         ref={editorRef}

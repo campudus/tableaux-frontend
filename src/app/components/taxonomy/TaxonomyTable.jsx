@@ -32,6 +32,7 @@ const shouldShowAction = ({ node, expandedNodeId }) =>
 const EditorEntry = ({ entry, node }) => (
   <li
     className="tree-node__menu-popup__item"
+    data-testid={`taxonomy-node-menu-item-${entry.titleKey.split(".").pop()}`}
     onClick={() => entry.onClick(node)}
   >
     <span className="item__icon">

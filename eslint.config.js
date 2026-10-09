@@ -153,6 +153,13 @@ export default [
             "JSXOpeningElement[name.name=/^(a|button|input|select|textarea)$/]:not(:has(JSXAttribute[name.name='data-testid'])):not(:has(JSXSpreadAttribute))",
           message:
             "Interactive elements need a data-testid for E2E tests (see docs/testing/test-ids.md)."
+        },
+        {
+          // other elements become click targets through their handlers, e.g. table cells or menu entries
+          selector:
+            "JSXOpeningElement[name.name=/^[a-z]/]:not([name.name=/^(a|button|input|select|textarea)$/]):has(JSXAttribute[name.name=/^on(Click|DoubleClick|MouseDown|MouseUp|ContextMenu)$/]):not(:has(JSXAttribute[name.name='data-testid'])):not(:has(JSXSpreadAttribute))",
+          message:
+            "Elements with click handlers need a data-testid for E2E tests (see docs/testing/test-ids.md)."
         }
       ]
     }

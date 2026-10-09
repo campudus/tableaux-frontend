@@ -188,6 +188,7 @@ const LinkItem = props => {
           ref={refs.setReference}
           className={mainButtonClass}
           onClick={canEditAttributes ? handleOpenAttributesPopover : undefined}
+          data-testid={`link-item-${props.row.id}`}
         >
           <div draggable={false}>
             {isPermissionDenied ? (

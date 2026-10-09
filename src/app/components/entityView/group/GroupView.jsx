@@ -22,6 +22,7 @@ const GroupView = props => {
   return (
     <div
       className="item-content group"
+      data-testid={`entity-view-group-${cell.column.id}`}
       tabIndex="1"
       ref={el => {
         funcs.register(el);

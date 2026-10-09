@@ -33,7 +33,7 @@ const Navigation = ({ langtag }) => {
       >
         <i className="fa fa-bars" />
       </button>
-      <div onClick={closePopup}>
+      <div onClick={closePopup} data-testid="main-navigation-popup">
         <SelfClosingNavigationPopup
           langtag={langtag}
           handleClickOutside={closePopup}

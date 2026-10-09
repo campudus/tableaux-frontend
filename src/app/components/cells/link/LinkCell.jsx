@@ -89,7 +89,11 @@ const LinkCell = props => {
 
   return (
     <>
-      <div className={"cell-content"} onClick={handleClick}>
+      <div
+        className={"cell-content"}
+        onClick={handleClick}
+        data-testid="cell-content"
+      >
         {links}
         {hasMore && !isEditOrSelect && (
           <span key={"more"} className="more">

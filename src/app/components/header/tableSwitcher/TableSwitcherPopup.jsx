@@ -237,6 +237,7 @@ class SwitcherPopup extends React.PureComponent {
         <li
           key={"group" + group.id}
           onClick={this.onClickGroup(group)}
+          data-testid={`table-switcher-group-${group.id}`}
           className={className}
         >
           {groupDisplayName}

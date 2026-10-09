@@ -125,10 +125,12 @@ const FilterPopup = ({
       <div
         className="full-screen capture-outside-click"
         onClick={onClickedOutside}
+        data-testid="filter-popup-backdrop"
       />
       <div
         className="filter-popup"
         onClick={evt => void evt.stopPropagation()}
+        data-testid="filter-popup"
         onKeyDown={handleKeyPress}
       >
         <section className="filter-popup__content-section">
@@ -282,6 +284,7 @@ const AnnotationFilterArea = ({ onToggle, filters, options, langtag }) => {
               className="annotation-filter"
               key={kind}
               onClick={onToggle(kind)}
+              data-testid={`filter-annotation-option-${kind}`}
             >
               <div className="annotation-filter__label">
                 {getAnnotationTitle(kind, langtag)}

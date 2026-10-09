@@ -163,6 +163,7 @@ class Table extends PureComponent {
         id="table-wrapper"
         tabIndex="-1"
         onMouseDown={this.onMouseDownHandler}
+        data-testid="table"
       >
         <div className={tableClass}>
           {isTaxonomy ? (

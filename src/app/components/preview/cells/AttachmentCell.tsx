@@ -67,6 +67,7 @@ export default function AttachmentCell({
             <div className="attachment-slider-overlay">
               <div
                 className="attachment-slider-backdrop"
+                data-testid="preview-attachments-slider-backdrop"
                 onClick={() => setOpen(false)}
               />
 

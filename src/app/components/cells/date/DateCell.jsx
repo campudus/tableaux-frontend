@@ -54,13 +54,18 @@ const DateCell = props => {
         {innerValue?.isValid() ? format(innerValue) : null}
 
         {editing && innerValue ? (
-          <i className="fa fa-ban" onMouseDown={() => handleSave(null)} />
+          <i
+            className="fa fa-ban"
+            onMouseDown={() => handleSave(null)}
+            data-testid="cell-date-clear"
+          />
         ) : null}
       </div>
 
       {editing && (
         <div
           className="time-picker-wrapper"
+          data-testid="cell-date-picker"
           style={{
             position: "absolute",
             top: needsShiftUp ? -DATE_PICKER_HEIGHT : "100%"

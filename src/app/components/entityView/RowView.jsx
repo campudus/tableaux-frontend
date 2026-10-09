@@ -170,6 +170,7 @@ class View extends PureComponent {
       <div
         key={itemKey}
         className={viewClass}
+        data-testid={`entity-view-item-${column.id}`}
         onClick={this.clickHandler}
         onMouseEnter={() => this.setState({ hovered: true })}
         onMouseLeave={() => this.setState({ hovered: false })}

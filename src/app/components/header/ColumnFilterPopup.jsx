@@ -115,6 +115,7 @@ const ColumnFilterPopup = ({
         key={id}
         style={style}
         onClick={handleToggleColumnVisibility}
+        data-testid={`column-visibility-item-${column.id}`}
         onMouseEnter={() => selectColumn(column.id, index)}
       >
         <input

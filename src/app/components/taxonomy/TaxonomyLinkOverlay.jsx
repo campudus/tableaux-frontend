@@ -71,6 +71,7 @@ export const LinkedItem = ({
                 <span
                   key={n.id}
                   className="linked-item__path-step"
+                  data-testid={`taxonomy-link-path-step-${n.id}`}
                   title={title}
                   onClick={() => onFocusNode(n)}
                 >

@@ -96,6 +96,7 @@ export default function PasteCellIcon({
   return (
     <Popup
       className="clipboard-icon"
+      testId="clipboard-toggle"
       trigger={<i className={"fa fa-clipboard"} />}
     >
       <div className={"clipboard-popup"}>

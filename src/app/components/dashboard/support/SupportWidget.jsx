@@ -89,7 +89,11 @@ const SupportWidget = () => {
                 onChange={handleChange}
                 placeholder={i18n.t("dashboard:support.feedback-placeholder")}
               />
-              <div className="submit-button" onClick={handleSubmit}>
+              <div
+                className="submit-button"
+                onClick={handleSubmit}
+                data-testid="dashboard-support-submit"
+              >
                 {i18n.t("dashboard:support.submit-feedback")}
               </div>
             </div>

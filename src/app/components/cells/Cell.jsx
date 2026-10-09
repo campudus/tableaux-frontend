@@ -397,6 +397,7 @@ const RepeaterCell = React.memo(props => {
       style={props.style}
       className="cell repeat placeholder"
       onContextMenu={onContextMenu}
+      data-testid={`cell-${cell.column.id}-${cell.row.id}-${langtag}`}
     >
       —.—
     </div>

@@ -179,6 +179,7 @@ class AnnotationPopup extends Component {
             <div
               className={popupCssClass}
               ref={this.rememberContainer}
+              data-testid="annotation-popup"
               onClick={this.handleClick}
               onContextMenu={this.handleClick}
               style={{
@@ -186,7 +187,11 @@ class AnnotationPopup extends Component {
                 top
               }}
             >
-              <div className="close-icon" onClick={this.handleClickOutside}>
+              <div
+                className="close-icon"
+                data-testid="annotation-popup-close"
+                onClick={this.handleClickOutside}
+              >
                 <SvgIcon icon="cross" />
               </div>
               <div className="annotation-popup-header">
@@ -224,7 +229,11 @@ class AnnotationPopup extends Component {
                     onBlur={this.focusInput}
                     data-testid="annotation-popup-input"
                   />
-                  <div className="button" onClick={this.saveComment}>
+                  <div
+                    className="button"
+                    data-testid="annotation-popup-add"
+                    onClick={this.saveComment}
+                  >
                     {i18n.t("common:add")}
                   </div>
                 </footer>

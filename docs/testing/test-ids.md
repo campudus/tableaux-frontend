@@ -6,10 +6,12 @@ test IDs are a contract with those tests: don't rename or remove one without ada
 
 ## Rule
 
-Every `a`, `button`, `input`, `select` and `textarea` needs a `data-testid`; eslint enforces it
-(`no-restricted-syntax` in `eslint.config.js`). Elements with spread props are exempt, the spread
-may carry the ID. Reusable components that render such an element take a `testId` prop and pass it
-on (`Button`, `ButtonAction`, `NumberInput`, `NewRowButton`, `ContextMenuItem`).
+Every `a`, `button`, `input`, `select` and `textarea` needs a `data-testid`, and so does every
+other HTML element with `onClick`, `onDoubleClick`, `onMouseDown`, `onMouseUp` or `onContextMenu`
+(cells, menu entries, popup backdrops). eslint enforces both (`no-restricted-syntax` in
+`eslint.config.js`). Elements with spread props are exempt, the spread may carry the ID. Reusable
+components that render such an element take a `testId` prop and pass it on (`Button`,
+`ButtonAction`, `NumberInput`, `NewRowButton`, `ContextMenuItem`, `Toggle`, `SearchBar`).
 
 ## Naming
 
